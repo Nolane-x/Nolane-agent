@@ -4,7 +4,7 @@
 
 **Goal:** Make the home composer route all built-in provider selections to the correct provider and make Codex App Server thread creation work with the installed Codex CLI wire schema.
 
-**Architecture:** Keep model-profile labels for display, but submit the registered provider ID for planner selection. Add a narrow compatibility resolver in the adaptive router for legacy `provider/model` keys. Normalize Codex sandbox policy once at the App Server adapter boundary so every thread/session path emits the current `read-only` enum.
+**Architecture:** Keep model-profile labels for display, but submit the registered provider ID for planner selection. Add a narrow compatibility resolver in the adaptive router for legacy `provider/model` keys. Normalize Codex sandbox values at the App Server adapter boundary while preserving the asymmetric wire contracts: `thread/start.params.sandbox` is the `read-only` string enum, and `turn/start.params.sandboxPolicy` is the `{ type: 'readOnly' }` object variant.
 
 **Tech Stack:** Node.js ESM, Node test runner, existing Nolane provider registry/router, UI v3 home composer.
 
@@ -123,15 +123,16 @@ git -c user.name="Codex" -c user.email="codex@local" commit -m "fix: resolve leg
 **Interfaces:**
 - Consumes: optional sandbox policies from `startThread` and `startTurn`,
   including legacy `{ type: 'readOnly' }`.
-- Produces: Codex App Server JSON-RPC params with `{ type: 'read-only' }`
-  for all read-only thread/session paths.
+- Produces: `thread/start.params.sandbox: 'read-only'` for thread creation and
+  `turn/start.params.sandboxPolicy: { type: 'readOnly' }` for turn creation.
 
 - [ ] **Step 1: Write the failing fixture assertion and test**
 
-Make the fixture return a JSON-RPC error from `thread/start` unless the
-sandbox type is `read-only`. Keep the existing test's explicit
-`{ type: 'readOnly' }` input and add an assertion that `complete()` also
-passes through the normalized policy.
+Make the fixture return a JSON-RPC error from `thread/start` unless
+`params.sandbox` is the `read-only` string enum, and from `turn/start` unless
+`params.sandboxPolicy.type` is `readOnly`. Keep the existing test's explicit
+`{ type: 'readOnly' }` input and add an assertion that `complete()` passes
+through both normalized method-specific shapes.
 
 - [ ] **Step 2: Run the focused test and verify it fails**
 
@@ -145,10 +146,11 @@ Expected: the fixture rejects the current camel-case sandbox value.
 
 - [ ] **Step 3: Implement centralized normalization**
 
-Add a small adapter-local normalizer that defaults missing policy to
-`{ type: 'read-only' }` and maps only `readOnly` to `read-only`. Use it in
-`startThread` and `startTurn`; use the hyphenated default in `openSession` and
-`complete`.
+Add adapter-local normalizers that default missing values to the method's
+authoritative shape. `startThread` maps read-only object inputs to the
+`read-only` enum. `startTurn` maps read-only string or object inputs to
+`{ type: 'readOnly' }`. Use the thread enum default in `openSession` and
+`complete`; their turns continue through the object normalizer.
 
 - [ ] **Step 4: Run the focused test and verify it passes**
 

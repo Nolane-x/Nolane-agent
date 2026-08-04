@@ -24,9 +24,11 @@ profile key as `planningProviderId`, so the router looks up a provider that
 does not exist and the HTTP layer reduces the resulting exception to
 `internal-error`.
 
-The Codex App Server adapter sends sandbox `{ type: 'readOnly' }`. The
-installed Codex CLI expects the hyphenated enum value `read-only`, so
-`thread/start` is rejected before a turn can begin.
+The Codex App Server methods have asymmetric sandbox wire shapes.
+`thread/start.params.sandbox` is a string enum such as `read-only`, while
+`turn/start.params.sandboxPolicy` is an object variant such as
+`{ type: 'readOnly' }`. Sending the turn-policy object to `thread/start`
+causes the installed Codex CLI to reject the thread before a turn can begin.
 
 ## Design
 
@@ -44,11 +46,12 @@ from failing with an opaque 500. All built-in providers share the same path.
 
 ### Codex sandbox normalization
 
-`CodexAppServerClient` will normalize its default and session-created
-read-only sandbox policy to `{ type: 'read-only' }`. The normalization is
-centralized at the adapter boundary so `startThread`, `openSession`, and
-`complete` cannot diverge. Existing callers that pass the old camel-case
-value are converted to the current wire value.
+`CodexAppServerClient` will preserve the method-specific wire contracts at
+the adapter boundary. `startThread` sends `sandbox: 'read-only'`, including
+when an existing caller supplies `{ type: 'readOnly' }` or
+`{ type: 'read-only' }`. `startTurn` separately sends
+`sandboxPolicy: { type: 'readOnly' }`. `openSession` and `complete` use these
+same normalized defaults so thread and turn calls cannot diverge.
 
 ### Error and safety boundaries
 
@@ -65,7 +68,8 @@ approval handler.
 2. Add a failing planner/router compatibility test proving a legacy model key
    resolves to its registered provider and an unknown key fails clearly.
 3. Add a failing Codex App Server fixture test proving all thread-start paths
-   send `type: 'read-only'`, including an old `readOnly` caller input.
+   send `sandbox: 'read-only'`, including an old `readOnly` caller input, and
+   all turn-start paths send `sandboxPolicy: { type: 'readOnly' }`.
 4. Run the focused tests, the relevant HTTP/provider suites, and a real
    read-only Codex CLI/App Server smoke check where the local installation is
    available. Missing optional CLIs are reported as unavailable, not passed.

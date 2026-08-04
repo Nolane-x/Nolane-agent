@@ -12,7 +12,7 @@ function client(overrides = {}) {
   return new CodexAppServerClient({ executable: process.execPath, args: [fixture], timeoutMs: 1_000, approvalHandler: async (request) => ({ decision: request.command?.[0] === 'git' ? 'accept' : 'decline' }), ...overrides });
 }
 
-test('CodexAppServerClient initializes, reads account, streams a turn, and handles approval', async (t) => {
+test('CodexAppServerClient sends the thread sandbox enum and turn sandboxPolicy object', async (t) => {
   const codex = client();
   t.after(() => codex.close());
   const initialized = await codex.connect();
@@ -29,7 +29,7 @@ test('CodexAppServerClient initializes, reads account, streams a turn, and handl
   assert.deepEqual(result.approvals.map((item) => item.decision), ['accept']);
 });
 
-test('CodexAppServerClient complete() sends the normalized sandbox policy, and exposes resume, interrupt, and retry classification', async (t) => {
+test('CodexAppServerClient complete() preserves method-specific sandbox shapes and retry classification', async (t) => {
   const codex = client();
   t.after(() => codex.close());
   const resumed = await codex.resumeThread('thr_saved');

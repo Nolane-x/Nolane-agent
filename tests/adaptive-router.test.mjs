@@ -85,6 +85,14 @@ test('AdaptiveProviderRouter rejects a legacy model-profile key when its provide
   assert.throws(() => router.select({ providerId: 'missing/model' }), /Unknown provider: missing\/model/);
 });
 
+test('AdaptiveProviderRouter does not treat an empty model-profile suffix as a legacy key', () => {
+  const providers = registry([provider('codex', { capabilities: ['coding'], qualityTier: 2 })]);
+  const router = new AdaptiveProviderRouter({ registry: providers });
+
+  assert.equal(router.select({ providerId: 'codex' }).id, 'codex');
+  assert.throws(() => router.select({ providerId: 'codex/' }), /Unknown provider: codex\//);
+});
+
 test('AdaptiveProviderRouter excludes installed providers that are not authenticated or healthy', () => {
   const values = [
     provider('logged-out', { capabilities: ['coding'], qualityTier: 9 }),

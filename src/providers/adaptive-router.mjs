@@ -29,7 +29,7 @@ function resolveExplicitProviderId(registry, providerId) {
   const providerIds = new Set(registry.list().map((provider) => provider.id));
   if (providerIds.has(providerId)) return providerId;
   const separator = providerId.indexOf('/');
-  const legacyProviderId = separator > 0 ? providerId.slice(0, separator) : null;
+  const legacyProviderId = separator > 0 && separator < providerId.length - 1 ? providerId.slice(0, separator) : null;
   return legacyProviderId && providerIds.has(legacyProviderId) ? legacyProviderId : providerId;
 }
 

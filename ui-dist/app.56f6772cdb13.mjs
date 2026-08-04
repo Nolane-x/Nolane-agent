@@ -167,7 +167,7 @@ function rerenderView(root, view, { preserve = null } = {}) {
 }
 
 router.register({ id: 'home', pattern: /^\/(?:\?.*)?$/, title: 'Chat', load: async () => {
-  const { createHomeController, renderHomeView } = await import('./views/home/home-view.8a4331eed63b.mjs');
+  const { createHomeController, renderHomeView } = await import('./views/home/home-view.74f3017bf8f0.mjs');
   const restoredDraft = sessionRestore.snapshot().drafts.home;
   const controller = createHomeController({ api, language: cachedPreferences.language }); await controller.load();
   if (restoredDraft?.projectId) controller.setProject(restoredDraft.projectId);
