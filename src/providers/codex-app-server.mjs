@@ -10,6 +10,11 @@ export function isRetryableCodexError(error) {
 
 function versionOf(value) { return String(value ?? '').match(/\b(\d+\.\d+(?:\.\d+)?(?:[-+][\w.-]+)?)\b/)?.[1] ?? null; }
 
+function normalizeSandboxPolicy(policy) {
+  const normalized = policy ?? { type: 'read-only' };
+  return normalized?.type === 'readOnly' ? { ...normalized, type: 'read-only' } : normalized;
+}
+
 function tokenUsage(params) {
   const raw = params?.tokenUsage?.total ?? params?.tokenUsage ?? {};
   const promptTokens = Number(raw.inputTokens ?? raw.promptTokens ?? 0) || 0;
@@ -67,9 +72,9 @@ export class CodexAppServerClient {
   async loginCancel(loginId) { await this.connect(); return this.rpc.request('account/login/cancel', { loginId: String(loginId) }); }
   async logout() { await this.connect(); return this.rpc.request('account/logout', {}); }
 
-  async startThread({ cwd = this.cwd, ephemeral = false, sandboxPolicy = { type: 'readOnly' }, approvalPolicy = 'untrusted' } = {}) {
+  async startThread({ cwd = this.cwd, ephemeral = false, sandboxPolicy = undefined, approvalPolicy = 'untrusted' } = {}) {
     await this.connect();
-    const result = await this.rpc.request('thread/start', { cwd: cwd ?? undefined, ephemeral: Boolean(ephemeral), sandbox: sandboxPolicy, approvalPolicy });
+    const result = await this.rpc.request('thread/start', { cwd: cwd ?? undefined, ephemeral: Boolean(ephemeral), sandbox: normalizeSandboxPolicy(sandboxPolicy), approvalPolicy });
     return Object.freeze(result.thread ?? result);
   }
 
@@ -83,7 +88,7 @@ export class CodexAppServerClient {
     await this.connect();
     if (!String(threadId ?? '').trim()) throw new TypeError('threadId is required');
     const text = typeof input === 'string' ? input : JSON.stringify(input ?? '');
-    const params = { threadId: String(threadId), input: [{ type: 'text', text }], ...(cwd ? { cwd } : {}), ...(model ? { model } : {}), ...(sandboxPolicy ? { sandboxPolicy } : {}), ...(approvalPolicy ? { approvalPolicy } : {}) };
+    const params = { threadId: String(threadId), input: [{ type: 'text', text }], ...(cwd ? { cwd } : {}), ...(model ? { model } : {}), sandboxPolicy: normalizeSandboxPolicy(sandboxPolicy), ...(approvalPolicy ? { approvalPolicy } : {}) };
     const started = await this.rpc.request('turn/start', params, { signal, timeoutMs: this.timeoutMs });
     const turn = started.turn ?? started;
     const state = this.#turnState(threadId, turn.id);
@@ -104,7 +109,7 @@ export class CodexAppServerClient {
   processDescriptor() { return Object.freeze({ rootPid: Number(this.rpc?.child?.pid) || null, state: this.state, runtimeKind: 'codex-app-server' }); }
 
   async openSession({ scope = {}, signal = null } = {}) {
-    const thread = await this.startThread({ cwd: scope.cwd ?? this.cwd, ephemeral: false, sandboxPolicy: { type: 'readOnly' }, approvalPolicy: 'untrusted' });
+    const thread = await this.startThread({ cwd: scope.cwd ?? this.cwd, ephemeral: false, sandboxPolicy: { type: 'read-only' }, approvalPolicy: 'untrusted' });
     return Object.freeze({ id: thread.id, threadId: thread.id, cwd: scope.cwd ?? this.cwd, openedFor: Object.freeze({ projectId: scope.projectId ?? null, missionId: scope.missionId ?? null, repositoryId: scope.repositoryId ?? null }), signalBound: Boolean(signal) });
   }
 
@@ -120,7 +125,7 @@ export class CodexAppServerClient {
   async closeSession(_session, _options = {}) { return Object.freeze({ closed: true, processRetained: this.state === 'ready' }); }
 
   async complete({ messages = [], tools = [], signal = null, model = undefined } = {}) {
-    const thread = await this.startThread({ cwd: this.cwd, ephemeral: true, sandboxPolicy: { type: 'readOnly' }, approvalPolicy: 'untrusted' });
+    const thread = await this.startThread({ cwd: this.cwd, ephemeral: true, sandboxPolicy: { type: 'read-only' }, approvalPolicy: 'untrusted' });
     return this.completeInSession({ id: thread.id, threadId: thread.id, cwd: this.cwd }, { messages, tools, signal, model });
   }
 

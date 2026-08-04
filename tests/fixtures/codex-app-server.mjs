@@ -18,7 +18,11 @@ rl.on('line', async (line) => {
   }
   if (message.method === 'account/login/cancel') return send({ id: message.id, result: {} });
   if (message.method === 'account/logout') { account = null; return send({ id: message.id, result: {} }); }
-  if (message.method === 'thread/start') { const thread = { id: `thr_${++threadCounter}`, ephemeral: Boolean(message.params.ephemeral), turns: [] }; send({ id: message.id, result: { thread } }); send({ method: 'thread/started', params: { thread } }); return; }
+  if (message.method === 'thread/start') {
+    if (message.params?.sandbox?.type !== 'read-only') return send({ id: message.id, error: { code: -32602, message: 'sandbox.type must be read-only' } });
+    const thread = { id: `thr_${++threadCounter}`, ephemeral: Boolean(message.params.ephemeral), turns: [] };
+    send({ id: message.id, result: { thread } }); send({ method: 'thread/started', params: { thread } }); return;
+  }
   if (message.method === 'thread/resume') return send({ id: message.id, result: { thread: { id: message.params.threadId, ephemeral: false, turns: [] } } });
   if (message.method === 'turn/interrupt') { send({ id: message.id, result: {} }); send({ method: 'turn/completed', params: { threadId: message.params.threadId, turn: { id: message.params.turnId, status: 'interrupted', items: [] } } }); return; }
   if (message.method === 'turn/start') {

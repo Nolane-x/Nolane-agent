@@ -27,7 +27,7 @@ test('CodexAppServerClient initializes, reads account, streams a turn, and handl
   assert.deepEqual(result.approvals.map((item) => item.decision), ['accept']);
 });
 
-test('CodexAppServerClient exposes provider complete(), resume, interrupt, and retry classification', async (t) => {
+test('CodexAppServerClient complete() sends the normalized sandbox policy, and exposes resume, interrupt, and retry classification', async (t) => {
   const codex = client();
   t.after(() => codex.close());
   const resumed = await codex.resumeThread('thr_saved');
