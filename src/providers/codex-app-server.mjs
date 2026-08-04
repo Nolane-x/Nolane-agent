@@ -10,9 +10,25 @@ export function isRetryableCodexError(error) {
 
 function versionOf(value) { return String(value ?? '').match(/\b(\d+\.\d+(?:\.\d+)?(?:[-+][\w.-]+)?)\b/)?.[1] ?? null; }
 
-function normalizeSandboxPolicy(policy) {
-  const normalized = policy ?? { type: 'read-only' };
-  return normalized?.type === 'readOnly' ? { ...normalized, type: 'read-only' } : normalized;
+function normalizeThreadSandbox(policy) {
+  const value = typeof policy === 'string' ? policy : policy?.type;
+  if (value === undefined || value === null || value === 'readOnly' || value === 'read-only') return 'read-only';
+  if (value === 'workspaceWrite' || value === 'workspace-write') return 'workspace-write';
+  if (value === 'dangerFullAccess' || value === 'danger-full-access') return 'danger-full-access';
+  return value;
+}
+
+function normalizeTurnSandboxPolicy(policy) {
+  if (policy === undefined || policy === null) return { type: 'readOnly' };
+  if (typeof policy === 'string') {
+    if (policy === 'readOnly' || policy === 'read-only') return { type: 'readOnly' };
+    if (policy === 'workspaceWrite' || policy === 'workspace-write') return { type: 'workspaceWrite' };
+    if (policy === 'dangerFullAccess' || policy === 'danger-full-access') return { type: 'dangerFullAccess' };
+  }
+  if (policy?.type === 'read-only') return { ...policy, type: 'readOnly' };
+  if (policy?.type === 'workspace-write') return { ...policy, type: 'workspaceWrite' };
+  if (policy?.type === 'danger-full-access') return { ...policy, type: 'dangerFullAccess' };
+  return policy;
 }
 
 function tokenUsage(params) {
@@ -74,7 +90,7 @@ export class CodexAppServerClient {
 
   async startThread({ cwd = this.cwd, ephemeral = false, sandboxPolicy = undefined, approvalPolicy = 'untrusted' } = {}) {
     await this.connect();
-    const result = await this.rpc.request('thread/start', { cwd: cwd ?? undefined, ephemeral: Boolean(ephemeral), sandbox: normalizeSandboxPolicy(sandboxPolicy), approvalPolicy });
+    const result = await this.rpc.request('thread/start', { cwd: cwd ?? undefined, ephemeral: Boolean(ephemeral), sandbox: normalizeThreadSandbox(sandboxPolicy), approvalPolicy });
     return Object.freeze(result.thread ?? result);
   }
 
@@ -88,7 +104,7 @@ export class CodexAppServerClient {
     await this.connect();
     if (!String(threadId ?? '').trim()) throw new TypeError('threadId is required');
     const text = typeof input === 'string' ? input : JSON.stringify(input ?? '');
-    const params = { threadId: String(threadId), input: [{ type: 'text', text }], ...(cwd ? { cwd } : {}), ...(model ? { model } : {}), sandboxPolicy: normalizeSandboxPolicy(sandboxPolicy), ...(approvalPolicy ? { approvalPolicy } : {}) };
+    const params = { threadId: String(threadId), input: [{ type: 'text', text }], ...(cwd ? { cwd } : {}), ...(model ? { model } : {}), sandboxPolicy: normalizeTurnSandboxPolicy(sandboxPolicy), ...(approvalPolicy ? { approvalPolicy } : {}) };
     const started = await this.rpc.request('turn/start', params, { signal, timeoutMs: this.timeoutMs });
     const turn = started.turn ?? started;
     const state = this.#turnState(threadId, turn.id);

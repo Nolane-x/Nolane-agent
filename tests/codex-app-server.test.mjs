@@ -19,7 +19,9 @@ test('CodexAppServerClient initializes, reads account, streams a turn, and handl
   assert.equal(initialized.userAgent, 'fixture');
   const account = await codex.accountRead();
   assert.equal(account.account.planType, 'plus');
+  const defaultThread = await codex.startThread({ cwd: process.cwd(), ephemeral: true });
   const thread = await codex.startThread({ cwd: process.cwd(), ephemeral: true, sandboxPolicy: { type: 'readOnly' } });
+  assert.notEqual(defaultThread.id, thread.id);
   const result = await codex.startTurn({ threadId: thread.id, input: 'Inspect this repository', cwd: process.cwd() });
   assert.equal(result.status, 'completed');
   assert.equal(result.text, 'fixture answer');
