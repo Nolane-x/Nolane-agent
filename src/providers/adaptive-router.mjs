@@ -24,6 +24,15 @@ function describe(entries) {
   return entries.map((entry) => `${entry.provider.id}: ${entry.reason}`).join('; ');
 }
 
+function resolveExplicitProviderId(registry, providerId) {
+  if (typeof providerId !== 'string') return providerId;
+  const providerIds = new Set(registry.list().map((provider) => provider.id));
+  if (providerIds.has(providerId)) return providerId;
+  const separator = providerId.indexOf('/');
+  const legacyProviderId = separator > 0 ? providerId.slice(0, separator) : null;
+  return legacyProviderId && providerIds.has(legacyProviderId) ? legacyProviderId : providerId;
+}
+
 export class AdaptiveProviderRouter {
   #health = new Map();
 
@@ -58,7 +67,7 @@ export class AdaptiveProviderRouter {
 
   rank({ providerId = 'auto', requiredCapabilities = [], localOnly = false, maxCostTier = Number.POSITIVE_INFINITY, prefer = [] } = {}) {
     if (providerId && providerId !== 'auto') {
-      const provider = this.registry.get(providerId);
+      const provider = this.registry.get(resolveExplicitProviderId(this.registry, providerId));
       const profile = profileOf(provider, this.registry.detection?.(provider.id));
       if (!profile.available) return [{ provider, eligible: false, reason: 'provider unavailable', score: Number.NEGATIVE_INFINITY, profile }];
       if (!profile.authenticated) return [{ provider, eligible: false, reason: 'provider authentication required', score: Number.NEGATIVE_INFINITY, profile }];
