@@ -1,0 +1,49 @@
+{
+  "schema": "nolane.small-model.multi-file-refactor-skill.v1",
+  "id": "rename-public-api",
+  "version": "1",
+  "kind": "type-aware-multi-file-refactor",
+  "operation": {
+    "op": "rename-exported-symbol",
+    "modulePath": "src/api.mjs",
+    "from": "legacyName",
+    "to": "canonicalName"
+  },
+  "rollbackOperation": {
+    "op": "rename-exported-symbol",
+    "modulePath": "src/api.mjs",
+    "from": "canonicalName",
+    "to": "legacyName"
+  },
+  "allowedPaths": [
+    "src/alias.mjs",
+    "src/api.mjs",
+    "src/direct.mjs"
+  ],
+  "maxChangedFiles": 3,
+  "maxChangedTokens": 4,
+  "sourceRepositoryIds": [
+    "checkpoint-9-refactor-induction-a",
+    "checkpoint-9-refactor-induction-b"
+  ],
+  "sourceMissionReceiptSha256": [
+    "25d48d2eb85c0b75cb6ec76b55d9f761552f45a2cbde682776be083b0278bec9",
+    "ac577a94cc0e3fb3a720f7c1158f4fa3ad3b3ccd0ee8374d924f962bf68e287e"
+  ],
+  "hiddenChainOfThoughtStored": false,
+  "soundnessScope": [
+    "named ES module export rename",
+    "direct named imports",
+    "bound identifier references"
+  ],
+  "knownIncompleteness": [
+    "namespace imports and re-export chains are unsupported",
+    "TypeScript type space is not modeled"
+  ],
+  "claims": {
+    "boundedMultiFileRefactor": true,
+    "externalRepositoryGeneralization": false,
+    "generalCodingIntelligence": false
+  },
+  "receiptSha256": "3541da8659dbbf4bdd75738038e74d283305efef7b35850185530247a94f62d1"
+}

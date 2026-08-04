@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 2,
+  "id": "enforcing-review-separation",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Enforcing Review Separation",
+    "description": "Use when artifact, code, finding, provider, or release approval requires independent review across principal, role, team, or trust-domain boundaries.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "kernel"
+    ],
+    "keywords": [
+      "enforcing-review-separation",
+      "artifact",
+      "code",
+      "finding",
+      "provider",
+      "or",
+      "release",
+      "approval",
+      "requires"
+    ],
+    "antiTriggers": [
+      "A0 prototype policy explicitly permits self-review",
+      "the action is a reversible draft with no assurance claim"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "project-state",
+        "schema": "artifact://forgeos/project-state/v2"
+      }
+    ],
+    "produces": [
+      {
+        "type": "review-authority-decision",
+        "schema": "artifact://forgeos/review-authority-decision/v1"
+      }
+    ],
+    "invariants": [
+      "Producer cannot be sole verifier for critical work.",
+      "Reviewer authority is scoped to tenant and artifact type.",
+      "Separation remains true after role delegation."
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "confirmed intent and current semantic revision exist"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Resolve producer, resolver, evaluator, closer, and signer trust domains.",
+        "evidence": "Producer cannot be sole verifier for critical work."
+      },
+      {
+        "id": "step-2",
+        "action": "Apply assurance-specific role and independence constraints.",
+        "evidence": "Reviewer authority is scoped to tenant and artifact type."
+      },
+      {
+        "id": "step-3",
+        "action": "Reject alternate IDs controlled by the same trust domain.",
+        "evidence": "Separation remains true after role delegation."
+      },
+      {
+        "id": "step-4",
+        "action": "Bind the authorized reviewer and evidence set to the reviewed subject.",
+        "evidence": "Separation remains true after role delegation."
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "review-authority-decision is produced with current evidence or a blocker is recorded"
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Producer cannot be sole verifier for critical work.",
+      "Reviewer authority is scoped to tenant and artifact type.",
+      "Separation remains true after role delegation."
+    ],
+    "reviewerRole": "kernel-skill-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "behavioral-eval-receipt",
+      "context-receipt"
+    ],
+    "evaluatorIds": [
+      "enforcing-review-separation-evaluator-v2"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 5,
+    "maxReferenceDepth": 2,
+    "targetTokens": 516,
+    "hardTokens": 910,
+    "outputReserveTokens": 256
+  },
+  "quality": {
+    "benchmarkIds": [
+      "enforcing-review-separation-public-v1"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L0",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "coverage-ledger",
+      "typed-preconditions",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionability-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.verify-contracts",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:l0:enforcing-review-separation",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.enforcing-review-separation",
+      "fitScore": 100,
+      "mappingEvidence": "reviewed:l0:enforcing-review-separation",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "59f19538fd362a8fd18570bb817434bce3e1ba394a4b078957bbf08abf69a21c",
+        "bytes": 878,
+        "tokens": {
+          "gpt-5.6": 237,
+          "claude-opus-4.2": 248,
+          "gemini-3.0-pro": 226,
+          "qwen3.5-32b": 263
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "7a8a3f7d6efcd84886bf69e50c6713d075cab645c609ea7bce71df5c200dd3ee",
+        "bytes": 537,
+        "tokens": {
+          "gpt-5.6": 145,
+          "claude-opus-4.2": 152,
+          "gemini-3.0-pro": 138,
+          "qwen3.5-32b": 161
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "ce6b780e7111bd23302b7787a5ac03cd99f1711936b70d624202d73da690a469",
+        "bytes": 391,
+        "tokens": {
+          "gpt-5.6": 106,
+          "claude-opus-4.2": 111,
+          "gemini-3.0-pro": 101,
+          "qwen3.5-32b": 117
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "072e09d095b15d33b2994984ec2ad89e14ef7c34736b6aed0090cb7ee3b9896b",
+        "bytes": 260,
+        "tokens": {
+          "gpt-5.6": 70,
+          "claude-opus-4.2": 74,
+          "gemini-3.0-pro": 67,
+          "qwen3.5-32b": 78
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "80d3a31b554397fa949124ed75a2ed3551bf0b695c340c592965bc0e109e3335",
+        "bytes": 228,
+        "tokens": {
+          "gpt-5.6": 62,
+          "claude-opus-4.2": 65,
+          "gemini-3.0-pro": 59,
+          "qwen3.5-32b": 69
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "bc8078dd6ce5e815ca8b09aec56e0605e06c661bbaca675f4d5956e1c2a9f74a",
+        "bytes": 362,
+        "tokens": {
+          "gpt-5.6": 98,
+          "claude-opus-4.2": 102,
+          "gemini-3.0-pro": 93,
+          "qwen3.5-32b": 109
+        }
+      }
+    ],
+    "indexSha256": "fbfcc747c082c9604bd03c5e1f037c22d4b220adf0a13d5d16321d18703a3a67"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "d46539d587d1f034c29435340571fec4d2697788df0e4e6fec21926f7a387d0e"
+}

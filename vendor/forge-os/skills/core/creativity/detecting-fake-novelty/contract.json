@@ -1,0 +1,141 @@
+{
+  "name": "detecting-fake-novelty",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "creativity",
+  "domain": null,
+  "status": "stable",
+  "stages": [
+    "synthesis"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "candidate-ideas"
+  ],
+  "produces": [
+    "scored-ideas"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:scored-ideas"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/creativity.md",
+  "method": {
+    "focus": "distinguish new causal mechanisms from renamed, bundled, randomized, or AI-decorated existing patterns",
+    "steps": [
+      "Identify the closest existing product or system pattern.",
+      "Reduce both candidate and comparator to target, mechanism, interface, incentive, distribution, and ownership.",
+      "Count meaningful axis differences and identify dependencies on existing mechanisms.",
+      "Search prior art only after the unconstrained generation pass to avoid premature anchoring.",
+      "Classify novelty as surface, configuration, mechanism, system, or problem-reframing."
+    ],
+    "verification": [
+      "Would the concept still be new without its name and branding?",
+      "Is adding an LLM the only difference?",
+      "Are at least three material axes different?",
+      "Is the novelty claim bounded to the evidence searched?"
+    ],
+    "evidence": [
+      "closest-pattern analysis",
+      "difference matrix",
+      "prior-art map",
+      "novelty classification"
+    ],
+    "traps": [
+      "claiming “never done before”",
+      "equating rarity with usefulness",
+      "rewarding random combinations"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Freeze the challenge, constraints, forbidden defaults, and evaluation frame.",
+    "Generate independent mechanism-level candidates before cross-contamination.",
+    "Identify the closest existing product or system pattern.",
+    "Reduce both candidate and comparator to target, mechanism, interface, incentive, distribution, and ownership.",
+    "Count meaningful axis differences and identify dependencies on existing mechanisms.",
+    "Search prior art only after the unconstrained generation pass to avoid premature anchoring.",
+    "Classify novelty as surface, configuration, mechanism, system, or problem-reframing.",
+    "Apply the named divergence or mutation operation.",
+    "Represent candidates as structured idea genomes.",
+    "Remove semantic duplicates and fake novelty.",
+    "Hand off distinct candidates without selecting a winner prematurely."
+  ],
+  "gate": {
+    "reviewerRole": "independent-reviewer",
+    "rules": [
+      "The output directly and completely performs detecting fake novelty within its declared boundary.",
+      "Would the concept still be new without its name and branding?",
+      "Is adding an LLM the only difference?",
+      "Are at least three material axes different?",
+      "Is the novelty claim bounded to the evidence searched?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "scored-ideas"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "closest-pattern analysis",
+      "difference matrix",
+      "prior-art map",
+      "novelty classification"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1605,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "claiming “never done before”",
+    "equating rarity with usefulness",
+    "rewarding random combinations"
+  ],
+  "optionalConsumes": [],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when detecting fake novelty is required during creativity work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

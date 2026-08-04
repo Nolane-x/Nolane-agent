@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "status": "red-baseline-recorded",
+  "scenarios": [
+    {
+      "caseId": "detecting-semantic-duplication-positive",
+      "observedFailure": "Treating shared headings as semantic duplication."
+    },
+    {
+      "caseId": "detecting-semantic-duplication-anti-trigger",
+      "observedFailure": "superficial keyword activation"
+    }
+  ],
+  "note": "Candidate status only. Independent multi-model holdout is required before stable promotion."
+}

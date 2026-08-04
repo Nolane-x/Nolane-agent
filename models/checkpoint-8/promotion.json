@@ -1,0 +1,81 @@
+{
+  "schema": "nolane.small-model.checkpoint-8-suite-promotion.v1",
+  "bundleReceiptSha256": "c95eb1acdd3ddd89815547681b3d207e4fad91c2a68808ad61b565520068542d",
+  "promotions": [
+    {
+      "schema": "nolane.small-model.skill-promotion.v4",
+      "skillId": "rename-legacy-name",
+      "kind": "ast-codemod",
+      "skillReceiptSha256": "4af016eafc821f016f1192ad84ed8bebc15ac0458ce7ec5cc31a478a6b9dca8e",
+      "previousSkillReceiptSha256": null,
+      "evidenceBundleReceiptSha256": "c95eb1acdd3ddd89815547681b3d207e4fad91c2a68808ad61b565520068542d",
+      "processReceiptSha256": "7e6aa816cf1c9358504249329b5965adcaaf8140a8f6ba0ccd010f401cea1b04",
+      "costReceiptSha256": "50c2f6e1ecb9a2978493770e84b89f13a71cbcffe40758368c8faf3b1d38ab66",
+      "approvedBy": "forensic-recovery-checkpoint-8",
+      "status": "promoted",
+      "governance": "solver-transfer-proof-process-cost-required",
+      "receiptSha256": "d4ce5e3005bf70b7ecd1f3a800a8c650f3cbe5f2b46f4c3adf88191e7404afe3"
+    },
+    {
+      "schema": "nolane.small-model.skill-promotion.v4",
+      "skillId": "bounded-test-plan",
+      "kind": "finite-domain-smt",
+      "skillReceiptSha256": "9161d3c03961b8fb90420064a691ea57f5818f1ef084275a1629766f542cbc29",
+      "previousSkillReceiptSha256": null,
+      "evidenceBundleReceiptSha256": "c95eb1acdd3ddd89815547681b3d207e4fad91c2a68808ad61b565520068542d",
+      "processReceiptSha256": "7e6aa816cf1c9358504249329b5965adcaaf8140a8f6ba0ccd010f401cea1b04",
+      "costReceiptSha256": "50c2f6e1ecb9a2978493770e84b89f13a71cbcffe40758368c8faf3b1d38ab66",
+      "approvedBy": "forensic-recovery-checkpoint-8",
+      "status": "promoted",
+      "governance": "solver-transfer-proof-process-cost-required",
+      "receiptSha256": "c96987382b136f92247471c227ce76a0fa775449588512034fabead58f8a69ef"
+    },
+    {
+      "schema": "nolane.small-model.skill-promotion.v4",
+      "skillId": "bounded-test-impact",
+      "kind": "bounded-datalog",
+      "skillReceiptSha256": "18ccc455ceea93c7d4969fb0c4497988d8b6ef073ebf3b521006eed42ae0c9f5",
+      "previousSkillReceiptSha256": null,
+      "evidenceBundleReceiptSha256": "c95eb1acdd3ddd89815547681b3d207e4fad91c2a68808ad61b565520068542d",
+      "processReceiptSha256": "7e6aa816cf1c9358504249329b5965adcaaf8140a8f6ba0ccd010f401cea1b04",
+      "costReceiptSha256": "50c2f6e1ecb9a2978493770e84b89f13a71cbcffe40758368c8faf3b1d38ab66",
+      "approvedBy": "forensic-recovery-checkpoint-8",
+      "status": "promoted",
+      "governance": "solver-transfer-proof-process-cost-required",
+      "receiptSha256": "00a98186c9872b5b34211d8bf3ffb5bb390004a735727969c007d5904293242f"
+    }
+  ],
+  "status": {
+    "schema": "nolane.small-model.checkpoint-8-status.v1",
+    "required": [
+      "rename-legacy-name",
+      "bounded-test-plan",
+      "bounded-test-impact"
+    ],
+    "active": {
+      "rename-legacy-name": "4af016eafc821f016f1192ad84ed8bebc15ac0458ce7ec5cc31a478a6b9dca8e",
+      "bounded-test-plan": "9161d3c03961b8fb90420064a691ea57f5818f1ef084275a1629766f542cbc29",
+      "bounded-test-impact": "18ccc455ceea93c7d4969fb0c4497988d8b6ef073ebf3b521006eed42ae0c9f5"
+    },
+    "missing": [],
+    "pendingBundles": 0,
+    "ready": true,
+    "claims": {
+      "boundedSolverPortfolio": true,
+      "externalRepositoryGeneralization": false,
+      "generalCodingIntelligence": false,
+      "frontierParity": false,
+      "competitorSuperiority": false
+    },
+    "receiptSha256": "c38cde7c1df5ab082103989757f87fd743ff10149638732a985947e2f9906f2c"
+  },
+  "approvedBy": "forensic-recovery-checkpoint-8",
+  "claims": {
+    "boundedSolverPortfolio": true,
+    "externalRepositoryGeneralization": false,
+    "generalCodingIntelligence": false,
+    "frontierParity": false,
+    "competitorSuperiority": false
+  },
+  "receiptSha256": "a12ebd7cb1fc7d47f0797260b4fa36e6c72206bc31c30276db5016514ba13b92"
+}

@@ -1,0 +1,128 @@
+{
+  "schema": "nolane.nolane_native.core.classification-rules.v1",
+  "sourceUse": "clean-room behavioral inventory only; upstream implementation is not copied or packaged",
+  "domains": [
+    {
+      "id": "agent-kernel",
+      "scope": "turn lifecycle, goals, model/tool loops, cancellation, retries and receipts"
+    },
+    {
+      "id": "prompt-context",
+      "scope": "prompt tiers, references, context discovery, compression and caching"
+    },
+    {
+      "id": "provider-fabric",
+      "scope": "providers, models, credentials, aliases, fallback and usage"
+    },
+    {
+      "id": "tool-execution",
+      "scope": "tools, dispatch, process, PTY, container and remote execution"
+    },
+    {
+      "id": "repository-files",
+      "scope": "repository, files, search, patches, checkpoints and rollback"
+    },
+    {
+      "id": "browser-computer-use",
+      "scope": "browser and computer interaction, snapshots, downloads and approvals"
+    },
+    {
+      "id": "sessions",
+      "scope": "session persistence, lineage, search and profile isolation"
+    },
+    {
+      "id": "memory-learning",
+      "scope": "memory, consolidation, learning, curator and journey behavior"
+    },
+    {
+      "id": "skills",
+      "scope": "skill discovery, loading, grading, pruning and compatibility"
+    },
+    {
+      "id": "plugin-system",
+      "scope": "plugin manifests, hooks, tools, commands, providers and trust"
+    },
+    {
+      "id": "mcp",
+      "scope": "MCP stdio and HTTP lifecycle, filtering, sampling and credentials"
+    },
+    {
+      "id": "scheduler",
+      "scope": "cron, intervals, durable jobs, retries and delivery"
+    },
+    {
+      "id": "multi-agent",
+      "scope": "delegation, workers, leases, blackboards, verification and synthesis"
+    },
+    {
+      "id": "gateway-integrations",
+      "scope": "gateway authorization, pairing, routing, delivery and platform adapters"
+    },
+    {
+      "id": "acp-api",
+      "scope": "ACP, JSON-RPC, OpenAI-compatible API and streaming"
+    },
+    {
+      "id": "media-voice",
+      "scope": "vision, image, video, speech-to-text and text-to-speech"
+    },
+    {
+      "id": "observability-operations",
+      "scope": "logging, tracing, diagnostics, health, deployment and recovery"
+    },
+    {
+      "id": "security",
+      "scope": "secrets, permissions, redaction, egress, provenance and adversarial controls"
+    },
+    {
+      "id": "product-surfaces",
+      "scope": "CLI, TUI, desktop, web dashboard, onboarding and settings"
+    },
+    {
+      "id": "configuration",
+      "scope": "configuration, profiles, bootstrap, install and migration"
+    }
+  ],
+  "exclusions": [
+    {
+      "class": "localized-marketing-or-doc",
+      "reason": "translation payload is not executable core behavior"
+    },
+    {
+      "class": "documentation-or-marketing",
+      "reason": "website and prose are re-authored for Nolane"
+    },
+    {
+      "class": "optional-generated-or-community-payload",
+      "reason": "optional skills, generated data and contributor payload are not core runtime"
+    },
+    {
+      "class": "non-runtime-document-or-asset",
+      "reason": "standalone media and prose do not establish a runtime contract"
+    },
+    {
+      "class": "retain-license-attribution",
+      "reason": "license is preserved as provenance, not treated as implementation"
+    },
+    {
+      "class": "development-build-infrastructure",
+      "reason": "CI, lockfiles, bundler configuration and vendored build implementation are not runtime capability contracts"
+    },
+    {
+      "class": "bundled-skill-payload",
+      "reason": "individual bundled skill scripts and content are optional payload; the skill engine is audited separately"
+    },
+    {
+      "class": "localized-product-copy",
+      "reason": "translated product copy is re-authored for Nolane and does not establish runtime behavior"
+    }
+  ],
+  "claimPolicy": {
+    "fileExistenceIsProof": false,
+    "requiresProductionEntrypoint": true,
+    "requiresDirectTest": true,
+    "requiresNegativeTest": true,
+    "requiresFreshEvidenceHash": true,
+    "externalBehaviorRequiresExternalReceipt": true
+  }
+}

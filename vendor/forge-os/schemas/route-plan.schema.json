@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forgeos.dev/schemas/v0.5/route-plan.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "intent",
+    "context",
+    "outcomes",
+    "steps",
+    "executionGroups",
+    "inclusions",
+    "exclusions",
+    "blockers",
+    "budget",
+    "stopConditions",
+    "routePlanId",
+    "routePlanSha256",
+    "generatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 2
+    },
+    "routePlanId": {
+      "type": "string",
+      "pattern": "^route_[a-f0-9]{24}$"
+    },
+    "routePlanSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "generatedAt": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "intent": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "outcomes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stepId",
+          "techniqueId",
+          "providerId",
+          "outcomeIds",
+          "dependsOn",
+          "score",
+          "sections",
+          "evidenceObligations"
+        ],
+        "properties": {
+          "stepId": {
+            "type": "string"
+          },
+          "techniqueId": {
+            "type": "string"
+          },
+          "providerId": {
+            "type": "string"
+          },
+          "outcomeIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dependsOn": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "score": {
+            "type": "number"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evidenceObligations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "executionGroups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "inclusions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "exclusions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "stopConditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "nolane.small-model.checkpoint-8-evidence-bundle.v1",
+  "allowed": true,
+  "portfolioReceiptSha256": "a550bacb0ade3a04518d1601e563183adff803e745e25c64607d9c82a378fbfe",
+  "astSkillReceiptSha256": "4af016eafc821f016f1192ad84ed8bebc15ac0458ce7ec5cc31a478a6b9dca8e",
+  "astTransferReceiptSha256": "b8825843611540ad4805c44c52ac1907e3e756b975d8839a0117fc236b167316",
+  "constraintSkillReceiptSha256": [
+    "18ccc455ceea93c7d4969fb0c4497988d8b6ef073ebf3b521006eed42ae0c9f5",
+    "9161d3c03961b8fb90420064a691ea57f5818f1ef084275a1629766f542cbc29"
+  ],
+  "constraintProofReceiptSha256": [
+    "0a4e9ea1d21db3a155607166a7def2ba66d14c3ef6a7623af5c6cef2a19c985b",
+    "fd82ae6c43add62fac7dc6a868d45444f7f41bd06b065a23fb5fa2c83b4e4478"
+  ],
+  "process": {
+    "schema": "nolane.small-model.checkpoint-8-process-evidence.v1",
+    "allowed": true,
+    "portfolioReceiptSha256": "a550bacb0ade3a04518d1601e563183adff803e745e25c64607d9c82a378fbfe",
+    "value": 21,
+    "receiptSha256": "7e6aa816cf1c9358504249329b5965adcaaf8140a8f6ba0ccd010f401cea1b04"
+  },
+  "cost": {
+    "schema": "nolane.small-model.checkpoint-8-cost-bundle.v1",
+    "allowed": true,
+    "portfolioReceiptSha256": "a550bacb0ade3a04518d1601e563183adff803e745e25c64607d9c82a378fbfe",
+    "totalCostRatio": 0.45614035,
+    "candidateCostLower": true,
+    "externalCompetitorMeasured": false,
+    "receiptSha256": "50c2f6e1ecb9a2978493770e84b89f13a71cbcffe40758368c8faf3b1d38ab66"
+  },
+  "safety": {
+    "baselineViolations": 0,
+    "candidateViolations": 0,
+    "noRegression": true
+  },
+  "claims": {
+    "boundedSolverEvidence": true,
+    "externalRepositoryGeneralization": false,
+    "generalCodingIntelligence": false,
+    "frontierParity": false,
+    "competitorSuperiority": false
+  },
+  "receiptSha256": "c95eb1acdd3ddd89815547681b3d207e4fad91c2a68808ad61b565520068542d"
+}

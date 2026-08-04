@@ -1,0 +1,20 @@
+[
+  {
+    "id": "compiling-global-context-positive",
+    "kind": "application",
+    "input": "A task requiring Compiling Global Context",
+    "expectedEvidence": [
+      "Total input is below the hard limit.",
+      "No source disappears without an omission record.",
+      "The receipt binds hashes of all included sections."
+    ],
+    "baselineFailure": "Budgeting only skill text."
+  },
+  {
+    "id": "compiling-global-context-anti-trigger",
+    "kind": "counter-example",
+    "input": "the complete request is already far below every category budget",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

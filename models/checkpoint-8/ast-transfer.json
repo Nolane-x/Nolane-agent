@@ -1,0 +1,179 @@
+{
+  "schema": "nolane.small-model.ast-skill-transfer.v1",
+  "status": "pass",
+  "skillId": "rename-legacy-name",
+  "skillReceiptSha256": "4af016eafc821f016f1192ad84ed8bebc15ac0458ce7ec5cc31a478a6b9dca8e",
+  "repositoryId": "checkpoint-8-ast-transfer-c",
+  "sourceRepositoryIds": [
+    "checkpoint-8-ast-induction-a",
+    "checkpoint-8-ast-induction-b"
+  ],
+  "repositoryDisjoint": true,
+  "mission": {
+    "schema": "nolane.small-model.ast-recovery-mission.v1",
+    "missionId": "checkpoint-8-ast-transfer-c:rename-legacy-name",
+    "repositoryId": "checkpoint-8-ast-transfer-c",
+    "role": "transfer",
+    "runtime": "node",
+    "language": "javascript",
+    "status": "verified-recovery",
+    "sourcePath": "src/value.mjs",
+    "steps": [
+      {
+        "index": 1,
+        "type": "inspect",
+        "expectedEffect": "source-and-test-hashes-observed",
+        "actualEffect": "hashes-observed",
+        "verifier": {
+          "valid": true
+        },
+        "sourceSha256": "5a2b14309648169a0c681b9e99dc485483a8452d9a03781259d4e27b5faaefee",
+        "bestCandidateSha256": null,
+        "receiptSha256": "2f37aa28e737f5181d43ab2045c14cb3cf58bbaa89042bdb26ee5a64c10c913a"
+      },
+      {
+        "index": 2,
+        "type": "verify-baseline",
+        "expectedEffect": "test-pass",
+        "actualEffect": "test-pass",
+        "verifier": {
+          "valid": true,
+          "exitCode": 0
+        },
+        "outputSha256": "6d02e4237708f7b0e8c20f7719e0dfdef3ad3c5996d207c4769c19cd046b6c5f",
+        "receiptSha256": "fb0ea0476a618f99383f1922894676ea01770b7e074cba62e0659d5bb79c77ed"
+      },
+      {
+        "index": 3,
+        "type": "apply-mutation",
+        "expectedEffect": "test-fail",
+        "actualEffect": "test-fail",
+        "verifier": {
+          "valid": true,
+          "exitCode": 1
+        },
+        "candidateSha256": "2d97d63ada9da994a2b252cffe3c4da1ba1e0328e97ed0725a09c2d81f195c45",
+        "changedTokens": 1,
+        "receiptSha256": "6da8a4b311b91d6819ce2034eaae5e30668ab81f7e5b60ed1d7329f1559b1667"
+      },
+      {
+        "index": 4,
+        "type": "apply-repair",
+        "expectedEffect": "test-pass",
+        "actualEffect": "test-pass",
+        "verifier": {
+          "valid": true,
+          "exitCode": 0
+        },
+        "candidateSha256": "5a2b14309648169a0c681b9e99dc485483a8452d9a03781259d4e27b5faaefee",
+        "changedTokens": 1,
+        "bestCandidateSha256": "5a2b14309648169a0c681b9e99dc485483a8452d9a03781259d4e27b5faaefee",
+        "receiptSha256": "5817ce3c8701c547a74733a87657179310a6a18dd17a1659cc12a13f8c9e4175"
+      },
+      {
+        "index": 5,
+        "type": "verify-rollback",
+        "expectedEffect": "mutation-hash-restored",
+        "actualEffect": "mutation-hash-restored",
+        "verifier": {
+          "valid": true
+        },
+        "rollbackSha256": "2d97d63ada9da994a2b252cffe3c4da1ba1e0328e97ed0725a09c2d81f195c45",
+        "bestCandidateSha256": "5a2b14309648169a0c681b9e99dc485483a8452d9a03781259d4e27b5faaefee",
+        "receiptSha256": "a3ff6a06d748faeac9adb4dea98418d88f9de61cd9a7bd0fa09cf00a40f58409"
+      },
+      {
+        "index": 6,
+        "type": "final-verification",
+        "expectedEffect": "best-candidate-pass",
+        "actualEffect": "best-candidate-pass",
+        "verifier": {
+          "valid": true,
+          "exitCode": 0
+        },
+        "bestCandidateSha256": "5a2b14309648169a0c681b9e99dc485483a8452d9a03781259d4e27b5faaefee",
+        "receiptSha256": "d03632615b41d5f140a3c76dbec0787fb974db850879a6da713c3fa4562f8c62"
+      }
+    ],
+    "baseline": {
+      "exitCode": 0,
+      "durationMs": 67,
+      "outputSha256": "6d02e4237708f7b0e8c20f7719e0dfdef3ad3c5996d207c4769c19cd046b6c5f",
+      "outputBytes": 277
+    },
+    "mutation": {
+      "exitCode": 1,
+      "durationMs": 69,
+      "outputSha256": "dec47fa4c1a22916727dc7d3dd48e6d636ef32380b4d17229c9e4426300abcb3",
+      "outputBytes": 960
+    },
+    "repair": {
+      "exitCode": 0,
+      "durationMs": 69,
+      "outputSha256": "46b101320072096192dc20c74ca48b2ea58c4e198a98a676c27e327ec8595648",
+      "outputBytes": 279
+    },
+    "final": {
+      "exitCode": 0,
+      "durationMs": 73,
+      "outputSha256": "98695aeaf258295f9a6605547afd986538243a6d4e9287eecf33598903788d3b",
+      "outputBytes": 279
+    },
+    "declaredMutation": {
+      "path": "src/value.mjs",
+      "operation": {
+        "op": "rename-identifier",
+        "from": "canonicalName",
+        "to": "legacyName",
+        "scope": "program"
+      }
+    },
+    "declaredRepair": {
+      "path": "src/value.mjs",
+      "operation": {
+        "op": "rename-identifier",
+        "from": "legacyName",
+        "to": "canonicalName",
+        "scope": "program"
+      }
+    },
+    "inputSha256": "2d97d63ada9da994a2b252cffe3c4da1ba1e0328e97ed0725a09c2d81f195c45",
+    "outputSha256": "5a2b14309648169a0c681b9e99dc485483a8452d9a03781259d4e27b5faaefee",
+    "rollbackRestoredMutationHash": true,
+    "trackedSourceUnchanged": true,
+    "bestCandidatePreserved": true,
+    "bestCandidateSha256": "5a2b14309648169a0c681b9e99dc485483a8452d9a03781259d4e27b5faaefee",
+    "changedTokens": 1,
+    "commentPreserved": true,
+    "stringPreserved": true,
+    "workspaceRemoved": true,
+    "shellUsed": false,
+    "hiddenChainOfThoughtStored": false,
+    "skillReceiptSha256": "4af016eafc821f016f1192ad84ed8bebc15ac0458ce7ec5cc31a478a6b9dca8e",
+    "claims": {
+      "boundedAstRecovery": true,
+      "externalRepositoryGeneralization": false,
+      "generalCodingIntelligence": false,
+      "competitorSuperiority": false
+    },
+    "receiptSha256": "25a3cb55a57cff10f027fb407f6988746bde8719fb5b4c90e6717e979ecbddac"
+  },
+  "missionReceiptSha256": "25a3cb55a57cff10f027fb407f6988746bde8719fb5b4c90e6717e979ecbddac",
+  "baselinePassed": true,
+  "mutationFailed": true,
+  "repairPassed": true,
+  "rollbackRestoredMutationHash": true,
+  "trackedSourceUnchanged": true,
+  "bestCandidatePreserved": true,
+  "commentPreserved": true,
+  "stringPreserved": true,
+  "changedTokens": 1,
+  "hiddenChainOfThoughtStored": false,
+  "claims": {
+    "boundedAstTransfer": true,
+    "externalRepositoryGeneralization": false,
+    "generalCodingIntelligence": false,
+    "competitorSuperiority": false
+  },
+  "receiptSha256": "b8825843611540ad4805c44c52ac1907e3e756b975d8839a0117fc236b167316"
+}

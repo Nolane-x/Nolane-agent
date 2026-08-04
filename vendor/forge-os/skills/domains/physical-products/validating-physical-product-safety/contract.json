@@ -1,0 +1,154 @@
+{
+  "name": "validating-physical-product-safety",
+  "version": "0.2.0",
+  "kind": "domain",
+  "pack": "domain",
+  "domain": "physical-products",
+  "status": "candidate",
+  "stages": [
+    "product-definition",
+    "ux-design",
+    "architecture",
+    "planning",
+    "implementation",
+    "verification",
+    "release-readiness"
+  ],
+  "domains": [
+    "physical-products"
+  ],
+  "consumes": [
+    "product-definition"
+  ],
+  "produces": [
+    "domain-blueprint",
+    "domain-evidence"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:domain-blueprint",
+    "downstream:domain-evidence"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/domains/physical-products.md",
+  "method": {
+    "focus": "build a safety evidence plan for a physical product while keeping certification and real-world testing under qualified human authority",
+    "steps": [
+      "Identify users, environments, foreseeable misuse, energy sources, hazardous states, applicable jurisdictions, and the safety owner.",
+      "Perform documented hazard analysis with severity, likelihood, controls, residual risk, safe-state behavior, warnings, and verification method.",
+      "Define traceable safety requirements, design controls, inspection points, emergency behavior, change-control rules, and incident reporting.",
+      "Plan prototype, laboratory, environmental, abuse, and failure-mode tests with qualified personnel, equipment, stopping criteria, and records.",
+      "Produce a review packet that distinguishes planned evidence, observed evidence, unresolved hazards, and any required legal or certification path."
+    ],
+    "verification": [
+      "Does every material hazard have an owner, control, residual-risk decision, and verification method?",
+      "Are legal, certification, and laboratory claims explicitly withheld until qualified evidence exists?",
+      "Do test plans include safe stopping conditions and incident handling?",
+      "Can a reviewer trace each safety requirement to a test, inspection, or justified exception?"
+    ],
+    "evidence": [
+      "hazard analysis",
+      "safety requirements trace",
+      "qualified test plan",
+      "residual-risk review"
+    ],
+    "traps": [
+      "claiming certification from a checklist",
+      "testing hazardous systems without qualified supervision",
+      "treating warnings as a substitute for an engineered control"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Read the confirmed product definition, domain context, assurance profile, and active findings.",
+    "Identify the domain objects, actors, state transitions, regulations, provider boundaries, and operational constraints owned by this skill.",
+    "Identify users, environments, foreseeable misuse, energy sources, hazardous states, applicable jurisdictions, and the safety owner.",
+    "Perform documented hazard analysis with severity, likelihood, controls, residual risk, safe-state behavior, warnings, and verification method.",
+    "Define traceable safety requirements, design controls, inspection points, emergency behavior, change-control rules, and incident reporting.",
+    "Plan prototype, laboratory, environmental, abuse, and failure-mode tests with qualified personnel, equipment, stopping criteria, and records.",
+    "Produce a review packet that distinguishes planned evidence, observed evidence, unresolved hazards, and any required legal or certification path.",
+    "Model normal, boundary, failure, recovery, permission, concurrency, migration, and abuse behavior before implementation.",
+    "Define stable contracts and explicit non-goals; do not leak domain concerns into unrelated modules.",
+    "Create executable acceptance, negative, resilience, and compatibility checks proportional to risk.",
+    "Publish the domain artifact, evidence packet, unresolved assumptions, and downstream invalidations."
+  ],
+  "gate": {
+    "reviewerRole": "physical-products-reviewer",
+    "rules": [
+      "The output directly and completely performs validating physical product safety within its declared boundary.",
+      "Does every material hazard have an owner, control, residual-risk decision, and verification method?",
+      "Are legal, certification, and laboratory claims explicitly withheld until qualified evidence exists?",
+      "Do test plans include safe stopping conditions and incident handling?",
+      "Can a reviewer trace each safety requirement to a test, inspection, or justified exception?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "domain-blueprint",
+        "domain-evidence"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "hazard analysis",
+      "safety requirements trace",
+      "qualified test plan",
+      "residual-risk review"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 2000,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "claiming certification from a checklist",
+    "testing hazardous systems without qualified supervision",
+    "treating warnings as a substitute for an engineered control"
+  ],
+  "optionalConsumes": [
+    "architecture-decision",
+    "verified-build"
+  ],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when validating physical product safety is required during physical-products product work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

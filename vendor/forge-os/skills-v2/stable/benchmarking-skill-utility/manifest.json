@@ -1,0 +1,289 @@
+{
+  "schemaVersion": 2,
+  "id": "benchmarking-skill-utility",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "stable",
+  "identity": {
+    "title": "Benchmarking Skill Utility",
+    "description": "Use when measure marginal task success and quality attributable to a skill under controlled comparisons, especially when are the cases representative of the trigger description?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "meta"
+    ],
+    "keywords": [
+      "benchmarking-skill-utility",
+      "measure",
+      "marginal",
+      "task",
+      "success",
+      "and",
+      "quality",
+      "attributable",
+      "to"
+    ],
+    "antiTriggers": [
+      "single anecdotal success without a baseline",
+      "production promotion without paired runs"
+    ]
+  },
+  "relations": {
+    "requires": [
+      "behavioral-baseline",
+      "candidate-change"
+    ],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "behavioral-baseline",
+        "schema": "artifact://forgeos/behavioral-baseline/v1"
+      },
+      {
+        "type": "candidate-change",
+        "schema": "artifact://forgeos/candidate-change/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "skill-evaluation",
+        "schema": "artifact://forgeos/skill-evaluation/v1"
+      }
+    ],
+    "invariants": [
+      "Output remains within the benchmarking-skill-utility responsibility boundary",
+      "Every pass claim is backed by current trusted evidence"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define representative cases, success criteria, judge rubric, models, seeds, and token budgets before running.",
+        "evidence": "eval corpus"
+      },
+      {
+        "id": "step-2",
+        "action": "Run baseline and candidate conditions with identical task inputs and tool availability.",
+        "evidence": "run manifest"
+      },
+      {
+        "id": "step-3",
+        "action": "Blind judges to condition where possible and separate task success from style preference.",
+        "evidence": "paired results"
+      },
+      {
+        "id": "step-4",
+        "action": "Calculate pass-rate, quality, critical failures, token growth, latency, and variance.",
+        "evidence": "promotion decision"
+      },
+      {
+        "id": "step-5",
+        "action": "Promote only measurable gains; quarantine regressions and token-only growth.",
+        "evidence": "promotion decision"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required tool, input, or approval is unavailable",
+        "action": "stop and record a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Are the cases representative of the trigger description?",
+      "Are baseline and candidate conditions otherwise identical?",
+      "Do improvements survive multiple models or seeds?",
+      "Are critical failures weighted as blockers?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "eval corpus",
+      "run manifest",
+      "paired results",
+      "promotion decision"
+    ],
+    "evaluatorIds": [
+      "benchmarking-skill-utility-evaluator"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 646,
+    "hardTokens": 1058,
+    "outputReserveTokens": 264
+  },
+  "quality": {
+    "benchmarkIds": [
+      "v04-benchmarking-skill-utility-behavior"
+    ],
+    "minimumSkillDepthScore": 82,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2"
+  ],
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.measure-outcomes",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:v0.5:benchmarking-skill-utility",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "software-testing.measure-outcomes",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:v0.5:benchmarking-skill-utility",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.benchmarking-skill-utility",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:v0.5:benchmarking-skill-utility",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "ee6b2e3081be5743c13046fe9c02efd605e2dc401244dc7a4d432dac4bb7426f",
+        "bytes": 831,
+        "tokens": {
+          "gpt-5.6": 224,
+          "claude-opus-4.2": 235,
+          "gemini-3.0-pro": 214,
+          "qwen3.5-32b": 249
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "e098109fafacde670a595a08559b542e78ebaa5609699a71449ee22b12952de1",
+        "bytes": 889,
+        "tokens": {
+          "gpt-5.6": 239,
+          "claude-opus-4.2": 251,
+          "gemini-3.0-pro": 228,
+          "qwen3.5-32b": 266
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "f9bfe6ef36de59d9db6341e6221b617221c90ebbc72b538c413f967f5f21581a",
+        "bytes": 346,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 98,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 104
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "06f49a9893fa4cfa5467736efbffd06cdfcc3e96dd0522d99f31fb122607afa7",
+        "bytes": 321,
+        "tokens": {
+          "gpt-5.6": 87,
+          "claude-opus-4.2": 91,
+          "gemini-3.0-pro": 83,
+          "qwen3.5-32b": 96
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "4c1b2f2a419b400271a46e305dee375724005a95f19045cdeb0a5187c79d2136",
+        "bytes": 252,
+        "tokens": {
+          "gpt-5.6": 68,
+          "claude-opus-4.2": 71,
+          "gemini-3.0-pro": 65,
+          "qwen3.5-32b": 76
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "163fc13f35af5923124b2b72a47ea347b64590c89f33b6a2ce57d2a51e27ec31",
+        "bytes": 334,
+        "tokens": {
+          "gpt-5.6": 90,
+          "claude-opus-4.2": 95,
+          "gemini-3.0-pro": 86,
+          "qwen3.5-32b": 100
+        }
+      }
+    ],
+    "indexSha256": "528477eee50b59f29cb01a89e981bfb308b14544bc0b6edac534c34244bbeffb"
+  },
+  "manifestSha256": "983c4509ff5d7c9806013f0157dcf9b1aeec235e40ed39d820bcee4d3c9427fb"
+}

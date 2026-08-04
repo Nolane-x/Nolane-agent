@@ -1,0 +1,309 @@
+{
+  "schemaVersion": 2,
+  "id": "decomposing-bounded-contexts",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Decomposing Bounded Contexts",
+    "description": "Use when decomposing bounded contexts within architecture lifecycle boundaries, especially when does the artifact make the owned decision for decomposing bounded contexts explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "architecture"
+    ],
+    "keywords": [
+      "decomposing-bounded-contexts",
+      "decomposing",
+      "bounded",
+      "contexts",
+      "within",
+      "architecture",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require decomposing bounded contexts within architecture lifecycle boundaries",
+      "the typed inputs for decomposing-bounded-contexts are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "product-definition",
+        "schema": "artifact://forgeos/product-definition/v1"
+      },
+      {
+        "type": "ux-contract",
+        "schema": "artifact://forgeos/ux-contract/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "system-boundaries",
+        "schema": "artifact://forgeos/system-boundaries/v1"
+      },
+      {
+        "type": "architecture-decision",
+        "schema": "artifact://forgeos/architecture-decision/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for decomposing bounded contexts explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by decomposing bounded contexts.",
+        "evidence": "decomposing-bounded-contexts-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to decomposing bounded contexts.",
+        "evidence": "decomposing-bounded-contexts-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply decomposing bounded contexts only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "decomposing-bounded-contexts-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "decomposing-bounded-contexts-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if decomposing bounded contexts were incomplete or implemented incorrectly.",
+        "evidence": "decomposing-bounded-contexts-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for decomposing bounded contexts explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "decomposing-bounded-contexts-decision-table",
+      "decomposing-bounded-contexts-verification-report",
+      "decomposing-bounded-contexts-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "decomposing-bounded-contexts-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 714,
+    "hardTokens": 1112,
+    "outputReserveTokens": 278
+  },
+  "quality": {
+    "benchmarkIds": [
+      "decomposing-bounded-contexts-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "software-architecture.design-architecture",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:decomposing-bounded-contexts",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "f88e845648c0265851adc1a6acbaed050195170df7e30f93d6bea0dee8566f22",
+        "bytes": 963,
+        "tokens": {
+          "gpt-5.6": 259,
+          "claude-opus-4.2": 272,
+          "gemini-3.0-pro": 247,
+          "qwen3.5-32b": 288
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "6090222941df3fa0640060dbcbef74ecc108ef69884ab4223fb0b29a75f28358",
+        "bytes": 718,
+        "tokens": {
+          "gpt-5.6": 194,
+          "claude-opus-4.2": 203,
+          "gemini-3.0-pro": 185,
+          "qwen3.5-32b": 215
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "0c535eb5533770ab6a09752a897b876c18b995b0746fb05c56c15e8824f39bdc",
+        "bytes": 304,
+        "tokens": {
+          "gpt-5.6": 82,
+          "claude-opus-4.2": 86,
+          "gemini-3.0-pro": 78,
+          "qwen3.5-32b": 91
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "c58b12dcbd796887f021347b8368df8c70b55cce441e5c469b95afec8ef02a83",
+        "bytes": 613,
+        "tokens": {
+          "gpt-5.6": 165,
+          "claude-opus-4.2": 173,
+          "gemini-3.0-pro": 158,
+          "qwen3.5-32b": 183
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "bef787f94d59ca6e0acf71e4e69e65e5382328f5b0cc3fdab78712a8d6b63d1d",
+        "bytes": 332,
+        "tokens": {
+          "gpt-5.6": 90,
+          "claude-opus-4.2": 94,
+          "gemini-3.0-pro": 86,
+          "qwen3.5-32b": 100
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "154239603437070fff763c5a5a606d2c86eddc401c932879cad8e8442e9f187f",
+        "bytes": 242,
+        "tokens": {
+          "gpt-5.6": 66,
+          "claude-opus-4.2": 69,
+          "gemini-3.0-pro": 63,
+          "qwen3.5-32b": 73
+        }
+      }
+    ],
+    "indexSha256": "305bebc225afaf9f1b8db584e041b258682551ebc1eb284c52b27ca8c2300269"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "b46a5254d42b63bf445050486ce1dfbad1b5e6ce39b6ecd1456468acdce67a97"
+}

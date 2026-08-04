@@ -1,0 +1,149 @@
+{
+  "name": "reviewing-critical-code-line-by-line",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "implementation",
+  "domain": null,
+  "status": "stable",
+  "stages": [
+    "implementation"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "implemented-increment"
+  ],
+  "produces": [
+    "verified-build"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:verified-build"
+  ],
+  "tools": [
+    "filesystem",
+    "shell"
+  ],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/implementation.md",
+  "method": {
+    "focus": "review high-impact code with complete data-flow, control-flow, failure, concurrency, and trust-boundary coverage",
+    "steps": [
+      "Define why the module is critical and identify assets, callers, side effects, invariants, and failure consequences.",
+      "Trace every input from origin through validation, transformation, authorization, persistence, and output.",
+      "Review each branch, error path, cleanup path, retry, timeout, and concurrent interleaving.",
+      "Cross-check code against requirements, tests, dependency behavior, and operational telemetry.",
+      "Record findings with exact lines, exploit or failure scenario, severity, and required evidence for closure."
+    ],
+    "verification": [
+      "Can malformed, stale, duplicated, reordered, or unauthorized input reach a side effect?",
+      "Can partial failure leave durable corruption or cost?",
+      "Do tests kill plausible mutations in critical branches?",
+      "Can logs or errors disclose secrets?"
+    ],
+    "evidence": [
+      "annotated diff",
+      "data-flow map",
+      "finding ledger",
+      "closure evidence"
+    ],
+    "traps": [
+      "style-only review",
+      "trusting test coverage percentage",
+      "reviewer silently fixing findings"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Load one task, its direct contracts, and its failing test.",
+    "Verify the test fails for the intended missing behavior.",
+    "Define why the module is critical and identify assets, callers, side effects, invariants, and failure consequences.",
+    "Trace every input from origin through validation, transformation, authorization, persistence, and output.",
+    "Review each branch, error path, cleanup path, retry, timeout, and concurrent interleaving.",
+    "Cross-check code against requirements, tests, dependency behavior, and operational telemetry.",
+    "Record findings with exact lines, exploit or failure scenario, severity, and required evidence for closure.",
+    "Implement the minimum sufficient change.",
+    "Run focused tests, then relevant regression tests.",
+    "Review the diff for complexity, security, and contract drift.",
+    "Commit evidence and hand off to independent review."
+  ],
+  "gate": {
+    "reviewerRole": "independent-reviewer",
+    "rules": [
+      "The output directly and completely performs reviewing critical code line by line within its declared boundary.",
+      "Can malformed, stale, duplicated, reordered, or unauthorized input reach a side effect?",
+      "Can partial failure leave durable corruption or cost?",
+      "Do tests kill plausible mutations in critical branches?",
+      "Can logs or errors disclose secrets?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "verified-build"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "annotated diff",
+      "data-flow map",
+      "finding ledger",
+      "closure evidence"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1682,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "style-only review",
+    "trusting test coverage percentage",
+    "reviewer silently fixing findings"
+  ],
+  "optionalConsumes": [
+    "acceptance-contracts"
+  ],
+  "requiredTools": [
+    "filesystem",
+    "shell"
+  ],
+  "optionalTools": [],
+  "description": "Use when reviewing critical code line by line is required during implementation work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

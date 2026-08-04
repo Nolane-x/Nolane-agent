@@ -1,0 +1,38 @@
+[
+  {
+    "id": "deciding-release-scope-application",
+    "kind": "application",
+    "input": "Task directly requiring deciding release scope within planning lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "deciding-release-scope-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require deciding release scope within planning lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "deciding-release-scope-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "deciding-release-scope-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "deciding-release-scope-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "deciding-release-scope-transfer",
+    "kind": "transfer",
+    "input": "Apply the deciding-release-scope mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

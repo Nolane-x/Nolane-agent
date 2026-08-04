@@ -1,0 +1,10 @@
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { verifyLocalFrontierCompletion } from '../src/release/local-frontier-completion-verifier.mjs';
+const root = path.resolve(process.argv[2] ?? '.');
+const metadata = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
+const output = path.join(root, 'release', `local-frontier-completion-${metadata.version}.json`);
+await mkdir(path.dirname(output), { recursive: true });
+const report = await verifyLocalFrontierCompletion({ rootDirectory: root, version: metadata.version, outputFile: output });
+await writeFile(output, `${JSON.stringify(report, null, 2)}\n`);
+process.stdout.write(`${JSON.stringify({ status: report.status, version: report.version, receiptSha256: report.receiptSha256, output: path.relative(root, output).replaceAll('\\','/') })}\n`);

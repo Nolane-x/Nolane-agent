@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.operations-leadership",
+  "domain": "operations-leadership",
+  "title": "Operations and Leadership Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "strategy",
+    "process",
+    "capacity",
+    "governance",
+    "communication",
+    "risk",
+    "change",
+    "measurement"
+  ],
+  "capabilities": [
+    "operations-leadership.map-landscape",
+    "operations-leadership.frame-problem",
+    "operations-leadership.research-users",
+    "operations-leadership.define-requirements",
+    "operations-leadership.model-domain",
+    "operations-leadership.compare-alternatives",
+    "operations-leadership.design-concept",
+    "operations-leadership.prototype-critical-flow",
+    "operations-leadership.validate-prototype",
+    "operations-leadership.design-architecture",
+    "operations-leadership.model-data",
+    "operations-leadership.model-threats",
+    "operations-leadership.plan-delivery",
+    "operations-leadership.implement-core",
+    "operations-leadership.integrate-dependencies",
+    "operations-leadership.verify-contracts",
+    "operations-leadership.test-boundaries",
+    "operations-leadership.test-resilience",
+    "operations-leadership.test-performance",
+    "operations-leadership.test-security",
+    "operations-leadership.audit-accessibility",
+    "operations-leadership.optimize-quality",
+    "operations-leadership.optimize-cost",
+    "operations-leadership.document-system",
+    "operations-leadership.prepare-migration",
+    "operations-leadership.plan-rollout",
+    "operations-leadership.instrument-observability",
+    "operations-leadership.operate-lifecycle",
+    "operations-leadership.respond-incidents",
+    "operations-leadership.govern-evolution",
+    "operations-leadership.measure-outcomes",
+    "operations-leadership.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "block-agent-skills",
+      "title": "Block Agent Skills",
+      "url": "https://github.com/block/agent-skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "Apache-2.0",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "neurofoo-agent-skills",
+      "title": "Thinking framework skills",
+      "url": "https://github.com/neurofoo/agent-skills",
+      "authority": "community",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "UNKNOWN",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

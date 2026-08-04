@@ -1,0 +1,290 @@
+{
+  "schemaVersion": 2,
+  "id": "validating-source-credibility",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "stable",
+  "identity": {
+    "title": "Validating Source Credibility",
+    "description": "Use when assess authority, recency, directness, methodology, conflicts, corroboration, and claim-specific relevance, especially when does the source support the exact claim being made?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "research"
+    ],
+    "keywords": [
+      "validating-source-credibility",
+      "assess",
+      "authority",
+      "recency",
+      "directness",
+      "methodology",
+      "conflicts",
+      "corroboration",
+      "and"
+    ],
+    "antiTriggers": [
+      "purely creative writing with no factual claims",
+      "a source already authenticated and current by policy"
+    ]
+  },
+  "relations": {
+    "requires": [
+      "research-evidence",
+      "problem-discovery"
+    ],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "research-evidence",
+        "schema": "artifact://forgeos/research-evidence/v1"
+      },
+      {
+        "type": "problem-discovery",
+        "schema": "artifact://forgeos/problem-discovery/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "research-synthesis",
+        "schema": "artifact://forgeos/research-synthesis/v1"
+      }
+    ],
+    "invariants": [
+      "Output remains within the validating-source-credibility responsibility boundary",
+      "Every pass claim is backed by current trusted evidence"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Decompose each product claim into the evidence it actually requires.",
+        "evidence": "source ledger"
+      },
+      {
+        "id": "step-2",
+        "action": "Prefer primary and authoritative sources; record when only secondary evidence exists.",
+        "evidence": "claim-to-source matrix"
+      },
+      {
+        "id": "step-3",
+        "action": "Check publication date, version, scope, methodology, and incentives.",
+        "evidence": "freshness record"
+      },
+      {
+        "id": "step-4",
+        "action": "Corroborate load-bearing claims through independent sources where possible.",
+        "evidence": "confidence notes"
+      },
+      {
+        "id": "step-5",
+        "action": "Attach confidence and limitations to each claim, not only to the document.",
+        "evidence": "confidence notes"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required tool, input, or approval is unavailable",
+        "action": "stop and record a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the source support the exact claim being made?",
+      "Could the fact have changed since publication?",
+      "Are disagreements represented rather than averaged away?",
+      "Is an inference labeled as an inference?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "source ledger",
+      "claim-to-source matrix",
+      "freshness record",
+      "confidence notes"
+    ],
+    "evaluatorIds": [
+      "validating-source-credibility-evaluator"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 634,
+    "hardTokens": 1054,
+    "outputReserveTokens": 263
+  },
+  "quality": {
+    "benchmarkIds": [
+      "v04-validating-source-credibility-behavior"
+    ],
+    "minimumSkillDepthScore": 82,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2"
+  ],
+  "capabilityMappings": [
+    {
+      "capabilityId": "scientific-research.map-landscape",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:validating-source-credibility",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "scientific-research.verify-contracts",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:validating-source-credibility",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.validating-source-credibility",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:validating-source-credibility",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "8bbb6f00e401eb16079f79486889cc9f929f1b4391b76af9f82ae8196b638925",
+        "bytes": 871,
+        "tokens": {
+          "gpt-5.6": 235,
+          "claude-opus-4.2": 246,
+          "gemini-3.0-pro": 224,
+          "qwen3.5-32b": 260
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "d3ec982421d10783fd321aa8a6f5f39a993163ad1b4a09f3c9918c2fac60fc07",
+        "bytes": 801,
+        "tokens": {
+          "gpt-5.6": 216,
+          "claude-opus-4.2": 226,
+          "gemini-3.0-pro": 206,
+          "qwen3.5-32b": 240
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "f9bfe6ef36de59d9db6341e6221b617221c90ebbc72b538c413f967f5f21581a",
+        "bytes": 346,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 98,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 104
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "3279796a4a969a73daddb06e85d7c085bd9b8cb80ed4d4de72f5a7c38f96ba06",
+        "bytes": 320,
+        "tokens": {
+          "gpt-5.6": 87,
+          "claude-opus-4.2": 91,
+          "gemini-3.0-pro": 83,
+          "qwen3.5-32b": 96
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "0c4bf512a00cb7896888db0af5d79d1065089fedff89ea93b8c2bbe32abb8cc0",
+        "bytes": 274,
+        "tokens": {
+          "gpt-5.6": 74,
+          "claude-opus-4.2": 78,
+          "gemini-3.0-pro": 71,
+          "qwen3.5-32b": 82
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "a41617224caba24909450c965ce314924a37712c02656234201afb1ba6691048",
+        "bytes": 339,
+        "tokens": {
+          "gpt-5.6": 92,
+          "claude-opus-4.2": 96,
+          "gemini-3.0-pro": 87,
+          "qwen3.5-32b": 102
+        }
+      }
+    ],
+    "indexSha256": "d535d9293869d7a820b2c8a678e9f2c4e3ed1bfc2bdab394ca49343f0e3cd732"
+  },
+  "manifestSha256": "96ae1577a8be16d574d52c93cfa467819f8a2c7a3351c88d5b69b1e838d572d9",
+  "kernelLevel": "L1"
+}

@@ -1,0 +1,154 @@
+{
+  "name": "designing-model-routing",
+  "version": "0.2.0",
+  "kind": "domain",
+  "pack": "domain",
+  "domain": "ai-products",
+  "status": "stable",
+  "stages": [
+    "product-definition",
+    "ux-design",
+    "architecture",
+    "planning",
+    "implementation",
+    "verification",
+    "release-readiness"
+  ],
+  "domains": [
+    "ai-products"
+  ],
+  "consumes": [
+    "product-definition"
+  ],
+  "produces": [
+    "domain-blueprint",
+    "domain-evidence"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:domain-blueprint",
+    "downstream:domain-evidence"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/domains/ai-products.md",
+  "method": {
+    "focus": "route AI requests by capability, risk, latency, cost, context, privacy, and measured task quality",
+    "steps": [
+      "Classify task type, required capabilities, data sensitivity, assurance, latency, and maximum spend.",
+      "Maintain provider/model profiles from measured evals rather than marketing claims.",
+      "Define deterministic primary, fallback, timeout, retry, and degradation policies.",
+      "Preserve prompt, tool, schema, and safety compatibility across routes.",
+      "Record route decision, model version, cost, latency, quality evidence, and failure reason."
+    ],
+    "verification": [
+      "Can a cheaper model safely handle the task class?",
+      "Does fallback change output contracts or privacy boundaries?",
+      "Are retries capable of multiplying cost or side effects?",
+      "Can routing be replayed and audited?"
+    ],
+    "evidence": [
+      "routing policy",
+      "model eval matrix",
+      "fallback tests",
+      "cost and latency trace"
+    ],
+    "traps": [
+      "routing by brand",
+      "silent model upgrades",
+      "fallback loops without budgets"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Read the confirmed product definition, domain context, assurance profile, and active findings.",
+    "Identify the domain objects, actors, state transitions, regulations, provider boundaries, and operational constraints owned by this skill.",
+    "Classify task type, required capabilities, data sensitivity, assurance, latency, and maximum spend.",
+    "Maintain provider/model profiles from measured evals rather than marketing claims.",
+    "Define deterministic primary, fallback, timeout, retry, and degradation policies.",
+    "Preserve prompt, tool, schema, and safety compatibility across routes.",
+    "Record route decision, model version, cost, latency, quality evidence, and failure reason.",
+    "Model normal, boundary, failure, recovery, permission, concurrency, migration, and abuse behavior before implementation.",
+    "Define stable contracts and explicit non-goals; do not leak domain concerns into unrelated modules.",
+    "Create executable acceptance, negative, resilience, and compatibility checks proportional to risk.",
+    "Publish the domain artifact, evidence packet, unresolved assumptions, and downstream invalidations."
+  ],
+  "gate": {
+    "reviewerRole": "ai-products-reviewer",
+    "rules": [
+      "The output directly and completely performs designing model routing within its declared boundary.",
+      "Can a cheaper model safely handle the task class?",
+      "Does fallback change output contracts or privacy boundaries?",
+      "Are retries capable of multiplying cost or side effects?",
+      "Can routing be replayed and audited?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "domain-blueprint",
+        "domain-evidence"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "routing policy",
+      "model eval matrix",
+      "fallback tests",
+      "cost and latency trace"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1725,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "routing by brand",
+    "silent model upgrades",
+    "fallback loops without budgets"
+  ],
+  "optionalConsumes": [
+    "architecture-decision",
+    "verified-build"
+  ],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when designing model routing is required during ai-products product work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

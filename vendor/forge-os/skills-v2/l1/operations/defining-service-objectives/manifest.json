@@ -1,0 +1,308 @@
+{
+  "schemaVersion": 2,
+  "id": "defining-service-objectives",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Defining Service Objectives",
+    "description": "Use when defining service objectives within operations lifecycle boundaries, especially when does the artifact make the owned decision for defining service objectives explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "operations"
+    ],
+    "keywords": [
+      "defining-service-objectives",
+      "defining",
+      "service",
+      "objectives",
+      "within",
+      "operations",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require defining service objectives within operations lifecycle boundaries",
+      "the typed inputs for defining-service-objectives are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "verified-build",
+        "schema": "artifact://forgeos/verified-build/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "deployment-plan",
+        "schema": "artifact://forgeos/deployment-plan/v1"
+      },
+      {
+        "type": "operations-evidence",
+        "schema": "artifact://forgeos/operations-evidence/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for defining service objectives explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": [
+      "shell",
+      "container-runtime"
+    ]
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by defining service objectives.",
+        "evidence": "defining-service-objectives-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to defining service objectives.",
+        "evidence": "defining-service-objectives-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply defining service objectives only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "defining-service-objectives-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "defining-service-objectives-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if defining service objectives were incomplete or implemented incorrectly.",
+        "evidence": "defining-service-objectives-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for defining service objectives explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "defining-service-objectives-decision-table",
+      "defining-service-objectives-verification-report",
+      "defining-service-objectives-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "defining-service-objectives-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 708,
+    "hardTokens": 1104,
+    "outputReserveTokens": 276
+  },
+  "quality": {
+    "benchmarkIds": [
+      "defining-service-objectives-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "devops-sre.operate-lifecycle",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:defining-service-objectives",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "a005a8ef9707a37f71dc9198f7f9d5d7cc9b72861c6eb35a941139d98b907f1e",
+        "bytes": 950,
+        "tokens": {
+          "gpt-5.6": 256,
+          "claude-opus-4.2": 268,
+          "gemini-3.0-pro": 244,
+          "qwen3.5-32b": 284
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "933f5a5c2a4bc4ce00ea6bcbcf9df0af1fb3a7a5f49de10f968aad3bf94063a7",
+        "bytes": 714,
+        "tokens": {
+          "gpt-5.6": 192,
+          "claude-opus-4.2": 202,
+          "gemini-3.0-pro": 184,
+          "qwen3.5-32b": 214
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "31775f415f9aa2afcea8db7020a18c8d9169eb13af1a81cbe9cb24cb98d2df97",
+        "bytes": 303,
+        "tokens": {
+          "gpt-5.6": 82,
+          "claude-opus-4.2": 86,
+          "gemini-3.0-pro": 78,
+          "qwen3.5-32b": 91
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "6572813e1dda0935056ddf8ea7552a015952a8915c8eafcea29b60cbe74ad30d",
+        "bytes": 609,
+        "tokens": {
+          "gpt-5.6": 164,
+          "claude-opus-4.2": 172,
+          "gemini-3.0-pro": 157,
+          "qwen3.5-32b": 182
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "208d694e670315087f10c9c3f5a319c6f7e2cecd41a58a07ec82db4ea14e3507",
+        "bytes": 331,
+        "tokens": {
+          "gpt-5.6": 89,
+          "claude-opus-4.2": 94,
+          "gemini-3.0-pro": 85,
+          "qwen3.5-32b": 99
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "3ecb370153b741e4f3b426d82cf642cb19b59bf8784780eb4098c7215ac8ce3f",
+        "bytes": 241,
+        "tokens": {
+          "gpt-5.6": 65,
+          "claude-opus-4.2": 68,
+          "gemini-3.0-pro": 62,
+          "qwen3.5-32b": 72
+        }
+      }
+    ],
+    "indexSha256": "870e20c1e3574d0b6896334c1e16bf65040780d233b5c52e7fcd02df795ac690"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "d2ff77d6c95b6f3317c64eded240c21f44c8cc7366846318eca42cb95e0b9441"
+}

@@ -1,0 +1,305 @@
+{
+  "schemaVersion": 2,
+  "id": "requesting-human-decisions",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Requesting Human Decisions",
+    "description": "Use when requesting human decisions within kernel lifecycle boundaries, especially when does the artifact make the owned decision for requesting human decisions explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "kernel"
+    ],
+    "keywords": [
+      "requesting-human-decisions",
+      "requesting",
+      "human",
+      "decisions",
+      "within",
+      "kernel",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require requesting human decisions within kernel lifecycle boundaries",
+      "the typed inputs for requesting-human-decisions are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "project-state",
+        "schema": "artifact://forgeos/project-state/v1"
+      },
+      {
+        "type": "gate-state",
+        "schema": "artifact://forgeos/gate-state/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "approval-request",
+        "schema": "artifact://forgeos/approval-request/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for requesting human decisions explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by requesting human decisions.",
+        "evidence": "requesting-human-decisions-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to requesting human decisions.",
+        "evidence": "requesting-human-decisions-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply requesting human decisions only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "requesting-human-decisions-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "requesting-human-decisions-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if requesting human decisions were incomplete or implemented incorrectly.",
+        "evidence": "requesting-human-decisions-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for requesting human decisions explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "requesting-human-decisions-decision-table",
+      "requesting-human-decisions-verification-report",
+      "requesting-human-decisions-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "requesting-human-decisions-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 701,
+    "hardTokens": 1097,
+    "outputReserveTokens": 274
+  },
+  "quality": {
+    "benchmarkIds": [
+      "requesting-human-decisions-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.govern-evolution",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:requesting-human-decisions",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "490f23939ca9bfe08a9c542554ef9f7ffbbcca2502f58258b2d130e006a46fce",
+        "bytes": 931,
+        "tokens": {
+          "gpt-5.6": 251,
+          "claude-opus-4.2": 263,
+          "gemini-3.0-pro": 239,
+          "qwen3.5-32b": 278
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "dcffd3e52669f0c6e07e61857341e60c2e4bfbede50cb28abebfb0f9981a6793",
+        "bytes": 710,
+        "tokens": {
+          "gpt-5.6": 191,
+          "claude-opus-4.2": 200,
+          "gemini-3.0-pro": 183,
+          "qwen3.5-32b": 212
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "b6c3a87df6e6736e3052cf349e1cc3f741f54a07f497f96de39abc214bfcefe4",
+        "bytes": 302,
+        "tokens": {
+          "gpt-5.6": 82,
+          "claude-opus-4.2": 86,
+          "gemini-3.0-pro": 78,
+          "qwen3.5-32b": 91
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "e309d2a7653baa41e3da0ed3b480052224ee9f77db799d7ea3a9814aea034b89",
+        "bytes": 605,
+        "tokens": {
+          "gpt-5.6": 163,
+          "claude-opus-4.2": 171,
+          "gemini-3.0-pro": 156,
+          "qwen3.5-32b": 181
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "17b02adc68acca50b2cceaa09fcbf7ef13cfdb705a2a56e432fedea03d47c0ca",
+        "bytes": 330,
+        "tokens": {
+          "gpt-5.6": 89,
+          "claude-opus-4.2": 93,
+          "gemini-3.0-pro": 85,
+          "qwen3.5-32b": 99
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "0cacdc972bf2e2fd2747eb347d3ad8907719c6bf9939d746b219ceba9342373a",
+        "bytes": 240,
+        "tokens": {
+          "gpt-5.6": 65,
+          "claude-opus-4.2": 68,
+          "gemini-3.0-pro": 62,
+          "qwen3.5-32b": 72
+        }
+      }
+    ],
+    "indexSha256": "49f70efbf466ad261c9226d08ee93e9c59751b4dba7df447382e1608d2810fa0"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "adcf3eae77a36905d590397c4f5754cd0c499d85464bedcdacfb0acad528fb88"
+}

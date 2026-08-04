@@ -1,0 +1,10 @@
+import { readFile, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { renderForgeStudioHtml } from '../src/ui/forge-studio.mjs';
+const dataDir = path.resolve(process.argv[2] ?? '.forgeos-demo-data');
+const projectId = process.argv[3];
+const project = JSON.parse(await readFile(path.join(dataDir, `${projectId}.json`),'utf8'));
+const routes = project.routes.at(-1)?.routes ?? [];
+let html = renderForgeStudioHtml({ project, routes });
+html = html.replace('</style>', '@page{size:1600px 1100px;margin:0} body{width:1600px;min-height:1100px}</style>');
+await writeFile(process.argv[4] ?? 'evidence/dashboard.html', html);

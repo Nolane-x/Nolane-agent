@@ -1,0 +1,88 @@
+{
+  "schema": "nolane.agent.third-party-retirement.v1",
+  "product": "Nolane Agent",
+  "version": "5.0.0-beta.6",
+  "nolane_nativeBundled": false,
+  "executableNolaneNativePaths": 0,
+  "historicalLedgerEntries": 8548,
+  "historicalLedgerSha256": "021c57df0abbaeb48a3c81348f13d6a822d680266f0948ac190cbe1ae690cc11",
+  "historicalSummarySha256": "b2fee5817df5a22c0fb3041aade4f929c11b853113d7143e9e1a72e522a0e66e",
+  "replacementCoverage": {
+    "accepted": 14,
+    "replaced": 14,
+    "entries": [
+      {
+        "capability": "agent-loop",
+        "path": "src/nolane-native/agent-loop.mjs",
+        "present": true
+      },
+      {
+        "capability": "agent-service",
+        "path": "src/nolane-native/agent-service.mjs",
+        "present": true
+      },
+      {
+        "capability": "provider-adapters",
+        "path": "src/nolane-native/provider-adapters.mjs",
+        "present": true
+      },
+      {
+        "capability": "tool-registry",
+        "path": "src/nolane-native/tool-registry.mjs",
+        "present": true
+      },
+      {
+        "capability": "shell-tool",
+        "path": "src/nolane-native/shell-tool.mjs",
+        "present": true
+      },
+      {
+        "capability": "file-tools",
+        "path": "src/nolane-native/file-tools.mjs",
+        "present": true
+      },
+      {
+        "capability": "orchestration",
+        "path": "src/nolane-native/orchestration-service.mjs",
+        "present": true
+      },
+      {
+        "capability": "runtime",
+        "path": "src/nolane-native/runtime-service.mjs",
+        "present": true
+      },
+      {
+        "capability": "web-browser",
+        "path": "src/nolane-native/web-browser-tools.mjs",
+        "present": true
+      },
+      {
+        "capability": "notebook",
+        "path": "src/nolane-native/code-notebook-tools.mjs",
+        "present": true
+      },
+      {
+        "capability": "cross-session-memory",
+        "path": "src/nolane-native/cross-session-memory.mjs",
+        "present": true
+      },
+      {
+        "capability": "terminal-ui",
+        "path": "src/nolane-native/terminal-ui.mjs",
+        "present": true
+      },
+      {
+        "capability": "media",
+        "path": "src/nolane-native/media-provider-registry.mjs",
+        "present": true
+      },
+      {
+        "capability": "audio",
+        "path": "src/nolane-native/audio-provider-registry.mjs",
+        "present": true
+      }
+    ]
+  },
+  "attributionPreserved": true,
+  "retirementReceiptSha256": "50631ccf013a2fef262fc4a3b07f23b898b71d1c28ade6ee723f0e43dc77d1ae"
+}

@@ -1,0 +1,66 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+
+import { renderExperienceSwitcher } from '../ui-v3/components/experience-switcher/experience-switcher.mjs';
+import { createExperienceTransitionController } from '../ui-v3/core/experience-transition-controller.mjs';
+import { createViewStateBridge } from '../ui-v3/core/view-state-bridge.mjs';
+
+function fakeRoot() {
+  const objective = { id: 'objective', name: '', dataset: {}, type: 'textarea', disabled: false, value: 'keep this draft', checked: undefined, selectionStart: 2, selectionEnd: 5 };
+  const workspace = { scrollTop: 140 };
+  const sidebar = { scrollTop: 33 };
+  const summary = { dataset: { open: 'true' } };
+  return {
+    activeElement: objective,
+    querySelectorAll(selector) { return selector === 'input, textarea, select' ? [objective] : []; },
+    querySelector(selector) {
+      if (selector === '#workspace') return workspace;
+      if (selector === '#session-groups') return sidebar;
+      if (selector === '#output-summary-root') return summary;
+      return null;
+    }
+  };
+}
+
+test('experience switcher renders one direct option for every progressive level', () => {
+  const html = renderExperienceSwitcher({ current: 'workspace', language: 'en' });
+  for (const level of ['everyday', 'workspace', 'studio', 'expert']) assert.match(html, new RegExp(`data-experience-option="${level}"`));
+  assert.match(html, /role="listbox"/);
+  assert.match(html, /aria-selected="true" data-experience-option="workspace"/);
+  assert.match(html, /Does not change agent permissions/);
+});
+
+test('view-state bridge preserves draft metadata and maps routes to representable destinations', () => {
+  const bridge = createViewStateBridge();
+  bridge.capture(fakeRoot(), { experience: 'expert', path: '/control-plane/runtime' });
+  const snapshot = bridge.snapshot();
+  assert.equal(snapshot.states.expert.controls[0].value, 'keep this draft');
+  assert.equal(snapshot.states.expert.workspaceScrollTop, 140);
+  assert.equal(bridge.resolveDestination({ currentPath: '/control-plane/runtime', targetExperience: 'everyday' }), '/');
+  assert.equal(bridge.resolveDestination({ currentPath: '/control-plane/runtime', targetExperience: 'workspace' }), '/missions');
+  assert.equal(bridge.resolveDestination({ currentPath: '/control-plane/runtime', targetExperience: 'studio' }), '/workroom');
+});
+
+test('transition persists through Personalization API before reporting success', async () => {
+  const calls = [];
+  const bridge = createViewStateBridge();
+  const api = { patch: async (path, body) => { calls.push({ path, body }); return { profile: { preferences: { experience: { level: 'expert' } } } }; } };
+  const controller = createExperienceTransitionController({ api, viewStateBridge: bridge, documentRoot: fakeRoot });
+  const result = await controller.transition({ fromExperience: 'everyday', toExperience: 'expert', currentPath: '/' });
+  assert.equal(result.ok, true);
+  assert.equal(result.experience, 'expert');
+  assert.equal(calls[0].path, '/api/personalization/preferences');
+  assert.deepEqual(calls[0].body.patch, { experience: { level: 'expert' } });
+  assert.equal(calls[0].body.source, 'experience-switcher');
+});
+
+test('transition reports persistence failure and keeps the previous experience', async () => {
+  const bridge = createViewStateBridge();
+  const api = { patch: async () => { throw Object.assign(new Error('disk full'), { status: 507 }); } };
+  const controller = createExperienceTransitionController({ api, viewStateBridge: bridge, documentRoot: fakeRoot });
+  const result = await controller.transition({ fromExperience: 'workspace', toExperience: 'expert', currentPath: '/missions?id=m1' });
+  assert.equal(result.ok, false);
+  assert.equal(result.experience, 'workspace');
+  assert.equal(result.path, '/missions?id=m1');
+  assert.match(result.error, /disk full/);
+});

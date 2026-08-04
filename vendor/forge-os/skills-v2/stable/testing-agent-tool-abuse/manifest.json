@@ -1,0 +1,290 @@
+{
+  "schemaVersion": 2,
+  "id": "testing-agent-tool-abuse",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "stable",
+  "identity": {
+    "title": "Testing Agent Tool Abuse",
+    "description": "Use when verify that untrusted prompts, retrieved content, and agent outputs cannot exceed tool authority or bypass human decisions, especially when can content from a file or webpage cause a privileged call?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "security"
+    ],
+    "keywords": [
+      "testing-agent-tool-abuse",
+      "verify",
+      "that",
+      "untrusted",
+      "prompts",
+      "retrieved",
+      "content",
+      "and",
+      "agent"
+    ],
+    "antiTriggers": [
+      "a model with no tool access",
+      "ordinary input validation unrelated to agent authority"
+    ]
+  },
+  "relations": {
+    "requires": [
+      "threat-model",
+      "verified-build"
+    ],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "threat-model",
+        "schema": "artifact://forgeos/threat-model/v1"
+      },
+      {
+        "type": "verified-build",
+        "schema": "artifact://forgeos/verified-build/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "security-review",
+        "schema": "artifact://forgeos/security-review/v1"
+      }
+    ],
+    "invariants": [
+      "Output remains within the testing-agent-tool-abuse responsibility boundary",
+      "Every pass claim is backed by current trusted evidence"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Enumerate tools, permissions, side effects, irreversible actions, and authority delegation paths.",
+        "evidence": "abuse-case suite"
+      },
+      {
+        "id": "step-2",
+        "action": "Construct indirect prompt injection, tool argument manipulation, cross-context, replay, and confused-deputy scenarios.",
+        "evidence": "tool permission matrix"
+      },
+      {
+        "id": "step-3",
+        "action": "Verify server-side schema, authorization, scope, idempotency, and human confirmation independently of model compliance.",
+        "evidence": "blocked exploit traces"
+      },
+      {
+        "id": "step-4",
+        "action": "Test least-privilege degradation when a tool or model is compromised.",
+        "evidence": "residual-risk report"
+      },
+      {
+        "id": "step-5",
+        "action": "Record exploit traces without exposing live credentials or harming external systems.",
+        "evidence": "residual-risk report"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required tool, input, or approval is unavailable",
+        "action": "stop and record a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Can content from a file or webpage cause a privileged call?",
+      "Can the model invent a confirmation token?",
+      "Are read-only and destructive annotations truthful?",
+      "Can tool output inject a second instruction into the agent?"
+    ],
+    "reviewerRole": "security-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "abuse-case suite",
+      "tool permission matrix",
+      "blocked exploit traces",
+      "residual-risk report"
+    ],
+    "evaluatorIds": [
+      "testing-agent-tool-abuse-evaluator"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 664,
+    "hardTokens": 1077,
+    "outputReserveTokens": 269
+  },
+  "quality": {
+    "benchmarkIds": [
+      "v04-testing-agent-tool-abuse-behavior"
+    ],
+    "minimumSkillDepthScore": 82,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2"
+  ],
+  "capabilityMappings": [
+    {
+      "capabilityId": "cybersecurity.test-security",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:testing-agent-tool-abuse",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "ai-agent-engineering.test-security",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:testing-agent-tool-abuse",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.testing-agent-tool-abuse",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:testing-agent-tool-abuse",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "1b25c4bf661014b624f9b7a2aa3f1678105746482d30a6f61b4e6d1e5d2afa0c",
+        "bytes": 884,
+        "tokens": {
+          "gpt-5.6": 238,
+          "claude-opus-4.2": 250,
+          "gemini-3.0-pro": 227,
+          "qwen3.5-32b": 264
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "bf3b2fb5558459cc980abdc20695c27a70895de59e3ad71c420996717b77d601",
+        "bytes": 874,
+        "tokens": {
+          "gpt-5.6": 235,
+          "claude-opus-4.2": 247,
+          "gemini-3.0-pro": 225,
+          "qwen3.5-32b": 261
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "f9bfe6ef36de59d9db6341e6221b617221c90ebbc72b538c413f967f5f21581a",
+        "bytes": 346,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 98,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 104
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "0b57f265f00ffea1dbdbf5926c0042e50a65b4c01bc84a156e9e7039ef0bba6f",
+        "bytes": 351,
+        "tokens": {
+          "gpt-5.6": 95,
+          "claude-opus-4.2": 99,
+          "gemini-3.0-pro": 90,
+          "qwen3.5-32b": 105
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "07deaa909feba08b8baaa10af43765acc725f3405c1ace9c8fd020cda3433497",
+        "bytes": 259,
+        "tokens": {
+          "gpt-5.6": 70,
+          "claude-opus-4.2": 73,
+          "gemini-3.0-pro": 67,
+          "qwen3.5-32b": 78
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "187798101f806973731c621676fd53e8cec1a81375f537427f559a24455ed512",
+        "bytes": 331,
+        "tokens": {
+          "gpt-5.6": 89,
+          "claude-opus-4.2": 94,
+          "gemini-3.0-pro": 85,
+          "qwen3.5-32b": 99
+        }
+      }
+    ],
+    "indexSha256": "7f83064d03abc37e786b226dda1b046b21c946578088262e7e0c2c9f0830b2d8"
+  },
+  "manifestSha256": "e25dd59e7ce05f9af4bec060f1348827cc474a874d1228eba89cc9f6c3ada69d",
+  "kernelLevel": "L1"
+}

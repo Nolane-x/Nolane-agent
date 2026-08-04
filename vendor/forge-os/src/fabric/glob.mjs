@@ -1,0 +1,2 @@
+export function globToRegExp(glob){const value=String(glob).replaceAll('\\','/');let source='';for(let i=0;i<value.length;i++){const char=value[i];if(char==='*'){if(value[i+1]==='*'){i++;if(value[i+1]==='/'){i++;source+='(?:.*/)?';}else source+='.*';}else source+='[^/]*';continue;}if(char==='?'){source+='[^/]';continue;}source+=/[.+^${}()|[\]\\]/.test(char)?`\\${char}`:char;}return new RegExp(`^${source}$`);}
+export function matchesAny(file,patterns){return(patterns??[]).some((pattern)=>globToRegExp(pattern).test(String(file).replaceAll('\\','/')));}

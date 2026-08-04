@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 2,
+  "id": "clustering-semantic-ideas",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Clustering Semantic Ideas",
+    "description": "Use when clustering semantic ideas within creativity lifecycle boundaries, especially when does the artifact make the owned decision for clustering semantic ideas explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "creativity"
+    ],
+    "keywords": [
+      "clustering-semantic-ideas",
+      "clustering",
+      "semantic",
+      "ideas",
+      "within",
+      "creativity",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require clustering semantic ideas within creativity lifecycle boundaries",
+      "the typed inputs for clustering-semantic-ideas are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "candidate-ideas",
+        "schema": "artifact://forgeos/candidate-ideas/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "scored-ideas",
+        "schema": "artifact://forgeos/scored-ideas/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for clustering semantic ideas explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by clustering semantic ideas.",
+        "evidence": "clustering-semantic-ideas-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to clustering semantic ideas.",
+        "evidence": "clustering-semantic-ideas-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply clustering semantic ideas only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "clustering-semantic-ideas-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "clustering-semantic-ideas-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if clustering semantic ideas were incomplete or implemented incorrectly.",
+        "evidence": "clustering-semantic-ideas-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for clustering semantic ideas explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "clustering-semantic-ideas-decision-table",
+      "clustering-semantic-ideas-verification-report",
+      "clustering-semantic-ideas-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "clustering-semantic-ideas-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 700,
+    "hardTokens": 1095,
+    "outputReserveTokens": 273
+  },
+  "quality": {
+    "benchmarkIds": [
+      "clustering-semantic-ideas-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "graphic-design.design-concept",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:clustering-semantic-ideas",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "29c6d14bafb54e74429d9d504f2ed1920705a8980bd3c7060edc7649d84bd76c",
+        "bytes": 936,
+        "tokens": {
+          "gpt-5.6": 252,
+          "claude-opus-4.2": 264,
+          "gemini-3.0-pro": 240,
+          "qwen3.5-32b": 280
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "fed29f82a3bba264654fc9747dad6b6353a8e0c32ca9ed9166848a4df668bd75",
+        "bytes": 706,
+        "tokens": {
+          "gpt-5.6": 190,
+          "claude-opus-4.2": 199,
+          "gemini-3.0-pro": 182,
+          "qwen3.5-32b": 211
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "1289c77e4257f94fe196ab8dd4fb09443665160ba95ff72c071ce2fbf0904aeb",
+        "bytes": 301,
+        "tokens": {
+          "gpt-5.6": 81,
+          "claude-opus-4.2": 85,
+          "gemini-3.0-pro": 78,
+          "qwen3.5-32b": 90
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "10b104c4a22078535ca293c10f1bec9c9fb6f28d97b70176b1b63a0ff164be4c",
+        "bytes": 601,
+        "tokens": {
+          "gpt-5.6": 162,
+          "claude-opus-4.2": 170,
+          "gemini-3.0-pro": 155,
+          "qwen3.5-32b": 180
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "d3640272f30f9753ac2c56b5127265df8461f5839f1a07142e761b09f287d2ed",
+        "bytes": 329,
+        "tokens": {
+          "gpt-5.6": 89,
+          "claude-opus-4.2": 93,
+          "gemini-3.0-pro": 85,
+          "qwen3.5-32b": 99
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "ea5c8f44f2b2f314b31d382f7a72ae43dae6d0731717a443f7fa992f7571d61b",
+        "bytes": 239,
+        "tokens": {
+          "gpt-5.6": 65,
+          "claude-opus-4.2": 68,
+          "gemini-3.0-pro": 62,
+          "qwen3.5-32b": 72
+        }
+      }
+    ],
+    "indexSha256": "38e7f64aa3bda19395ddf36f40d377e03b13aa75c9b43523a8a603997495de63"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "f0da7c95949b74835cc1c5cbe3b9772f3c631dd0b7928cbf26741ce0fb43c4a4"
+}

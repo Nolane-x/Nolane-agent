@@ -1,0 +1,2 @@
+import { canonicalSha256 } from '../core/canonical-json.mjs';
+export function createHoldoutManifest(cases,{version}){if(!Array.isArray(cases)||!cases.length)throw new TypeError('Holdout cases are required');const records=cases.map((item)=>({id:String(item.id),caseSha256:canonicalSha256(item)})).sort((a,b)=>a.id.localeCompare(b.id));const subject={schemaVersion:1,version:String(version),caseCount:records.length,caseIds:records.map((item)=>item.id),caseHashes:records};return Object.freeze({...subject,corpusSha256:canonicalSha256(subject)});}

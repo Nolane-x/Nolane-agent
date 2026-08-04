@@ -1,0 +1,17 @@
+name: Skill proposal
+description: Propose a skill with a measurable behavioral gap
+title: "[skill]: "
+labels: [skill, proposal]
+body:
+  - type: textarea
+    id: failure
+    attributes: { label: Baseline failure, description: What does an agent do wrong without this skill? }
+    validations: { required: true }
+  - type: textarea
+    id: contract
+    attributes: { label: Proposed inputs and outputs }
+    validations: { required: true }
+  - type: textarea
+    id: eval
+    attributes: { label: Evaluation plan }
+    validations: { required: true }

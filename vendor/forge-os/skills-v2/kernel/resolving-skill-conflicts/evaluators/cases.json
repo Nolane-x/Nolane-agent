@@ -1,0 +1,20 @@
+[
+  {
+    "id": "resolving-skill-conflicts-positive",
+    "kind": "application",
+    "input": "A task requiring Resolving Skill Conflicts",
+    "expectedEvidence": [
+      "No conflicting writer owns the same output slot.",
+      "Resolution does not weaken assurance silently.",
+      "Human choice is required for value trade-offs, not guessed."
+    ],
+    "baselineFailure": "Treating low similarity as conflict."
+  },
+  {
+    "id": "resolving-skill-conflicts-anti-trigger",
+    "kind": "counter-example",
+    "input": "alternatives are compatible and can run independently",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

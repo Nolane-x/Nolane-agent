@@ -1,0 +1,74 @@
+{
+  "schema": "forge.studio.long-horizon-construction-measurement.v1",
+  "version": "3.0.0",
+  "specification": {
+    "readyStatus": "ready",
+    "conflictBlocked": true,
+    "conflictCount": 1
+  },
+  "traceability": {
+    "criterionCompleted": true,
+    "verificationIds": [
+      "targeted-session-test"
+    ],
+    "receiptSha256": "4d7c7c690618ad6aff2bd81741751d15245b01dd12e2a5479112b37bd022b2ee"
+  },
+  "invariants": {
+    "currentAllows": true,
+    "staleBlocks": true
+  },
+  "plan": {
+    "hierarchical": true,
+    "nextStepReady": true,
+    "repositoryDriftBlocks": true
+  },
+  "capsule": {
+    "exactResume": true,
+    "driftRequiresRevalidation": true,
+    "receiptSha256": "48180f600bc001ac98a196f9b53f89890822c71ee156eb794b7ae91fc76b294e"
+  },
+  "obligation": {
+    "triggered": true,
+    "completedAfterTrigger": true
+  },
+  "goals": {
+    "hardConstraintPreserved": true,
+    "hardConstraintsWeakened": false
+  },
+  "patch": {
+    "safePatchAllowed": true,
+    "publicApiBreakBlocked": true,
+    "overBudgetBlocked": true,
+    "safeSemanticFootprint": 9.85
+  },
+  "candidates": {
+    "correctnessFirst": true,
+    "semanticFootprintSelected": true,
+    "worktreesCreatedDirectly": false
+  },
+  "proof": {
+    "completeWithReceipts": true,
+    "incompleteWithoutReceipts": true
+  },
+  "lifecycle": {
+    "closed": false,
+    "specifications": 2,
+    "traceabilityLedgers": 2,
+    "invariantLedgers": 2,
+    "plans": 1
+  },
+  "composition": {
+    "appStaticImports": 154,
+    "appConstructors": 172
+  },
+  "boundaries": {
+    "directFileMutationClaimed": false,
+    "worktreeCreationClaimed": false,
+    "crossRebootProductionCertified": false,
+    "naturalLanguageUnderstandingClaimed": false,
+    "causalSimulationCompleteClaimed": false,
+    "hostedLifecycleClaimed": false,
+    "comparativeSuperiorityClaimed": false
+  },
+  "receiptSha256": "3982b69c34eab2e394aefd1f1d42de5d99b4e5a2972b1c0c0be7c439bd6405e4"
+}

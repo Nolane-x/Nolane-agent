@@ -1,0 +1,20 @@
+[
+  {
+    "id": "consolidating-project-memory-positive",
+    "kind": "application",
+    "input": "A task requiring Consolidating Project Memory",
+    "expectedEvidence": [
+      "Every summary has traceable sources.",
+      "Stale memory is excluded automatically.",
+      "Archive transcripts are never treated as authoritative state."
+    ],
+    "baselineFailure": "Saving model speculation as a decision."
+  },
+  {
+    "id": "consolidating-project-memory-anti-trigger",
+    "kind": "counter-example",
+    "input": "ephemeral reasoning has no future decision value",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

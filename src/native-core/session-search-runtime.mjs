@@ -1,0 +1,9 @@
+import { freeze, sha256 } from './native-runtime-utils.mjs';
+const publicText = (doc) => [doc.title, ...(Array.isArray(doc.messages) ? doc.messages.map((m) => m?.content) : [])].map((v) => String(v ?? '')).join('\n');
+const tokens = (value) => String(value).toLowerCase().match(/[\p{L}\p{N}_-]+/gu) ?? [];
+export class SessionSearchRuntime {
+  constructor({ maxDocuments = 1000 } = {}) { this.maxDocuments = maxDocuments; this.documents = new Map(); this.order = []; }
+  index(input = {}) { const sessionId = String(input.sessionId ?? '').trim(); if (!sessionId) throw new TypeError('sessionId is required'); const text = publicText(input); const row = freeze({ sessionId, profileId: String(input.profileId ?? ''), title: String(input.title ?? ''), text, terms: freeze([...new Set(tokens(text))]) }); if (!this.documents.has(sessionId)) this.order.push(sessionId); this.documents.set(sessionId, row); while (this.order.length > this.maxDocuments) this.documents.delete(this.order.shift()); return freeze({ sessionId, receiptSha256: sha256(row) }); }
+  search({ query, profileId = null, limit = 20 } = {}) { const requested = [...new Set(tokens(query))]; const items = [...this.documents.values()].filter((d) => !profileId || d.profileId === String(profileId)).map((d) => ({ sessionId: d.sessionId, profileId: d.profileId, title: d.title, score: requested.reduce((n, t) => n + (d.terms.includes(t) ? 1 : 0), 0), preview: d.text.slice(0, 240) })).filter((d) => d.score > 0).sort((a, b) => b.score - a.score || a.sessionId.localeCompare(b.sessionId)).slice(0, Math.max(1, Math.min(100, Number(limit)))); const base = { schema: 'nolane.session-search.result.v1', query: String(query ?? ''), profileId, items }; return freeze({ ...base, items: freeze(items.map(freeze)), receiptSha256: sha256(base) }); }
+  snapshot() { return freeze({ schema: 'nolane.session-search.snapshot.v1', documents: this.documents.size }); }
+}

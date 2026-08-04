@@ -1,0 +1,20 @@
+[
+  {
+    "id": "certifying-release-evidence-positive",
+    "kind": "application",
+    "input": "A task requiring Certifying Release Evidence",
+    "expectedEvidence": [
+      "Archive can verify without a .git directory.",
+      "Evidence names exact source and archive digests.",
+      "Private signing material is not packaged."
+    ],
+    "baselineFailure": "Signing a report that does not bind archive bytes."
+  },
+  {
+    "id": "certifying-release-evidence-anti-trigger",
+    "kind": "counter-example",
+    "input": "an uncommitted experiment has no release subject",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

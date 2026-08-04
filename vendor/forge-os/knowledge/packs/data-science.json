@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.data-science",
+  "domain": "data-science",
+  "title": "Data Science Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "experiments",
+    "statistics",
+    "feature analysis",
+    "visualization",
+    "causal inference",
+    "bias",
+    "reproducibility",
+    "communication"
+  ],
+  "capabilities": [
+    "data-science.map-landscape",
+    "data-science.frame-problem",
+    "data-science.research-users",
+    "data-science.define-requirements",
+    "data-science.model-domain",
+    "data-science.compare-alternatives",
+    "data-science.design-concept",
+    "data-science.prototype-critical-flow",
+    "data-science.validate-prototype",
+    "data-science.design-architecture",
+    "data-science.model-data",
+    "data-science.model-threats",
+    "data-science.plan-delivery",
+    "data-science.implement-core",
+    "data-science.integrate-dependencies",
+    "data-science.verify-contracts",
+    "data-science.test-boundaries",
+    "data-science.test-resilience",
+    "data-science.test-performance",
+    "data-science.test-security",
+    "data-science.audit-accessibility",
+    "data-science.optimize-quality",
+    "data-science.optimize-cost",
+    "data-science.document-system",
+    "data-science.prepare-migration",
+    "data-science.plan-rollout",
+    "data-science.instrument-observability",
+    "data-science.operate-lifecycle",
+    "data-science.respond-incidents",
+    "data-science.govern-evolution",
+    "data-science.measure-outcomes",
+    "data-science.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "nvidia-skills",
+      "title": "NVIDIA Agent Skills",
+      "url": "https://github.com/NVIDIA/skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "Mixed",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

@@ -1,0 +1,308 @@
+{
+  "schemaVersion": 2,
+  "id": "designing-ci-cd",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Designing Ci Cd",
+    "description": "Use when designing ci cd within operations lifecycle boundaries, especially when does the artifact make the owned decision for designing ci cd explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "operations"
+    ],
+    "keywords": [
+      "designing-ci-cd",
+      "designing",
+      "ci",
+      "cd",
+      "within",
+      "operations",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require designing ci cd within operations lifecycle boundaries",
+      "the typed inputs for designing-ci-cd are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "verified-build",
+        "schema": "artifact://forgeos/verified-build/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "deployment-plan",
+        "schema": "artifact://forgeos/deployment-plan/v1"
+      },
+      {
+        "type": "operations-evidence",
+        "schema": "artifact://forgeos/operations-evidence/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for designing ci cd explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": [
+      "shell",
+      "container-runtime"
+    ]
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by designing ci cd.",
+        "evidence": "designing-ci-cd-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to designing ci cd.",
+        "evidence": "designing-ci-cd-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply designing ci cd only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "designing-ci-cd-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "designing-ci-cd-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if designing ci cd were incomplete or implemented incorrectly.",
+        "evidence": "designing-ci-cd-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for designing ci cd explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "designing-ci-cd-decision-table",
+      "designing-ci-cd-verification-report",
+      "designing-ci-cd-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "designing-ci-cd-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 660,
+    "hardTokens": 1047,
+    "outputReserveTokens": 261
+  },
+  "quality": {
+    "benchmarkIds": [
+      "designing-ci-cd-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "devops-sre.operate-lifecycle",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:designing-ci-cd",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "4dd53524a87898a17de5b34d5cd5f8f31630ff94b5e79f0bb1739285ba9e6697",
+        "bytes": 866,
+        "tokens": {
+          "gpt-5.6": 233,
+          "claude-opus-4.2": 244,
+          "gemini-3.0-pro": 223,
+          "qwen3.5-32b": 259
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "13ed309006626722be309ebbba2fd3492da08db532b2c4276ae70c1e83cc2358",
+        "bytes": 666,
+        "tokens": {
+          "gpt-5.6": 180,
+          "claude-opus-4.2": 188,
+          "gemini-3.0-pro": 171,
+          "qwen3.5-32b": 199
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "d94387290c8edfbf01f5238c79116766ebf5f19788ab01f7c38915b357686348",
+        "bytes": 291,
+        "tokens": {
+          "gpt-5.6": 79,
+          "claude-opus-4.2": 82,
+          "gemini-3.0-pro": 75,
+          "qwen3.5-32b": 87
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "045d7180d5b92c0f6cd53de4fb68da4a056a1c973b1b5bcf92657910ab64b064",
+        "bytes": 561,
+        "tokens": {
+          "gpt-5.6": 151,
+          "claude-opus-4.2": 159,
+          "gemini-3.0-pro": 144,
+          "qwen3.5-32b": 168
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "1d6cb0e3c1d92b5434e12d1e3382681f11954fcd117ab0a93fb5bfb30b6f9b64",
+        "bytes": 319,
+        "tokens": {
+          "gpt-5.6": 86,
+          "claude-opus-4.2": 90,
+          "gemini-3.0-pro": 82,
+          "qwen3.5-32b": 96
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "2c962f3fa7b5203931b881d93b623eb388aadb8e57a01daff5d46f89ade5a2d4",
+        "bytes": 229,
+        "tokens": {
+          "gpt-5.6": 62,
+          "claude-opus-4.2": 65,
+          "gemini-3.0-pro": 59,
+          "qwen3.5-32b": 69
+        }
+      }
+    ],
+    "indexSha256": "3a8fb715c1399f4d7c5c3d72534a824a2170953ce7933b3845bcf98904a2a004"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "44e78337ec40a2ecd5776371a6d33888a7345ff989583ba236db6d08133976da"
+}

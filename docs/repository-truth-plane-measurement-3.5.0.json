@@ -1,0 +1,92 @@
+{
+  "schema": "forge.studio.repository-truth-plane-measurement.v1",
+  "version": "3.5.0",
+  "promotedRequirementIds": [
+    "32.2",
+    "32.3",
+    "32.4",
+    "32.7",
+    "32.9",
+    "32.10",
+    "32.11",
+    "32.12",
+    "32.15",
+    "32.17",
+    "32.18"
+  ],
+  "workspace": {
+    "realGitRepository": true,
+    "branchDetected": true,
+    "worktreeDetected": true,
+    "dirtyStateDetected": true,
+    "editorOverlayIsolated": true
+  },
+  "architecture": {
+    "nodeKinds": [
+      "build-target",
+      "configuration",
+      "database-schema",
+      "domain",
+      "external-dependency",
+      "file",
+      "internal-api",
+      "layer",
+      "package",
+      "public-api",
+      "service",
+      "workspace"
+    ]
+  },
+  "symbols": {
+    "edgeKinds": [
+      "calls",
+      "defines",
+      "implements",
+      "reads",
+      "references",
+      "verifies",
+      "writes"
+    ]
+  },
+  "runtime": {
+    "edgeKinds": [
+      "controls",
+      "data-flow",
+      "event",
+      "process",
+      "reads",
+      "request",
+      "state",
+      "writes"
+    ]
+  },
+  "provenance": {
+    "allReturnedFactsCited": true,
+    "crossBranchFactRejected": true,
+    "sourceHashDriftInvalidated": true
+  },
+  "query": {
+    "stageOrder": [
+      "exact",
+      "lexical",
+      "ast-lsp",
+      "graph",
+      "git",
+      "test",
+      "semantic",
+      "runtime"
+    ],
+    "unavailableStagesExplicit": true
+  },
+  "viewer": {
+    "pageLoadedLessThanGraph": true,
+    "corruptCursorRejected": true
+  },
+  "boundaries": {
+    "externalGateCountChanged": false,
+    "comparativeSuperiorityClaimed": false,
+    "uncitedInferencePromoted": false,
+    "fullGraphLoadedForPage": false
+  },
+  "receiptSha256": "8d2efaf24f9496a00993d4ff8d648ca11fb94b8121ed514e9df5a78d603af8e9"
+}

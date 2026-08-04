@@ -1,0 +1,307 @@
+{
+  "schemaVersion": 2,
+  "id": "analyzing-competing-products",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Analyzing Competing Products",
+    "description": "Use when analyzing competing products within research lifecycle boundaries, especially when does the artifact make the owned decision for analyzing competing products explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "research"
+    ],
+    "keywords": [
+      "analyzing-competing-products",
+      "analyzing",
+      "competing",
+      "products",
+      "within",
+      "research",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require analyzing competing products within research lifecycle boundaries",
+      "the typed inputs for analyzing-competing-products are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "confirmed-intent",
+        "schema": "artifact://forgeos/confirmed-intent/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "research-evidence",
+        "schema": "artifact://forgeos/research-evidence/v1"
+      },
+      {
+        "type": "problem-discovery",
+        "schema": "artifact://forgeos/problem-discovery/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for analyzing competing products explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [
+      "web-search"
+    ],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by analyzing competing products.",
+        "evidence": "analyzing-competing-products-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to analyzing competing products.",
+        "evidence": "analyzing-competing-products-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply analyzing competing products only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "analyzing-competing-products-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "analyzing-competing-products-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if analyzing competing products were incomplete or implemented incorrectly.",
+        "evidence": "analyzing-competing-products-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for analyzing competing products explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "analyzing-competing-products-decision-table",
+      "analyzing-competing-products-verification-report",
+      "analyzing-competing-products-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "analyzing-competing-products-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 711,
+    "hardTokens": 1109,
+    "outputReserveTokens": 277
+  },
+  "quality": {
+    "benchmarkIds": [
+      "analyzing-competing-products-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "scientific-research.map-landscape",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:analyzing-competing-products",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "54615f519af1b5745b2bf246c45d8aa325f69c2ba4ee3ddc7d995c979878ec5d",
+        "bytes": 951,
+        "tokens": {
+          "gpt-5.6": 256,
+          "claude-opus-4.2": 268,
+          "gemini-3.0-pro": 244,
+          "qwen3.5-32b": 284
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "4e95232f48843bde68bdba9a2209f9bc2f3e81042cda3331e742e550dfcd4116",
+        "bytes": 718,
+        "tokens": {
+          "gpt-5.6": 194,
+          "claude-opus-4.2": 203,
+          "gemini-3.0-pro": 185,
+          "qwen3.5-32b": 215
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "c75c612f7bb3a63ccefcf139560d6fc623c97fe9aaf17bd5c242e2afe771a0ca",
+        "bytes": 304,
+        "tokens": {
+          "gpt-5.6": 82,
+          "claude-opus-4.2": 86,
+          "gemini-3.0-pro": 78,
+          "qwen3.5-32b": 91
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "cc0ee0bc505aa7931aa787d14bc4a05732d1020ad44dc95ae0e143fb3f14bb83",
+        "bytes": 613,
+        "tokens": {
+          "gpt-5.6": 165,
+          "claude-opus-4.2": 173,
+          "gemini-3.0-pro": 158,
+          "qwen3.5-32b": 183
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "f0090fac04ffee141f17fb0abfbce0226777b35cb606e064a8d3e853db4feeb3",
+        "bytes": 332,
+        "tokens": {
+          "gpt-5.6": 90,
+          "claude-opus-4.2": 94,
+          "gemini-3.0-pro": 86,
+          "qwen3.5-32b": 100
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "7abf098cfa617a7fb88327fd05d23128d9bd62395a40903ad678db31518f5d36",
+        "bytes": 242,
+        "tokens": {
+          "gpt-5.6": 66,
+          "claude-opus-4.2": 69,
+          "gemini-3.0-pro": 63,
+          "qwen3.5-32b": 73
+        }
+      }
+    ],
+    "indexSha256": "b6a65a321e2cb0e38750d8bcbd2ca1932038c213f5c2ab8a58808681fbc2a967"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "1f1ea2a56646227ee934bf87c6c17aac182539e29c27e23b78cd31b76048759e"
+}

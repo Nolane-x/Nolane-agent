@@ -1,0 +1,28 @@
+{
+  "schema": "nolane.small-model.bootstrap-tool-router-dataset-receipt.v1",
+  "datasetReceiptSha256": "a9aafbfd063368b5e9383c3bdfe9ebb4576de42e8158ca3b9a3b803a56a9366f",
+  "splitReceiptSha256": "47767be564b1536dad5695c6d798d35aa82292dfb24410c7afa9c0252bd93168",
+  "labels": [
+    "patch",
+    "read",
+    "rollback",
+    "search",
+    "stop",
+    "test"
+  ],
+  "variants": 30,
+  "counts": {
+    "total": 180,
+    "train": 108,
+    "validation": 36,
+    "heldOut": 36
+  },
+  "disjointBy": "scenarioGroup",
+  "groupCounts": {
+    "train": 18,
+    "validation": 6,
+    "heldOut": 6
+  },
+  "hiddenChainOfThoughtStored": false,
+  "receiptSha256": "6c1155dd9677b63bfbe6e178cd6d3a757021225a93406d88c8ba5c17b090ea9c"
+}

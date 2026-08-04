@@ -1,0 +1,143 @@
+{
+  "name": "planning-performance-budgets",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "architecture",
+  "domain": null,
+  "status": "candidate",
+  "stages": [
+    "architecture"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "system-boundaries",
+    "product-definition"
+  ],
+  "produces": [
+    "architecture-decision"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:architecture-decision"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/architecture.md",
+  "method": {
+    "focus": "planning performance budgets within architecture lifecycle boundaries",
+    "source": "generated-specific",
+    "steps": [
+      "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by planning performance budgets.",
+      "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to planning performance budgets.",
+      "Apply planning performance budgets only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+      "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+      "Create reproducible checks that would fail if planning performance budgets were incomplete or implemented incorrectly."
+    ],
+    "verification": [
+      "Does the artifact make the owned decision for planning performance budgets explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "evidence": [
+      "planning-performance-budgets-decision-table",
+      "planning-performance-budgets-verification-report",
+      "planning-performance-budgets-handoff-envelope"
+    ],
+    "traps": [
+      "treating planning performance budgets as a naming exercise",
+      "covering only the happy path",
+      "creating extension points without a current contract or consumer"
+    ]
+  },
+  "procedure": [
+    "Read product capabilities, quality attributes, and domain constraints.",
+    "Define boundaries and stable contracts before implementation details.",
+    "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by planning performance budgets.",
+    "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to planning performance budgets.",
+    "Apply planning performance budgets only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+    "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+    "Create reproducible checks that would fail if planning performance budgets were incomplete or implemented incorrectly.",
+    "Model data, failures, extension points, and operational behavior.",
+    "Evaluate at least two viable alternatives and trade-offs.",
+    "Threat-model the selected design and its dependencies.",
+    "Publish an architecture decision with validation evidence."
+  ],
+  "gate": {
+    "reviewerRole": "independent-reviewer",
+    "rules": [
+      "The output directly and completely performs planning performance budgets within its declared boundary.",
+      "Does the artifact make the owned decision for planning performance budgets explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "architecture-decision"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "planning-performance-budgets-decision-table",
+      "planning-performance-budgets-verification-report",
+      "planning-performance-budgets-handoff-envelope"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1920,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "treating planning performance budgets as a naming exercise",
+    "covering only the happy path",
+    "creating extension points without a current contract or consumer"
+  ],
+  "optionalConsumes": [
+    "ux-contract",
+    "domain-blueprint"
+  ],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when planning performance budgets is required during architecture work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

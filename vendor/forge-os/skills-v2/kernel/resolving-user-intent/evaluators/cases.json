@@ -1,0 +1,20 @@
+[
+  {
+    "id": "resolving-user-intent-positive",
+    "kind": "application",
+    "input": "A task requiring Resolving User Intent",
+    "expectedEvidence": [
+      "No material assumption is silently invented.",
+      "Every success measure is observable.",
+      "Scope, non-goals, constraints, and decision owners are explicit."
+    ],
+    "baselineFailure": "Treating chat history as confirmed intent."
+  },
+  {
+    "id": "resolving-user-intent-anti-trigger",
+    "kind": "counter-example",
+    "input": "a fully specified deterministic command",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

@@ -1,0 +1,154 @@
+{
+  "name": "designing-interactive-3d-experiences",
+  "version": "0.2.0",
+  "kind": "domain",
+  "pack": "domain",
+  "domain": "interactive-3d",
+  "status": "candidate",
+  "stages": [
+    "product-definition",
+    "ux-design",
+    "architecture",
+    "planning",
+    "implementation",
+    "verification",
+    "release-readiness"
+  ],
+  "domains": [
+    "interactive-3d"
+  ],
+  "consumes": [
+    "product-definition"
+  ],
+  "produces": [
+    "domain-blueprint",
+    "domain-evidence"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:domain-blueprint",
+    "downstream:domain-evidence"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/domains/interactive-3d.md",
+  "method": {
+    "focus": "design an interactive 3D experience with explicit runtime, input, accessibility, asset, and device constraints",
+    "steps": [
+      "Define the user goal, interaction model, supported devices, input methods, comfort constraints, and a non-3D fallback.",
+      "Specify scene graph, coordinate conventions, asset provenance, level-of-detail policy, loading states, and interaction affordances.",
+      "Set measurable budgets for startup, frame time, memory, geometry, textures, draw calls, and network payload by target class.",
+      "Design navigation, focus, keyboard or assistive alternatives, motion reduction, camera behavior, and error recovery before implementation.",
+      "Deliver an experience contract, representative scene specification, budget table, fallback design, and assumptions requiring runtime validation."
+    ],
+    "verification": [
+      "Is every primary task possible through the declared supported input methods?",
+      "Do geometry, texture, startup, memory, and frame budgets name a target device class?",
+      "Is there a usable fallback when WebGL, GPU, motion, or large assets are unavailable?",
+      "Are source licenses and coordinate conventions recorded before assets are integrated?"
+    ],
+    "evidence": [
+      "interactive-3d experience contract",
+      "scene and input specification",
+      "performance budget table",
+      "fallback and asset provenance review"
+    ],
+    "traps": [
+      "assuming a design file proves runtime performance",
+      "requiring motion when a reduced-motion path is needed",
+      "shipping unlicensed models or textures"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Read the confirmed product definition, domain context, assurance profile, and active findings.",
+    "Identify the domain objects, actors, state transitions, regulations, provider boundaries, and operational constraints owned by this skill.",
+    "Define the user goal, interaction model, supported devices, input methods, comfort constraints, and a non-3D fallback.",
+    "Specify scene graph, coordinate conventions, asset provenance, level-of-detail policy, loading states, and interaction affordances.",
+    "Set measurable budgets for startup, frame time, memory, geometry, textures, draw calls, and network payload by target class.",
+    "Design navigation, focus, keyboard or assistive alternatives, motion reduction, camera behavior, and error recovery before implementation.",
+    "Deliver an experience contract, representative scene specification, budget table, fallback design, and assumptions requiring runtime validation.",
+    "Model normal, boundary, failure, recovery, permission, concurrency, migration, and abuse behavior before implementation.",
+    "Define stable contracts and explicit non-goals; do not leak domain concerns into unrelated modules.",
+    "Create executable acceptance, negative, resilience, and compatibility checks proportional to risk.",
+    "Publish the domain artifact, evidence packet, unresolved assumptions, and downstream invalidations."
+  ],
+  "gate": {
+    "reviewerRole": "interactive-3d-reviewer",
+    "rules": [
+      "The output directly and completely performs designing interactive 3d experiences within its declared boundary.",
+      "Is every primary task possible through the declared supported input methods?",
+      "Do geometry, texture, startup, memory, and frame budgets name a target device class?",
+      "Is there a usable fallback when WebGL, GPU, motion, or large assets are unavailable?",
+      "Are source licenses and coordinate conventions recorded before assets are integrated?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "domain-blueprint",
+        "domain-evidence"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "interactive-3d experience contract",
+      "scene and input specification",
+      "performance budget table",
+      "fallback and asset provenance review"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1975,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "assuming a design file proves runtime performance",
+    "requiring motion when a reduced-motion path is needed",
+    "shipping unlicensed models or textures"
+  ],
+  "optionalConsumes": [
+    "architecture-decision",
+    "verified-build"
+  ],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when designing interactive 3d experiences is required during interactive-3d product work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

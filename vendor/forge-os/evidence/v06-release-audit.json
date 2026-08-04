@@ -1,0 +1,2243 @@
+{
+  "schemaVersion": 1,
+  "version": "0.6.1",
+  "kernel": {
+    "total": 128,
+    "l0": 32,
+    "l1": 96,
+    "stable": 33,
+    "candidate": 95
+  },
+  "graph": {
+    "outcomes": 1024,
+    "techniques": 128,
+    "evaluators": 128
+  },
+  "review": {
+    "schemaVersion": 1,
+    "cases": 12,
+    "fileCoverage": 1,
+    "anchorAccuracy": 1,
+    "precision": 1,
+    "noisyCommentRate": 0,
+    "corpusSha256": "09bd89e8599185e581742e1d8913ee825845bb7ff4de2987a35fe12f5f1ad64a",
+    "reportSha256": "cf016afbf405f35bb78d1248ceeed48405cd94708299d2e1763e6bee1feebec4",
+    "groundTruth": "deterministic-conformance-corpus",
+    "expertLabeledRepositories": false
+  },
+  "security": {
+    "schemaVersion": 1,
+    "cases": 20,
+    "passed": 20,
+    "missed": 0,
+    "results": [
+      {
+        "id": "AS-001",
+        "expected": "prompt-injection",
+        "detected": true
+      },
+      {
+        "id": "AS-002",
+        "expected": "secret-exfiltration",
+        "detected": true
+      },
+      {
+        "id": "AS-003",
+        "expected": "pipe-to-shell",
+        "detected": true
+      },
+      {
+        "id": "AS-004",
+        "expected": "secret-exfiltration",
+        "detected": true
+      },
+      {
+        "id": "AS-005",
+        "expected": "unsafe-mcp-description",
+        "detected": true
+      },
+      {
+        "id": "AS-006",
+        "expected": "broad-permission",
+        "detected": true
+      },
+      {
+        "id": "AS-007",
+        "expected": "broad-permission",
+        "detected": true
+      },
+      {
+        "id": "AS-008",
+        "expected": "package-lifecycle-script",
+        "detected": true
+      },
+      {
+        "id": "AS-009",
+        "expected": "pipe-to-shell",
+        "detected": true
+      },
+      {
+        "id": "AS-010",
+        "expected": "secret-reference",
+        "detected": true
+      },
+      {
+        "id": "AS-011",
+        "expected": "secret-reference",
+        "detected": true
+      },
+      {
+        "id": "AS-012",
+        "expected": "prompt-injection",
+        "detected": true
+      },
+      {
+        "id": "AS-013",
+        "expected": "prompt-injection",
+        "detected": true
+      },
+      {
+        "id": "AS-014",
+        "expected": "secret-exfiltration",
+        "detected": true
+      },
+      {
+        "id": "AS-015",
+        "expected": "broad-permission",
+        "detected": true
+      },
+      {
+        "id": "AS-016",
+        "expected": "package-lifecycle-script",
+        "detected": true
+      },
+      {
+        "id": "AS-017",
+        "expected": "pipe-to-shell",
+        "detected": true
+      },
+      {
+        "id": "AS-018",
+        "expected": "secret-reference",
+        "detected": true
+      },
+      {
+        "id": "AS-019",
+        "expected": "unsafe-mcp-description",
+        "detected": true
+      },
+      {
+        "id": "AS-020",
+        "expected": "broad-permission",
+        "detected": true
+      }
+    ],
+    "corpusSha256": "5e47938c4fa5c895034b18954462fe79faaaf9b5dd9c403cba976cde6163b6c0",
+    "reportSha256": "4dbd1efe2fd47669361165891fdff2e87e3410d2e15685fe295f42f8b2af03b8"
+  },
+  "quality": {
+    "minimumDepthScore": 95,
+    "medianDepthScore": 95,
+    "invalidDepth": 0,
+    "invalidDepthSkills": [],
+    "maximumBoilerplateRatio": 0,
+    "boilerplateViolations": 0,
+    "boilerplateViolationSkills": []
+  },
+  "stableMaterialization": {
+    "total": 33,
+    "passed": 33,
+    "failed": 0,
+    "failures": []
+  },
+  "certification": {
+    "schemaVersion": 1,
+    "auditId": "forgeos-v06-final-skill-certification",
+    "criteriaProfile": "forgeos-skill-intelligence-blueprint-revision-2",
+    "inventory": {
+      "totalTechniques": 128,
+      "declaredCandidate": 95,
+      "declaredValidated": 0,
+      "declaredStable": 33,
+      "declaredCertified": 0
+    },
+    "packageEvidence": {
+      "withRedBaseline": 98,
+      "withEvaluatorBinding": 128,
+      "stableWithAtLeastTwentyPublicScenarios": 0,
+      "stableScenarioDeficits": [
+        {
+          "id": "benchmarking-skill-utility",
+          "observed": 2,
+          "required": 20
+        },
+        {
+          "id": "choosing-system-architecture",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "compiling-context-pack",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "constructing-idea-genomes",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "defining-minimum-viable-product",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "designing-api-contracts",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "designing-api-versioning",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "designing-idempotent-automations",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "designing-interaction-contracts",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "designing-model-routing",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "designing-saas-tenancy",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "detecting-fake-novelty",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "developing-features-with-tdd",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "fuzzing-untrusted-inputs",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "generating-divergent-concepts",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "managing-artifact-lineage",
+          "observed": 2,
+          "required": 20
+        },
+        {
+          "id": "measuring-mutation-resistance",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "modeling-security-threats",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "optimizing-context-budget",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "packaging-release-evidence",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "resolving-user-intent",
+          "observed": 2,
+          "required": 20
+        },
+        {
+          "id": "reviewing-critical-code-line-by-line",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "routing-skill-graph",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "running-security-release-gate",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "selecting-winning-concept",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "testing-agent-tool-abuse",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "testing-cost-abuse",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "testing-properties-and-invariants",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "testing-skill-behavior",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "using-forge-os",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "validating-source-credibility",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "writing-executable-plans",
+          "observed": 0,
+          "required": 20
+        },
+        {
+          "id": "writing-minimal-sufficient-code",
+          "observed": 0,
+          "required": 20
+        }
+      ],
+      "hiddenHoldoutRunReceipts": 0,
+      "multiModelPairedRunReceipts": 0,
+      "independentCertificationReceipts": 0,
+      "productionEvidenceReceipts": 0,
+      "pairedRunCountProven": 0
+    },
+    "evidenceQualified": {
+      "stable": 0,
+      "certified": 0
+    },
+    "kernel": {
+      "l0Total": 32,
+      "l0MeetingFiftyScenarioThreshold": 0,
+      "l0ScenarioDeficits": [
+        {
+          "id": "auditing-agent-actions",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "benchmarking-skill-utility",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "binding-approvals-to-actions",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "calibrating-token-estimates",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "certifying-release-evidence",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "compiling-global-context",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "composing-technique-workflows",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "consolidating-project-memory",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "decomposing-multi-domain-work",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "detecting-semantic-duplication",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "detecting-skill-regression",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "distilling-tool-output",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "enforcing-context-budgets",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "enforcing-review-separation",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "expiring-stale-skills",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "explaining-route-decisions",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "invalidating-dependent-proof",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "issuing-trusted-execution-receipts",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "learning-from-agent-failures",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "managing-artifact-lineage",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "planning-parallel-agent-work",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "projecting-artifact-deltas",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "promoting-skill-providers",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "recovering-interrupted-runs",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "resolving-skill-conflicts",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "resolving-user-intent",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "retrieving-semantic-code-symbols",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "routing-capability-graph",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "selecting-minimum-provider-set",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "selecting-skill-sections",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "validating-evidence-freshness",
+          "observed": 2,
+          "required": 50
+        },
+        {
+          "id": "writing-agent-skills-with-tdd",
+          "observed": 2,
+          "required": 50
+        }
+      ],
+      "allL0Certified": false
+    },
+    "claims": {
+      "allKernelStableOrCertified": false,
+      "allProceduralSkillsProductionGrade": false,
+      "oneThousandTwentyFourProceduralSkillsProductionGrade": false,
+      "tenThousandPairedRunsCompleted": false,
+      "runtimeHardeningCanBePublishedWithExplicitClaimsBoundary": true
+    },
+    "blockers": [
+      {
+        "code": "stable-public-scenarios-insufficient",
+        "count": 33,
+        "detail": "Stable requires at least 20 scenarios including holdout and transfer evidence."
+      },
+      {
+        "code": "l0-fifty-scenario-threshold-unmet",
+        "count": 32,
+        "detail": "Every L0 kernel technique requires at least 50 scenarios."
+      },
+      {
+        "code": "hidden-holdout-missing",
+        "count": 128,
+        "detail": "No package-bound hidden holdout run receipts were found."
+      },
+      {
+        "code": "multi-model-paired-runs-missing",
+        "count": 128,
+        "detail": "Declared model compatibility is not a paired multi-model evaluation receipt."
+      },
+      {
+        "code": "independent-certification-review-missing",
+        "count": 128,
+        "detail": "No independent maintainer/domain certification receipt is packaged."
+      },
+      {
+        "code": "production-evidence-and-expiry-missing",
+        "count": 128,
+        "detail": "No production evidence plus certification expiry policy receipt is packaged."
+      },
+      {
+        "code": "ten-thousand-paired-runs-missing",
+        "count": 1,
+        "detail": "The release does not contain evidence of the 10,000 paired runs required for a production-grade 1,024-skill claim."
+      }
+    ],
+    "records": [
+      {
+        "id": "analyzing-competing-products",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "applying-cross-domain-analogies",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "assigning-agent-work",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "auditing-agent-actions",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "backcasting-from-the-future",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "benchmarking-skill-utility",
+        "maturity": "stable",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "v0.5 section and deterministic-execution migration; expanded hidden holdout remains scheduled."
+        ]
+      },
+      {
+        "id": "binding-approvals-to-actions",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "breaking-hidden-assumptions",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "building-evidence-backed-personas",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "calibrating-token-estimates",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "certifying-platform-adapters",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "certifying-release-evidence",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "choosing-deployment-strategy",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "choosing-system-architecture",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "classifying-delivery-risk",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "clustering-semantic-ideas",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "compiling-context-pack",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "compiling-global-context",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "composing-technique-workflows",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "compressing-project-artifacts",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "consolidating-project-memory",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "constructing-idea-genomes",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "controlling-code-complexity",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "deciding-release-scope",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "decomposing-bounded-contexts",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "decomposing-multi-domain-work",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "defining-domain-model",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "defining-error-budget-policy",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "defining-minimum-viable-product",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "defining-product-non-goals",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "defining-product-north-star",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "defining-product-thesis",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "defining-service-objectives",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "designing-api-contracts",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "designing-api-versioning",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "designing-ci-cd",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "designing-data-migrations",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "designing-data-model",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "designing-event-contracts",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "designing-extension-points",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "designing-idempotent-automations",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "designing-information-architecture",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "designing-integration-tests",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "designing-interaction-contracts",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "designing-interface-system",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "designing-invisible-interfaces",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "designing-model-routing",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "designing-product-pricing",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "designing-responsive-experiences",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "designing-saas-tenancy",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "designing-unit-tests",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "detecting-fake-novelty",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "detecting-semantic-duplication",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "detecting-skill-regression",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "developing-features-with-tdd",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "distilling-tool-output",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "documenting-public-interfaces",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "eliciting-user-workflows",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "enforcing-accessibility",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "enforcing-context-budgets",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "enforcing-domain-language",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "enforcing-review-separation",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "evolving-skill-packs",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "expiring-stale-skills",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "explaining-route-decisions",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "exploring-edge-users",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "extracting-user-pain",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "fixing-bugs-with-tdd",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "fuzzing-untrusted-inputs",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "generating-divergent-concepts",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "handling-uncertainty",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "identifying-market-shifts",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "implementing-contract-first",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "invalidating-dependent-proof",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "isolating-development-work",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "issuing-trusted-execution-receipts",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "learning-from-agent-failures",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "maintaining-prior-art-map",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "managing-artifact-lineage",
+        "maturity": "stable",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "v0.5 section and deterministic-execution migration; expanded hidden holdout remains scheduled."
+        ]
+      },
+      {
+        "id": "managing-change-impact",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "managing-project-state",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "managing-software-dependencies",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "mapping-business-model",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "mapping-existing-solutions",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "measuring-mutation-resistance",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "modeling-security-threats",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "monitoring-post-release",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "optimizing-context-budget",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "packaging-release-evidence",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "planning-incident-response",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "planning-parallel-agent-work",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "projecting-artifact-deltas",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "promoting-skill-providers",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "protecting-secrets",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "recovering-interrupted-runs",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "rehearsing-data-migrations",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "requesting-human-decisions",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "resolving-skill-conflicts",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "resolving-user-intent",
+        "maturity": "stable",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "v0.5 section and deterministic-execution migration; expanded hidden holdout remains scheduled."
+        ]
+      },
+      {
+        "id": "retrieving-semantic-code-symbols",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "reviewing-critical-code-line-by-line",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "reviewing-data-privacy",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "reviewing-secure-design",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "routing-capability-graph",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "routing-skill-graph",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "running-controlled-chaos",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "running-differential-tests",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "running-security-release-gate",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "sandboxing-untrusted-execution",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "scanning-dependency-vulnerabilities",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "securing-software-supply-chain",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "selecting-minimum-provider-set",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "selecting-skill-sections",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "selecting-winning-concept",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "testing-accessibility",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "testing-agent-tool-abuse",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "testing-concurrent-behavior",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "testing-cost-abuse",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "testing-data-integrity",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "testing-end-to-end-flows",
+        "maturity": "candidate",
+        "kernelLevel": "L1",
+        "publicScenarios": 6,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+        ]
+      },
+      {
+        "id": "testing-properties-and-invariants",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "testing-skill-behavior",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "using-forge-os",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "validating-evidence-freshness",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "validating-source-credibility",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "writing-agent-skills-with-tdd",
+        "maturity": "candidate",
+        "kernelLevel": "L0",
+        "publicScenarios": 2,
+        "redBaseline": true,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+        ]
+      },
+      {
+        "id": "writing-executable-plans",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      },
+      {
+        "id": "writing-minimal-sufficient-code",
+        "maturity": "stable",
+        "kernelLevel": "L1",
+        "publicScenarios": 0,
+        "redBaseline": false,
+        "evaluatorBindings": 1,
+        "independentReviewDeclared": true,
+        "compatibleModelFamiliesDeclared": 3,
+        "knownLimitations": [
+          "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+        ]
+      }
+    ],
+    "reportSha256": "68af8504f70a7ff824468c098b3a9554271c55d7a10df20d234531ed2e6ff989"
+  },
+  "features": {
+    "executionGraph": true,
+    "fencedCoverageLedger": true,
+    "codeReviewVerticalSlice": true,
+    "continuousLearningQuarantine": true,
+    "harnessRuntimeV2": true,
+    "agentSurfaceSecurity": true,
+    "globalContextKernelV2": true,
+    "brokeredLocalProcessRunner": true
+  },
+  "claims": {
+    "proceduralSkillsProductionGrade1024": false,
+    "fullPostgresLifecycleHA": false,
+    "universalMicroVmSandbox": false,
+    "expertLabeledCodeReviewBenchmark": false,
+    "tenThousandPairedRuns": false,
+    "allKernelStableOrCertified": false
+  },
+  "reportSha256": "26b9a052d4344011b27af7056c6de0dbee2689b133a0aad66aad468d51be4847"
+}

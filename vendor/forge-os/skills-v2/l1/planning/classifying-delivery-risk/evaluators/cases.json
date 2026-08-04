@@ -1,0 +1,38 @@
+[
+  {
+    "id": "classifying-delivery-risk-application",
+    "kind": "application",
+    "input": "Task directly requiring classifying delivery risk within planning lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "classifying-delivery-risk-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require classifying delivery risk within planning lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "classifying-delivery-risk-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "classifying-delivery-risk-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "classifying-delivery-risk-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "classifying-delivery-risk-transfer",
+    "kind": "transfer",
+    "input": "Apply the classifying-delivery-risk mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

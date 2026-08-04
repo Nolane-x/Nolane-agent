@@ -1,0 +1,289 @@
+{
+  "schemaVersion": 2,
+  "id": "designing-api-versioning",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "stable",
+  "identity": {
+    "title": "Designing Api Versioning",
+    "description": "Use when evolve public API behavior without surprising existing consumers, especially when can an old client parse and correctly interpret the new response?.",
+    "domains": [
+      "api-products"
+    ],
+    "subdomains": [
+      "domain"
+    ],
+    "keywords": [
+      "designing-api-versioning",
+      "evolve",
+      "public",
+      "API",
+      "behavior",
+      "without",
+      "surprising",
+      "existing",
+      "consumers"
+    ],
+    "antiTriggers": [
+      "a private API with no compatibility obligation",
+      "a one-time data migration without an interface contract"
+    ]
+  },
+  "relations": {
+    "requires": [
+      "product-definition"
+    ],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "product-definition",
+        "schema": "artifact://forgeos/product-definition/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "domain-blueprint",
+        "schema": "artifact://forgeos/domain-blueprint/v1"
+      },
+      {
+        "type": "domain-evidence",
+        "schema": "artifact://forgeos/domain-evidence/v1"
+      }
+    ],
+    "invariants": [
+      "Output remains within the designing-api-versioning responsibility boundary",
+      "Every pass claim is backed by current trusted evidence"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Classify compatibility across syntax, semantics, errors, defaults, performance, and side effects.",
+        "evidence": "versioning policy"
+      },
+      {
+        "id": "step-2",
+        "action": "Choose versioning surface and support window from consumer deployment realities.",
+        "evidence": "consumer contract suite"
+      },
+      {
+        "id": "step-3",
+        "action": "Design additive evolution rules and explicit breaking-change triggers.",
+        "evidence": "compatibility diff"
+      },
+      {
+        "id": "step-4",
+        "action": "Run recorded consumer contracts against current and candidate implementations.",
+        "evidence": "migration guide"
+      },
+      {
+        "id": "step-5",
+        "action": "Publish migration tooling, deprecation telemetry, communication, and rollback policy.",
+        "evidence": "migration guide"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required tool, input, or approval is unavailable",
+        "action": "stop and record a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Can an old client parse and correctly interpret the new response?",
+      "Did an error code, default, ordering, or rate limit change semantically?",
+      "Can consumers discover deprecation before failure?",
+      "Is the old version operable through the migration window?"
+    ],
+    "reviewerRole": "api-products-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "versioning policy",
+      "consumer contract suite",
+      "compatibility diff",
+      "migration guide"
+    ],
+    "evaluatorIds": [
+      "designing-api-versioning-evaluator"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 713,
+    "hardTokens": 1132,
+    "outputReserveTokens": 283
+  },
+  "quality": {
+    "benchmarkIds": [
+      "v04-designing-api-versioning-behavior"
+    ],
+    "minimumSkillDepthScore": 82,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2"
+  ],
+  "capabilityMappings": [
+    {
+      "capabilityId": "api-integration.govern-evolution",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:designing-api-versioning",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "api-integration.prepare-migration",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:designing-api-versioning",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.designing-api-versioning",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:designing-api-versioning",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "8cbd16c8e0717e6dd95a31e1e2a17d303baaa4adfd64fb3591b230d23268b26a",
+        "bytes": 794,
+        "tokens": {
+          "gpt-5.6": 214,
+          "claude-opus-4.2": 224,
+          "gemini-3.0-pro": 204,
+          "qwen3.5-32b": 238
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "246927fa2ff50a9099342056c2e911957932291c773f944d44eae0fc238d421d",
+        "bytes": 1117,
+        "tokens": {
+          "gpt-5.6": 301,
+          "claude-opus-4.2": 315,
+          "gemini-3.0-pro": 287,
+          "qwen3.5-32b": 334
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "f9bfe6ef36de59d9db6341e6221b617221c90ebbc72b538c413f967f5f21581a",
+        "bytes": 346,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 98,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 104
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "916bb69bdc168c21d0e0388cdbc63622cb6143e2e5bcc5633203f5dbb4eea600",
+        "bytes": 377,
+        "tokens": {
+          "gpt-5.6": 102,
+          "claude-opus-4.2": 107,
+          "gemini-3.0-pro": 97,
+          "qwen3.5-32b": 113
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "caff4033e8fec9706303fbee6387e9fa590597395a41af0b405c96bff1321d9b",
+        "bytes": 262,
+        "tokens": {
+          "gpt-5.6": 71,
+          "claude-opus-4.2": 74,
+          "gemini-3.0-pro": 68,
+          "qwen3.5-32b": 79
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "45041eeae7761cf8ffa8ba9d38f57a5a4e4ec911f922543403d12ceedc916d1b",
+        "bytes": 349,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 99,
+          "gemini-3.0-pro": 90,
+          "qwen3.5-32b": 105
+        }
+      }
+    ],
+    "indexSha256": "5325f7af9c83d405fa79657c43a884444a86351c4b0a83b9b1083bf3d2768a45"
+  },
+  "manifestSha256": "3f0812355bf04387c866dd0e1e70e937e6b9177c753261bbf6463f5131c73af8",
+  "kernelLevel": "L1"
+}

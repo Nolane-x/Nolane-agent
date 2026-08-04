@@ -1,0 +1,57 @@
+{
+  "schema": "forge.studio.world-development-measurement.v1",
+  "version": "3.5.0",
+  "worldModel": {
+    "modelSelected": true,
+    "simulationChosen": true,
+    "boundedHorizon": true,
+    "multipleRollouts": true,
+    "realProbeFallback": true,
+    "verifiedOutcomeOnly": true
+  },
+  "counterfactual": {
+    "alternativesCompared": true,
+    "unreliablePruned": true,
+    "decisionDeltaExtracted": true,
+    "blastRadiusMeasured": true,
+    "rollbackFeasibilityMeasured": true,
+    "cacheHit": true,
+    "cacheInvalidated": true,
+    "observedValidationBound": true,
+    "noCommitBoundary": true
+  },
+  "selfModel": {
+    "unverifiedRejected": true,
+    "capabilityUpdated": true,
+    "limitsTracked": true,
+    "toolTrustUpdated": true,
+    "responsibilityBound": true,
+    "selfDeclaredCapabilityAccepted": false
+  },
+  "development": {
+    "zpdSelected": true,
+    "teacherChallengeBounded": true,
+    "noveltyBlocked": true,
+    "stageAdvancedWithHeldOut": true,
+    "futureSelfRequired": true,
+    "productionPromotionAllowed": false,
+    "automaticCoreRewriteAllowed": false
+  },
+  "privacy": {
+    "rawPromptStored": false,
+    "rawOutputStored": false,
+    "chainOfThoughtStored": false,
+    "sourcePayloadStored": false
+  },
+  "composition": {
+    "appStaticImports": 154,
+    "appConstructors": 172
+  },
+  "boundaries": {
+    "productionPolicyPromotionCertified": false,
+    "autonomousSelfModificationCertified": false,
+    "openWorldLongTermLearningCertified": false,
+    "agiClaimed": false
+  },
+  "receiptSha256": "3013c70e402587365e883ced87ad736b97baa68f8b1eac7f05249360131cd4fa"
+}

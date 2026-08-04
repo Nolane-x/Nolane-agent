@@ -1,0 +1,306 @@
+{
+  "schemaVersion": 2,
+  "id": "enforcing-accessibility",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Enforcing Accessibility",
+    "description": "Use when enforcing accessibility within ux lifecycle boundaries, especially when does the artifact make the owned decision for enforcing accessibility explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "ux"
+    ],
+    "keywords": [
+      "enforcing-accessibility",
+      "enforcing",
+      "accessibility",
+      "within",
+      "ux",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require enforcing accessibility within ux lifecycle boundaries",
+      "the typed inputs for enforcing-accessibility are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "product-definition",
+        "schema": "artifact://forgeos/product-definition/v1"
+      },
+      {
+        "type": "user-workflows",
+        "schema": "artifact://forgeos/user-workflows/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "ux-contract",
+        "schema": "artifact://forgeos/ux-contract/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for enforcing accessibility explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": [
+      "browser"
+    ]
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by enforcing accessibility.",
+        "evidence": "enforcing-accessibility-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to enforcing accessibility.",
+        "evidence": "enforcing-accessibility-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply enforcing accessibility only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "enforcing-accessibility-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "enforcing-accessibility-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if enforcing accessibility were incomplete or implemented incorrectly.",
+        "evidence": "enforcing-accessibility-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for enforcing accessibility explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "enforcing-accessibility-decision-table",
+      "enforcing-accessibility-verification-report",
+      "enforcing-accessibility-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "enforcing-accessibility-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 686,
+    "hardTokens": 1079,
+    "outputReserveTokens": 269
+  },
+  "quality": {
+    "benchmarkIds": [
+      "enforcing-accessibility-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ux-research.research-users",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:enforcing-accessibility",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "fc23182a0f7a08f1b03297f79b73372b2da55d494208fc83321544680b421bb5",
+        "bytes": 898,
+        "tokens": {
+          "gpt-5.6": 242,
+          "claude-opus-4.2": 253,
+          "gemini-3.0-pro": 231,
+          "qwen3.5-32b": 269
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "8cf8ecc397147dcbf705fcb93c9f7ad37798a296e31ce24e7998b82c01b2a7b1",
+        "bytes": 698,
+        "tokens": {
+          "gpt-5.6": 188,
+          "claude-opus-4.2": 197,
+          "gemini-3.0-pro": 179,
+          "qwen3.5-32b": 209
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "1112513921346c62ef45bb2f2fb6412751e1b539d48c26e68d8376c02233046b",
+        "bytes": 299,
+        "tokens": {
+          "gpt-5.6": 81,
+          "claude-opus-4.2": 85,
+          "gemini-3.0-pro": 77,
+          "qwen3.5-32b": 90
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "8642146a632fde0ace0299f55eb585f5cefbb43e9ad4c1605bea1be006b045b2",
+        "bytes": 593,
+        "tokens": {
+          "gpt-5.6": 160,
+          "claude-opus-4.2": 168,
+          "gemini-3.0-pro": 153,
+          "qwen3.5-32b": 178
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "842c4cecbe2fc84e4866c0cc78db981cba60fa9dd5bd585ab23b58018a1cf646",
+        "bytes": 327,
+        "tokens": {
+          "gpt-5.6": 88,
+          "claude-opus-4.2": 93,
+          "gemini-3.0-pro": 84,
+          "qwen3.5-32b": 98
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "972d38a49cd0ba3fff90273f4f0ff94487328e37b68f17b43e00521d10ef26fb",
+        "bytes": 237,
+        "tokens": {
+          "gpt-5.6": 64,
+          "claude-opus-4.2": 67,
+          "gemini-3.0-pro": 61,
+          "qwen3.5-32b": 71
+        }
+      }
+    ],
+    "indexSha256": "3ca5ed0180c3e3caa226fe8b451e95cc55b647b2adddbb688fe6a57361224b78"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "afdfc853552283bcac92effee198102d1275c81db966635d918933b269c0efb9"
+}

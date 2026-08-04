@@ -1,0 +1,20 @@
+[
+  {
+    "id": "calibrating-token-estimates-positive",
+    "kind": "application",
+    "input": "A task requiring Calibrating Token Estimates",
+    "expectedEvidence": [
+      "Calibration cannot reduce safety below policy minimum.",
+      "p95 error is reported by model family.",
+      "Old model versions do not calibrate new versions silently."
+    ],
+    "baselineFailure": "Optimizing the mean while hiding large tail errors."
+  },
+  {
+    "id": "calibrating-token-estimates-anti-trigger",
+    "kind": "counter-example",
+    "input": "the provider exposes an exact offline tokenizer already in use",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

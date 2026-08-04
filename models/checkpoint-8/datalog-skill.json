@@ -1,0 +1,174 @@
+{
+  "schema": "nolane.small-model.constraint-skill.v1",
+  "id": "bounded-test-impact",
+  "version": "1",
+  "inductionEpisodeIds": [
+    "constraint-a",
+    "constraint-b"
+  ],
+  "inductionReceiptSha256": [
+    "3263c7291ea89770fe4d07ff22e4900c85b2258590e2426330d8c1e304f75797",
+    "3b84faa168f812e63c927d4757f509531f39fb4c98dac48fcdfc78930f9cf109"
+  ],
+  "sourceDomains": [
+    "checkpoint-8-ast-induction-a",
+    "checkpoint-8-ast-induction-b"
+  ],
+  "kind": "bounded-datalog",
+  "definition": {
+    "facts": [
+      {
+        "predicate": "depends",
+        "args": [
+          "unit",
+          "source"
+        ]
+      },
+      {
+        "predicate": "depends",
+        "args": [
+          "integration",
+          "unit"
+        ]
+      },
+      {
+        "predicate": "candidate",
+        "args": [
+          "unit"
+        ]
+      },
+      {
+        "predicate": "candidate",
+        "args": [
+          "full"
+        ]
+      },
+      {
+        "predicate": "blocked",
+        "args": [
+          "full"
+        ]
+      }
+    ],
+    "rules": [
+      {
+        "head": {
+          "predicate": "impacted",
+          "args": [
+            "?x",
+            "?y"
+          ]
+        },
+        "body": [
+          {
+            "predicate": "depends",
+            "args": [
+              "?x",
+              "?y"
+            ]
+          }
+        ]
+      },
+      {
+        "head": {
+          "predicate": "impacted",
+          "args": [
+            "?x",
+            "?z"
+          ]
+        },
+        "body": [
+          {
+            "predicate": "depends",
+            "args": [
+              "?x",
+              "?y"
+            ]
+          },
+          {
+            "predicate": "impacted",
+            "args": [
+              "?y",
+              "?z"
+            ]
+          }
+        ]
+      },
+      {
+        "head": {
+          "predicate": "allowed",
+          "args": [
+            "?x"
+          ]
+        },
+        "body": [
+          {
+            "predicate": "candidate",
+            "args": [
+              "?x"
+            ]
+          },
+          {
+            "predicate": "blocked",
+            "args": [
+              "?x"
+            ],
+            "negated": true
+          }
+        ]
+      }
+    ],
+    "query": {
+      "predicate": "allowed",
+      "args": [
+        "?test"
+      ]
+    },
+    "unsafeProbe": {
+      "facts": [],
+      "rules": [
+        {
+          "head": {
+            "predicate": "p",
+            "args": [
+              "?x"
+            ]
+          },
+          "body": [
+            {
+              "predicate": "q",
+              "args": [
+                "fixed"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "maxIterations": 20,
+    "maxFacts": 100
+  },
+  "verifierObligations": [
+    "deterministic-query-proof",
+    "stratified-negation",
+    "unsafe-probe-rejected",
+    "fact-and-iteration-budgets-enforced"
+  ],
+  "soundnessScope": [
+    "positive-ground-facts",
+    "safe-rules",
+    "stratified-negation",
+    "bounded-forward-chaining"
+  ],
+  "knownIncompleteness": [
+    "does-not-support-function-symbols",
+    "does-not-support-unstratified-negation"
+  ],
+  "hiddenChainOfThoughtStored": false,
+  "claims": {
+    "boundedConstraintSkill": true,
+    "generalCodingIntelligence": false,
+    "competitorSuperiority": false
+  },
+  "receiptSha256": "18ccc455ceea93c7d4969fb0c4497988d8b6ef073ebf3b521006eed42ae0c9f5"
+}

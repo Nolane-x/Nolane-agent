@@ -1,0 +1,20 @@
+[
+  {
+    "id": "expiring-stale-skills-positive",
+    "kind": "application",
+    "input": "A task requiring Expiring Stale Skills",
+    "expectedEvidence": [
+      "Expired providers cannot appear in executable bundles.",
+      "Routes explain freshness exclusion.",
+      "Revalidation preserves previous failure history."
+    ],
+    "baselineFailure": "Leaving stable status forever."
+  },
+  {
+    "id": "expiring-stale-skills-anti-trigger",
+    "kind": "counter-example",
+    "input": "the provider has a current immutable source and unexpired evaluation",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

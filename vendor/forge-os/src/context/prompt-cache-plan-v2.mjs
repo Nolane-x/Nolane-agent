@@ -1,0 +1,2 @@
+import {canonicalSha256} from '../core/canonical-json.mjs';
+export function compilePromptCachePlan({policyHashes=[],toolContractHashes=[],projectConventionHash,taskHash,deltaHashes=[],routePlanHash}={}){const stable={policyHashes:[...policyHashes].sort(),toolContractHashes:[...toolContractHashes].sort(),projectConventionHash};const dynamic={taskHash,deltaHashes:[...deltaHashes].sort(),routePlanHash};return Object.freeze({schemaVersion:1,stablePrefix:stable,dynamicTail:dynamic,stablePrefixSha256:canonicalSha256(stable),dynamicTailSha256:canonicalSha256(dynamic)});}

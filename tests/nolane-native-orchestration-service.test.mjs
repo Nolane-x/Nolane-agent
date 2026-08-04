@@ -1,0 +1,35 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtemp, mkdir, writeFile, rm, readFile } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import { NolaneNativeOrchestrationService } from '../src/nolane-native/orchestration-service.mjs';
+
+test('orchestration service production-wires skills, scoped subagents, gateway, messaging, scheduler and trajectories', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-orchestration-service-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const skillsRoot = path.join(root, 'skills');
+  await mkdir(path.join(skillsRoot, 'repair'), { recursive: true });
+  await writeFile(path.join(skillsRoot, 'repair', 'SKILL.md'), '# Repair\nRun focused tests.');
+  await writeFile(path.join(skillsRoot, 'repair', 'skill.json'), JSON.stringify({ schema: 'nolane.agent.skill.v1', id: 'repair', title: 'Repair', entrypoint: 'SKILL.md', capabilities: ['repo:read'] }));
+  const events = [];
+  const service = new NolaneNativeOrchestrationService({ dataDir: root, skillRoots: [skillsRoot], clock: () => 1000, eventSink: (event) => events.push(event) });
+  await service.open();
+  assert.deepEqual((await service.listSkills()).map((item) => item.id), ['repair']);
+  assert.match((await service.loadSkill('repair', { grantedCapabilities: ['repo:read'] })).receiptSha256, /^[a-f0-9]{64}$/);
+  const child = service.spawnSubagent({ missionId: 'm1', parentAgentId: 'root', agentId: 'child', objective: 'Inspect', parentCapabilities: ['repo:read'], delegatedCapabilities: ['repo:read'], allowedPaths: ['src/**'] });
+  assert.equal(child.status, 'running');
+  const handoff = service.completeSubagent('child', { summary: 'Found issue', evidence: [{ receiptSha256: 'a'.repeat(64) }], verified: true });
+  assert.match(handoff.handoffSha256, /^[a-f0-9]{64}$/);
+  assert.equal((await service.startGateway('local')).status, 'running');
+  const message = await service.sendMessage({ channel: 'mission:m1', text: 'ready', metadata: { missionId: 'm1' } });
+  assert.match(message.externalId, /^local-/);
+  await service.schedule({ id: 'j1', runAt: 900, task: { type: 'noop', payload: { missionId: 'm1' } } });
+  assert.equal((await service.runDue()).length, 1);
+  const trajectory = await service.appendTrajectory({ episodeId: 'e1', step: 1, state: { missionId: 'm1' }, action: { type: 'tool' }, effect: { status: 'pass' }, verifier: { valid: true, receiptSha256: 'b'.repeat(64) } });
+  assert.match(trajectory.recordSha256, /^[a-f0-9]{64}$/);
+  const exported = await service.exportTrajectories({ outputFile: path.join(root, 'export.jsonl') });
+  assert.equal(exported.records, 1);
+  assert.match(await readFile(path.join(root, 'export.jsonl'), 'utf8'), /"episodeId":"e1"/);
+  assert.ok(events.some((event) => event.type === 'nolane.orchestration.message'));
+});

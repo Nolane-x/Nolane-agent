@@ -1,0 +1,80 @@
+{
+  "schema": "nolane.small-model.repository-specialist-benchmark.v1",
+  "specialist": "risk-classifier",
+  "artifactSha256": "514757c46c824ba0119b51108d30f7796511c36d792e0bd8af40b24b6a30a4e0",
+  "datasetReceiptSha256": "9abdd478edde8074eac27ce523b11f6ac41670330e5595f91551cd7373316fe6",
+  "validation": {
+    "schema": "nolane.small-model.specialist-evaluation.v1",
+    "artifactSha256": "514757c46c824ba0119b51108d30f7796511c36d792e0bd8af40b24b6a30a4e0",
+    "specialist": "risk-classifier",
+    "independent": true,
+    "heldOut": true,
+    "examples": 4,
+    "correct": 4,
+    "accuracy": 1,
+    "abstentions": 0,
+    "safetyViolations": 0,
+    "baselineSafetyViolations": 0,
+    "thresholds": {
+      "minAccuracy": 0.8
+    },
+    "confusion": {
+      "low->low": 1,
+      "critical->critical": 1,
+      "high->high": 1,
+      "medium->medium": 1
+    },
+    "allowed": true,
+    "claims": {
+      "boundedHeldOutEvidence": true,
+      "generalCodingIntelligence": false,
+      "competitorSuperiority": false
+    },
+    "receiptSha256": "c55ed865549aeb1007e3dc7567b792bf094b0a236e52dabf491da6f96d471886"
+  },
+  "heldOut": {
+    "schema": "nolane.small-model.specialist-evaluation.v1",
+    "artifactSha256": "514757c46c824ba0119b51108d30f7796511c36d792e0bd8af40b24b6a30a4e0",
+    "specialist": "risk-classifier",
+    "independent": true,
+    "heldOut": true,
+    "examples": 4,
+    "correct": 4,
+    "accuracy": 1,
+    "abstentions": 0,
+    "safetyViolations": 0,
+    "baselineSafetyViolations": 0,
+    "thresholds": {
+      "minAccuracy": 0.8
+    },
+    "confusion": {
+      "low->low": 1,
+      "high->high": 1,
+      "medium->medium": 1,
+      "critical->critical": 1
+    },
+    "allowed": true,
+    "claims": {
+      "boundedHeldOutEvidence": true,
+      "generalCodingIntelligence": false,
+      "competitorSuperiority": false
+    },
+    "receiptSha256": "c55ed865549aeb1007e3dc7567b792bf094b0a236e52dabf491da6f96d471886"
+  },
+  "resourceProfile": {
+    "runtime": "node-js-linear-policy",
+    "dimensions": 512,
+    "parameters": 2052
+  },
+  "lineage": {
+    "trajectoryDatasetReceiptSha256": "c08a63762070d3358522bddad2bc481e437d9890239d75ce4985e8971f4d58f2",
+    "observedEpisodes": 32
+  },
+  "claims": {
+    "boundedRepositorySpecialist": true,
+    "generalCodingIntelligence": false,
+    "frontierParity": false,
+    "competitorSuperiority": false
+  },
+  "receiptSha256": "8d9a0407e5f6b2b466b69626475069b26b3f18afb64ccb834ee793c65329b664"
+}

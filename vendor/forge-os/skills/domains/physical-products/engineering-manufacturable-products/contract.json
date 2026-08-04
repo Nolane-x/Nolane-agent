@@ -1,0 +1,154 @@
+{
+  "name": "engineering-manufacturable-products",
+  "version": "0.2.0",
+  "kind": "domain",
+  "pack": "domain",
+  "domain": "physical-products",
+  "status": "candidate",
+  "stages": [
+    "product-definition",
+    "ux-design",
+    "architecture",
+    "planning",
+    "implementation",
+    "verification",
+    "release-readiness"
+  ],
+  "domains": [
+    "physical-products"
+  ],
+  "consumes": [
+    "product-definition"
+  ],
+  "produces": [
+    "domain-blueprint",
+    "domain-evidence"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:domain-blueprint",
+    "downstream:domain-evidence"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/domains/physical-products.md",
+  "method": {
+    "focus": "translate a product concept into a reviewable manufacturability package without authorizing procurement or fabrication",
+    "steps": [
+      "Define intended use, user environment, safety assumptions, functional requirements, measurable acceptance criteria, and excluded use cases.",
+      "Establish units, datum scheme, materials, interfaces, critical dimensions, tolerances, finish, serviceability, and revision control.",
+      "Perform design-for-manufacture and assembly review with supplier-process assumptions, tolerance-stack risks, tooling risks, and alternate components.",
+      "Create a controlled bill of materials, prototype plan, inspection plan, traceability needs, and test matrix for human engineering review.",
+      "Publish drawings or models, assumptions, risk register, review decisions, and the explicit approvals required before any build or purchase."
+    ],
+    "verification": [
+      "Are units, datums, tolerances, materials, and revision identifiers unambiguous?",
+      "Does the package separate preliminary supplier assumptions from quoted or approved production capability?",
+      "Can inspection verify each critical requirement with a named method?",
+      "Does it state that fabrication, procurement, and certification require authorized human decisions?"
+    ],
+    "evidence": [
+      "manufacturability specification",
+      "controlled BOM",
+      "tolerance and inspection plan",
+      "prototype risk register"
+    ],
+    "traps": [
+      "using approximate dimensions for safety-critical interfaces",
+      "assuming a CAD model is production-ready",
+      "placing orders or approving manufacture from an agent-generated draft"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Read the confirmed product definition, domain context, assurance profile, and active findings.",
+    "Identify the domain objects, actors, state transitions, regulations, provider boundaries, and operational constraints owned by this skill.",
+    "Define intended use, user environment, safety assumptions, functional requirements, measurable acceptance criteria, and excluded use cases.",
+    "Establish units, datum scheme, materials, interfaces, critical dimensions, tolerances, finish, serviceability, and revision control.",
+    "Perform design-for-manufacture and assembly review with supplier-process assumptions, tolerance-stack risks, tooling risks, and alternate components.",
+    "Create a controlled bill of materials, prototype plan, inspection plan, traceability needs, and test matrix for human engineering review.",
+    "Publish drawings or models, assumptions, risk register, review decisions, and the explicit approvals required before any build or purchase.",
+    "Model normal, boundary, failure, recovery, permission, concurrency, migration, and abuse behavior before implementation.",
+    "Define stable contracts and explicit non-goals; do not leak domain concerns into unrelated modules.",
+    "Create executable acceptance, negative, resilience, and compatibility checks proportional to risk.",
+    "Publish the domain artifact, evidence packet, unresolved assumptions, and downstream invalidations."
+  ],
+  "gate": {
+    "reviewerRole": "physical-products-reviewer",
+    "rules": [
+      "The output directly and completely performs engineering manufacturable products within its declared boundary.",
+      "Are units, datums, tolerances, materials, and revision identifiers unambiguous?",
+      "Does the package separate preliminary supplier assumptions from quoted or approved production capability?",
+      "Can inspection verify each critical requirement with a named method?",
+      "Does it state that fabrication, procurement, and certification require authorized human decisions?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "domain-blueprint",
+        "domain-evidence"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "manufacturability specification",
+      "controlled BOM",
+      "tolerance and inspection plan",
+      "prototype risk register"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 2004,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "using approximate dimensions for safety-critical interfaces",
+    "assuming a CAD model is production-ready",
+    "placing orders or approving manufacture from an agent-generated draft"
+  ],
+  "optionalConsumes": [
+    "architecture-decision",
+    "verified-build"
+  ],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when engineering manufacturable products is required during physical-products product work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

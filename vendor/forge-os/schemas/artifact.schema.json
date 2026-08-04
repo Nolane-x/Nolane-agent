@@ -1,0 +1,244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forgeos.dev/schemas/artifact.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "projectId",
+    "type",
+    "slot",
+    "schemaVersion",
+    "version",
+    "state",
+    "sha256",
+    "contentHash",
+    "envelopeHash",
+    "title",
+    "content",
+    "producedBy",
+    "consumes",
+    "dependencyHashes",
+    "decisions",
+    "residualRisks",
+    "evidence",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+    },
+    "projectId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+    },
+    "type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "slot": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "schemaVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "state": {
+      "enum": [
+        "draft",
+        "review",
+        "verified",
+        "superseded",
+        "invalidated"
+      ]
+    },
+    "sha256": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "contentHash": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "envelopeHash": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "producedBy": {
+      "type": "object",
+      "required": [
+        "skill",
+        "principalId",
+        "principalType",
+        "trustDomain"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "skill": {
+          "type": "string",
+          "minLength": 1
+        },
+        "skillRunId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "principalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9:._@/-]{0,159}$"
+        },
+        "principalType": {
+          "enum": [
+            "human",
+            "agent",
+            "service",
+            "system"
+          ]
+        },
+        "trustDomain": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        }
+      }
+    },
+    "consumes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+      },
+      "uniqueItems": true,
+      "maxItems": 200
+    },
+    "dependencyHashes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+      },
+      "uniqueItems": true,
+      "maxItems": 200
+    },
+    "residualRisks": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+      },
+      "uniqueItems": true,
+      "maxItems": 200
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+      },
+      "uniqueItems": true,
+      "maxItems": 500
+    },
+    "sourceIdeaId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "sourceIdeaSha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "supersedes": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "supersededBy": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "migration": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": true
+    },
+    "review": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": true
+    },
+    "verification": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": true
+    },
+    "invalidation": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": true
+    },
+    "createdAt": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    }
+  }
+}

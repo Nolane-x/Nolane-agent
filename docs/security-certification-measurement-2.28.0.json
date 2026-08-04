@@ -1,0 +1,48 @@
+{
+  "schema": "forge.studio.security-certification-measurement.v1",
+  "version": "2.28.0",
+  "security": {
+    "taintBlocked": true,
+    "promptQuarantined": true,
+    "dependencyQuarantined": true,
+    "exfiltrationBlocked": true,
+    "auditTamperDetected": true
+  },
+  "adversarial": {
+    "sandboxEscapeBlocked": true,
+    "failureRecovered": true,
+    "directHostFaultInjected": false
+  },
+  "certification": {
+    "comparableContractPassed": true,
+    "mismatchRejected": true,
+    "contaminationBlocked": true,
+    "evidenceBounded": true,
+    "fakeProviderExcluded": true,
+    "externalComparativeClaimAllowed": false
+  },
+  "surfaces": {
+    "httpBounded": true,
+    "webEvidenceOnly": true,
+    "vscodeBounded": true
+  },
+  "privacy": {
+    "rawPromptStored": false,
+    "rawOutputStored": false,
+    "secretMaterialStored": false,
+    "hiddenCaseContentStored": false
+  },
+  "composition": {
+    "appStaticImports": 154,
+    "appConstructors": 172
+  },
+  "boundaries": {
+    "realCompetitorRunsPresent": false,
+    "independentSuperiorityAttested": false,
+    "privateHeldOutSuiteCertified": false,
+    "directHostFaultCertificationComplete": false,
+    "platformMatrixCertified": false,
+    "comparativeSuperiorityClaimed": false
+  },
+  "receiptSha256": "0e5d74b7558f670b78d94d7cb91f3ba5767953586d20d9dafe73d76eddd2076b"
+}

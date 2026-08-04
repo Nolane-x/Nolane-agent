@@ -1,0 +1,38 @@
+[
+  {
+    "id": "planning-incident-response-application",
+    "kind": "application",
+    "input": "Task directly requiring planning incident response within security lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "planning-incident-response-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require planning incident response within security lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "planning-incident-response-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "planning-incident-response-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "planning-incident-response-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "planning-incident-response-transfer",
+    "kind": "transfer",
+    "input": "Apply the planning-incident-response mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

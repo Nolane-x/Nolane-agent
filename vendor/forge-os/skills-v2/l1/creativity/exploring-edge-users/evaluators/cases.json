@@ -1,0 +1,38 @@
+[
+  {
+    "id": "exploring-edge-users-application",
+    "kind": "application",
+    "input": "Task directly requiring exploring edge users within creativity lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "exploring-edge-users-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require exploring edge users within creativity lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "exploring-edge-users-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "exploring-edge-users-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "exploring-edge-users-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "exploring-edge-users-transfer",
+    "kind": "transfer",
+    "input": "Apply the exploring-edge-users mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

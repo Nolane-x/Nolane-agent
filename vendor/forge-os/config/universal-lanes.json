@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "lanes": [
+    {
+      "id": "strategy-and-research",
+      "title": "Strategy and research",
+      "summary": "Evidence-backed problem framing, market research, concept selection, and experiment design.",
+      "capabilityDomains": ["product-management", "ux-research", "scientific-research"],
+      "skillIds": ["scoping-product-research", "mapping-existing-solutions", "defining-product-thesis"],
+      "externalSourceIds": ["agentskills-spec", "superpowers"],
+      "executionBoundary": "verified-artifact"
+    },
+    {
+      "id": "product-ux-and-ui",
+      "title": "Product, UX, and UI",
+      "summary": "User workflows, interaction contracts, accessible interface systems, and visual review.",
+      "capabilityDomains": ["product-management", "ux-research", "ui-design"],
+      "skillIds": ["eliciting-user-workflows", "designing-interface-system", "designing-production-visual-systems"],
+      "externalSourceIds": ["agentskills-spec", "w3c-wcag", "vercel-agent-skills"],
+      "executionBoundary": "verified-artifact"
+    },
+    {
+      "id": "visual-media-and-3d",
+      "title": "Visual media and 3D",
+      "summary": "Production visual systems, interactive 3D experience design, and device-aware performance validation.",
+      "capabilityDomains": ["graphic-design", "motion-design", "industrial-design", "game-development"],
+      "skillIds": ["designing-production-visual-systems", "designing-interactive-3d-experiences", "testing-interactive-3d-performance"],
+      "externalSourceIds": ["vercel-agent-skills", "nvidia-skills"],
+      "executionBoundary": "verified-artifact"
+    },
+    {
+      "id": "software-and-platforms",
+      "title": "Software and platforms",
+      "summary": "Architecture, implementation, tests, integrations, and release evidence for digital products.",
+      "capabilityDomains": ["software-architecture", "backend-engineering", "frontend-engineering", "api-integration"],
+      "skillIds": ["choosing-system-architecture", "developing-features-with-tdd", "testing-service-contracts"],
+      "externalSourceIds": ["superpowers", "vercel-agent-skills"],
+      "executionBoundary": "verified-artifact"
+    },
+    {
+      "id": "data-and-ai",
+      "title": "Data and AI",
+      "summary": "Data systems, model routing, evaluation, cost control, and governed AI product behavior.",
+      "capabilityDomains": ["data-engineering", "data-science", "machine-learning", "ai-agent-engineering"],
+      "skillIds": ["designing-data-pipelines", "designing-model-routing", "evaluating-ai-quality"],
+      "externalSourceIds": ["agentskills-spec", "nvidia-skills"],
+      "executionBoundary": "human-approved-executor"
+    },
+    {
+      "id": "agents-and-automation",
+      "title": "Agents and automation",
+      "summary": "Bounded agent routing, idempotent automation, tool authority, and recovery-aware workflows.",
+      "capabilityDomains": ["ai-agent-engineering", "automation-robotics", "operations-leadership"],
+      "skillIds": ["routing-skill-graph", "designing-idempotent-automations", "testing-agent-tool-abuse"],
+      "externalSourceIds": ["agentskills-spec", "superpowers"],
+      "executionBoundary": "human-approved-executor"
+    },
+    {
+      "id": "security-and-compliance",
+      "title": "Security and compliance",
+      "summary": "Threat modeling, privacy, software supply-chain controls, and evidence-based security gates.",
+      "capabilityDomains": ["cybersecurity", "legal-compliance", "software-testing"],
+      "skillIds": ["modeling-security-threats", "securing-software-supply-chain", "running-security-release-gate"],
+      "externalSourceIds": ["owasp-agentic-skills-top10", "nist-ssdf"],
+      "executionBoundary": "verified-artifact"
+    },
+    {
+      "id": "cloud-and-operations",
+      "title": "Cloud and operations",
+      "summary": "Deployment, observability, rollback, and incident readiness with operational ownership.",
+      "capabilityDomains": ["cloud-platforms", "devops-sre", "operations-leadership"],
+      "skillIds": ["designing-ci-cd", "validating-observability", "testing-production-rollback"],
+      "externalSourceIds": ["microsoft-skills", "google-skills"],
+      "executionBoundary": "human-approved-executor"
+    },
+    {
+      "id": "business-and-commerce",
+      "title": "Business and commerce",
+      "summary": "Business models, commerce flows, fraud boundaries, and measurable commercial decisions.",
+      "capabilityDomains": ["product-management", "finance-commerce", "legal-compliance"],
+      "skillIds": ["mapping-business-model", "designing-shopping-cart", "preventing-ecommerce-fraud"],
+      "externalSourceIds": ["block-agent-skills", "agentskills-spec"],
+      "executionBoundary": "human-approved-executor"
+    },
+    {
+      "id": "education-and-knowledge",
+      "title": "Education and knowledge",
+      "summary": "Source credibility, bounded context, teachable documentation, and evidence-linked knowledge artifacts.",
+      "capabilityDomains": ["education-learning", "technical-writing", "scientific-research"],
+      "skillIds": ["validating-source-credibility", "compiling-context-pack", "documenting-public-interfaces"],
+      "externalSourceIds": ["agentskills-spec", "forgeos-knowledge-index"],
+      "executionBoundary": "verified-artifact"
+    },
+    {
+      "id": "hardware-and-manufacturing",
+      "title": "Hardware and manufacturing",
+      "summary": "Manufacturability, tolerances, bill of materials, test planning, and physical-product safety evidence.",
+      "capabilityDomains": ["industrial-design", "hardware-embedded", "automation-robotics"],
+      "skillIds": ["engineering-manufacturable-products", "validating-physical-product-safety"],
+      "externalSourceIds": ["nvidia-skills", "agentskills-spec"],
+      "executionBoundary": "human-approved-executor"
+    },
+    {
+      "id": "robotics-and-physical-ai",
+      "title": "Robotics and physical AI",
+      "summary": "Simulation-to-reality planning, bounded physical-AI testing, and explicit human authority before live actuation.",
+      "capabilityDomains": ["automation-robotics", "hardware-embedded", "industrial-design", "machine-learning"],
+      "skillIds": ["designing-simulation-to-reality-workflows", "testing-physical-ai-deployment-boundaries"],
+      "externalSourceIds": ["nvidia-skills", "agentskills-spec"],
+      "executionBoundary": "human-approved-executor"
+    }
+  ]
+}

@@ -1,0 +1,289 @@
+{
+  "schemaVersion": 2,
+  "id": "managing-artifact-lineage",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "stable",
+  "identity": {
+    "title": "Managing Artifact Lineage",
+    "description": "Use when preserve immutable provenance, dependency edges, supersession, verification, and downstream invalidation, especially when does the same canonical content produce the same hash?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "kernel"
+    ],
+    "keywords": [
+      "managing-artifact-lineage",
+      "preserve",
+      "immutable",
+      "provenance",
+      "dependency",
+      "edges",
+      "supersession",
+      "verification",
+      "and"
+    ],
+    "antiTriggers": [
+      "ephemeral notes with no downstream consumer",
+      "independent artifacts with no dependency relation"
+    ]
+  },
+  "relations": {
+    "requires": [
+      "project-state",
+      "gate-state"
+    ],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "project-state",
+        "schema": "artifact://forgeos/project-state/v1"
+      },
+      {
+        "type": "gate-state",
+        "schema": "artifact://forgeos/gate-state/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "routing-decision",
+        "schema": "artifact://forgeos/routing-decision/v1"
+      }
+    ],
+    "invariants": [
+      "Output remains within the managing-artifact-lineage responsibility boundary",
+      "Every pass claim is backed by current trusted evidence"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Assign stable project-scoped IDs and canonical content hashes.",
+        "evidence": "lineage graph"
+      },
+      {
+        "id": "step-2",
+        "action": "Record producing skill, agent identity, consumed artifacts, decisions, evidence, and residual risks.",
+        "evidence": "hash manifest"
+      },
+      {
+        "id": "step-3",
+        "action": "Append new versions; never mutate previously verified content in place.",
+        "evidence": "invalidation report"
+      },
+      {
+        "id": "step-4",
+        "action": "When upstream content changes, compute descendants and mark only affected artifacts invalidated.",
+        "evidence": "verification record"
+      },
+      {
+        "id": "step-5",
+        "action": "Require independent verification before changing state to verified.",
+        "evidence": "verification record"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required tool, input, or approval is unavailable",
+        "action": "stop and record a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the same canonical content produce the same hash?",
+      "Can every output reconstruct its input lineage?",
+      "Are unaffected branches preserved during invalidation?",
+      "Can a worker verify its own artifact?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "lineage graph",
+      "hash manifest",
+      "invalidation report",
+      "verification record"
+    ],
+    "evaluatorIds": [
+      "managing-artifact-lineage-evaluator"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 624,
+    "hardTokens": 1038,
+    "outputReserveTokens": 259
+  },
+  "quality": {
+    "benchmarkIds": [
+      "v04-managing-artifact-lineage-behavior"
+    ],
+    "minimumSkillDepthScore": 82,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2"
+  ],
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.integrate-dependencies",
+      "fitScore": 98,
+      "mappingEvidence": "reviewed:v0.5:managing-artifact-lineage",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "ai-agent-engineering.govern-evolution",
+      "fitScore": 98,
+      "mappingEvidence": "reviewed:v0.5:managing-artifact-lineage",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.managing-artifact-lineage",
+      "fitScore": 98,
+      "mappingEvidence": "reviewed:v0.5:managing-artifact-lineage",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "14f25d5a8f060daf3fd732332449edb8ca96db4517fa4e488b72492daba9d0f0",
+        "bytes": 856,
+        "tokens": {
+          "gpt-5.6": 231,
+          "claude-opus-4.2": 242,
+          "gemini-3.0-pro": 220,
+          "qwen3.5-32b": 256
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "f315e003e33ffe8f098777248a6055e2b76bd22374b706f9ae9dfed2bca2bf2f",
+        "bytes": 788,
+        "tokens": {
+          "gpt-5.6": 212,
+          "claude-opus-4.2": 222,
+          "gemini-3.0-pro": 203,
+          "qwen3.5-32b": 236
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "f9bfe6ef36de59d9db6341e6221b617221c90ebbc72b538c413f967f5f21581a",
+        "bytes": 346,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 98,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 104
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "64cfe3f7219a83abc4a589923f5313bc37c0ced9b6439104bf9108c55d87f9de",
+        "bytes": 316,
+        "tokens": {
+          "gpt-5.6": 85,
+          "claude-opus-4.2": 90,
+          "gemini-3.0-pro": 82,
+          "qwen3.5-32b": 95
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "cd852c6d9f72009708e82b2387c9e07c4d5f79d70ec560eee0bd2ef087fcf4c8",
+        "bytes": 258,
+        "tokens": {
+          "gpt-5.6": 70,
+          "claude-opus-4.2": 73,
+          "gemini-3.0-pro": 67,
+          "qwen3.5-32b": 78
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "0cfa3aef33ba4a6f769b540f7bdea5f881d07001838df86385ee3b70b6d843d6",
+        "bytes": 333,
+        "tokens": {
+          "gpt-5.6": 90,
+          "claude-opus-4.2": 94,
+          "gemini-3.0-pro": 86,
+          "qwen3.5-32b": 100
+        }
+      }
+    ],
+    "indexSha256": "f5a997e83273d3287a969bbd0b79d13b73d5e4c5bea0691d2d26517655889813"
+  },
+  "manifestSha256": "10ee1ee4e3e03154c88516fa2edd09bc367d0d0d40cbcbce9fa9f4011770c9bd"
+}

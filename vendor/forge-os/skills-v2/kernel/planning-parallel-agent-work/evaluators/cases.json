@@ -1,0 +1,20 @@
+[
+  {
+    "id": "planning-parallel-agent-work-positive",
+    "kind": "application",
+    "input": "A task requiring Planning Parallel Agent Work",
+    "expectedEvidence": [
+      "No output target has two active writers.",
+      "Coverage ledger accounts for every scoped unit.",
+      "Join failure leaves resumable state."
+    ],
+    "baselineFailure": "Parallelizing coupled edits to the same invariant."
+  },
+  {
+    "id": "planning-parallel-agent-work-anti-trigger",
+    "kind": "counter-example",
+    "input": "shared mutable state cannot be isolated",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

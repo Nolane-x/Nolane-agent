@@ -1,0 +1,305 @@
+{
+  "schemaVersion": 2,
+  "id": "evolving-skill-packs",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Evolving Skill Packs",
+    "description": "Use when evolving skill packs within meta lifecycle boundaries, especially when does the artifact make the owned decision for evolving skill packs explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "meta"
+    ],
+    "keywords": [
+      "evolving-skill-packs",
+      "evolving",
+      "skill",
+      "packs",
+      "within",
+      "meta",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require evolving skill packs within meta lifecycle boundaries",
+      "the typed inputs for evolving-skill-packs are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "behavioral-baseline",
+        "schema": "artifact://forgeos/behavioral-baseline/v1"
+      },
+      {
+        "type": "candidate-change",
+        "schema": "artifact://forgeos/candidate-change/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "skill-evaluation",
+        "schema": "artifact://forgeos/skill-evaluation/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for evolving skill packs explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by evolving skill packs.",
+        "evidence": "evolving-skill-packs-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to evolving skill packs.",
+        "evidence": "evolving-skill-packs-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply evolving skill packs only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "evolving-skill-packs-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "evolving-skill-packs-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if evolving skill packs were incomplete or implemented incorrectly.",
+        "evidence": "evolving-skill-packs-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for evolving skill packs explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "evolving-skill-packs-decision-table",
+      "evolving-skill-packs-verification-report",
+      "evolving-skill-packs-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "evolving-skill-packs-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 676,
+    "hardTokens": 1067,
+    "outputReserveTokens": 266
+  },
+  "quality": {
+    "benchmarkIds": [
+      "evolving-skill-packs-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.govern-evolution",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:evolving-skill-packs",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "ff5e79de89d33633d3e6bb8d0baa4b9c72f10fbe3f11953f9981ddf4f41a63b8",
+        "bytes": 883,
+        "tokens": {
+          "gpt-5.6": 238,
+          "claude-opus-4.2": 249,
+          "gemini-3.0-pro": 227,
+          "qwen3.5-32b": 264
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "b4479e65eb5a23cbcb2387dd8a614b9ee0b6854921be4549639c5d92a06aeeb0",
+        "bytes": 686,
+        "tokens": {
+          "gpt-5.6": 185,
+          "claude-opus-4.2": 194,
+          "gemini-3.0-pro": 176,
+          "qwen3.5-32b": 205
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "c4ff1f01afa279ec71eb702fc9e2ea759e7b26f1e73f3ca9fb50f96aff9933b7",
+        "bytes": 296,
+        "tokens": {
+          "gpt-5.6": 80,
+          "claude-opus-4.2": 84,
+          "gemini-3.0-pro": 76,
+          "qwen3.5-32b": 89
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "2ce9af902eaaf80282fdc9c7e19e002c546e098b21e412a6af96f73406ad5b95",
+        "bytes": 581,
+        "tokens": {
+          "gpt-5.6": 157,
+          "claude-opus-4.2": 164,
+          "gemini-3.0-pro": 149,
+          "qwen3.5-32b": 174
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "363d5029f74340a149a5369bc2108b8846a5094726ff3ae40f958a025886dd39",
+        "bytes": 324,
+        "tokens": {
+          "gpt-5.6": 88,
+          "claude-opus-4.2": 92,
+          "gemini-3.0-pro": 84,
+          "qwen3.5-32b": 97
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "7a6681dc36a1b4a8bb86047652b66621be400a62e277848f90aa818d26f5d826",
+        "bytes": 234,
+        "tokens": {
+          "gpt-5.6": 63,
+          "claude-opus-4.2": 66,
+          "gemini-3.0-pro": 60,
+          "qwen3.5-32b": 70
+        }
+      }
+    ],
+    "indexSha256": "b7952abb3ca82d6d7e7e452e7252ee0915a353d87d0a68b39336f40f12c1fe3b"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "aadd2dcb02cbf4add3a9ea7727441826a2e3f27e9406eff1a59bb31709fe773a"
+}

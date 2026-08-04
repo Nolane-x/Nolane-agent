@@ -1,0 +1,100 @@
+{
+  "schema": "nolane.small-model.checkpoint-6-specialist-benchmark.v1",
+  "specialist": "risk-classifier",
+  "artifactSha256": "c85ed180c47e7038ab07b118865ea5bc0534011e45253f0cc1d64a3dff7ec79d",
+  "datasetReceiptSha256": "04edd3e089eb4635728587abf227562102255b7f11ca5d037e332f93651d4ae4",
+  "validation": {
+    "schema": "nolane.small-model.specialist-evaluation.v1",
+    "artifactSha256": "c85ed180c47e7038ab07b118865ea5bc0534011e45253f0cc1d64a3dff7ec79d",
+    "specialist": "risk-classifier",
+    "independent": true,
+    "heldOut": true,
+    "examples": 4,
+    "correct": 4,
+    "accuracy": 1,
+    "abstentions": 0,
+    "safetyViolations": 0,
+    "baselineSafetyViolations": 0,
+    "thresholds": {
+      "minAccuracy": 0.8
+    },
+    "confusion": {
+      "critical->critical": 1,
+      "high->high": 1,
+      "low->low": 1,
+      "medium->medium": 1
+    },
+    "allowed": true,
+    "claims": {
+      "boundedHeldOutEvidence": true,
+      "generalCodingIntelligence": false,
+      "competitorSuperiority": false
+    },
+    "receiptSha256": "1cd3316edf65c32f213bf1867ef448d9a8af467f61119655120bb596453b8e35"
+  },
+  "heldOut": {
+    "schema": "nolane.small-model.specialist-evaluation.v1",
+    "artifactSha256": "c85ed180c47e7038ab07b118865ea5bc0534011e45253f0cc1d64a3dff7ec79d",
+    "specialist": "risk-classifier",
+    "independent": true,
+    "heldOut": true,
+    "examples": 4,
+    "correct": 4,
+    "accuracy": 1,
+    "abstentions": 0,
+    "safetyViolations": 0,
+    "baselineSafetyViolations": 0,
+    "thresholds": {
+      "minAccuracy": 0.8
+    },
+    "confusion": {
+      "high->high": 1,
+      "critical->critical": 1,
+      "low->low": 1,
+      "medium->medium": 1
+    },
+    "allowed": true,
+    "claims": {
+      "boundedHeldOutEvidence": true,
+      "generalCodingIntelligence": false,
+      "competitorSuperiority": false
+    },
+    "receiptSha256": "1cd3316edf65c32f213bf1867ef448d9a8af467f61119655120bb596453b8e35"
+  },
+  "ablationReceiptSha256": "85489c87c42a0b8690711abee69a3a54cc9ca9459171f5ffcf4e7d1848e073e5",
+  "resourceProfile": {
+    "runtime": "node-js-linear-policy",
+    "dimensions": 1024,
+    "parameters": 4100
+  },
+  "lineage": {
+    "repositoryDatasetReceiptSha256": "c08a63762070d3358522bddad2bc481e437d9890239d75ce4985e8971f4d58f2",
+    "multiRuntimeDatasetReceiptSha256": "502fb426e4a829ac617c16e792dcba1ef8bf04e9c055102241af1d7661f7e671",
+    "recoveryDatasetReceiptSha256": "a9ec47ce9e898cc2ded822b146bb1bfbc541c0270b3d26780e4c59c192ca5b05",
+    "repositoryEpisodes": 32,
+    "multiRuntimeEpisodes": 7,
+    "recoveryEpisodes": 6,
+    "projects": [
+      "launcher-go",
+      "native-credential-go",
+      "native-pty-go",
+      "nolane-agent-node",
+      "nolane-node",
+      "python-sdk"
+    ],
+    "runtimes": [
+      "go",
+      "node",
+      "python"
+    ],
+    "mutationObserved": true,
+    "recoveryObserved": true
+  },
+  "claims": {
+    "boundedMultiRuntimeSpecialist": true,
+    "generalCodingIntelligence": false,
+    "frontierParity": false,
+    "competitorSuperiority": false
+  },
+  "receiptSha256": "83347f7f50ab3b77b4928ab9b98b5a7bdddb18fef3d0c20223a05333bb22f81a"
+}

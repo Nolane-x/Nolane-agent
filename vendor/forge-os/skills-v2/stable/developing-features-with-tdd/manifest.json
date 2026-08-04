@@ -1,0 +1,293 @@
+{
+  "schemaVersion": 2,
+  "id": "developing-features-with-tdd",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "stable",
+  "identity": {
+    "title": "Developing Features With Tdd",
+    "description": "Use when implement one externally observable feature through a verified red-green-refactor cycle, especially when was the failure observed before implementation?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "implementation"
+    ],
+    "keywords": [
+      "developing-features-with-tdd",
+      "implement",
+      "one",
+      "externally",
+      "observable",
+      "feature",
+      "through",
+      "a",
+      "verified"
+    ],
+    "antiTriggers": [
+      "generated fixtures or disposable experiments",
+      "documentation-only changes with no executable behavior"
+    ]
+  },
+  "relations": {
+    "requires": [
+      "execution-plan",
+      "acceptance-contracts"
+    ],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "execution-plan",
+        "schema": "artifact://forgeos/execution-plan/v1"
+      },
+      {
+        "type": "acceptance-contracts",
+        "schema": "artifact://forgeos/acceptance-contracts/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "implemented-increment",
+        "schema": "artifact://forgeos/implemented-increment/v1"
+      }
+    ],
+    "invariants": [
+      "Output remains within the developing-features-with-tdd responsibility boundary",
+      "Every pass claim is backed by current trusted evidence"
+    ],
+    "requiredTools": [
+      "filesystem",
+      "shell"
+    ],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Write the smallest behavior test from the acceptance contract before production code.",
+        "evidence": "red test log"
+      },
+      {
+        "id": "step-2",
+        "action": "Run it and confirm it fails for the intended missing behavior rather than setup or syntax.",
+        "evidence": "green test log"
+      },
+      {
+        "id": "step-3",
+        "action": "Implement only enough behavior to pass, then run the focused and relevant regression suites.",
+        "evidence": "diff review"
+      },
+      {
+        "id": "step-4",
+        "action": "Refactor only while all tests remain green and no behavior changes.",
+        "evidence": "commit hash"
+      },
+      {
+        "id": "step-5",
+        "action": "Record the red output, green output, diff review, and remaining risks.",
+        "evidence": "commit hash"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required tool, input, or approval is unavailable",
+        "action": "stop and record a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Was the failure observed before implementation?",
+      "Does the test assert behavior rather than mocks or internals?",
+      "Did implementation add anything not demanded by the test?",
+      "Are warnings and unrelated regressions zero?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "red test log",
+      "green test log",
+      "diff review",
+      "commit hash"
+    ],
+    "evaluatorIds": [
+      "developing-features-with-tdd-evaluator"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 615,
+    "hardTokens": 1037,
+    "outputReserveTokens": 259
+  },
+  "quality": {
+    "benchmarkIds": [
+      "v04-developing-features-with-tdd-behavior"
+    ],
+    "minimumSkillDepthScore": 82,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2"
+  ],
+  "capabilityMappings": [
+    {
+      "capabilityId": "backend-engineering.implement-core",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:developing-features-with-tdd",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "software-testing.verify-contracts",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:developing-features-with-tdd",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.developing-features-with-tdd",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:developing-features-with-tdd",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "8d7a38c93fb88f087d1bcabb2d653dc18187b332eee1ead74b4d58a12d0f1937",
+        "bytes": 827,
+        "tokens": {
+          "gpt-5.6": 223,
+          "claude-opus-4.2": 233,
+          "gemini-3.0-pro": 213,
+          "qwen3.5-32b": 247
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "d89bdeafef17d67bd58c1342704c77d879e54b28761f216c3af64db0e80c7118",
+        "bytes": 779,
+        "tokens": {
+          "gpt-5.6": 210,
+          "claude-opus-4.2": 220,
+          "gemini-3.0-pro": 200,
+          "qwen3.5-32b": 233
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "f9bfe6ef36de59d9db6341e6221b617221c90ebbc72b538c413f967f5f21581a",
+        "bytes": 346,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 98,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 104
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "fa8c6a9eb12dbfd432abb3e297c334cf1db4a99afc933658d26172f0e3ff9fa3",
+        "bytes": 317,
+        "tokens": {
+          "gpt-5.6": 86,
+          "claude-opus-4.2": 90,
+          "gemini-3.0-pro": 82,
+          "qwen3.5-32b": 95
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "5a0c16ba189a82e6780961f37bbb6a3242195bc2d744a2b7d0134c14e999a869",
+        "bytes": 281,
+        "tokens": {
+          "gpt-5.6": 76,
+          "claude-opus-4.2": 80,
+          "gemini-3.0-pro": 73,
+          "qwen3.5-32b": 84
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "ff65967b4a26bd04e95becf9677bd27b741a633a6aa8ae28ce3baa3a71edf051",
+        "bytes": 341,
+        "tokens": {
+          "gpt-5.6": 92,
+          "claude-opus-4.2": 97,
+          "gemini-3.0-pro": 88,
+          "qwen3.5-32b": 102
+        }
+      }
+    ],
+    "indexSha256": "22bb9aa7240b0a345e15c46542fbacaab79507ef3fce26b486fb540b987cab6f"
+  },
+  "manifestSha256": "150f84f14272c77ec91c43d6658763cf58938e2bf257c58c9feadc2ad959e2f4",
+  "kernelLevel": "L1"
+}

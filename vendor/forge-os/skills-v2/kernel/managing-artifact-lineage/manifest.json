@@ -1,0 +1,315 @@
+{
+  "schemaVersion": 2,
+  "id": "managing-artifact-lineage",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "stable",
+  "identity": {
+    "title": "Managing Artifact Lineage",
+    "description": "Use when artifacts consume, replace, verify, invalidate, or derive from other versioned artifacts and downstream state must remain explainable and fresh.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "kernel"
+    ],
+    "keywords": [
+      "managing-artifact-lineage",
+      "artifacts",
+      "consume",
+      "replace",
+      "verify",
+      "invalidate",
+      "or",
+      "derive",
+      "from"
+    ],
+    "antiTriggers": [
+      "ephemeral notes with no downstream consumer",
+      "independent artifacts with no dependency relation"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "project-state",
+        "schema": "artifact://forgeos/project-state/v2"
+      }
+    ],
+    "produces": [
+      {
+        "type": "lineage-update",
+        "schema": "artifact://forgeos/lineage-update/v1"
+      }
+    ],
+    "invariants": [
+      "The artifact graph remains acyclic.",
+      "Exactly one active version exists per typed slot.",
+      "Tampering with lifecycle metadata is detectable."
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "confirmed intent and current semantic revision exist"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Validate typed dependencies and active version slots before write.",
+        "evidence": "The artifact graph remains acyclic."
+      },
+      {
+        "id": "step-2",
+        "action": "Record content hash and immutable lifecycle envelope separately.",
+        "evidence": "Exactly one active version exists per typed slot."
+      },
+      {
+        "id": "step-3",
+        "action": "Maintain supersession links and dependency hashes in both directions.",
+        "evidence": "Tampering with lifecycle metadata is detectable."
+      },
+      {
+        "id": "step-4",
+        "action": "Invalidate downstream artifacts and proof when an upstream subject changes.",
+        "evidence": "Tampering with lifecycle metadata is detectable."
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "lineage-update is produced with current evidence or a blocker is recorded"
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "The artifact graph remains acyclic.",
+      "Exactly one active version exists per typed slot.",
+      "Tampering with lifecycle metadata is detectable."
+    ],
+    "reviewerRole": "kernel-skill-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "behavioral-eval-receipt",
+      "context-receipt"
+    ],
+    "evaluatorIds": [
+      "managing-artifact-lineage-evaluator-v2"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 5,
+    "maxReferenceDepth": 2,
+    "targetTokens": 509,
+    "hardTokens": 903,
+    "outputReserveTokens": 256
+  },
+  "quality": {
+    "benchmarkIds": [
+      "managing-artifact-lineage-public-v1"
+    ],
+    "minimumSkillDepthScore": 82,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "v0.5 section and deterministic-execution migration; expanded hidden holdout remains scheduled."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L0",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "coverage-ledger",
+      "typed-preconditions",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionability-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.integrate-dependencies",
+      "fitScore": 98,
+      "mappingEvidence": "reviewed:v0.5:managing-artifact-lineage",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "ai-agent-engineering.govern-evolution",
+      "fitScore": 98,
+      "mappingEvidence": "reviewed:v0.5:managing-artifact-lineage",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "ai-agent-engineering.model-data",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:l0:managing-artifact-lineage",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.managing-artifact-lineage",
+      "fitScore": 100,
+      "mappingEvidence": "reviewed:l0:managing-artifact-lineage",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "54c1dbabae567fa5b8e2e863543c2df23334bc0c30dc323c6d5c7bc333a842a6",
+        "bytes": 860,
+        "tokens": {
+          "gpt-5.6": 232,
+          "claude-opus-4.2": 243,
+          "gemini-3.0-pro": 221,
+          "qwen3.5-32b": 257
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "fc94918bb32271f2ef8c0d089f468c5df33b2b58a8d3a9466b80c32707e1680a",
+        "bytes": 553,
+        "tokens": {
+          "gpt-5.6": 149,
+          "claude-opus-4.2": 156,
+          "gemini-3.0-pro": 142,
+          "qwen3.5-32b": 166
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "ce6b780e7111bd23302b7787a5ac03cd99f1711936b70d624202d73da690a469",
+        "bytes": 391,
+        "tokens": {
+          "gpt-5.6": 106,
+          "claude-opus-4.2": 111,
+          "gemini-3.0-pro": 101,
+          "qwen3.5-32b": 117
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "e734b3df5db1c7d4c7f5846495aba0bdeb6d764dbb7542dc70bf0992afc8cee3",
+        "bytes": 238,
+        "tokens": {
+          "gpt-5.6": 64,
+          "claude-opus-4.2": 68,
+          "gemini-3.0-pro": 62,
+          "qwen3.5-32b": 72
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "93f01aca15ed81bdb8976fcf6f1f85e888c383d1960484cd6964d854936fc0c2",
+        "bytes": 239,
+        "tokens": {
+          "gpt-5.6": 65,
+          "claude-opus-4.2": 68,
+          "gemini-3.0-pro": 62,
+          "qwen3.5-32b": 72
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "d6a8ef3150c67dad54c6e2853991008f0a86a23dd2badbf6ec9d2797b08b8bc6",
+        "bytes": 351,
+        "tokens": {
+          "gpt-5.6": 95,
+          "claude-opus-4.2": 99,
+          "gemini-3.0-pro": 90,
+          "qwen3.5-32b": 105
+        }
+      }
+    ],
+    "indexSha256": "51b10fde06fc512a1c3eeaf2c32ea1b9e923ca5c216743e33c2b4b253f785fc4"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "35fc93cb12a85826eaf4b553236ab42aa1acebf4bd477de4f75a8eb11fb99790"
+}

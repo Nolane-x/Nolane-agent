@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forgeos.dev/schemas/v0.5/skill-inspection.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "version",
+    "maturity",
+    "skillType",
+    "manifestSha256",
+    "identity",
+    "context",
+    "sections",
+    "policyProfileHashes",
+    "capabilityMappings",
+    "evaluatorPackage"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "maturity": {
+      "type": "string"
+    },
+    "skillType": {
+      "type": "string"
+    },
+    "kernelLevel": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "manifestSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "policyProfileHashes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "capabilityMappings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "evaluatorPackage": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

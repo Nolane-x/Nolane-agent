@@ -1,0 +1,20 @@
+[
+  {
+    "id": "selecting-skill-sections-positive",
+    "kind": "application",
+    "input": "A task requiring Selecting Skill Sections",
+    "expectedEvidence": [
+      "No executable script is materialized as instruction text.",
+      "Selected section hashes match the provider manifest.",
+      "Median selected section count remains bounded."
+    ],
+    "baselineFailure": "Loading all references for routine work."
+  },
+  {
+    "id": "selecting-skill-sections-anti-trigger",
+    "kind": "counter-example",
+    "input": "the complete skill is shorter than the section-selection overhead",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

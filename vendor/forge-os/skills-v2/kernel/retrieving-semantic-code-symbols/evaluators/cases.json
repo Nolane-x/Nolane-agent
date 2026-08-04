@@ -1,0 +1,20 @@
+[
+  {
+    "id": "retrieving-semantic-code-symbols-positive",
+    "kind": "application",
+    "input": "A task requiring Retrieving Semantic Code Symbols",
+    "expectedEvidence": [
+      "Symbol IDs remain stable across body-only edits.",
+      "Stale content hashes are rejected.",
+      "Permission boundaries apply before retrieval."
+    ],
+    "baselineFailure": "Using line numbers as permanent identity."
+  },
+  {
+    "id": "retrieving-semantic-code-symbols-anti-trigger",
+    "kind": "counter-example",
+    "input": "a tiny file can be read safely in full",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

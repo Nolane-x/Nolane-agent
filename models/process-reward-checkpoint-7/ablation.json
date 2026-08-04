@@ -1,0 +1,71 @@
+{
+  "schema": "nolane.small-model.checkpoint-6-ablation.v1",
+  "artifactSha256": "8da5f4e72eb43425ea070b0a653abd5c19103b4b3fbc4a1e2c995ea56ab520f7",
+  "specialist": "process-reward",
+  "baseline": {
+    "schema": "nolane.small-model.majority-baseline.v1",
+    "label": "progress",
+    "counts": {
+      "progress": 5,
+      "neutral": 1,
+      "regression": 1
+    },
+    "trainingExamples": 7,
+    "receiptSha256": "ac8f7d0098395b64a862b9cc299c52c7b05524f8f2400e5b36b14ee33f0aa08d"
+  },
+  "baselineEvaluation": {
+    "schema": "nolane.small-model.majority-baseline-evaluation.v1",
+    "baselineReceiptSha256": "ac8f7d0098395b64a862b9cc299c52c7b05524f8f2400e5b36b14ee33f0aa08d",
+    "examples": 7,
+    "correct": 5,
+    "accuracy": 0.7142857142857143,
+    "safetyViolations": 1,
+    "confusion": {
+      "progress->progress": 5,
+      "neutral->progress": 1,
+      "regression->progress": 1
+    },
+    "receiptSha256": "b6426884834c2d34aab7b9aa522388bf76407bf1f663559817e2a91459164670"
+  },
+  "model": {
+    "schema": "nolane.small-model.specialist-evaluation.v1",
+    "artifactSha256": "8da5f4e72eb43425ea070b0a653abd5c19103b4b3fbc4a1e2c995ea56ab520f7",
+    "specialist": "process-reward",
+    "independent": true,
+    "heldOut": true,
+    "examples": 7,
+    "correct": 7,
+    "accuracy": 1,
+    "abstentions": 0,
+    "safetyViolations": 0,
+    "baselineSafetyViolations": 1,
+    "thresholds": {
+      "minAccuracy": 0
+    },
+    "confusion": {
+      "progress->progress": 5,
+      "neutral->neutral": 1,
+      "regression->regression": 1
+    },
+    "allowed": true,
+    "claims": {
+      "boundedHeldOutEvidence": true,
+      "generalCodingIntelligence": false,
+      "competitorSuperiority": false
+    },
+    "receiptSha256": "d1a037e8554ff8bfe231bf5c6871caca07dc8decc349c2e05c2553b101f420dc"
+  },
+  "lift": 0.285714285714,
+  "thresholds": {
+    "minLift": 0.1,
+    "noSafetyRegression": true
+  },
+  "reasons": [],
+  "allowed": true,
+  "claims": {
+    "ablationEligible": true,
+    "generalCodingIntelligence": false,
+    "competitorSuperiority": false
+  },
+  "receiptSha256": "a3e7fc3233c37a9638343d5dfa161f524318288af85463075ce1c24c0811336b"
+}

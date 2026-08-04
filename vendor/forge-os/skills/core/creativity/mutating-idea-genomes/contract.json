@@ -1,0 +1,139 @@
+{
+  "name": "mutating-idea-genomes",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "creativity",
+  "domain": null,
+  "status": "candidate",
+  "stages": [
+    "divergence"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "creative-brief"
+  ],
+  "produces": [
+    "candidate-ideas"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:candidate-ideas"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/creativity.md",
+  "method": {
+    "focus": "mutating idea genomes within creativity lifecycle boundaries",
+    "source": "generated-specific",
+    "steps": [
+      "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by mutating idea genomes.",
+      "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to mutating idea genomes.",
+      "Apply mutating idea genomes only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+      "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+      "Create reproducible checks that would fail if mutating idea genomes were incomplete or implemented incorrectly."
+    ],
+    "verification": [
+      "Does the artifact make the owned decision for mutating idea genomes explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "evidence": [
+      "mutating-idea-genomes-decision-table",
+      "mutating-idea-genomes-verification-report",
+      "mutating-idea-genomes-handoff-envelope"
+    ],
+    "traps": [
+      "treating mutating idea genomes as a naming exercise",
+      "covering only the happy path",
+      "creating extension points without a current contract or consumer"
+    ]
+  },
+  "procedure": [
+    "Freeze the challenge, constraints, forbidden defaults, and evaluation frame.",
+    "Generate independent mechanism-level candidates before cross-contamination.",
+    "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by mutating idea genomes.",
+    "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to mutating idea genomes.",
+    "Apply mutating idea genomes only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+    "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+    "Create reproducible checks that would fail if mutating idea genomes were incomplete or implemented incorrectly.",
+    "Apply the named divergence or mutation operation.",
+    "Represent candidates as structured idea genomes.",
+    "Remove semantic duplicates and fake novelty.",
+    "Hand off distinct candidates without selecting a winner prematurely."
+  ],
+  "gate": {
+    "reviewerRole": "independent-reviewer",
+    "rules": [
+      "The output directly and completely performs mutating idea genomes within its declared boundary.",
+      "Does the artifact make the owned decision for mutating idea genomes explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "candidate-ideas"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "mutating-idea-genomes-decision-table",
+      "mutating-idea-genomes-verification-report",
+      "mutating-idea-genomes-handoff-envelope"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1853,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "treating mutating idea genomes as a naming exercise",
+    "covering only the happy path",
+    "creating extension points without a current contract or consumer"
+  ],
+  "optionalConsumes": [],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when mutating idea genomes is required during creativity work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

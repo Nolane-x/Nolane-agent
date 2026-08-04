@@ -1,0 +1,28 @@
+{
+  "schema": "nolane.model-management-policy.v1",
+  "version": "1.0.0",
+  "principles": [
+    "Fail closed when a required capability is unknown",
+    "Separate base model identity from provider deployment",
+    "Prefer verified operational observations over static assumptions",
+    "Never infer price, quota, context, or tool reliability from model family alone",
+    "Require independent verification for autonomous repository changes",
+    "Keep local-only and data-residency constraints as hard blockers",
+    "Use provider-diverse fallbacks to reduce correlated outages"
+  ],
+  "weights": {
+    "quality": 0.34,
+    "reliability": 0.23,
+    "cost": 0.14,
+    "latency": 0.12,
+    "confidence": 0.09,
+    "locality": 0.05,
+    "lifecycle": 0.03
+  },
+  "circuitBreaker": {
+    "minimumCalls": 5,
+    "failureRate": 0.6,
+    "consecutiveFailures": 3,
+    "cooldownMs": 60000
+  }
+}

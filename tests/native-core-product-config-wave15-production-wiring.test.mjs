@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtemp, rm } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import { NolaneNativeOrchestrationService } from '../src/nolane-native/orchestration-service.mjs';
+import { createRoutes } from '../src/server/routes.mjs';
+
+async function fixture(t) { const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-wave15-production-')); t.after(() => rm(root, { recursive: true, force: true })); const service = new NolaneNativeOrchestrationService({ dataDir: path.join(root, '.data'), workspaceRoot: root }); await service.open(); return service; }
+const callFor = (service) => { const route = createRoutes({ nativeOrchestration: service }); return async ({ method = 'GET', pathname, body = null }) => { let status; let data = ''; const req = { method, forgePrincipal: { subject: 'alice' }, async *[Symbol.asyncIterator]() { if (body !== null) yield Buffer.from(JSON.stringify(body)); } }; const res = { writeHead(code) { status = code; }, end(chunk = '') { data += chunk; } }; await route(req, res, new URL(`http://local${pathname}`)); return { status, body: data ? JSON.parse(data) : null }; }; };
+
+test('orchestration production-wires product/config wave15', async (t) => { const service = await fixture(t); service.applyNativeProductEventWave15({ type: 'session.upsert', payload: { id: 's1', title: 'Session' } }); service.createNativeProductProfileWave15({ id: 'p1', name: 'Local', credentialRef: 'vault:p1' }); const projection = service.projectNativeProductWave15('vscode'); assert.equal(projection.state.sessions[0].id, 's1'); assert.equal(service.nativeProductProfileWave15('p1').name, 'Local'); assert.equal(service.status().productWave15.product.sessions.length, 1); });
+
+test('HTTP product/config wave15 routes expose shared projection, profiles and bootstrap plan', async (t) => { const service = await fixture(t); const call = callFor(service); const profile = await call({ method: 'POST', pathname: '/api/nolane/native-core/product/wave15/profiles', body: { id: 'p1', name: 'Local', credentialRef: 'vault:p1' } }); assert.equal(profile.status, 201); const event = await call({ method: 'POST', pathname: '/api/nolane/native-core/product/wave15/events', body: { type: 'session.upsert', payload: { id: 's1', title: 'Session' } } }); assert.equal(event.body.revision, 1); const projected = await call({ pathname: '/api/nolane/native-core/product/wave15/project?surface=web' }); assert.equal(projected.body.state.sessions[0].id, 's1'); const bootstrap = await call({ method: 'POST', pathname: '/api/nolane/native-core/product/wave15/bootstrap', body: { platform: 'linux', backend: 'local', workspace: '/repo' } }); assert.equal(bootstrap.body.command.shell, false); const status = await call({ pathname: '/api/nolane/native-core/product/wave15/status' }); assert.equal(status.body.configuration.profiles.length, 1); });

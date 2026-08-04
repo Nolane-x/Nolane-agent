@@ -1,0 +1,55 @@
+name: Nolane Agent CI
+
+on:
+  push:
+    branches: [main, master, "release/**", "feature/**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+      - name: Install locked source dependencies
+        run: npm ci --ignore-scripts
+      - name: Validate Node product
+        run: npm run validate
+      - name: Validate native Go modules
+        run: npm run test:go
+      - name: Build and validate VS Code extension
+        run: npm run build:vscode
+      - name: Verify Nolane runtime purity
+        run: node scripts/verify-nolane-runtime-purity.mjs .
+      - name: Verify Electron installer contract
+        run: npm run verify:electron-installer
+
+  windows-electron-contract:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked source dependencies
+        run: npm ci --ignore-scripts
+      - name: Verify Electron and update contracts
+        run: node --test tests/electron-installer-config.test.mjs tests/electron-update-controller.test.mjs tests/electron-update-wiring.test.mjs tests/update-service.test.mjs tests/github-release-workflow.test.mjs

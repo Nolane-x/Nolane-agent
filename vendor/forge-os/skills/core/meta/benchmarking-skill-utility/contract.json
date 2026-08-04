@@ -1,0 +1,145 @@
+{
+  "name": "benchmarking-skill-utility",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "meta",
+  "domain": null,
+  "status": "stable",
+  "stages": [
+    "discovery",
+    "planning",
+    "implementation",
+    "verification"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "behavioral-baseline",
+    "candidate-change"
+  ],
+  "produces": [
+    "skill-evaluation"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:skill-evaluation"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/meta.md",
+  "method": {
+    "focus": "measure marginal task success and quality attributable to a skill under controlled comparisons",
+    "steps": [
+      "Define representative cases, success criteria, judge rubric, models, seeds, and token budgets before running.",
+      "Run baseline and candidate conditions with identical task inputs and tool availability.",
+      "Blind judges to condition where possible and separate task success from style preference.",
+      "Calculate pass-rate, quality, critical failures, token growth, latency, and variance.",
+      "Promote only measurable gains; quarantine regressions and token-only growth."
+    ],
+    "verification": [
+      "Are the cases representative of the trigger description?",
+      "Are baseline and candidate conditions otherwise identical?",
+      "Do improvements survive multiple models or seeds?",
+      "Are critical failures weighted as blockers?"
+    ],
+    "evidence": [
+      "eval corpus",
+      "run manifest",
+      "paired results",
+      "promotion decision"
+    ],
+    "traps": [
+      "cherry-picked examples",
+      "LLM judge without calibration",
+      "rewarding verbosity"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Identify the measured agent failure or capability gap.",
+    "Write a baseline scenario that exposes the gap without the candidate skill.",
+    "Define representative cases, success criteria, judge rubric, models, seeds, and token budgets before running.",
+    "Run baseline and candidate conditions with identical task inputs and tool availability.",
+    "Blind judges to condition where possible and separate task success from style preference.",
+    "Calculate pass-rate, quality, critical failures, token growth, latency, and variance.",
+    "Promote only measurable gains; quarantine regressions and token-only growth.",
+    "Design the smallest skill or adapter change that targets the failure.",
+    "Run paired behavioral evaluations across representative agents.",
+    "Measure success, quality, context, cost, and new failure modes.",
+    "Promote, revise, deprecate, or quarantine based on evidence."
+  ],
+  "gate": {
+    "reviewerRole": "independent-reviewer",
+    "rules": [
+      "The output directly and completely performs benchmarking skill utility within its declared boundary.",
+      "Are the cases representative of the trigger description?",
+      "Are baseline and candidate conditions otherwise identical?",
+      "Do improvements survive multiple models or seeds?",
+      "Are critical failures weighted as blockers?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "skill-evaluation"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "eval corpus",
+      "run manifest",
+      "paired results",
+      "promotion decision"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1627,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "cherry-picked examples",
+    "LLM judge without calibration",
+    "rewarding verbosity"
+  ],
+  "optionalConsumes": [],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when benchmarking skill utility is required during meta work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

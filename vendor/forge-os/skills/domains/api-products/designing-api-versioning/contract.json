@@ -1,0 +1,154 @@
+{
+  "name": "designing-api-versioning",
+  "version": "0.2.0",
+  "kind": "domain",
+  "pack": "domain",
+  "domain": "api-products",
+  "status": "stable",
+  "stages": [
+    "product-definition",
+    "ux-design",
+    "architecture",
+    "planning",
+    "implementation",
+    "verification",
+    "release-readiness"
+  ],
+  "domains": [
+    "api-products"
+  ],
+  "consumes": [
+    "product-definition"
+  ],
+  "produces": [
+    "domain-blueprint",
+    "domain-evidence"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:domain-blueprint",
+    "downstream:domain-evidence"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/domains/api-products.md",
+  "method": {
+    "focus": "evolve public API behavior without surprising existing consumers",
+    "steps": [
+      "Classify compatibility across syntax, semantics, errors, defaults, performance, and side effects.",
+      "Choose versioning surface and support window from consumer deployment realities.",
+      "Design additive evolution rules and explicit breaking-change triggers.",
+      "Run recorded consumer contracts against current and candidate implementations.",
+      "Publish migration tooling, deprecation telemetry, communication, and rollback policy."
+    ],
+    "verification": [
+      "Can an old client parse and correctly interpret the new response?",
+      "Did an error code, default, ordering, or rate limit change semantically?",
+      "Can consumers discover deprecation before failure?",
+      "Is the old version operable through the migration window?"
+    ],
+    "evidence": [
+      "versioning policy",
+      "consumer contract suite",
+      "compatibility diff",
+      "migration guide"
+    ],
+    "traps": [
+      "versioning only the URL",
+      "silent semantic breaks",
+      "deprecation without usage telemetry"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Read the confirmed product definition, domain context, assurance profile, and active findings.",
+    "Identify the domain objects, actors, state transitions, regulations, provider boundaries, and operational constraints owned by this skill.",
+    "Classify compatibility across syntax, semantics, errors, defaults, performance, and side effects.",
+    "Choose versioning surface and support window from consumer deployment realities.",
+    "Design additive evolution rules and explicit breaking-change triggers.",
+    "Run recorded consumer contracts against current and candidate implementations.",
+    "Publish migration tooling, deprecation telemetry, communication, and rollback policy.",
+    "Model normal, boundary, failure, recovery, permission, concurrency, migration, and abuse behavior before implementation.",
+    "Define stable contracts and explicit non-goals; do not leak domain concerns into unrelated modules.",
+    "Create executable acceptance, negative, resilience, and compatibility checks proportional to risk.",
+    "Publish the domain artifact, evidence packet, unresolved assumptions, and downstream invalidations."
+  ],
+  "gate": {
+    "reviewerRole": "api-products-reviewer",
+    "rules": [
+      "The output directly and completely performs designing api versioning within its declared boundary.",
+      "Can an old client parse and correctly interpret the new response?",
+      "Did an error code, default, ordering, or rate limit change semantically?",
+      "Can consumers discover deprecation before failure?",
+      "Is the old version operable through the migration window?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "domain-blueprint",
+        "domain-evidence"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "versioning policy",
+      "consumer contract suite",
+      "compatibility diff",
+      "migration guide"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1741,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "versioning only the URL",
+    "silent semantic breaks",
+    "deprecation without usage telemetry"
+  ],
+  "optionalConsumes": [
+    "architecture-decision",
+    "verified-build"
+  ],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when designing api versioning is required during api-products product work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

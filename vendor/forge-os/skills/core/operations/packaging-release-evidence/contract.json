@@ -1,0 +1,150 @@
+{
+  "name": "packaging-release-evidence",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "operations",
+  "domain": null,
+  "status": "stable",
+  "stages": [
+    "release-readiness"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "verification-report",
+    "security-review",
+    "operations-evidence"
+  ],
+  "produces": [
+    "release-dossier"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:release-dossier"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/operations.md",
+  "method": {
+    "focus": "assemble a reproducible release dossier linking requirements, build identity, tests, findings, migrations, rollback, and residual risks",
+    "steps": [
+      "Freeze the release candidate and record source, dependency, build, and artifact hashes.",
+      "Collect requirement traceability, test logs, coverage, mutation, fuzz, security, UX, performance, compatibility, migration, and rollback evidence required by assurance.",
+      "Verify evidence freshness and that every report targets the frozen candidate.",
+      "List unresolved findings and exact human acceptances without summarizing them away.",
+      "Generate a machine-readable dossier plus a concise human release decision."
+    ],
+    "verification": [
+      "Can another reviewer reproduce each verification command?",
+      "Do screenshots and logs identify the tested version?",
+      "Are missing evidence and skipped controls explicit?",
+      "Does the dossier distinguish tested claims from assumptions?"
+    ],
+    "evidence": [
+      "release dossier",
+      "hash manifest",
+      "traceability matrix",
+      "known-risk register"
+    ],
+    "traps": [
+      "copying CI badges",
+      "mixing evidence from different commits",
+      "claiming defect-free software"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Read deployment topology, service objectives, and rollback constraints.",
+    "Define observable success and failure signals.",
+    "Freeze the release candidate and record source, dependency, build, and artifact hashes.",
+    "Collect requirement traceability, test logs, coverage, mutation, fuzz, security, UX, performance, compatibility, migration, and rollback evidence required by assurance.",
+    "Verify evidence freshness and that every report targets the frozen candidate.",
+    "List unresolved findings and exact human acceptances without summarizing them away.",
+    "Generate a machine-readable dossier plus a concise human release decision.",
+    "Rehearse the operational change in a controlled environment.",
+    "Verify monitoring, alerting, rollback, and incident ownership.",
+    "Capture production-safe evidence and residual risks.",
+    "Publish an operations artifact with explicit go/no-go criteria."
+  ],
+  "gate": {
+    "reviewerRole": "independent-reviewer",
+    "rules": [
+      "The output directly and completely performs packaging release evidence within its declared boundary.",
+      "Can another reviewer reproduce each verification command?",
+      "Do screenshots and logs identify the tested version?",
+      "Are missing evidence and skipped controls explicit?",
+      "Does the dossier distinguish tested claims from assumptions?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "release-dossier"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "release dossier",
+      "hash manifest",
+      "traceability matrix",
+      "known-risk register"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1710,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "copying CI badges",
+    "mixing evidence from different commits",
+    "claiming defect-free software"
+  ],
+  "optionalConsumes": [
+    "security-release-decision",
+    "deployment-plan",
+    "ux-evidence"
+  ],
+  "requiredTools": [],
+  "optionalTools": [
+    "shell",
+    "container-runtime"
+  ],
+  "description": "Use when packaging release evidence is required during operations work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

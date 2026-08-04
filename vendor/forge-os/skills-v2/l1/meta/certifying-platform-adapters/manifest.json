@@ -1,0 +1,305 @@
+{
+  "schemaVersion": 2,
+  "id": "certifying-platform-adapters",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Certifying Platform Adapters",
+    "description": "Use when certifying platform adapters within meta lifecycle boundaries, especially when does the artifact make the owned decision for certifying platform adapters explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "meta"
+    ],
+    "keywords": [
+      "certifying-platform-adapters",
+      "certifying",
+      "platform",
+      "adapters",
+      "within",
+      "meta",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require certifying platform adapters within meta lifecycle boundaries",
+      "the typed inputs for certifying-platform-adapters are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "behavioral-baseline",
+        "schema": "artifact://forgeos/behavioral-baseline/v1"
+      },
+      {
+        "type": "candidate-change",
+        "schema": "artifact://forgeos/candidate-change/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "adapter-certification",
+        "schema": "artifact://forgeos/adapter-certification/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for certifying platform adapters explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by certifying platform adapters.",
+        "evidence": "certifying-platform-adapters-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to certifying platform adapters.",
+        "evidence": "certifying-platform-adapters-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply certifying platform adapters only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "certifying-platform-adapters-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "certifying-platform-adapters-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if certifying platform adapters were incomplete or implemented incorrectly.",
+        "evidence": "certifying-platform-adapters-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for certifying platform adapters explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "certifying-platform-adapters-decision-table",
+      "certifying-platform-adapters-verification-report",
+      "certifying-platform-adapters-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "certifying-platform-adapters-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 708,
+    "hardTokens": 1106,
+    "outputReserveTokens": 276
+  },
+  "quality": {
+    "benchmarkIds": [
+      "certifying-platform-adapters-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.govern-evolution",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:certifying-platform-adapters",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "4a5bcff05913103fb9dc31d50372a4f6a57f7ce1045f2e07e93c748daeb2d364",
+        "bytes": 939,
+        "tokens": {
+          "gpt-5.6": 253,
+          "claude-opus-4.2": 265,
+          "gemini-3.0-pro": 241,
+          "qwen3.5-32b": 281
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "dc6b63a6ce6653fb402b398850ad039650612cd2d34e4e7ac17f41d6ed7bcd11",
+        "bytes": 718,
+        "tokens": {
+          "gpt-5.6": 194,
+          "claude-opus-4.2": 203,
+          "gemini-3.0-pro": 185,
+          "qwen3.5-32b": 215
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "212bfd2b21deb4b235865d8da8984584697eeff2d5a51ed996a7931fcb6cc8b4",
+        "bytes": 304,
+        "tokens": {
+          "gpt-5.6": 82,
+          "claude-opus-4.2": 86,
+          "gemini-3.0-pro": 78,
+          "qwen3.5-32b": 91
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "31bcf1c77711d78651e9fae41487d5c783789eae6e95be82d0ac6a3f9498a669",
+        "bytes": 613,
+        "tokens": {
+          "gpt-5.6": 165,
+          "claude-opus-4.2": 173,
+          "gemini-3.0-pro": 158,
+          "qwen3.5-32b": 183
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "8953ed6526eb7191211114c0768d117b5d8359c9b6977d4e3b11d7a3db31a754",
+        "bytes": 332,
+        "tokens": {
+          "gpt-5.6": 90,
+          "claude-opus-4.2": 94,
+          "gemini-3.0-pro": 86,
+          "qwen3.5-32b": 100
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "068f395871feef5dc514816e1597cfaf8168b039884798a811d23906c5ce22d4",
+        "bytes": 242,
+        "tokens": {
+          "gpt-5.6": 66,
+          "claude-opus-4.2": 69,
+          "gemini-3.0-pro": 63,
+          "qwen3.5-32b": 73
+        }
+      }
+    ],
+    "indexSha256": "4a6b9f5d0db4e88000f2a337749535d17a12aa89cba867e5c507f92ff7935b69"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "dfecb60fbf1c04a6465b0478234e8303e81d9bd5ec0779277d7e15258df6834f"
+}

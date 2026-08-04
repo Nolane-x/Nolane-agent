@@ -1,0 +1,308 @@
+[
+  {
+    "schema": "nolane.small-model.mutation-recovery-scenario.v1",
+    "id": "go-pty-validation-recovery",
+    "projectId": "native-pty-go",
+    "runtime": "go",
+    "projectRoot": "native/pty",
+    "sourcePath": "main.go",
+    "originalSourceSha256": "02a1e8b66ae51cb8f470345839ebd255bcab4949eb1e59fb6ce0a6dd7b1835ad",
+    "mutatedSourceSha256": "fcecc57e028dccd6f8902ad743d8d5fe3c23b9e85a93281115499434a5e7e5bd",
+    "repairedSourceSha256": "02a1e8b66ae51cb8f470345839ebd255bcab4949eb1e59fb6ce0a6dd7b1835ad",
+    "mutationObserved": true,
+    "recoveryObserved": true,
+    "phases": [
+      {
+        "schema": "nolane.small-model.mutation-recovery-phase.v1",
+        "scenarioId": "go-pty-validation-recovery",
+        "phase": "baseline-pass",
+        "exitCode": 0,
+        "timedOut": false,
+        "execution": {
+          "executable": "go",
+          "argv": [
+            "go",
+            "test",
+            "./..."
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "timedOut": false,
+          "durationMs": 190.403,
+          "stdoutSha256": "20788315bdce03ec5845cfc11a1bcbbb1a49f7f915cc5b960ae1d9539a0a5814",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdoutBytes": 36,
+          "stderrBytes": 0,
+          "outputTruncated": false
+        },
+        "sourceSha256": "02a1e8b66ae51cb8f470345839ebd255bcab4949eb1e59fb6ce0a6dd7b1835ad",
+        "workspaceIdentity": "394be6df77775cacba573a1700e962bd0b7d43b4e75c64bb624dd12aec50d256",
+        "receiptSha256": "656d606fee40d70c5b76fc4a4a2458d118dc2836edf48499757a06d7fab8c6e0"
+      },
+      {
+        "schema": "nolane.small-model.mutation-recovery-phase.v1",
+        "scenarioId": "go-pty-validation-recovery",
+        "phase": "mutation-failure",
+        "exitCode": 1,
+        "timedOut": false,
+        "execution": {
+          "executable": "go",
+          "argv": [
+            "go",
+            "test",
+            "./..."
+          ],
+          "exitCode": 1,
+          "signal": null,
+          "timedOut": false,
+          "durationMs": 194.051,
+          "stdoutSha256": "7b58353054246387d40e9567a7d581ed04860252f29458e8ebc2e83586453b68",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdoutBytes": 190,
+          "stderrBytes": 0,
+          "outputTruncated": false
+        },
+        "sourceSha256": "fcecc57e028dccd6f8902ad743d8d5fe3c23b9e85a93281115499434a5e7e5bd",
+        "workspaceIdentity": "394be6df77775cacba573a1700e962bd0b7d43b4e75c64bb624dd12aec50d256",
+        "receiptSha256": "e4bbb0e8059c2b65bdbdb0ec1637a94765609cc174789459b71118f624a77922"
+      },
+      {
+        "schema": "nolane.small-model.mutation-recovery-phase.v1",
+        "scenarioId": "go-pty-validation-recovery",
+        "phase": "recovery-pass",
+        "exitCode": 0,
+        "timedOut": false,
+        "execution": {
+          "executable": "go",
+          "argv": [
+            "go",
+            "test",
+            "./..."
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "timedOut": false,
+          "durationMs": 69.27,
+          "stdoutSha256": "3078c235bbb60599145991749888078dd6702b9b9bd408f7804e7b80e328474a",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdoutBytes": 38,
+          "stderrBytes": 0,
+          "outputTruncated": false
+        },
+        "sourceSha256": "02a1e8b66ae51cb8f470345839ebd255bcab4949eb1e59fb6ce0a6dd7b1835ad",
+        "workspaceIdentity": "394be6df77775cacba573a1700e962bd0b7d43b4e75c64bb624dd12aec50d256",
+        "receiptSha256": "5613710b3d1542caae5ee08b9e843bb18e18f7298b2af4282b1f29954a033d50"
+      }
+    ],
+    "receiptSha256": "dbd59c672c32fe3d088c1858f526e845f7b36bdcfe0ee99a4506946b9fb0c9c5"
+  },
+  {
+    "schema": "nolane.small-model.mutation-recovery-scenario.v1",
+    "id": "node-release-claim-recovery",
+    "projectId": "nolane-node",
+    "runtime": "node",
+    "projectRoot": ".",
+    "sourcePath": "src/release/non-claim-manifest.mjs",
+    "originalSourceSha256": "475015a29fcb46abc2528ba8221ddad2a4f29f1cef1a3c920e8b4ff1a2fdcbdd",
+    "mutatedSourceSha256": "75db9c066541cfddedd854de49cbdf6021c62a499951831bc68221c6696b18e7",
+    "repairedSourceSha256": "475015a29fcb46abc2528ba8221ddad2a4f29f1cef1a3c920e8b4ff1a2fdcbdd",
+    "mutationObserved": true,
+    "recoveryObserved": true,
+    "phases": [
+      {
+        "schema": "nolane.small-model.mutation-recovery-phase.v1",
+        "scenarioId": "node-release-claim-recovery",
+        "phase": "baseline-pass",
+        "exitCode": 0,
+        "timedOut": false,
+        "execution": {
+          "executable": "/opt/nvm/versions/node/v22.16.0/bin/node",
+          "argv": [
+            "/opt/nvm/versions/node/v22.16.0/bin/node",
+            "--test",
+            "tests/release-non-claim-manifest.test.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "timedOut": false,
+          "durationMs": 76.969,
+          "stdoutSha256": "768d275e6292fc2fba6088a099b53315521ffe01d3e083a12b03b7353f1f522e",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdoutBytes": 629,
+          "stderrBytes": 0,
+          "outputTruncated": false
+        },
+        "sourceSha256": "475015a29fcb46abc2528ba8221ddad2a4f29f1cef1a3c920e8b4ff1a2fdcbdd",
+        "workspaceIdentity": "520c58665000a1e443b721a84e5ca7d4a3687db7e4138b880a9382f3526daa93",
+        "receiptSha256": "0cdd9cd594ca47bee1dab66229440e511dc1416b7a8df66baecd9830148441e7"
+      },
+      {
+        "schema": "nolane.small-model.mutation-recovery-phase.v1",
+        "scenarioId": "node-release-claim-recovery",
+        "phase": "mutation-failure",
+        "exitCode": 1,
+        "timedOut": false,
+        "execution": {
+          "executable": "/opt/nvm/versions/node/v22.16.0/bin/node",
+          "argv": [
+            "/opt/nvm/versions/node/v22.16.0/bin/node",
+            "--test",
+            "tests/release-non-claim-manifest.test.mjs"
+          ],
+          "exitCode": 1,
+          "signal": null,
+          "timedOut": false,
+          "durationMs": 76.748,
+          "stdoutSha256": "6224af3c87f87691197d337f2b724df0f70a2fb893d75280ebfea022a7879109",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdoutBytes": 1442,
+          "stderrBytes": 0,
+          "outputTruncated": false
+        },
+        "sourceSha256": "75db9c066541cfddedd854de49cbdf6021c62a499951831bc68221c6696b18e7",
+        "workspaceIdentity": "520c58665000a1e443b721a84e5ca7d4a3687db7e4138b880a9382f3526daa93",
+        "receiptSha256": "360ea490c3fc242c0cc92daf4f969b7c7554e6d7413990c53a83cc5ac1330605"
+      },
+      {
+        "schema": "nolane.small-model.mutation-recovery-phase.v1",
+        "scenarioId": "node-release-claim-recovery",
+        "phase": "recovery-pass",
+        "exitCode": 0,
+        "timedOut": false,
+        "execution": {
+          "executable": "/opt/nvm/versions/node/v22.16.0/bin/node",
+          "argv": [
+            "/opt/nvm/versions/node/v22.16.0/bin/node",
+            "--test",
+            "tests/release-non-claim-manifest.test.mjs"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "timedOut": false,
+          "durationMs": 74.551,
+          "stdoutSha256": "fceada2d764f1dcaa7b1d9e0a09ad4ab775d779653d6a702aa7f0d4b2af1d5b1",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdoutBytes": 630,
+          "stderrBytes": 0,
+          "outputTruncated": false
+        },
+        "sourceSha256": "475015a29fcb46abc2528ba8221ddad2a4f29f1cef1a3c920e8b4ff1a2fdcbdd",
+        "workspaceIdentity": "520c58665000a1e443b721a84e5ca7d4a3687db7e4138b880a9382f3526daa93",
+        "receiptSha256": "806b61f7a4fb731ccd30cc9895ba39d16e957b51e96002eea9a986554ed8140b"
+      }
+    ],
+    "receiptSha256": "c8b59d9328f736e2bdf12cbe08fb9f20c917afebdddb4d291571d4d6d9629471"
+  },
+  {
+    "schema": "nolane.small-model.mutation-recovery-scenario.v1",
+    "id": "python-sdk-https-recovery",
+    "projectId": "python-sdk",
+    "runtime": "python",
+    "projectRoot": "sdk/python",
+    "sourcePath": "nolane_agent/client.py",
+    "originalSourceSha256": "615b9caaaa6e64265a1b3e1f99e58694b31a8ac03307fdd6bbc6831a288218f1",
+    "mutatedSourceSha256": "9fc24f5f4d7182afbe59e1b3d3789d92047be154bc5bb22aadf705c5ea44beb5",
+    "repairedSourceSha256": "615b9caaaa6e64265a1b3e1f99e58694b31a8ac03307fdd6bbc6831a288218f1",
+    "mutationObserved": true,
+    "recoveryObserved": true,
+    "phases": [
+      {
+        "schema": "nolane.small-model.mutation-recovery-phase.v1",
+        "scenarioId": "python-sdk-https-recovery",
+        "phase": "baseline-pass",
+        "exitCode": 0,
+        "timedOut": false,
+        "execution": {
+          "executable": "python3",
+          "argv": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tests",
+            "-p",
+            "test_*.py"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "timedOut": false,
+          "durationMs": 1055.936,
+          "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderrSha256": "8a07cadaea2f08c12b74343c74d726e45b9d4fe91aaa0d19f78ddaa331f42fd6",
+          "stdoutBytes": 0,
+          "stderrBytes": 101,
+          "outputTruncated": false
+        },
+        "sourceSha256": "615b9caaaa6e64265a1b3e1f99e58694b31a8ac03307fdd6bbc6831a288218f1",
+        "workspaceIdentity": "ec34b062a6c3339431b9b7ea5e7350e9c3471036822ea5f87e1888569ec40582",
+        "receiptSha256": "44c4bf9cad6c0c2a38084b4cd02e1d6d9cfe5f7467bd5907c236271e444f5ff8"
+      },
+      {
+        "schema": "nolane.small-model.mutation-recovery-phase.v1",
+        "scenarioId": "python-sdk-https-recovery",
+        "phase": "mutation-failure",
+        "exitCode": 1,
+        "timedOut": false,
+        "execution": {
+          "executable": "python3",
+          "argv": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tests",
+            "-p",
+            "test_*.py"
+          ],
+          "exitCode": 1,
+          "signal": null,
+          "timedOut": false,
+          "durationMs": 1035.351,
+          "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderrSha256": "7842dbbc32c1e41e88c0c1bdde9e3caaf5747d551d4c5f211667110fde11407d",
+          "stdoutBytes": 0,
+          "stderrBytes": 691,
+          "outputTruncated": false
+        },
+        "sourceSha256": "9fc24f5f4d7182afbe59e1b3d3789d92047be154bc5bb22aadf705c5ea44beb5",
+        "workspaceIdentity": "ec34b062a6c3339431b9b7ea5e7350e9c3471036822ea5f87e1888569ec40582",
+        "receiptSha256": "2e47585d990cc3d7716ecf37c95e8c99c5ab192e01d362c17c73c636dbab4874"
+      },
+      {
+        "schema": "nolane.small-model.mutation-recovery-phase.v1",
+        "scenarioId": "python-sdk-https-recovery",
+        "phase": "recovery-pass",
+        "exitCode": 0,
+        "timedOut": false,
+        "execution": {
+          "executable": "python3",
+          "argv": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tests",
+            "-p",
+            "test_*.py"
+          ],
+          "exitCode": 0,
+          "signal": null,
+          "timedOut": false,
+          "durationMs": 1056.468,
+          "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderrSha256": "8a07cadaea2f08c12b74343c74d726e45b9d4fe91aaa0d19f78ddaa331f42fd6",
+          "stdoutBytes": 0,
+          "stderrBytes": 101,
+          "outputTruncated": false
+        },
+        "sourceSha256": "615b9caaaa6e64265a1b3e1f99e58694b31a8ac03307fdd6bbc6831a288218f1",
+        "workspaceIdentity": "ec34b062a6c3339431b9b7ea5e7350e9c3471036822ea5f87e1888569ec40582",
+        "receiptSha256": "b013dcbbedbf8055c3743ea88531fc8fe6a98a374ae9be8ab4a9ad6af31df07d"
+      }
+    ],
+    "receiptSha256": "94cba3dd1bb04e2e0a1dd8274db706fe1db07acffedf5760dd7571e9a9023848"
+  }
+]

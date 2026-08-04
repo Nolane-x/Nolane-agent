@@ -1,0 +1,19 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { EpistemicActionSelector } from '../src/cognition/epistemic-action-selector.mjs';
+
+test('prefers a cheap discriminating probe and rejects irreversible action under high uncertainty', () => {
+  const selector = new EpistemicActionSelector();
+  const result = selector.select({
+    uncertainty: 0.8,
+    irreversibilityLimit: 0.3,
+    actions: [
+      { id: 'read-20-files', kind: 'read', taskUtility: 0.2, informationGain: 0.25, tokenCost: 8000, ramMbSeconds: 300, timeMs: 12000, irreversibility: 0 },
+      { id: 'run-target-test', kind: 'probe', taskUtility: 0.3, informationGain: 0.85, tokenCost: 100, ramMbSeconds: 20, timeMs: 2000, irreversibility: 0 },
+      { id: 'rewrite-cache', kind: 'patch', taskUtility: 0.9, informationGain: 0.1, tokenCost: 600, ramMbSeconds: 30, timeMs: 4000, irreversibility: 0.8 },
+    ],
+  });
+  assert.equal(result.selected.id, 'run-target-test');
+  assert.equal(result.ranked.find((item) => item.id === 'rewrite-cache').eligible, false);
+  assert.match(result.receiptSha256, /^[a-f0-9]{64}$/);
+});

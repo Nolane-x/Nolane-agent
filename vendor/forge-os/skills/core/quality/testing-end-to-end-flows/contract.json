@@ -1,0 +1,150 @@
+{
+  "name": "testing-end-to-end-flows",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "quality",
+  "domain": null,
+  "status": "candidate",
+  "stages": [
+    "verification"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "test-plan",
+    "verified-build"
+  ],
+  "produces": [
+    "verification-report",
+    "ux-evidence"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:verification-report",
+    "downstream:ux-evidence"
+  ],
+  "tools": [
+    "test-runner"
+  ],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/quality.md",
+  "method": {
+    "focus": "testing end to end flows within quality lifecycle boundaries",
+    "source": "generated-specific",
+    "steps": [
+      "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by testing end to end flows.",
+      "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to testing end to end flows.",
+      "Apply testing end to end flows only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+      "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+      "Create reproducible checks that would fail if testing end to end flows were incomplete or implemented incorrectly."
+    ],
+    "verification": [
+      "Does the artifact make the owned decision for testing end to end flows explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "evidence": [
+      "testing-end-to-end-flows-decision-table",
+      "testing-end-to-end-flows-verification-report",
+      "testing-end-to-end-flows-handoff-envelope"
+    ],
+    "traps": [
+      "treating testing end to end flows as a naming exercise",
+      "covering only the happy path",
+      "creating extension points without a current contract or consumer"
+    ]
+  },
+  "procedure": [
+    "Derive checks from requirements, contracts, invariants, and observed risks.",
+    "Create a test that can fail for the intended defect class.",
+    "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by testing end to end flows.",
+    "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to testing end to end flows.",
+    "Apply testing end to end flows only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+    "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+    "Create reproducible checks that would fail if testing end to end flows were incomplete or implemented incorrectly.",
+    "Run the test against the current system and record the baseline.",
+    "Exercise positive, negative, boundary, and recovery behavior.",
+    "Classify findings by impact, reproducibility, and affected scope.",
+    "Publish evidence without masking critical failures behind aggregate scores."
+  ],
+  "gate": {
+    "reviewerRole": "quality-reviewer",
+    "rules": [
+      "The output directly and completely performs testing end to end flows within its declared boundary.",
+      "Does the artifact make the owned decision for testing end to end flows explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "verification-report",
+        "ux-evidence"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "testing-end-to-end-flows-decision-table",
+      "testing-end-to-end-flows-verification-report",
+      "testing-end-to-end-flows-handoff-envelope"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1895,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "treating testing end to end flows as a naming exercise",
+    "covering only the happy path",
+    "creating extension points without a current contract or consumer"
+  ],
+  "optionalConsumes": [
+    "domain-evidence"
+  ],
+  "requiredTools": [
+    "test-runner"
+  ],
+  "optionalTools": [],
+  "description": "Use when testing end to end flows is required during quality work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

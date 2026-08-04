@@ -1,0 +1,154 @@
+{
+  "name": "using-forge-os",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "kernel",
+  "domain": null,
+  "status": "stable",
+  "stages": [
+    "intent",
+    "discovery",
+    "research",
+    "divergence",
+    "synthesis",
+    "selection",
+    "product-definition",
+    "ux-design",
+    "architecture",
+    "planning",
+    "implementation",
+    "verification",
+    "release-readiness"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "project-state",
+    "gate-state"
+  ],
+  "produces": [
+    "routing-decision"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:routing-decision"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/kernel.md",
+  "method": {
+    "focus": "route one project from confirmed intent to the next evidence-backed state without loading unrelated skills",
+    "steps": [
+      "Read only the project header, current gate, open findings, direct artifact hashes, and confirmed decisions.",
+      "Compute missing gate artifacts before selecting any skill.",
+      "Exclude skills with failed preconditions, unavailable tools, conflicts, quarantine status, or assurance mismatch.",
+      "Activate the smallest non-conflicting skill set that can close the current evidence gap.",
+      "Commit the route explanation, context budget, stop condition, and invalidation impact before dispatch."
+    ],
+    "verification": [
+      "Can every selected skill name a missing gate artifact?",
+      "Would removing any selected skill leave the same gate achievable?",
+      "Are human decisions and critical findings represented explicitly?",
+      "Does the context pack omit unrelated history and full skill bodies?"
+    ],
+    "evidence": [
+      "route-decision.json",
+      "context-pack manifest",
+      "current gate snapshot"
+    ],
+    "traps": [
+      "loading every skill",
+      "routing by keyword alone",
+      "advancing a stage from conversational confidence"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Read the current project state and active gate.",
+    "Resolve only the minimum missing state required for routing.",
+    "Read only the project header, current gate, open findings, direct artifact hashes, and confirmed decisions.",
+    "Compute missing gate artifacts before selecting any skill.",
+    "Exclude skills with failed preconditions, unavailable tools, conflicts, quarantine status, or assurance mismatch.",
+    "Activate the smallest non-conflicting skill set that can close the current evidence gap.",
+    "Commit the route explanation, context budget, stop condition, and invalidation impact before dispatch.",
+    "Compile a bounded context pack from direct dependencies.",
+    "Execute the contracted operation without authoring unrelated artifacts.",
+    "Record decisions, provenance, and audit events.",
+    "Emit the next eligible skill set and stop condition."
+  ],
+  "gate": {
+    "reviewerRole": "independent-reviewer",
+    "rules": [
+      "The output directly and completely performs using forge os within its declared boundary.",
+      "Can every selected skill name a missing gate artifact?",
+      "Would removing any selected skill leave the same gate achievable?",
+      "Are human decisions and critical findings represented explicitly?",
+      "Does the context pack omit unrelated history and full skill bodies?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "routing-decision"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "route-decision.json",
+      "context-pack manifest",
+      "current gate snapshot"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1963,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "loading every skill",
+    "routing by keyword alone",
+    "advancing a stage from conversational confidence"
+  ],
+  "optionalConsumes": [
+    "confirmed-intent"
+  ],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when using forge os is required during kernel work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

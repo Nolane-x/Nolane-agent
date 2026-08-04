@@ -1,0 +1,143 @@
+{
+  "name": "running-security-release-gate",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "security",
+  "domain": null,
+  "status": "stable",
+  "stages": [
+    "release-readiness"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "verification-report",
+    "security-review"
+  ],
+  "produces": [
+    "security-release-decision"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:security-release-decision"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/security.md",
+  "method": {
+    "focus": "make a release decision from unresolved findings, required controls, test evidence, provenance, and explicit residual-risk ownership",
+    "steps": [
+      "Resolve the assurance profile and enumerate mandatory security evidence.",
+      "Verify every critical and high finding against closure evidence rather than status labels.",
+      "Check dependency, secret, authorization, tenant, prompt injection, tool abuse, rollback, and incident readiness evidence.",
+      "Reject aggregate scores that hide a critical blocker.",
+      "Emit pass, fail, or blocked with exact rule IDs, remediation, owner, and evidence hashes."
+    ],
+    "verification": [
+      "Are any findings accepted without exact human confirmation?",
+      "Do evidence hashes match the release candidate?",
+      "Can the build be reproduced and rolled back?",
+      "Are monitoring and incident owners ready before exposure?"
+    ],
+    "evidence": [
+      "security gate result",
+      "finding closure matrix",
+      "release hash manifest",
+      "residual-risk acceptance"
+    ],
+    "traps": [
+      "waiving findings in chat",
+      "using stale scans",
+      "approving a different build than the one tested"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Define assets, trust boundaries, actors, and abuse objectives.",
+    "Map the targeted control or attack surface.",
+    "Resolve the assurance profile and enumerate mandatory security evidence.",
+    "Verify every critical and high finding against closure evidence rather than status labels.",
+    "Check dependency, secret, authorization, tenant, prompt injection, tool abuse, rollback, and incident readiness evidence.",
+    "Reject aggregate scores that hide a critical blocker.",
+    "Emit pass, fail, or blocked with exact rule IDs, remediation, owner, and evidence hashes.",
+    "Construct authorized, reproducible adversarial cases.",
+    "Verify server-side enforcement and least privilege.",
+    "Record exploitability, impact, remediation, and residual risk.",
+    "Block release readiness for unresolved critical findings."
+  ],
+  "gate": {
+    "reviewerRole": "security-reviewer",
+    "rules": [
+      "The output directly and completely performs running security release gate within its declared boundary.",
+      "Are any findings accepted without exact human confirmation?",
+      "Do evidence hashes match the release candidate?",
+      "Can the build be reproduced and rolled back?",
+      "Are monitoring and incident owners ready before exposure?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "security-release-decision"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "security gate result",
+      "finding closure matrix",
+      "release hash manifest",
+      "residual-risk acceptance"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1647,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "waiving findings in chat",
+    "using stale scans",
+    "approving a different build than the one tested"
+  ],
+  "optionalConsumes": [],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when running security release gate is required during security work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

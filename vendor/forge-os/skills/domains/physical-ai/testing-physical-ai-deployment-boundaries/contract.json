@@ -1,0 +1,156 @@
+{
+  "name": "testing-physical-ai-deployment-boundaries",
+  "version": "0.2.0",
+  "kind": "domain",
+  "pack": "domain",
+  "domain": "physical-ai",
+  "status": "candidate",
+  "stages": [
+    "product-definition",
+    "ux-design",
+    "architecture",
+    "planning",
+    "implementation",
+    "verification",
+    "release-readiness"
+  ],
+  "domains": [
+    "physical-ai"
+  ],
+  "consumes": [
+    "product-definition"
+  ],
+  "produces": [
+    "domain-blueprint",
+    "domain-evidence"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:domain-blueprint",
+    "downstream:domain-evidence"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/domains/physical-ai.md",
+  "method": {
+    "focus": "verify physical-AI deployment boundaries through controlled evidence, without granting an agent authority to operate live equipment",
+    "steps": [
+      "Freeze software, model, policy, configuration, hardware revision, calibration state, safety envelope, operator, and test environment identity.",
+      "Exercise simulated or qualified supervised scenarios for normal operation, out-of-envelope requests, stale sensors, communication loss, actuator limits, and emergency stop.",
+      "Record command intent, policy decision, safety interlock response, observation timestamps, intervention, outcome, and evidence integrity for each run.",
+      "Compare observed behavior with declared limits and classify each result as pass, fail, blocked, or untested without inferring field reliability.",
+      "Publish a release-boundary report with replayable inputs where safe, unresolved risks, rollback procedure, human authorization requirements, and prohibited autonomous actions."
+    ],
+    "verification": [
+      "Can evidence tie each test to a specific build, configuration, calibration, operator, and environment?",
+      "Were unsafe commands, stale inputs, communication loss, and emergency stop behavior deliberately tested under safe supervision?",
+      "Does a failed or untested case block the relevant deployment claim?",
+      "Does the report preserve human authority and forbid direct live control by this skill?"
+    ],
+    "evidence": [
+      "physical-AI boundary report",
+      "interlock and emergency-stop record",
+      "controlled scenario log",
+      "rollback and authorization register"
+    ],
+    "traps": [
+      "calling simulation-only checks field validation",
+      "suppressing operator intervention from evidence",
+      "allowing a test harness to become an unreviewed live controller"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Read the confirmed product definition, domain context, assurance profile, and active findings.",
+    "Identify the domain objects, actors, state transitions, regulations, provider boundaries, and operational constraints owned by this skill.",
+    "Freeze software, model, policy, configuration, hardware revision, calibration state, safety envelope, operator, and test environment identity.",
+    "Exercise simulated or qualified supervised scenarios for normal operation, out-of-envelope requests, stale sensors, communication loss, actuator limits, and emergency stop.",
+    "Record command intent, policy decision, safety interlock response, observation timestamps, intervention, outcome, and evidence integrity for each run.",
+    "Compare observed behavior with declared limits and classify each result as pass, fail, blocked, or untested without inferring field reliability.",
+    "Publish a release-boundary report with replayable inputs where safe, unresolved risks, rollback procedure, human authorization requirements, and prohibited autonomous actions.",
+    "Model normal, boundary, failure, recovery, permission, concurrency, migration, and abuse behavior before implementation.",
+    "Define stable contracts and explicit non-goals; do not leak domain concerns into unrelated modules.",
+    "Create executable acceptance, negative, resilience, and compatibility checks proportional to risk.",
+    "Publish the domain artifact, evidence packet, unresolved assumptions, and downstream invalidations."
+  ],
+  "gate": {
+    "reviewerRole": "physical-ai-reviewer",
+    "rules": [
+      "The output directly and completely performs testing physical ai deployment boundaries within its declared boundary.",
+      "Can evidence tie each test to a specific build, configuration, calibration, operator, and environment?",
+      "Were unsafe commands, stale inputs, communication loss, and emergency stop behavior deliberately tested under safe supervision?",
+      "Does a failed or untested case block the relevant deployment claim?",
+      "Does the report preserve human authority and forbid direct live control by this skill?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "domain-blueprint",
+        "domain-evidence"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "physical-AI boundary report",
+      "interlock and emergency-stop record",
+      "controlled scenario log",
+      "rollback and authorization register"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 2079,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "calling simulation-only checks field validation",
+    "suppressing operator intervention from evidence",
+    "allowing a test harness to become an unreviewed live controller"
+  ],
+  "optionalConsumes": [
+    "architecture-decision",
+    "verified-build"
+  ],
+  "requiredTools": [],
+  "optionalTools": [
+    "test-runner"
+  ],
+  "description": "Use when testing physical ai deployment boundaries is required during physical-ai product work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

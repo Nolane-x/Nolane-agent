@@ -1,0 +1,38 @@
+[
+  {
+    "id": "testing-end-to-end-flows-application",
+    "kind": "application",
+    "input": "Task directly requiring testing end to end flows within quality lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "testing-end-to-end-flows-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require testing end to end flows within quality lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "testing-end-to-end-flows-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "testing-end-to-end-flows-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "testing-end-to-end-flows-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "testing-end-to-end-flows-transfer",
+    "kind": "transfer",
+    "input": "Apply the testing-end-to-end-flows mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

@@ -1,0 +1,1493 @@
+{
+  "schema": "nolane.small-model.checkpoint-7-mission-collection.v1",
+  "primaryMissions": [
+    {
+      "schema": "nolane.small-model.mission-trajectory.v1",
+      "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary",
+      "repositoryId": "heldout-node-normalizer",
+      "runtime": "node",
+      "status": "verified-recovery",
+      "steps": [
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:step-01",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary",
+          "index": 0,
+          "phase": "inspect",
+          "parentStepId": null,
+          "state": {
+            "repositoryId": "heldout-node-normalizer",
+            "runtime": "node"
+          },
+          "action": {
+            "type": "inspect-hashes"
+          },
+          "expectedEffect": {
+            "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+            "testSha256": "696a4459fd673a490bb1aade47717ffb11dae13869e2675f30147e09e91dc8ca"
+          },
+          "actualEffect": {
+            "changed": true,
+            "informationGain": 1,
+            "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+            "testSha256": "696a4459fd673a490bb1aade47717ffb11dae13869e2675f30147e09e91dc8ca"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "7d2bee9c317f23ce660000152d929308f9b0f9da720696a3c086bab0a53c0683"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:step-02",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary",
+          "index": 1,
+          "phase": "baseline-test",
+          "parentStepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:step-01",
+          "state": {
+            "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "action": {
+            "type": "run-verifier",
+            "argv": [
+              "/opt/nvm/versions/node/v22.16.0/bin/node",
+              "--test",
+              "test/normalize.test.mjs"
+            ]
+          },
+          "expectedEffect": {
+            "exitCode": 0
+          },
+          "actualEffect": {
+            "changed": true,
+            "criterionDelta": 1,
+            "exitCode": 0,
+            "signal": null,
+            "durationMs": 69,
+            "outputSha256": "dc4f4b614fd828ce4106da07483b83e4b3d6d6e157eec72fd831107c8ef1864d",
+            "outputBytes": 518,
+            "shellUsed": false
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "1a1e22cabc58b1c4f9f3b84aaaa8bba035a257442d6846109d63ba7d81cecc76"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:step-03",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary",
+          "index": 2,
+          "phase": "mutate",
+          "parentStepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:step-02",
+          "state": {
+            "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "action": {
+            "type": "apply-declared-mutation",
+            "path": "src/normalize.mjs"
+          },
+          "expectedEffect": {
+            "sourceSha256Changed": true
+          },
+          "actualEffect": {
+            "changed": true,
+            "sourceSha256": "398e30ed94776f2bc78f73e606486a229723d49e67214799f60297e827dcc011"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "mutation-applied"
+          },
+          "candidateSha256": "398e30ed94776f2bc78f73e606486a229723d49e67214799f60297e827dcc011",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "c6b9ac4098a33297ab351d093ba8d380510221a5bfb27fe7f8db10864de13049"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:step-04",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary",
+          "index": 3,
+          "phase": "mutation-test",
+          "parentStepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:step-03",
+          "state": {
+            "candidateSha256": "398e30ed94776f2bc78f73e606486a229723d49e67214799f60297e827dcc011"
+          },
+          "action": {
+            "type": "run-verifier",
+            "argv": [
+              "/opt/nvm/versions/node/v22.16.0/bin/node",
+              "--test",
+              "test/normalize.test.mjs"
+            ]
+          },
+          "expectedEffect": {
+            "exitCode": 1
+          },
+          "actualEffect": {
+            "changed": true,
+            "regressionDelta": 1,
+            "exitCode": 1,
+            "signal": null,
+            "durationMs": 70,
+            "outputSha256": "ff883a6243cbe3182777c549130ad03dad5b7f9bf83b2a54138151facde84349",
+            "outputBytes": 1238,
+            "shellUsed": false
+          },
+          "verifier": {
+            "valid": true,
+            "status": "expected-failure"
+          },
+          "candidateSha256": "398e30ed94776f2bc78f73e606486a229723d49e67214799f60297e827dcc011",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "ed8772c0d150ef8395b4c214263b175824101e790982d1d1d16f2f5125aac201"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:step-05",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary",
+          "index": 4,
+          "phase": "repair",
+          "parentStepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:step-04",
+          "state": {
+            "candidateSha256": "398e30ed94776f2bc78f73e606486a229723d49e67214799f60297e827dcc011"
+          },
+          "action": {
+            "type": "apply-declared-repair",
+            "path": "src/normalize.mjs"
+          },
+          "expectedEffect": {
+            "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "actualEffect": {
+            "changed": true,
+            "recoveryDelta": 1,
+            "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "d8c0bf7538c51207cc838169dc61bb9db57428fe9d58846f19764e4a551d6282"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:step-06",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary",
+          "index": 5,
+          "phase": "recovery-test",
+          "parentStepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:step-05",
+          "state": {
+            "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "action": {
+            "type": "run-verifier",
+            "argv": [
+              "/opt/nvm/versions/node/v22.16.0/bin/node",
+              "--test",
+              "test/normalize.test.mjs"
+            ]
+          },
+          "expectedEffect": {
+            "exitCode": 0
+          },
+          "actualEffect": {
+            "changed": true,
+            "criterionDelta": 1,
+            "recoveryDelta": 1,
+            "exitCode": 0,
+            "signal": null,
+            "durationMs": 64,
+            "outputSha256": "d52ce34e9a5ae3ecfab3b5897c7da0783753e10163fbc696e2e05c6d7295848d",
+            "outputBytes": 532,
+            "shellUsed": false
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "9c4e15fa9cd586d4f6fa5736d40b27ccf551761a5fd3dba23e0b3171d118faf4"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:step-07",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary",
+          "index": 6,
+          "phase": "final-integrity",
+          "parentStepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:step-06",
+          "state": {
+            "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "action": {
+            "type": "verify-integrity"
+          },
+          "expectedEffect": {
+            "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "actualEffect": {
+            "changed": true,
+            "informationGain": 1,
+            "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "9b9a085f00036e38e9f156493ebb1c06546ced59dfb8bf054b5d7f61cc9addc6"
+        }
+      ],
+      "stepCount": 7,
+      "bestCandidate": {
+        "candidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:baseline",
+        "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+        "verified": true,
+        "score": 10,
+        "stepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:step-01"
+      },
+      "bestCandidateLedger": {
+        "schema": "nolane.small-model.best-candidate-ledger.v1",
+        "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary",
+        "best": {
+          "candidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:baseline",
+          "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+          "verified": true,
+          "score": 10,
+          "stepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:primary:step-01"
+        },
+        "decisions": 3,
+        "regressionsRejected": 1,
+        "receiptSha256": "6cef2f39589e394a7af1fe7cd5cf9da32034e15a3253f94b8f588b3d599e99b7"
+      },
+      "bestCandidatePreserved": true,
+      "trackedSourceUnchanged": true,
+      "declaredMutation": {
+        "path": "src/normalize.mjs",
+        "from": "return normalized.toLowerCase();",
+        "to": "return normalized;"
+      },
+      "declaredRepair": {
+        "path": "src/normalize.mjs",
+        "from": "return normalized;",
+        "to": "return normalized.toLowerCase();"
+      },
+      "trainingRepositoryDisjoint": true,
+      "hiddenChainOfThoughtStored": false,
+      "workspaceRemoved": true,
+      "receiptSha256": "0eccd9d2a6cf6ef947b39c95590a65eebc91cd077a7d654523798a2ea7d34d13"
+    },
+    {
+      "schema": "nolane.small-model.mission-trajectory.v1",
+      "missionId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary",
+      "repositoryId": "heldout-go-normalizer",
+      "runtime": "go",
+      "status": "verified-recovery",
+      "steps": [
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:step-01",
+          "missionId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary",
+          "index": 0,
+          "phase": "inspect",
+          "parentStepId": null,
+          "state": {
+            "repositoryId": "heldout-go-normalizer",
+            "runtime": "go"
+          },
+          "action": {
+            "type": "inspect-hashes"
+          },
+          "expectedEffect": {
+            "sourceSha256": "be39fdfbdc6c6bf2d92f9874b90ebcf6af0694af11594c5f293100a12d453235",
+            "testSha256": "7a761a7bd0125ac37b098197af7fee81413d1e6e43c7cb58a24bdd7b56e6d7f3"
+          },
+          "actualEffect": {
+            "changed": true,
+            "informationGain": 1,
+            "sourceSha256": "be39fdfbdc6c6bf2d92f9874b90ebcf6af0694af11594c5f293100a12d453235",
+            "testSha256": "7a761a7bd0125ac37b098197af7fee81413d1e6e43c7cb58a24bdd7b56e6d7f3"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "be39fdfbdc6c6bf2d92f9874b90ebcf6af0694af11594c5f293100a12d453235",
+          "bestCandidateId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "f92744b1950d65010d178207b7f00262134b0444d259ba360c03723f4759be3f"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:step-02",
+          "missionId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary",
+          "index": 1,
+          "phase": "baseline-test",
+          "parentStepId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:step-01",
+          "state": {
+            "candidateSha256": "be39fdfbdc6c6bf2d92f9874b90ebcf6af0694af11594c5f293100a12d453235"
+          },
+          "action": {
+            "type": "run-verifier",
+            "argv": [
+              "go",
+              "test",
+              "./..."
+            ]
+          },
+          "expectedEffect": {
+            "exitCode": 0
+          },
+          "actualEffect": {
+            "changed": true,
+            "criterionDelta": 1,
+            "exitCode": 0,
+            "signal": null,
+            "durationMs": 128,
+            "outputSha256": "2ccfd44d157b0680581b7eb83906725271c352427bc91d203e268f505bdfff70",
+            "outputBytes": 45,
+            "shellUsed": false
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "be39fdfbdc6c6bf2d92f9874b90ebcf6af0694af11594c5f293100a12d453235",
+          "bestCandidateId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "1abaa3c059308efd0927cd352592bc54543893cef8e99e0891e87931a9278085"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:step-03",
+          "missionId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary",
+          "index": 2,
+          "phase": "mutate",
+          "parentStepId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:step-02",
+          "state": {
+            "candidateSha256": "be39fdfbdc6c6bf2d92f9874b90ebcf6af0694af11594c5f293100a12d453235"
+          },
+          "action": {
+            "type": "apply-declared-mutation",
+            "path": "normalize.go"
+          },
+          "expectedEffect": {
+            "sourceSha256Changed": true
+          },
+          "actualEffect": {
+            "changed": true,
+            "sourceSha256": "efe5fd38477f9a331322ffad417b9395c841e85c61eea7482678e6cc19fa4dde"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "mutation-applied"
+          },
+          "candidateSha256": "efe5fd38477f9a331322ffad417b9395c841e85c61eea7482678e6cc19fa4dde",
+          "bestCandidateId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "0f83902312e23d19ef1c9fb3f6295e6e187ecc31d2cbf92d7e1c20f25c87878e"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:step-04",
+          "missionId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary",
+          "index": 3,
+          "phase": "mutation-test",
+          "parentStepId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:step-03",
+          "state": {
+            "candidateSha256": "efe5fd38477f9a331322ffad417b9395c841e85c61eea7482678e6cc19fa4dde"
+          },
+          "action": {
+            "type": "run-verifier",
+            "argv": [
+              "go",
+              "test",
+              "./..."
+            ]
+          },
+          "expectedEffect": {
+            "exitCode": 1
+          },
+          "actualEffect": {
+            "changed": true,
+            "regressionDelta": 1,
+            "exitCode": 1,
+            "signal": null,
+            "durationMs": 147,
+            "outputSha256": "04f2415c7495d4c9096f99271c10d6bf3e47712535859668865d4564093279f9",
+            "outputBytes": 160,
+            "shellUsed": false
+          },
+          "verifier": {
+            "valid": true,
+            "status": "expected-failure"
+          },
+          "candidateSha256": "efe5fd38477f9a331322ffad417b9395c841e85c61eea7482678e6cc19fa4dde",
+          "bestCandidateId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "1a557436a4c773d01693301d5aa836b114e16688921aeb9a4778597a4196406d"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:step-05",
+          "missionId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary",
+          "index": 4,
+          "phase": "repair",
+          "parentStepId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:step-04",
+          "state": {
+            "candidateSha256": "efe5fd38477f9a331322ffad417b9395c841e85c61eea7482678e6cc19fa4dde"
+          },
+          "action": {
+            "type": "apply-declared-repair",
+            "path": "normalize.go"
+          },
+          "expectedEffect": {
+            "sourceSha256": "be39fdfbdc6c6bf2d92f9874b90ebcf6af0694af11594c5f293100a12d453235"
+          },
+          "actualEffect": {
+            "changed": true,
+            "recoveryDelta": 1,
+            "sourceSha256": "be39fdfbdc6c6bf2d92f9874b90ebcf6af0694af11594c5f293100a12d453235"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "be39fdfbdc6c6bf2d92f9874b90ebcf6af0694af11594c5f293100a12d453235",
+          "bestCandidateId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "8195d3fac90d0aedfe94885c786c80375246181131053e19d60a68f3afc295da"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:step-06",
+          "missionId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary",
+          "index": 5,
+          "phase": "recovery-test",
+          "parentStepId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:step-05",
+          "state": {
+            "candidateSha256": "be39fdfbdc6c6bf2d92f9874b90ebcf6af0694af11594c5f293100a12d453235"
+          },
+          "action": {
+            "type": "run-verifier",
+            "argv": [
+              "go",
+              "test",
+              "./..."
+            ]
+          },
+          "expectedEffect": {
+            "exitCode": 0
+          },
+          "actualEffect": {
+            "changed": true,
+            "criterionDelta": 1,
+            "recoveryDelta": 1,
+            "exitCode": 0,
+            "signal": null,
+            "durationMs": 48,
+            "outputSha256": "9c2416d8bc8c7fa22faa6193ee2c3abfdec18f10593da91af75e07fec35800d9",
+            "outputBytes": 47,
+            "shellUsed": false
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "be39fdfbdc6c6bf2d92f9874b90ebcf6af0694af11594c5f293100a12d453235",
+          "bestCandidateId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "85694dd7e739844c4691d7bea3f6d6cb028374b82a76dc809ec5a11c83914861"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:step-07",
+          "missionId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary",
+          "index": 6,
+          "phase": "final-integrity",
+          "parentStepId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:step-06",
+          "state": {
+            "candidateSha256": "be39fdfbdc6c6bf2d92f9874b90ebcf6af0694af11594c5f293100a12d453235"
+          },
+          "action": {
+            "type": "verify-integrity"
+          },
+          "expectedEffect": {
+            "sourceSha256": "be39fdfbdc6c6bf2d92f9874b90ebcf6af0694af11594c5f293100a12d453235"
+          },
+          "actualEffect": {
+            "changed": true,
+            "informationGain": 1,
+            "sourceSha256": "be39fdfbdc6c6bf2d92f9874b90ebcf6af0694af11594c5f293100a12d453235"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "be39fdfbdc6c6bf2d92f9874b90ebcf6af0694af11594c5f293100a12d453235",
+          "bestCandidateId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "18c195075542b19032906a2dcfaa40cbd1dd1cbef996ddb780e9419444571840"
+        }
+      ],
+      "stepCount": 7,
+      "bestCandidate": {
+        "candidateId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:baseline",
+        "sourceSha256": "be39fdfbdc6c6bf2d92f9874b90ebcf6af0694af11594c5f293100a12d453235",
+        "verified": true,
+        "score": 10,
+        "stepId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:step-01"
+      },
+      "bestCandidateLedger": {
+        "schema": "nolane.small-model.best-candidate-ledger.v1",
+        "missionId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary",
+        "best": {
+          "candidateId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:baseline",
+          "sourceSha256": "be39fdfbdc6c6bf2d92f9874b90ebcf6af0694af11594c5f293100a12d453235",
+          "verified": true,
+          "score": 10,
+          "stepId": "checkpoint-7:heldout-go-normalizer:normalize-case-go:primary:step-01"
+        },
+        "decisions": 3,
+        "regressionsRejected": 1,
+        "receiptSha256": "fc1eca271af4c0a731f76f5d47addd81102e1446b836044aef6b31e40cf57d14"
+      },
+      "bestCandidatePreserved": true,
+      "trackedSourceUnchanged": true,
+      "declaredMutation": {
+        "path": "normalize.go",
+        "from": "return strings.ToLower(normalized)",
+        "to": "return normalized"
+      },
+      "declaredRepair": {
+        "path": "normalize.go",
+        "from": "return normalized",
+        "to": "return strings.ToLower(normalized)"
+      },
+      "trainingRepositoryDisjoint": true,
+      "hiddenChainOfThoughtStored": false,
+      "workspaceRemoved": true,
+      "receiptSha256": "73bc99a2b6a87924f8dd108ec3b14f7730bb1b2fee9318ed1252e2277a96850f"
+    },
+    {
+      "schema": "nolane.small-model.mission-trajectory.v1",
+      "missionId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary",
+      "repositoryId": "heldout-python-normalizer",
+      "runtime": "python",
+      "status": "verified-recovery",
+      "steps": [
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:step-01",
+          "missionId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary",
+          "index": 0,
+          "phase": "inspect",
+          "parentStepId": null,
+          "state": {
+            "repositoryId": "heldout-python-normalizer",
+            "runtime": "python"
+          },
+          "action": {
+            "type": "inspect-hashes"
+          },
+          "expectedEffect": {
+            "sourceSha256": "1ecca0e11e947ee33dda0edda321ae679990b7e21481e730871dab8530ea6fab",
+            "testSha256": "ee86a34bedd444cca3f1ae658b99924a283b70909d886462a51f64ff35f830c6"
+          },
+          "actualEffect": {
+            "changed": true,
+            "informationGain": 1,
+            "sourceSha256": "1ecca0e11e947ee33dda0edda321ae679990b7e21481e730871dab8530ea6fab",
+            "testSha256": "ee86a34bedd444cca3f1ae658b99924a283b70909d886462a51f64ff35f830c6"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "1ecca0e11e947ee33dda0edda321ae679990b7e21481e730871dab8530ea6fab",
+          "bestCandidateId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "f656c5d7900bda83a4f803924b5f8140790dbeac06f61fe809a972a5a509cc00"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:step-02",
+          "missionId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary",
+          "index": 1,
+          "phase": "baseline-test",
+          "parentStepId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:step-01",
+          "state": {
+            "candidateSha256": "1ecca0e11e947ee33dda0edda321ae679990b7e21481e730871dab8530ea6fab"
+          },
+          "action": {
+            "type": "run-verifier",
+            "argv": [
+              "python3",
+              "-m",
+              "unittest",
+              "test_normalize.py"
+            ]
+          },
+          "expectedEffect": {
+            "exitCode": 0
+          },
+          "actualEffect": {
+            "changed": true,
+            "criterionDelta": 1,
+            "exitCode": 0,
+            "signal": null,
+            "durationMs": 527,
+            "outputSha256": "7efe556458833bb311d7afb358db7f7ab6da6b774c67940d49121730ea560386",
+            "outputBytes": 107,
+            "shellUsed": false
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "1ecca0e11e947ee33dda0edda321ae679990b7e21481e730871dab8530ea6fab",
+          "bestCandidateId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "8155be82bda54b9e17bef8481d260000c0f773c820bea541ca5cfef300a05867"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:step-03",
+          "missionId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary",
+          "index": 2,
+          "phase": "mutate",
+          "parentStepId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:step-02",
+          "state": {
+            "candidateSha256": "1ecca0e11e947ee33dda0edda321ae679990b7e21481e730871dab8530ea6fab"
+          },
+          "action": {
+            "type": "apply-declared-mutation",
+            "path": "normalize.py"
+          },
+          "expectedEffect": {
+            "sourceSha256Changed": true
+          },
+          "actualEffect": {
+            "changed": true,
+            "sourceSha256": "ed341f2c5d69fff87b42e89aae0a640883476125af6372be4e3d8dc077fcab55"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "mutation-applied"
+          },
+          "candidateSha256": "ed341f2c5d69fff87b42e89aae0a640883476125af6372be4e3d8dc077fcab55",
+          "bestCandidateId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "aab67e623c2ae6aea16e0a9711061f6f9f41923817f5d5d908d1c0c8d5a2f66f"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:step-04",
+          "missionId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary",
+          "index": 3,
+          "phase": "mutation-test",
+          "parentStepId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:step-03",
+          "state": {
+            "candidateSha256": "ed341f2c5d69fff87b42e89aae0a640883476125af6372be4e3d8dc077fcab55"
+          },
+          "action": {
+            "type": "run-verifier",
+            "argv": [
+              "python3",
+              "-m",
+              "unittest",
+              "test_normalize.py"
+            ]
+          },
+          "expectedEffect": {
+            "exitCode": 1
+          },
+          "actualEffect": {
+            "changed": true,
+            "regressionDelta": 1,
+            "exitCode": 1,
+            "signal": null,
+            "durationMs": 522,
+            "outputSha256": "da7ec1d11e35bf23e71a87d7fb81198edaeaa57e92115cc73ec6bdb2683625de",
+            "outputBytes": 696,
+            "shellUsed": false
+          },
+          "verifier": {
+            "valid": true,
+            "status": "expected-failure"
+          },
+          "candidateSha256": "ed341f2c5d69fff87b42e89aae0a640883476125af6372be4e3d8dc077fcab55",
+          "bestCandidateId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "064856d91eaedc4d79240cf45b34a844a6f79a4ca153d8ff76a396aea1b0aa6b"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:step-05",
+          "missionId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary",
+          "index": 4,
+          "phase": "repair",
+          "parentStepId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:step-04",
+          "state": {
+            "candidateSha256": "ed341f2c5d69fff87b42e89aae0a640883476125af6372be4e3d8dc077fcab55"
+          },
+          "action": {
+            "type": "apply-declared-repair",
+            "path": "normalize.py"
+          },
+          "expectedEffect": {
+            "sourceSha256": "1ecca0e11e947ee33dda0edda321ae679990b7e21481e730871dab8530ea6fab"
+          },
+          "actualEffect": {
+            "changed": true,
+            "recoveryDelta": 1,
+            "sourceSha256": "1ecca0e11e947ee33dda0edda321ae679990b7e21481e730871dab8530ea6fab"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "1ecca0e11e947ee33dda0edda321ae679990b7e21481e730871dab8530ea6fab",
+          "bestCandidateId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "19191f8495809fc6c7697782a9f9b538e5177f68d778cee4a62ab51a20417378"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:step-06",
+          "missionId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary",
+          "index": 5,
+          "phase": "recovery-test",
+          "parentStepId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:step-05",
+          "state": {
+            "candidateSha256": "1ecca0e11e947ee33dda0edda321ae679990b7e21481e730871dab8530ea6fab"
+          },
+          "action": {
+            "type": "run-verifier",
+            "argv": [
+              "python3",
+              "-m",
+              "unittest",
+              "test_normalize.py"
+            ]
+          },
+          "expectedEffect": {
+            "exitCode": 0
+          },
+          "actualEffect": {
+            "changed": true,
+            "criterionDelta": 1,
+            "recoveryDelta": 1,
+            "exitCode": 0,
+            "signal": null,
+            "durationMs": 513,
+            "outputSha256": "7efe556458833bb311d7afb358db7f7ab6da6b774c67940d49121730ea560386",
+            "outputBytes": 107,
+            "shellUsed": false
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "1ecca0e11e947ee33dda0edda321ae679990b7e21481e730871dab8530ea6fab",
+          "bestCandidateId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "ef30a74a06e8659e50dd210382e7bd1aaef593ddb03e94b73cf835f2a0a0808b"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:step-07",
+          "missionId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary",
+          "index": 6,
+          "phase": "final-integrity",
+          "parentStepId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:step-06",
+          "state": {
+            "candidateSha256": "1ecca0e11e947ee33dda0edda321ae679990b7e21481e730871dab8530ea6fab"
+          },
+          "action": {
+            "type": "verify-integrity"
+          },
+          "expectedEffect": {
+            "sourceSha256": "1ecca0e11e947ee33dda0edda321ae679990b7e21481e730871dab8530ea6fab"
+          },
+          "actualEffect": {
+            "changed": true,
+            "informationGain": 1,
+            "sourceSha256": "1ecca0e11e947ee33dda0edda321ae679990b7e21481e730871dab8530ea6fab"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "1ecca0e11e947ee33dda0edda321ae679990b7e21481e730871dab8530ea6fab",
+          "bestCandidateId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "003d9bd67894e04d423af843877f69587f422b02fea81f2b6db590ff594be39e"
+        }
+      ],
+      "stepCount": 7,
+      "bestCandidate": {
+        "candidateId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:baseline",
+        "sourceSha256": "1ecca0e11e947ee33dda0edda321ae679990b7e21481e730871dab8530ea6fab",
+        "verified": true,
+        "score": 10,
+        "stepId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:step-01"
+      },
+      "bestCandidateLedger": {
+        "schema": "nolane.small-model.best-candidate-ledger.v1",
+        "missionId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary",
+        "best": {
+          "candidateId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:baseline",
+          "sourceSha256": "1ecca0e11e947ee33dda0edda321ae679990b7e21481e730871dab8530ea6fab",
+          "verified": true,
+          "score": 10,
+          "stepId": "checkpoint-7:heldout-python-normalizer:normalize-case-python:primary:step-01"
+        },
+        "decisions": 3,
+        "regressionsRejected": 1,
+        "receiptSha256": "aa08da8144c3fbd2968e101dcd024a1d87f883aab3562e54077fd4a7f438e6d0"
+      },
+      "bestCandidatePreserved": true,
+      "trackedSourceUnchanged": true,
+      "declaredMutation": {
+        "path": "normalize.py",
+        "from": "return normalized.lower()",
+        "to": "return normalized"
+      },
+      "declaredRepair": {
+        "path": "normalize.py",
+        "from": "return normalized",
+        "to": "return normalized.lower()"
+      },
+      "trainingRepositoryDisjoint": true,
+      "hiddenChainOfThoughtStored": false,
+      "workspaceRemoved": true,
+      "receiptSha256": "727ac151b799e81470fecdd4e74d156945ce18dfd0b713d5e2c338ac95282fe2"
+    }
+  ],
+  "inductionMissions": [
+    {
+      "schema": "nolane.small-model.mission-trajectory.v1",
+      "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a",
+      "repositoryId": "heldout-node-normalizer",
+      "runtime": "node",
+      "status": "verified-recovery",
+      "steps": [
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:step-01",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a",
+          "index": 0,
+          "phase": "inspect",
+          "parentStepId": null,
+          "state": {
+            "repositoryId": "heldout-node-normalizer",
+            "runtime": "node"
+          },
+          "action": {
+            "type": "inspect-hashes"
+          },
+          "expectedEffect": {
+            "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+            "testSha256": "696a4459fd673a490bb1aade47717ffb11dae13869e2675f30147e09e91dc8ca"
+          },
+          "actualEffect": {
+            "changed": true,
+            "informationGain": 1,
+            "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+            "testSha256": "696a4459fd673a490bb1aade47717ffb11dae13869e2675f30147e09e91dc8ca"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "e2ee295eb9243830a5c32a849f8a64c5105e142e97a37e05c71b0bac956f14a5"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:step-02",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a",
+          "index": 1,
+          "phase": "baseline-test",
+          "parentStepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:step-01",
+          "state": {
+            "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "action": {
+            "type": "run-verifier",
+            "argv": [
+              "/opt/nvm/versions/node/v22.16.0/bin/node",
+              "--test",
+              "test/normalize.test.mjs"
+            ]
+          },
+          "expectedEffect": {
+            "exitCode": 0
+          },
+          "actualEffect": {
+            "changed": true,
+            "criterionDelta": 1,
+            "exitCode": 0,
+            "signal": null,
+            "durationMs": 65,
+            "outputSha256": "1ace720ebc5f8c23ad49d5a7c0a681a26c00bced4aa5b8e4fca2076b6b54bd3f",
+            "outputBytes": 532,
+            "shellUsed": false
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "6e5d6fd80ba8cbd4ffb46c55c2a373dc1a7cf1fb7ca4ec413f842ea9c2fa07e5"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:step-03",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a",
+          "index": 2,
+          "phase": "mutate",
+          "parentStepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:step-02",
+          "state": {
+            "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "action": {
+            "type": "apply-declared-mutation",
+            "path": "src/normalize.mjs"
+          },
+          "expectedEffect": {
+            "sourceSha256Changed": true
+          },
+          "actualEffect": {
+            "changed": true,
+            "sourceSha256": "398e30ed94776f2bc78f73e606486a229723d49e67214799f60297e827dcc011"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "mutation-applied"
+          },
+          "candidateSha256": "398e30ed94776f2bc78f73e606486a229723d49e67214799f60297e827dcc011",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "a881537b00dcd838b6bfc12154b2eaecb5f96a19bb5dacc41d52482a7512b86a"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:step-04",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a",
+          "index": 3,
+          "phase": "mutation-test",
+          "parentStepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:step-03",
+          "state": {
+            "candidateSha256": "398e30ed94776f2bc78f73e606486a229723d49e67214799f60297e827dcc011"
+          },
+          "action": {
+            "type": "run-verifier",
+            "argv": [
+              "/opt/nvm/versions/node/v22.16.0/bin/node",
+              "--test",
+              "test/normalize.test.mjs"
+            ]
+          },
+          "expectedEffect": {
+            "exitCode": 1
+          },
+          "actualEffect": {
+            "changed": true,
+            "regressionDelta": 1,
+            "exitCode": 1,
+            "signal": null,
+            "durationMs": 68,
+            "outputSha256": "2ebd9bd5289221fd14a7fc81ee6e29b39825cff9754b7cf3ce141e8fdc866dbf",
+            "outputBytes": 1237,
+            "shellUsed": false
+          },
+          "verifier": {
+            "valid": true,
+            "status": "expected-failure"
+          },
+          "candidateSha256": "398e30ed94776f2bc78f73e606486a229723d49e67214799f60297e827dcc011",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "d4c8551822db03b10155fe99334ad56097a5680dfd9bfeb646a49fb37c143f46"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:step-05",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a",
+          "index": 4,
+          "phase": "repair",
+          "parentStepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:step-04",
+          "state": {
+            "candidateSha256": "398e30ed94776f2bc78f73e606486a229723d49e67214799f60297e827dcc011"
+          },
+          "action": {
+            "type": "apply-declared-repair",
+            "path": "src/normalize.mjs"
+          },
+          "expectedEffect": {
+            "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "actualEffect": {
+            "changed": true,
+            "recoveryDelta": 1,
+            "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "fba53885bead8c46dcc1ebad0d8eabc3f0c539e073326724e4a064660f4a9935"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:step-06",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a",
+          "index": 5,
+          "phase": "recovery-test",
+          "parentStepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:step-05",
+          "state": {
+            "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "action": {
+            "type": "run-verifier",
+            "argv": [
+              "/opt/nvm/versions/node/v22.16.0/bin/node",
+              "--test",
+              "test/normalize.test.mjs"
+            ]
+          },
+          "expectedEffect": {
+            "exitCode": 0
+          },
+          "actualEffect": {
+            "changed": true,
+            "criterionDelta": 1,
+            "recoveryDelta": 1,
+            "exitCode": 0,
+            "signal": null,
+            "durationMs": 66,
+            "outputSha256": "ce23b3425507db556015ba8d99814dad2df61fd53da65c31be7714c7f4656841",
+            "outputBytes": 532,
+            "shellUsed": false
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "f2d0914fd08341b5410a3de8abba8e397916e072e85109279c312df3f5929be3"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:step-07",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a",
+          "index": 6,
+          "phase": "final-integrity",
+          "parentStepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:step-06",
+          "state": {
+            "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "action": {
+            "type": "verify-integrity"
+          },
+          "expectedEffect": {
+            "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "actualEffect": {
+            "changed": true,
+            "informationGain": 1,
+            "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "fbc9420f79bc99074dff93792542d2ecaa061f6ecefa5a8f333b70b4473b97dd"
+        }
+      ],
+      "stepCount": 7,
+      "bestCandidate": {
+        "candidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:baseline",
+        "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+        "verified": true,
+        "score": 10,
+        "stepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:step-01"
+      },
+      "bestCandidateLedger": {
+        "schema": "nolane.small-model.best-candidate-ledger.v1",
+        "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a",
+        "best": {
+          "candidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:baseline",
+          "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+          "verified": true,
+          "score": 10,
+          "stepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-a:step-01"
+        },
+        "decisions": 3,
+        "regressionsRejected": 1,
+        "receiptSha256": "c5eb7ad5b8d7a67bfc28d08b9c4ae06b09bff05fd624a5c424532f50fe05997d"
+      },
+      "bestCandidatePreserved": true,
+      "trackedSourceUnchanged": true,
+      "declaredMutation": {
+        "path": "src/normalize.mjs",
+        "from": "return normalized.toLowerCase();",
+        "to": "return normalized;"
+      },
+      "declaredRepair": {
+        "path": "src/normalize.mjs",
+        "from": "return normalized;",
+        "to": "return normalized.toLowerCase();"
+      },
+      "trainingRepositoryDisjoint": true,
+      "hiddenChainOfThoughtStored": false,
+      "workspaceRemoved": true,
+      "receiptSha256": "b754eae9a4f7bf6acc57362f84c2562d383ac4511e12fc83772a9aa7989e890c"
+    },
+    {
+      "schema": "nolane.small-model.mission-trajectory.v1",
+      "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b",
+      "repositoryId": "heldout-node-normalizer",
+      "runtime": "node",
+      "status": "verified-recovery",
+      "steps": [
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:step-01",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b",
+          "index": 0,
+          "phase": "inspect",
+          "parentStepId": null,
+          "state": {
+            "repositoryId": "heldout-node-normalizer",
+            "runtime": "node"
+          },
+          "action": {
+            "type": "inspect-hashes"
+          },
+          "expectedEffect": {
+            "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+            "testSha256": "696a4459fd673a490bb1aade47717ffb11dae13869e2675f30147e09e91dc8ca"
+          },
+          "actualEffect": {
+            "changed": true,
+            "informationGain": 1,
+            "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+            "testSha256": "696a4459fd673a490bb1aade47717ffb11dae13869e2675f30147e09e91dc8ca"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "da0a9e882cf20d47529f677efc85f48c5c5b5ccdd90e4963174bd5650c42e6c5"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:step-02",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b",
+          "index": 1,
+          "phase": "baseline-test",
+          "parentStepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:step-01",
+          "state": {
+            "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "action": {
+            "type": "run-verifier",
+            "argv": [
+              "/opt/nvm/versions/node/v22.16.0/bin/node",
+              "--test",
+              "test/normalize.test.mjs"
+            ]
+          },
+          "expectedEffect": {
+            "exitCode": 0
+          },
+          "actualEffect": {
+            "changed": true,
+            "criterionDelta": 1,
+            "exitCode": 0,
+            "signal": null,
+            "durationMs": 64,
+            "outputSha256": "d877b62080d1c11eadb47d12efad9fcfa8a6a83a986edf90f087061cddf39d48",
+            "outputBytes": 532,
+            "shellUsed": false
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "02674e057977f539e8f009393aa648ebc741b171f68169e9be6c6c6c0fc9b8c5"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:step-03",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b",
+          "index": 2,
+          "phase": "mutate",
+          "parentStepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:step-02",
+          "state": {
+            "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "action": {
+            "type": "apply-declared-mutation",
+            "path": "src/normalize.mjs"
+          },
+          "expectedEffect": {
+            "sourceSha256Changed": true
+          },
+          "actualEffect": {
+            "changed": true,
+            "sourceSha256": "398e30ed94776f2bc78f73e606486a229723d49e67214799f60297e827dcc011"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "mutation-applied"
+          },
+          "candidateSha256": "398e30ed94776f2bc78f73e606486a229723d49e67214799f60297e827dcc011",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "a73ea5ae8bed3210a2a89053b23246ff1db1060d7fc4e7a9c6cf50d0f8f25e35"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:step-04",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b",
+          "index": 3,
+          "phase": "mutation-test",
+          "parentStepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:step-03",
+          "state": {
+            "candidateSha256": "398e30ed94776f2bc78f73e606486a229723d49e67214799f60297e827dcc011"
+          },
+          "action": {
+            "type": "run-verifier",
+            "argv": [
+              "/opt/nvm/versions/node/v22.16.0/bin/node",
+              "--test",
+              "test/normalize.test.mjs"
+            ]
+          },
+          "expectedEffect": {
+            "exitCode": 1
+          },
+          "actualEffect": {
+            "changed": true,
+            "regressionDelta": 1,
+            "exitCode": 1,
+            "signal": null,
+            "durationMs": 68,
+            "outputSha256": "fe67110ed3da2fbd078154ac8684100a0706bd207e1bf6707c4d42f04802a54e",
+            "outputBytes": 1236,
+            "shellUsed": false
+          },
+          "verifier": {
+            "valid": true,
+            "status": "expected-failure"
+          },
+          "candidateSha256": "398e30ed94776f2bc78f73e606486a229723d49e67214799f60297e827dcc011",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "31650073cdb62689db5596a05ea6ce1a7c705544198eb045592c1ad571eed2b6"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:step-05",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b",
+          "index": 4,
+          "phase": "repair",
+          "parentStepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:step-04",
+          "state": {
+            "candidateSha256": "398e30ed94776f2bc78f73e606486a229723d49e67214799f60297e827dcc011"
+          },
+          "action": {
+            "type": "apply-declared-repair",
+            "path": "src/normalize.mjs"
+          },
+          "expectedEffect": {
+            "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "actualEffect": {
+            "changed": true,
+            "recoveryDelta": 1,
+            "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "7f3b746fe27981f98e94472e269de6b3844340bb9c7984eeba4a96de513b34fd"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:step-06",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b",
+          "index": 5,
+          "phase": "recovery-test",
+          "parentStepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:step-05",
+          "state": {
+            "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "action": {
+            "type": "run-verifier",
+            "argv": [
+              "/opt/nvm/versions/node/v22.16.0/bin/node",
+              "--test",
+              "test/normalize.test.mjs"
+            ]
+          },
+          "expectedEffect": {
+            "exitCode": 0
+          },
+          "actualEffect": {
+            "changed": true,
+            "criterionDelta": 1,
+            "recoveryDelta": 1,
+            "exitCode": 0,
+            "signal": null,
+            "durationMs": 65,
+            "outputSha256": "7c57957bc75e53e558e02e4cd228ff525583be9891fdccb3296a364c82f539ea",
+            "outputBytes": 518,
+            "shellUsed": false
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "94c85c7c8f9b5d2b03791205e30fe4d4222d3181dc344953d07b3cd66cf17eaf"
+        },
+        {
+          "schema": "nolane.small-model.mission-step.v1",
+          "id": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:step-07",
+          "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b",
+          "index": 6,
+          "phase": "final-integrity",
+          "parentStepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:step-06",
+          "state": {
+            "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "action": {
+            "type": "verify-integrity"
+          },
+          "expectedEffect": {
+            "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "actualEffect": {
+            "changed": true,
+            "informationGain": 1,
+            "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40"
+          },
+          "verifier": {
+            "valid": true,
+            "status": "pass"
+          },
+          "candidateSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+          "bestCandidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:baseline",
+          "hiddenChainOfThoughtStored": false,
+          "receiptSha256": "f643c30c9dc84a127b18ceaa14039677574df81db9e91dc577ff3f4c49546f4b"
+        }
+      ],
+      "stepCount": 7,
+      "bestCandidate": {
+        "candidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:baseline",
+        "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+        "verified": true,
+        "score": 10,
+        "stepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:step-01"
+      },
+      "bestCandidateLedger": {
+        "schema": "nolane.small-model.best-candidate-ledger.v1",
+        "missionId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b",
+        "best": {
+          "candidateId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:baseline",
+          "sourceSha256": "4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40",
+          "verified": true,
+          "score": 10,
+          "stepId": "checkpoint-7:heldout-node-normalizer:normalize-case-node:induction-b:step-01"
+        },
+        "decisions": 3,
+        "regressionsRejected": 1,
+        "receiptSha256": "79a783747f1a42bcb07881943b69dc43f91f6187986fbeda8d5eb9354bbe3d49"
+      },
+      "bestCandidatePreserved": true,
+      "trackedSourceUnchanged": true,
+      "declaredMutation": {
+        "path": "src/normalize.mjs",
+        "from": "return normalized.toLowerCase();",
+        "to": "return normalized;"
+      },
+      "declaredRepair": {
+        "path": "src/normalize.mjs",
+        "from": "return normalized;",
+        "to": "return normalized.toLowerCase();"
+      },
+      "trainingRepositoryDisjoint": true,
+      "hiddenChainOfThoughtStored": false,
+      "workspaceRemoved": true,
+      "receiptSha256": "b013173f951be0b551afa5ba442c20b065115f0f4b65dfc1da1aa991148bed3e"
+    }
+  ],
+  "repositoryIds": [
+    "heldout-go-normalizer",
+    "heldout-node-normalizer",
+    "heldout-python-normalizer"
+  ],
+  "runtimes": [
+    "go",
+    "node",
+    "python"
+  ],
+  "trainingRepositoryIds": [
+    "go-launcher",
+    "nolane-root",
+    "python-sdk"
+  ],
+  "hiddenChainOfThoughtStored": false,
+  "claims": {
+    "boundedHeldOutMissionCollection": true,
+    "generalCodingIntelligence": false,
+    "frontierParity": false,
+    "competitorSuperiority": false
+  },
+  "receiptSha256": "16c7cf8f9be661a2b12a05c2909e1e43bc6cc775f22f3bedfe3a43c3d9a224af"
+}

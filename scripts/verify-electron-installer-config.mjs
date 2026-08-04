@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const root = path.resolve(process.argv[2] ?? '.');
+const config = require(path.join(root, 'electron-builder.config.cjs'));
+const failures = [];
+if (config.appId !== 'com.nolane.agent') failures.push('unstable-app-id');
+if (config.nsis?.guid !== 'd4f38ef8-b26d-4fc8-9b83-31a988f96251') failures.push('unstable-nsis-guid');
+if (config.nsis?.deleteAppDataOnUninstall !== false) failures.push('user-data-delete-enabled');
+if (config.nsis?.differentialPackage !== true) failures.push('differential-package-disabled');
+if (config.win?.electronUpdaterCompatibility !== '>=2.16') failures.push('updater-compatibility-missing');
+if (!Array.isArray(config.win?.target) || config.win.target[0]?.target !== 'nsis') failures.push('nsis-target-missing');
+for (const required of ['!vendor/nolane_native-agent/**', '!src/nolane_native/**']) if (!config.files?.includes(required)) failures.push(`missing-exclusion:${required}`);
+const installer = await readFile(path.join(root, 'build', 'installer.nsh'), 'utf8');
+if (/delete.*appdata|rmdir.*appdata/i.test(installer)) failures.push('installer-deletes-app-data');
+if (!/GetOptions[\s\S]*\/UPDATED/.test(installer)) failures.push('updater-relaunch-switch-missing');
+if (!/NolaneAgent\.exe[\s\S]*--post-update/.test(installer)) failures.push('post-update-relaunch-missing');
+const report = { schema: 'nolane.agent.electron-installer-config.v1', status: failures.length ? 'fail' : 'pass', appId: config.appId, guid: config.nsis?.guid, target: config.win?.target, failures };
+process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+if (failures.length) process.exitCode = 1;

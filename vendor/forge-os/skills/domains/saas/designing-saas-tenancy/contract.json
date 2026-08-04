@@ -1,0 +1,154 @@
+{
+  "name": "designing-saas-tenancy",
+  "version": "0.2.0",
+  "kind": "domain",
+  "pack": "domain",
+  "domain": "saas",
+  "status": "stable",
+  "stages": [
+    "product-definition",
+    "ux-design",
+    "architecture",
+    "planning",
+    "implementation",
+    "verification",
+    "release-readiness"
+  ],
+  "domains": [
+    "saas"
+  ],
+  "consumes": [
+    "product-definition"
+  ],
+  "produces": [
+    "domain-blueprint",
+    "domain-evidence"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:domain-blueprint",
+    "downstream:domain-evidence"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/domains/saas.md",
+  "method": {
+    "focus": "define tenant identity, data ownership, isolation, provisioning, lifecycle, and operational boundaries",
+    "steps": [
+      "Choose tenancy model from isolation, cost, scale, compliance, and migration requirements.",
+      "Define tenant context propagation through authentication, authorization, storage, queues, caches, logs, and background jobs.",
+      "Make every tenant-scoped query and side effect structurally require tenant identity.",
+      "Plan provisioning, suspension, deletion, export, backup, restore, and tenant migration.",
+      "Create cross-tenant negative tests and operational detection signals."
+    ],
+    "verification": [
+      "Can any identifier be used without tenant context?",
+      "Are caches and async jobs tenant-safe?",
+      "Can administrators cross boundaries only through audited authority?",
+      "Can one tenant be restored or deleted without affecting others?"
+    ],
+    "evidence": [
+      "tenancy decision",
+      "tenant data map",
+      "isolation test suite",
+      "lifecycle runbook"
+    ],
+    "traps": [
+      "tenant ID filtering by convention",
+      "shared cache keys",
+      "support impersonation without audit"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Read the confirmed product definition, domain context, assurance profile, and active findings.",
+    "Identify the domain objects, actors, state transitions, regulations, provider boundaries, and operational constraints owned by this skill.",
+    "Choose tenancy model from isolation, cost, scale, compliance, and migration requirements.",
+    "Define tenant context propagation through authentication, authorization, storage, queues, caches, logs, and background jobs.",
+    "Make every tenant-scoped query and side effect structurally require tenant identity.",
+    "Plan provisioning, suspension, deletion, export, backup, restore, and tenant migration.",
+    "Create cross-tenant negative tests and operational detection signals.",
+    "Model normal, boundary, failure, recovery, permission, concurrency, migration, and abuse behavior before implementation.",
+    "Define stable contracts and explicit non-goals; do not leak domain concerns into unrelated modules.",
+    "Create executable acceptance, negative, resilience, and compatibility checks proportional to risk.",
+    "Publish the domain artifact, evidence packet, unresolved assumptions, and downstream invalidations."
+  ],
+  "gate": {
+    "reviewerRole": "saas-reviewer",
+    "rules": [
+      "The output directly and completely performs designing saas tenancy within its declared boundary.",
+      "Can any identifier be used without tenant context?",
+      "Are caches and async jobs tenant-safe?",
+      "Can administrators cross boundaries only through audited authority?",
+      "Can one tenant be restored or deleted without affecting others?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "domain-blueprint",
+        "domain-evidence"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "tenancy decision",
+      "tenant data map",
+      "isolation test suite",
+      "lifecycle runbook"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1747,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "tenant ID filtering by convention",
+    "shared cache keys",
+    "support impersonation without audit"
+  ],
+  "optionalConsumes": [
+    "architecture-decision",
+    "verified-build"
+  ],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when designing saas tenancy is required during saas product work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

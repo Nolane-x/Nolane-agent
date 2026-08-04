@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forgeos.dev/schemas/v0.6/status.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "const": "0.6.1"
+    },
+    "executionGraphVersion": {
+      "const": 2
+    },
+    "kernelTechniqueCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "l0TechniqueCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "l1TechniqueCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "outcomeCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "techniqueCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "evaluatorCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "reviewBenchmark": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "agentSurfaceAdversarial": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "statusSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "version",
+    "executionGraphVersion",
+    "kernelTechniqueCount",
+    "l0TechniqueCount",
+    "l1TechniqueCount",
+    "outcomeCount",
+    "techniqueCount",
+    "evaluatorCount",
+    "reviewBenchmark",
+    "agentSurfaceAdversarial",
+    "statusSha256"
+  ]
+}

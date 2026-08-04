@@ -1,0 +1,226 @@
+name: Build and publish Nolane Agent
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing signed tag to publish
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+env:
+  RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
+  NOLANE_GITHUB_REPOSITORY: ${{ github.repository }}
+
+concurrency:
+  group: release-${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  windows-release:
+    runs-on: windows-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+
+      - name: Require Nolane update signing key
+        shell: pwsh
+        env:
+          NOLANE_UPDATE_PRIVATE_KEY_B64: ${{ secrets.NOLANE_UPDATE_PRIVATE_KEY_B64 }}
+        run: |
+          if (-not $env:NOLANE_UPDATE_PRIVATE_KEY_B64) { throw 'NOLANE_UPDATE_PRIVATE_KEY_B64 is required; release signing fails closed.' }
+
+      - name: Verify immutable tag and commit
+        shell: pwsh
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        run: node scripts/verify-release-tag.mjs
+
+      - name: Install locked source dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Run full release matrix
+        run: npm run release:matrix
+
+      - name: Validate Go and VS Code surfaces
+        shell: pwsh
+        run: |
+          npm run test:go
+          npm run build:vscode
+
+      - name: Build Windows native helpers
+        shell: pwsh
+        run: |
+          Push-Location native/pty
+          go build -trimpath -o NolanePty.exe .
+          Pop-Location
+          Push-Location native/credential
+          go build -trimpath -o NolaneCredential.exe .
+          Pop-Location
+
+      - name: Install exact Electron release toolchain
+        run: npm install --no-save --package-lock=false electron-builder@26.15.3
+
+      - name: Verify installer configuration
+        run: npm run verify:electron-installer
+
+      - name: Prepare packaged update trust
+        id: update_trust
+        shell: pwsh
+        env:
+          NOLANE_UPDATE_PRIVATE_KEY_B64: ${{ secrets.NOLANE_UPDATE_PRIVATE_KEY_B64 }}
+        run: |
+          $keyPath = Join-Path $env:RUNNER_TEMP 'nolane-update-private.pem'
+          [IO.File]::WriteAllBytes($keyPath, [Convert]::FromBase64String($env:NOLANE_UPDATE_PRIVATE_KEY_B64))
+          $package = Get-Content package.json -Raw | ConvertFrom-Json
+          $channel = if ($package.version -match '-([A-Za-z]+)') { $Matches[1].ToLowerInvariant() } else { 'stable' }
+          node scripts/prepare-update-trust.mjs --private-key $keyPath --output config --repository "${{ github.repository }}" --channel $channel
+          "key_path=$keyPath" >> $env:GITHUB_OUTPUT
+          "channel=$channel" >> $env:GITHUB_OUTPUT
+          "version=$($package.version)" >> $env:GITHUB_OUTPUT
+
+      - name: Build NSIS installer and update metadata
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
+          WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
+          NOLANE_WINDOWS_PUBLISHER: ${{ vars.NOLANE_WINDOWS_PUBLISHER }}
+        run: npm run build:electron:installer
+
+      - name: Prepare release asset paths
+        id: release_identity
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force release/github | Out-Null
+          $installer = Get-ChildItem release/installer/NolaneAgent-Setup-${{ steps.update_trust.outputs.version }}-x64.exe | Select-Object -First 1
+          if (-not $installer) { throw 'NSIS installer was not produced' }
+          $matrixMd = Get-Item "release/matrix-${{ steps.update_trust.outputs.version }}/full-release-matrix.md"
+          $matrixJson = Get-Item "release/matrix-${{ steps.update_trust.outputs.version }}/full-release-matrix.json"
+          "installer_path=$($installer.FullName)" >> $env:GITHUB_OUTPUT
+          "manifest_path=release/github/nolane-agent-update-${{ steps.update_trust.outputs.channel }}.json" >> $env:GITHUB_OUTPUT
+          "matrix_md=$($matrixMd.FullName)" >> $env:GITHUB_OUTPUT
+          "matrix_json=$($matrixJson.FullName)" >> $env:GITHUB_OUTPUT
+
+      - name: Create signed Nolane GitHub update manifest
+        shell: pwsh
+        run: |
+          node scripts/update-release-tools.mjs sign-manifest `
+            --package "${{ steps.release_identity.outputs.installer_path }}" `
+            --url "https://github.com/${{ github.repository }}/releases/download/$env:RELEASE_TAG/NolaneAgent-Setup-${{ steps.update_trust.outputs.version }}-x64.exe" `
+            --version "${{ steps.update_trust.outputs.version }}" `
+            --minimum-launcher "${{ steps.update_trust.outputs.version }}" `
+            --channel "${{ steps.update_trust.outputs.channel }}" `
+            --private-key "${{ steps.update_trust.outputs.key_path }}" `
+            --schema nolane.agent.update.v2 `
+            --repository "${{ github.repository }}" `
+            --tag "$env:RELEASE_TAG" `
+            --commit "${{ github.sha }}" `
+            --package-kind nsis `
+            --release-notes-url "https://github.com/${{ github.repository }}/releases/tag/$env:RELEASE_TAG" `
+            --output "${{ steps.release_identity.outputs.manifest_path }}"
+
+      - name: Generate SHA256SUMS
+        shell: pwsh
+        run: |
+          $files = @()
+          $files += Get-ChildItem release/installer -File | Where-Object { $_.Extension -in '.exe','.blockmap','.yml' }
+          $files += Get-Item "${{ steps.release_identity.outputs.manifest_path }}"
+          $files += Get-Item "${{ steps.release_identity.outputs.matrix_md }}"
+          $files += Get-Item "${{ steps.release_identity.outputs.matrix_json }}"
+          $lines = foreach ($file in $files) { "{0}  {1}" -f (Get-FileHash $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant(), $file.Name }
+          $lines | Set-Content release/github/SHA256SUMS.txt -Encoding utf8NoBOM
+
+      - name: Attest installer and update metadata
+        uses: actions/attest@v4
+        with:
+          subject-path: |
+            release/installer/NolaneAgent-Setup-*.exe
+            release/installer/*.blockmap
+            release/installer/*.yml
+            release/github/*.json
+            release/github/SHA256SUMS.txt
+            release/matrix-${{ steps.update_trust.outputs.version }}/full-release-matrix.md
+            release/matrix-${{ steps.update_trust.outputs.version }}/full-release-matrix.json
+
+      - name: Upload workflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nolane-agent-${{ steps.update_trust.outputs.version }}-windows
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            release/installer/NolaneAgent-Setup-*.exe
+            release/installer/*.blockmap
+            release/installer/*.yml
+            release/github/*.json
+            release/github/SHA256SUMS.txt
+            release/matrix-${{ steps.update_trust.outputs.version }}/full-release-matrix.md
+            release/matrix-${{ steps.update_trust.outputs.version }}/full-release-matrix.json
+
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $package = Get-Content package.json -Raw | ConvertFrom-Json
+          $assets = @()
+          $assets += Get-ChildItem release/installer -File | Where-Object { $_.Extension -in '.exe','.blockmap','.yml' } | ForEach-Object { $_.FullName }
+          $assets += (Get-Item "${{ steps.release_identity.outputs.manifest_path }}").FullName
+          $assets += (Get-Item "${{ steps.release_identity.outputs.matrix_md }}").FullName
+          $assets += (Get-Item "${{ steps.release_identity.outputs.matrix_json }}").FullName
+          $assets += (Get-Item release/github/SHA256SUMS.txt).FullName
+          if ($package.version -match '-') {
+            gh release create $env:RELEASE_TAG --verify-tag --generate-notes --prerelease --title "Nolane Agent $env:RELEASE_TAG" @assets
+          } else {
+            gh release create $env:RELEASE_TAG --verify-tag --generate-notes --title "Nolane Agent $env:RELEASE_TAG" @assets
+          }
+
+      - name: Update signed channel feed branch
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $repo = '${{ github.repository }}'
+          $branch = 'update-feed'
+          $channel = '${{ steps.update_trust.outputs.channel }}'
+          $feedPath = "feeds/$channel/nolane-agent-update-$channel.json"
+          $manifest = Get-Content "${{ steps.release_identity.outputs.manifest_path }}" -Raw
+          $encoded = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($manifest))
+          $refExists = $true
+          try { gh api "repos/$repo/git/ref/heads/$branch" | Out-Null } catch { $refExists = $false }
+          if (-not $refExists) {
+            gh api --method POST "repos/$repo/git/refs" -f ref="refs/heads/$branch" -f sha='${{ github.sha }}' | Out-Null
+          }
+          $existingSha = $null
+          try { $existingSha = (gh api "repos/$repo/contents/$feedPath`?ref=$branch" | ConvertFrom-Json).sha } catch {}
+          $body = @{ message = "release: update $channel feed to $env:RELEASE_TAG"; content = $encoded; branch = $branch }
+          if ($existingSha) { $body.sha = $existingSha }
+          $json = $body | ConvertTo-Json -Compress
+          $temp = Join-Path $env:RUNNER_TEMP 'feed-update.json'
+          [IO.File]::WriteAllText($temp, $json, [Text.UTF8Encoding]::new($false))
+          gh api --method PUT "repos/$repo/contents/$feedPath" --input $temp | Out-Null
+
+      - name: Remove ephemeral update private key
+        if: always()
+        shell: pwsh
+        run: Remove-Item "${{ steps.update_trust.outputs.key_path }}" -Force -ErrorAction SilentlyContinue

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.product-management",
+  "domain": "product-management",
+  "title": "Product Management Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "jobs to be done",
+    "prioritization",
+    "roadmaps",
+    "experiments",
+    "metrics",
+    "pricing",
+    "launch",
+    "feedback"
+  ],
+  "capabilities": [
+    "product-management.map-landscape",
+    "product-management.frame-problem",
+    "product-management.research-users",
+    "product-management.define-requirements",
+    "product-management.model-domain",
+    "product-management.compare-alternatives",
+    "product-management.design-concept",
+    "product-management.prototype-critical-flow",
+    "product-management.validate-prototype",
+    "product-management.design-architecture",
+    "product-management.model-data",
+    "product-management.model-threats",
+    "product-management.plan-delivery",
+    "product-management.implement-core",
+    "product-management.integrate-dependencies",
+    "product-management.verify-contracts",
+    "product-management.test-boundaries",
+    "product-management.test-resilience",
+    "product-management.test-performance",
+    "product-management.test-security",
+    "product-management.audit-accessibility",
+    "product-management.optimize-quality",
+    "product-management.optimize-cost",
+    "product-management.document-system",
+    "product-management.prepare-migration",
+    "product-management.plan-rollout",
+    "product-management.instrument-observability",
+    "product-management.operate-lifecycle",
+    "product-management.respond-incidents",
+    "product-management.govern-evolution",
+    "product-management.measure-outcomes",
+    "product-management.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "neurofoo-agent-skills",
+      "title": "Thinking framework skills",
+      "url": "https://github.com/neurofoo/agent-skills",
+      "authority": "community",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "UNKNOWN",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

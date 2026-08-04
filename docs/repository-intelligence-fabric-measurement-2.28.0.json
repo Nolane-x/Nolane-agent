@@ -1,0 +1,74 @@
+{
+  "schema": "forge.studio.repository-intelligence-fabric-measurement.v1",
+  "version": "2.28.0",
+  "lifecycle": {
+    "beforeActivation": "inactive",
+    "afterActivation": "active"
+  },
+  "retrieval": {
+    "query": "renew expired credential",
+    "topPath": "src/session.mjs",
+    "topSymbol": "renewSession",
+    "candidateCount": 6,
+    "scannedChunks": 6,
+    "embeddedCandidates": 0,
+    "maxCandidates": 300,
+    "providerId": "measurement-code-embedding-v1",
+    "modelSha256": "f7526916bab0558e5d33d8b4fb3fb6db7f43a61a9bd4ea0b3b853232323b424d",
+    "degraded": false,
+    "searchLatencyMs": 3.558,
+    "secondSearchAdditionalEmbeddedTexts": 1,
+    "stableTopResult": true
+  },
+  "indexing": {
+    "firstGeneratedEmbeddings": 6,
+    "firstReusedEmbeddings": 0,
+    "secondGeneratedEmbeddings": 1,
+    "secondReusedEmbeddings": 5,
+    "previousChunkRoot": "ea9df269c7723dcfe6ef7766aabbec7d65358b9efcde9e3b61f11917fb7b65ea",
+    "currentChunkRoot": "907c69d0e60a54f16f598c6ea3b4793a33aee684a4d42ac59c68f499ab48d97b",
+    "branch": "feature/repository-intelligence",
+    "dirtyHash": "session-changed"
+  },
+  "digitalTwin": {
+    "nodes": 13,
+    "edges": 16,
+    "totalNodes": 13,
+    "totalEdges": 16,
+    "kinds": [
+      "build-target",
+      "config",
+      "external-dependency",
+      "file",
+      "package",
+      "symbol",
+      "test",
+      "workspace"
+    ],
+    "unknowns": [
+      "runtime-observation-unavailable"
+    ],
+    "citationsValid": true,
+    "twinSha256": "be86ed2efee162dcbbf04e52bccf91a853b07792c8dc21c20ae802c7e0dd6fdc"
+  },
+  "fallback": {
+    "id": "forge-feature-hash-v1",
+    "kind": "feature-hash",
+    "dimensions": 256,
+    "degraded": true,
+    "modelSha256": null,
+    "available": true
+  },
+  "composition": {
+    "appStaticImports": 154,
+    "appConstructors": 172
+  },
+  "boundaries": {
+    "operatedOnnxModelClaimed": false,
+    "productionNeuralPackBundled": false,
+    "comparativeSuperiorityClaimed": false,
+    "realRepositoryBenchmarkClaimed": false,
+    "runtimeDigitalTwinEdgesClaimed": false
+  },
+  "receiptSha256": "5bfc4342e7a7b3780dff26165e2ad062fefec681d7d21d652f27c187783558eb"
+}

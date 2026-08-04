@@ -1,0 +1,289 @@
+{
+  "schemaVersion": 2,
+  "id": "designing-idempotent-automations",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "stable",
+  "identity": {
+    "title": "Designing Idempotent Automations",
+    "description": "Use when make repeated, delayed, reordered, or retried automation executions produce one intended outcome, especially when can two workers perform the side effect?.",
+    "domains": [
+      "automation"
+    ],
+    "subdomains": [
+      "domain"
+    ],
+    "keywords": [
+      "designing-idempotent-automations",
+      "make",
+      "repeated",
+      "delayed",
+      "reordered",
+      "or",
+      "retried",
+      "automation",
+      "executions"
+    ],
+    "antiTriggers": [
+      "read-only calculations without side effects",
+      "a manually triggered task that cannot retry"
+    ]
+  },
+  "relations": {
+    "requires": [
+      "product-definition"
+    ],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "product-definition",
+        "schema": "artifact://forgeos/product-definition/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "domain-blueprint",
+        "schema": "artifact://forgeos/domain-blueprint/v1"
+      },
+      {
+        "type": "domain-evidence",
+        "schema": "artifact://forgeos/domain-evidence/v1"
+      }
+    ],
+    "invariants": [
+      "Output remains within the designing-idempotent-automations responsibility boundary",
+      "Every pass claim is backed by current trusted evidence"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Identify the business operation and define its idempotency boundary.",
+        "evidence": "idempotency contract"
+      },
+      {
+        "id": "step-2",
+        "action": "Choose stable keys from event identity and operation scope; define retention and collision behavior.",
+        "evidence": "state machine"
+      },
+      {
+        "id": "step-3",
+        "action": "Persist claim, progress, result, and terminal failure atomically with side-effect ordering.",
+        "evidence": "concurrency tests"
+      },
+      {
+        "id": "step-4",
+        "action": "Handle concurrent claims, partial external success, provider timeouts, and replay.",
+        "evidence": "reconciliation runbook"
+      },
+      {
+        "id": "step-5",
+        "action": "Expose operator-safe retry, reconciliation, and audit evidence.",
+        "evidence": "reconciliation runbook"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required tool, input, or approval is unavailable",
+        "action": "stop and record a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Can two workers perform the side effect?",
+      "What happens when the provider succeeds but the response is lost?",
+      "Is the key scoped to the correct tenant and operation?",
+      "Can an operator distinguish retry from new intent?"
+    ],
+    "reviewerRole": "automation-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "idempotency contract",
+      "state machine",
+      "concurrency tests",
+      "reconciliation runbook"
+    ],
+    "evaluatorIds": [
+      "designing-idempotent-automations-evaluator"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 712,
+    "hardTokens": 1135,
+    "outputReserveTokens": 283
+  },
+  "quality": {
+    "benchmarkIds": [
+      "v04-designing-idempotent-automations-behavior"
+    ],
+    "minimumSkillDepthScore": 82,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2"
+  ],
+  "capabilityMappings": [
+    {
+      "capabilityId": "automation-robotics.design-architecture",
+      "fitScore": 98,
+      "mappingEvidence": "reviewed:v0.5:designing-idempotent-automations",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "automation-robotics.test-resilience",
+      "fitScore": 98,
+      "mappingEvidence": "reviewed:v0.5:designing-idempotent-automations",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.designing-idempotent-automations",
+      "fitScore": 98,
+      "mappingEvidence": "reviewed:v0.5:designing-idempotent-automations",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "c9e160388475bbf1e1c2dfe77da9b83627cf6be54a69f0246816419777013693",
+        "bytes": 834,
+        "tokens": {
+          "gpt-5.6": 225,
+          "claude-opus-4.2": 235,
+          "gemini-3.0-pro": 214,
+          "qwen3.5-32b": 249
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "6aa21eff8c472f31b4e49721b810269414c3754a4545575c0c8c3440d3e50dec",
+        "bytes": 1111,
+        "tokens": {
+          "gpt-5.6": 299,
+          "claude-opus-4.2": 313,
+          "gemini-3.0-pro": 285,
+          "qwen3.5-32b": 332
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "f9bfe6ef36de59d9db6341e6221b617221c90ebbc72b538c413f967f5f21581a",
+        "bytes": 346,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 98,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 104
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "261ee0a81ffdcc25012018d307290715b9ff29e225191365255a093fbb938723",
+        "bytes": 341,
+        "tokens": {
+          "gpt-5.6": 92,
+          "claude-opus-4.2": 97,
+          "gemini-3.0-pro": 88,
+          "qwen3.5-32b": 102
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "5b288a2951688fc1f9d4c5afaa3e3d758fde91018d02206b9a4ad1a20230311c",
+        "bytes": 270,
+        "tokens": {
+          "gpt-5.6": 73,
+          "claude-opus-4.2": 77,
+          "gemini-3.0-pro": 70,
+          "qwen3.5-32b": 81
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "1a14ffef58207cf2ad6ef790d4cc4f58bddb81bb90edf0bf1f1292bb0160d3e5",
+        "bytes": 357,
+        "tokens": {
+          "gpt-5.6": 96,
+          "claude-opus-4.2": 101,
+          "gemini-3.0-pro": 92,
+          "qwen3.5-32b": 107
+        }
+      }
+    ],
+    "indexSha256": "d7143d8fa50bab5d8af90d654b7e752a73528f0d3ebd8914ca2c96bbc58ff272"
+  },
+  "manifestSha256": "def4acadba0b42d6decf1dd61290ee9ba49b29c426bcf76758f018fcb4cab2b2",
+  "kernelLevel": "L1"
+}

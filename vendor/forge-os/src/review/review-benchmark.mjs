@@ -1,0 +1,4 @@
+import {readFile} from 'node:fs/promises';
+import {canonicalSha256} from '../core/canonical-json.mjs';
+const CASES=new URL('../../packs/code-review-intelligence/benchmark/cases.json',import.meta.url);
+export async function runCodeReviewBenchmark(){const cases=JSON.parse(await readFile(CASES,'utf8'));const tp=cases.filter(x=>x.expected==='finding'&&x.actual==='finding').length;const fp=cases.filter(x=>x.expected==='none'&&x.actual==='finding').length;const anchors=cases.filter(x=>x.anchored).length;const covered=cases.filter(x=>x.covered).length;const report={schemaVersion:1,cases:cases.length,fileCoverage:covered/cases.length,anchorAccuracy:anchors/cases.length,precision:tp/(tp+fp||1),noisyCommentRate:fp/cases.length,corpusSha256:canonicalSha256(cases)};return Object.freeze({...report,reportSha256:canonicalSha256(report)});}

@@ -1,0 +1,70 @@
+import { ASSURANCE_LEVELS, ARTIFACT_STATES, DOMAIN_PACKS, GATE_STATUSES, SKILL_STATUSES, STAGES } from './constants.mjs';
+import { validateSchema } from './schema-validator.mjs';
+
+const text = (options = {}) => ({ type: 'string', minLength: 1, ...options });
+const id = text({ pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$' });
+const sha256 = text({ pattern: '^[a-f0-9]{64}$' });
+const principalId = text({ maxLength:160, pattern:'^[A-Za-z0-9][A-Za-z0-9:._@/-]{0,159}$' });
+const dateTime = text({ format: 'date-time' });
+const principal = {
+  type: 'object', required: ['id','type','roles','trustDomain'], additionalProperties: false,
+  properties: { id:principalId, type: { enum: ['human','agent','service','system'] }, roles: { type:'array', items:text(), uniqueItems:true }, scopes:{type:'array',items:text(),uniqueItems:true}, trustDomain:text({maxLength:160}) },
+};
+
+export const ARTIFACT_SCHEMA = {
+  $schema:'https://json-schema.org/draft/2020-12/schema', $id:'https://forgeos.dev/schemas/artifact.schema.json',
+  type:'object', additionalProperties:false,
+  required:['id','projectId','type','slot','schemaVersion','version','state','sha256','contentHash','envelopeHash','title','content','producedBy','consumes','dependencyHashes','decisions','residualRisks','evidence','createdAt','updatedAt'],
+  properties:{
+    id, projectId:id, type:text({maxLength:100}), slot:text({maxLength:100}), schemaVersion:text({maxLength:40}), version:{type:'integer',minimum:1}, state:{enum:ARTIFACT_STATES}, sha256, contentHash:sha256, envelopeHash:sha256,
+    title:text({maxLength:300}), content:{type:'object',additionalProperties:true}, producedBy:{type:'object',required:['skill','principalId','principalType','trustDomain'],additionalProperties:false,properties:{skill:text(),skillRunId:{type:['string','null']},principalId:principalId,principalType:{enum:['human','agent','service','system']},trustDomain:text({maxLength:160})}},
+    consumes:{type:'array',items:id,uniqueItems:true,maxItems:200}, dependencyHashes:{type:'object',additionalProperties:sha256}, decisions:{type:'array',items:id,uniqueItems:true,maxItems:200}, residualRisks:{type:'array',items:id,uniqueItems:true,maxItems:200}, evidence:{type:'array',items:id,uniqueItems:true,maxItems:500},
+    sourceIdeaId:{type:['string','null']}, sourceIdeaSha256:{type:['string','null'],pattern:'^[a-f0-9]{64}$'}, supersedes:{type:['string','null']}, supersededBy:{type:['string','null']},
+    migration:{type:['object','null'],additionalProperties:true}, review:{type:['object','null'],additionalProperties:true}, verification:{type:['object','null'],additionalProperties:true}, invalidation:{type:['object','null'],additionalProperties:true}, createdAt:dateTime, updatedAt:dateTime,
+  },
+};
+
+export const EVIDENCE_SCHEMA = {
+  $schema:'https://json-schema.org/draft/2020-12/schema', $id:'https://forgeos.dev/schemas/evidence.schema.json',
+  type:'object', additionalProperties:false,
+  required:['id','type','title','status','summary','sha256','subject','producer','method','createdAt'],
+  properties:{
+    id, type:text({maxLength:100}), title:text({maxLength:300}), status:{enum:['pass','fail','inconclusive','unverified']}, summary:{type:'string',maxLength:10000},
+    uri:{type:['string','null'],format:'uri'}, sha256:{type:['string','null'],pattern:'^[a-f0-9]{64}$'},
+    subject:{type:['object','null'],additionalProperties:false,properties:{projectId:id,revision:{type:'integer',minimum:1},semanticRevision:{type:'integer',minimum:1},artifactId:{type:['string','null']},artifactSha256:{type:['string','null'],pattern:'^[a-f0-9]{64}$'},findingId:{type:['string','null']},skillRunId:{type:['string','null']},sourceCommit:{type:['string','null'],maxLength:128}}},
+    producer:{...principal,type:['object','null']}, requestedBy:{...principal,type:['object','null']}, method:{type:['object','null'],additionalProperties:true}, receipt:{type:['object','null'],additionalProperties:false,properties:{executionId:text(),trusted:{const:true},providerId:text(),providerVersion:text(),payloadSha256:sha256,requestSha256:sha256,claimsSha256:sha256,requestedBy:principal,issuedBy:principal,completedAt:dateTime,receiptSha256:sha256}}, metadata:{type:'object',additionalProperties:true}, createdAt:dateTime,
+  },
+};
+
+export const GATE_RESULT_SCHEMA = {
+  $schema:'https://json-schema.org/draft/2020-12/schema', $id:'https://forgeos.dev/schemas/gate-result.schema.json',
+  type:'object', additionalProperties:true, required:['id','stage','status','score','rules','checkedAt','evaluatedRevision','evaluatedSemanticRevision','inputSha256'],
+  properties:{id,stage:{enum:STAGES},status:{enum:[...GATE_STATUSES,'stale']},score:{type:'number',minimum:0,maximum:100},rules:{type:'array',items:{type:'object',additionalProperties:true}},evidence:{type:'array',items:id,uniqueItems:true},checkedAt:dateTime,evaluatedRevision:{type:'integer',minimum:1},evaluatedSemanticRevision:{type:'integer',minimum:1},inputSha256:sha256},
+};
+
+export const PROJECT_SCHEMA = {
+  $schema:'https://json-schema.org/draft/2020-12/schema', $id:'https://forgeos.dev/schemas/project.schema.json',
+  type:'object', additionalProperties:false,
+  required:['schemaVersion','revision','semanticRevision','id','name','domain','assurance','stage','createdAt','updatedAt','access','metadata','research','ideas','scores','decisions','artifacts','evidence','gates','findings','risks','routes','skillUtility','skillRuns','pendingApprovals','history','audit'],
+  properties:{
+    schemaVersion:{const:5},revision:{type:'integer',minimum:1},semanticRevision:{type:'integer',minimum:1},id:{type:'string',pattern:'^forge_[A-Za-z0-9_-]+$'},name:text({maxLength:300}),domain:{enum:['all',...DOMAIN_PACKS]},assurance:{enum:ASSURANCE_LEVELS},stage:{enum:STAGES},createdAt:dateTime,updatedAt:dateTime,access:{type:'object',additionalProperties:false,required:['ownerPrincipalId','ownerTrustDomain','entries'],properties:{ownerPrincipalId:text({maxLength:160}),ownerTrustDomain:text({maxLength:160}),entries:{type:'array',items:{type:'object',additionalProperties:false,required:['principalId','trustDomain','capabilities','grantedBy','grantedAt'],properties:{principalId:text({maxLength:160}),trustDomain:text({maxLength:160}),capabilities:{type:'array',items:{enum:['read','write','review','release','admin']},minItems:1,uniqueItems:true},grantedBy:principal,grantedAt:dateTime}}}}},metadata:{type:'object',additionalProperties:true},
+    intent:{type:['object','null'],additionalProperties:true},brief:{type:['object','null'],additionalProperties:true},research:{type:'array',items:id,uniqueItems:true},ideas:{type:'array',items:{type:'object',required:['id','sha256','fingerprint'],additionalProperties:true,properties:{id:text({maxLength:80}),sha256,fingerprint:sha256}}},scores:{type:'array',items:{type:'object',required:['ideaId','ideaSha256','evaluator','rubricVersion'],additionalProperties:true,properties:{ideaId:text({maxLength:80}),ideaSha256:sha256,evaluator:principal,rubricVersion:text()}}},selectedIdeaId:{type:['string','null']},selectionReason:{type:['string','null']},decisions:{type:'array',items:{type:'object',additionalProperties:true}},artifacts:{type:'array',items:ARTIFACT_SCHEMA},evidence:{type:'array',items:EVIDENCE_SCHEMA},gates:{type:'array',items:GATE_RESULT_SCHEMA},findings:{type:'array',items:{type:'object',additionalProperties:true}},risks:{type:'array',items:{type:'object',additionalProperties:true}},routes:{type:'array',items:{type:'object',additionalProperties:true}},skillUtility:{type:'object',additionalProperties:{type:'object',additionalProperties:true}},skillRuns:{type:'array',items:{type:'object',additionalProperties:true}},pendingApprovals:{type:'array',items:{type:'object',additionalProperties:true}},sealedAt:{type:['string','null'],format:'date-time'},releaseRevision:{type:['integer','null'],minimum:1},migrations:{type:'array',items:{type:'object',additionalProperties:true}},audit:{type:'object',required:['sequence','headSha256','events'],additionalProperties:false,properties:{sequence:{type:'integer',minimum:1},headSha256:sha256,events:{type:'array',minItems:1,items:{type:'object',required:['sequence','type','revision','semanticRevision','stateSha256','prevSha256','eventSha256','metadata','at'],additionalProperties:false,properties:{sequence:{type:'integer',minimum:1},type:text(),revision:{type:'integer',minimum:1},semanticRevision:{type:'integer',minimum:1},stateSha256:sha256,prevSha256:{type:['string','null'],pattern:'^[a-f0-9]{64}$'},eventSha256:sha256,metadata:{type:'object',additionalProperties:true},at:dateTime}}}}},history:{type:'array',items:{type:'object',additionalProperties:true}},
+  },
+};
+
+export const SKILL_CONTRACT_SCHEMA = {
+  $schema:'https://json-schema.org/draft/2020-12/schema',$id:'https://forgeos.dev/schemas/skill-contract.schema.json',type:'object',additionalProperties:false,
+  required:['name','version','kind','pack','status','stages','domains','assurance','consumes','optionalConsumes','produces','requiredTools','optionalTools','conflicts','invalidates','procedure','gate','handoff','context','method','reference','failureModes'],
+  properties:{name:text({pattern:'^[a-z0-9]+(?:-[a-z0-9]+)*$'}),description:text(),version:text(),kind:{enum:['core','domain']},pack:text(),domain:{type:['string','null']},status:{enum:SKILL_STATUSES},stages:{type:'array',items:{enum:STAGES},minItems:1,uniqueItems:true},domains:{type:'array',items:text(),minItems:1,uniqueItems:true},assurance:{type:'array',items:{enum:ASSURANCE_LEVELS},minItems:1,uniqueItems:true},consumes:{type:'array',items:text(),minItems:1,uniqueItems:true},optionalConsumes:{type:'array',items:text(),uniqueItems:true},produces:{type:'array',items:text(),minItems:1,uniqueItems:true},requiredTools:{type:'array',items:text(),uniqueItems:true},optionalTools:{type:'array',items:text(),uniqueItems:true},conflicts:{type:'array',items:text(),uniqueItems:true},invalidates:{type:'array',items:text(),uniqueItems:true},tools:{type:'array',items:text(),uniqueItems:true},failureModes:{type:'array',items:text(),minItems:1},preconditions:{type:'array',items:text()},procedure:{type:'array',items:text(),minItems:9},gate:{type:'object',required:['rules'],additionalProperties:true,properties:{rules:{type:'array',minItems:4,items:{anyOf:[text(),{type:'object',additionalProperties:true}]}}}},handoff:{type:'object',required:['next','requiredEvidence','requiredFields','stopWhen'],additionalProperties:true,properties:{next:{type:'object',required:['mode','outputTypes'],additionalProperties:false,properties:{mode:{const:'graph-router'},outputTypes:{type:'array',items:text(),minItems:1}}},requiredEvidence:{type:'array',items:text(),minItems:2},requiredFields:{type:'array',items:text(),minItems:8},stopWhen:text()}},context:{type:'object',required:['estimatedTokens'],additionalProperties:true,properties:{estimatedTokens:{type:'integer',minimum:1}}},method:{type:'object',required:['focus','source','steps','verification','evidence','traps'],additionalProperties:true,properties:{focus:text(),source:{enum:['flagship','generated-specific']},steps:{type:'array',items:text(),minItems:5},verification:{type:'array',items:text(),minItems:3},evidence:{type:'array',items:text(),minItems:2},traps:{type:'array',items:text(),minItems:1}}},reference:text({pattern:'^skills/references/'}),evaluation:{type:'object',additionalProperties:true}},
+};
+
+export const A2A_AGENT_CARD_SCHEMA = {
+  $schema:'https://json-schema.org/draft/2020-12/schema',$id:'https://forgeos.dev/schemas/a2a-agent-card.schema.json',type:'object',additionalProperties:false,
+  required:['name','description','version','supportedInterfaces','capabilities','defaultInputModes','defaultOutputModes','skills'],
+  properties:{name:text(),description:text(),version:text(),supportedInterfaces:{type:'array',minItems:1,items:{type:'object',required:['url','protocolBinding','protocolVersion'],additionalProperties:false,properties:{url:{type:'string',format:'uri'},protocolBinding:{enum:['JSONRPC']},protocolVersion:{const:'1.0'}}}},provider:{type:'object',additionalProperties:false,required:['organization','url'],properties:{organization:text(),url:{type:'string',format:'uri'}}},documentationUrl:{type:'string',format:'uri'},capabilities:{type:'object',additionalProperties:false,properties:{streaming:{type:'boolean'},pushNotifications:{type:'boolean'},stateTransitionHistory:{type:'boolean'},extendedAgentCard:{type:'boolean'}}},defaultInputModes:{type:'array',items:text(),minItems:1},defaultOutputModes:{type:'array',items:text(),minItems:1},securitySchemes:{type:'object',additionalProperties:true},securityRequirements:{type:'array',items:{type:'object',additionalProperties:true}},skills:{type:'array',items:{type:'object',required:['id','name','description','tags'],additionalProperties:false,properties:{id, name:text(),description:text(),tags:{type:'array',items:text()},examples:{type:'array',items:text()},inputModes:{type:'array',items:text()},outputModes:{type:'array',items:text()}}}}},
+};
+
+export const MCP_TOOL_RESULT_SCHEMA = {$schema:'https://json-schema.org/draft/2020-12/schema',$id:'https://forgeos.dev/schemas/mcp-tool-result.schema.json',type:'object',additionalProperties:false,required:['structuredContent','content'],properties:{structuredContent:{type:'object',additionalProperties:true},content:{type:'array',items:{type:'object',required:['type'],additionalProperties:true,properties:{type:{enum:['text','image','audio','resource','resource_link']}}}},isError:{type:'boolean'},_meta:{type:'object',additionalProperties:true}}};
+
+export const RUNTIME_SCHEMAS = Object.freeze({project:PROJECT_SCHEMA,artifact:ARTIFACT_SCHEMA,evidence:EVIDENCE_SCHEMA,gate:GATE_RESULT_SCHEMA,skill:SKILL_CONTRACT_SCHEMA,a2aAgentCard:A2A_AGENT_CARD_SCHEMA,mcpToolResult:MCP_TOOL_RESULT_SCHEMA});
+export function validateRuntimeSchema(name,value){const schema=RUNTIME_SCHEMAS[name];if(!schema)throw new TypeError(`Unknown runtime schema: ${name}`);validateSchema(schema,value,{label:name});return value;}

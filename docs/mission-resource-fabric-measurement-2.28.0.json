@@ -1,0 +1,85 @@
+{
+  "schema": "forge.studio.mission-resource-fabric-measurement.v1",
+  "version": "2.28.0",
+  "environment": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "v22.16.0",
+    "note": "Deterministic synthetic local measurement. It does not operate an external model, production OS sandbox, hosted Git provider, cloud service, or visual oracle."
+  },
+  "processAttribution": {
+    "missionId": "measurement-mission",
+    "taskId": "measurement-task",
+    "providerId": "codex-app-server",
+    "currentRssBytes": 150994944,
+    "peakRssBytes": 150994944,
+    "cpuTimeMs": 75,
+    "processCount": 3,
+    "fileDescriptors": 29,
+    "activeEntries": 1,
+    "rawPromptStored": false,
+    "secretStored": false,
+    "receiptSha256": "a954ac46b892126dbc9ff1c5cc42615be0fc5594bcc09b201be380439de2bb34"
+  },
+  "sessionReuse": {
+    "openCount": 1,
+    "closeCount": 1,
+    "sessionCompletions": 2,
+    "oneShotCalls": 0,
+    "reusedSecondCall": true,
+    "sameSession": true,
+    "oneShotMode": "one-shot",
+    "oneShotClaimedPersistent": false,
+    "pressureEvicted": 1,
+    "remainingAfterPressure": 0
+  },
+  "intelligence": {
+    "duplicateCoalesced": true,
+    "staleGenerationSuperseded": true,
+    "acknowledgedCursor": 2,
+    "latestCursor": 2,
+    "receiptSha256": "00db3fd499997526036fe87ac71a5f0f30934673b8f0b7477a77a42da489ae4c"
+  },
+  "canary": {
+    "regressionDisabled": true,
+    "decision": "disable-regression",
+    "candidateSamples": 4,
+    "baselineSamples": 6,
+    "rawPayloadStored": false,
+    "receiptSha256": "995e17c556ce30b469afccf078b86d3b053b352e5085520846574e046b0b0a22"
+  },
+  "journey": {
+    "domCaptured": true,
+    "accessibilityCaptured": true,
+    "consoleErrors": 1,
+    "networkFailures": 1,
+    "screenshotAvailable": true,
+    "videoUnavailableExplicit": true,
+    "visualCorrectnessClaimed": false,
+    "rawUrlSecretStored": false,
+    "receiptSha256": "5342de2946146f2f1ead55771b831e54706d6d94d97223ed2ea72c42d83f8fd7"
+  },
+  "hosted": {
+    "externalGateWithoutAdapter": true,
+    "externalReason": "HOSTED_ADAPTER_NOT_OPERATED",
+    "humanMergeRequired": true,
+    "finalState": "awaiting-human-merge",
+    "automaticMergeCapability": false,
+    "receiptSha256": "8cd1a74abf7e063001557ec7fef8860f38482c2ce4aa92510a25e13cbbb3d12b"
+  },
+  "ui": {
+    "primaryShells": 3,
+    "resourceHudPresent": true,
+    "pressureAware": true,
+    "heavyBlurUsed": false
+  },
+  "testRunner": {
+    "forceExitEnabled": true,
+    "nestedContextCleared": true
+  },
+  "composition": {
+    "appStaticImports": 154,
+    "appConstructors": 172
+  },
+  "receiptSha256": "544ffdd70811955975ba960dc7e668bd37ce5c2d61f6df764b83070678493ca1"
+}

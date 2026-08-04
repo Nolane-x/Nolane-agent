@@ -1,0 +1,52 @@
+{
+  "schema": "nolane.small-model.checkpoint-7-evidence-bundle.v1",
+  "artifactSha256": "0861234f6a2a8776b1040027b6ea16b7860da9ceca21231384b50c8c2a5feb06",
+  "evaluationReceiptSha256": "035aaca5cfad146739530d4103eb15b6d6accb2ceb3b70379c75c9c7f2573490",
+  "ablationReceiptSha256": "72dbceb221e6c4b19118eb94169333ec0280a3adf4084fff9ad17932098bac6b",
+  "transfer": {
+    "schema": "nolane.small-model.checkpoint-7-transfer-evidence.v1",
+    "artifactSha256": "0861234f6a2a8776b1040027b6ea16b7860da9ceca21231384b50c8c2a5feb06",
+    "allowed": true,
+    "repositoryDisjoint": true,
+    "heldOutRepositoryId": "heldout-node-normalizer-transfer",
+    "sourceRepositoryIds": [
+      "heldout-node-normalizer"
+    ],
+    "skillTransferReceiptSha256": "f4d38c9cccff2abec841056018cf6d45e8fc39fddbc0c1c35331a40716f6dced",
+    "oodTransferReceiptSha256": "875417bc955644e1291bc50156c5888943f6e0a5b0f3541508dba4001a5ba909",
+    "baselineSuccessRate": 0.5,
+    "candidateSuccessRate": 1,
+    "receiptSha256": "f864eca25234b0c2a94e3cc6baa6edb0e65523380ebd47211041626ec4cbf07d"
+  },
+  "process": {
+    "schema": "nolane.small-model.checkpoint-7-process-evidence.v1",
+    "artifactSha256": "0861234f6a2a8776b1040027b6ea16b7860da9ceca21231384b50c8c2a5feb06",
+    "allowed": true,
+    "processRewardVerificationReceiptSha256": "907ec6bc0d84ede9684a2d04dfcc62188dd1001da3ebd3d3df9f485f9a198604",
+    "baselineReward": 0,
+    "candidateReward": 1,
+    "delta": 1,
+    "receiptSha256": "d3bdf05a2468f8f5cdbb25815d25081a7222ca1db936fe78fdf022f73e350021"
+  },
+  "cost": {
+    "schema": "nolane.small-model.checkpoint-7-cost-evidence.v1",
+    "artifactSha256": "0861234f6a2a8776b1040027b6ea16b7860da9ceca21231384b50c8c2a5feb06",
+    "allowed": true,
+    "sameQualityCostReceiptSha256": "c9e529e59a3a1134ad46141d6784b0995ef98d321a1d51ccb4409a5458e2f41b",
+    "totalCostRatio": 0.2727272727272727,
+    "candidateCostLower": true,
+    "receiptSha256": "bc98130a6e4f6ffc7fa609cd782cbb44571fb0c0098a8658c9cd4b4df1feeb51"
+  },
+  "safety": {
+    "baselineViolations": 0,
+    "candidateViolations": 0,
+    "noRegression": true
+  },
+  "claims": {
+    "boundedTransferEvidence": true,
+    "generalCodingIntelligence": false,
+    "frontierParity": false,
+    "competitorSuperiority": false
+  },
+  "receiptSha256": "96dd1a9896f6919e2e3125e214dfbdfba6eeb6c4e6d08e5d9784a2b6848f1cca"
+}

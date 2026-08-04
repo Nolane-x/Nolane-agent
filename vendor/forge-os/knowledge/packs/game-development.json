@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.game-development",
+  "domain": "game-development",
+  "title": "Game Development Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "game loop",
+    "mechanics",
+    "level design",
+    "physics",
+    "assets",
+    "multiplayer",
+    "performance",
+    "player experience"
+  ],
+  "capabilities": [
+    "game-development.map-landscape",
+    "game-development.frame-problem",
+    "game-development.research-users",
+    "game-development.define-requirements",
+    "game-development.model-domain",
+    "game-development.compare-alternatives",
+    "game-development.design-concept",
+    "game-development.prototype-critical-flow",
+    "game-development.validate-prototype",
+    "game-development.design-architecture",
+    "game-development.model-data",
+    "game-development.model-threats",
+    "game-development.plan-delivery",
+    "game-development.implement-core",
+    "game-development.integrate-dependencies",
+    "game-development.verify-contracts",
+    "game-development.test-boundaries",
+    "game-development.test-resilience",
+    "game-development.test-performance",
+    "game-development.test-security",
+    "game-development.audit-accessibility",
+    "game-development.optimize-quality",
+    "game-development.optimize-cost",
+    "game-development.document-system",
+    "game-development.prepare-migration",
+    "game-development.plan-rollout",
+    "game-development.instrument-observability",
+    "game-development.operate-lifecycle",
+    "game-development.respond-incidents",
+    "game-development.govern-evolution",
+    "game-development.measure-outcomes",
+    "game-development.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "simota-agent-skills",
+      "title": "Specialized AI agent skills",
+      "url": "https://github.com/simota/agent-skills",
+      "authority": "community",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

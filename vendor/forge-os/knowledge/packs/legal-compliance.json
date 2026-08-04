@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.legal-compliance",
+  "domain": "legal-compliance",
+  "title": "Legal and Compliance Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "requirements",
+    "controls",
+    "privacy",
+    "records",
+    "audit",
+    "policy",
+    "jurisdictions",
+    "evidence"
+  ],
+  "capabilities": [
+    "legal-compliance.map-landscape",
+    "legal-compliance.frame-problem",
+    "legal-compliance.research-users",
+    "legal-compliance.define-requirements",
+    "legal-compliance.model-domain",
+    "legal-compliance.compare-alternatives",
+    "legal-compliance.design-concept",
+    "legal-compliance.prototype-critical-flow",
+    "legal-compliance.validate-prototype",
+    "legal-compliance.design-architecture",
+    "legal-compliance.model-data",
+    "legal-compliance.model-threats",
+    "legal-compliance.plan-delivery",
+    "legal-compliance.implement-core",
+    "legal-compliance.integrate-dependencies",
+    "legal-compliance.verify-contracts",
+    "legal-compliance.test-boundaries",
+    "legal-compliance.test-resilience",
+    "legal-compliance.test-performance",
+    "legal-compliance.test-security",
+    "legal-compliance.audit-accessibility",
+    "legal-compliance.optimize-quality",
+    "legal-compliance.optimize-cost",
+    "legal-compliance.document-system",
+    "legal-compliance.prepare-migration",
+    "legal-compliance.plan-rollout",
+    "legal-compliance.instrument-observability",
+    "legal-compliance.operate-lifecycle",
+    "legal-compliance.respond-incidents",
+    "legal-compliance.govern-evolution",
+    "legal-compliance.measure-outcomes",
+    "legal-compliance.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "nist-ssdf",
+      "title": "NIST Secure Software Development Framework",
+      "url": "https://csrc.nist.gov/projects/ssdf",
+      "authority": "standards-body",
+      "trust": "verified",
+      "revision": "web:2026-07-25",
+      "license": {
+        "spdx": "US-Government-Work",
+        "mode": "link-only"
+      }
+    },
+    {
+      "id": "owasp-asvs",
+      "title": "OWASP ASVS",
+      "url": "https://owasp.org/www-project-application-security-verification-standard/",
+      "authority": "standards-body",
+      "trust": "verified",
+      "revision": "web:2026-07-25",
+      "license": {
+        "spdx": "CC-BY-SA-4.0",
+        "mode": "link-only"
+      }
+    },
+    {
+      "id": "opa",
+      "title": "Open Policy Agent",
+      "url": "https://github.com/open-policy-agent/opa",
+      "authority": "standards-body",
+      "trust": "verified",
+      "revision": "release:v1.16.2",
+      "license": {
+        "spdx": "Apache-2.0",
+        "mode": "vendor-allowed"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

@@ -1,0 +1,361 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forgeos.dev/schemas/skill-contract.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "version",
+    "kind",
+    "pack",
+    "status",
+    "stages",
+    "domains",
+    "assurance",
+    "consumes",
+    "optionalConsumes",
+    "produces",
+    "requiredTools",
+    "optionalTools",
+    "conflicts",
+    "invalidates",
+    "procedure",
+    "gate",
+    "handoff",
+    "context",
+    "method",
+    "reference",
+    "failureModes"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "enum": [
+        "core",
+        "domain"
+      ]
+    },
+    "pack": {
+      "type": "string",
+      "minLength": 1
+    },
+    "domain": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "enum": [
+        "experimental",
+        "candidate",
+        "stable",
+        "deprecated",
+        "quarantined"
+      ]
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "intent",
+          "discovery",
+          "research",
+          "divergence",
+          "synthesis",
+          "selection",
+          "product-definition",
+          "ux-design",
+          "architecture",
+          "planning",
+          "implementation",
+          "verification",
+          "release-readiness",
+          "released"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "domains": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "assurance": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "A0",
+          "A1",
+          "A2",
+          "A3",
+          "A4"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "consumes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "optionalConsumes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "produces": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "requiredTools": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "optionalTools": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "invalidates": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "failureModes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "preconditions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "procedure": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 9
+    },
+    "gate": {
+      "type": "object",
+      "required": [
+        "rules"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "rules": {
+          "type": "array",
+          "minItems": 4,
+          "items": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "object",
+                "additionalProperties": true
+              }
+            ]
+          }
+        }
+      }
+    },
+    "handoff": {
+      "type": "object",
+      "required": [
+        "next",
+        "requiredEvidence",
+        "requiredFields",
+        "stopWhen"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "next": {
+          "type": "object",
+          "required": [
+            "mode",
+            "outputTypes"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "const": "graph-router"
+            },
+            "outputTypes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1
+            }
+          }
+        },
+        "requiredEvidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 2
+        },
+        "requiredFields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 8
+        },
+        "stopWhen": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "required": [
+        "estimatedTokens"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "estimatedTokens": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "method": {
+      "type": "object",
+      "required": [
+        "focus",
+        "source",
+        "steps",
+        "verification",
+        "evidence",
+        "traps"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "focus": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "enum": [
+            "flagship",
+            "generated-specific"
+          ]
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 5
+        },
+        "verification": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 3
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 2
+        },
+        "traps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "reference": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^skills/references/"
+    },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

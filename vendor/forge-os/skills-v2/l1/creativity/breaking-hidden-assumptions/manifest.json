@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 2,
+  "id": "breaking-hidden-assumptions",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Breaking Hidden Assumptions",
+    "description": "Use when breaking hidden assumptions within creativity lifecycle boundaries, especially when does the artifact make the owned decision for breaking hidden assumptions explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "creativity"
+    ],
+    "keywords": [
+      "breaking-hidden-assumptions",
+      "breaking",
+      "hidden",
+      "assumptions",
+      "within",
+      "creativity",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require breaking hidden assumptions within creativity lifecycle boundaries",
+      "the typed inputs for breaking-hidden-assumptions are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "creative-brief",
+        "schema": "artifact://forgeos/creative-brief/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "candidate-ideas",
+        "schema": "artifact://forgeos/candidate-ideas/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for breaking hidden assumptions explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by breaking hidden assumptions.",
+        "evidence": "breaking-hidden-assumptions-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to breaking hidden assumptions.",
+        "evidence": "breaking-hidden-assumptions-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply breaking hidden assumptions only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "breaking-hidden-assumptions-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "breaking-hidden-assumptions-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if breaking hidden assumptions were incomplete or implemented incorrectly.",
+        "evidence": "breaking-hidden-assumptions-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for breaking hidden assumptions explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "breaking-hidden-assumptions-decision-table",
+      "breaking-hidden-assumptions-verification-report",
+      "breaking-hidden-assumptions-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "breaking-hidden-assumptions-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 708,
+    "hardTokens": 1104,
+    "outputReserveTokens": 276
+  },
+  "quality": {
+    "benchmarkIds": [
+      "breaking-hidden-assumptions-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "graphic-design.design-concept",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:breaking-hidden-assumptions",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "dbd697ac0f43162213ad38178f60d94df7d634871d9d01ad8c45cf3b1aef2d09",
+        "bytes": 950,
+        "tokens": {
+          "gpt-5.6": 256,
+          "claude-opus-4.2": 268,
+          "gemini-3.0-pro": 244,
+          "qwen3.5-32b": 284
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "76063e8884c39df3e3a119ce5b3a70baa2d42a9363706ef10a15ff38d0d80942",
+        "bytes": 714,
+        "tokens": {
+          "gpt-5.6": 192,
+          "claude-opus-4.2": 202,
+          "gemini-3.0-pro": 184,
+          "qwen3.5-32b": 214
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "48ba70aac1eca6953a2a1bfd5101a8ce7a951ed7c0b2e093f71e04eed40fcf70",
+        "bytes": 303,
+        "tokens": {
+          "gpt-5.6": 82,
+          "claude-opus-4.2": 86,
+          "gemini-3.0-pro": 78,
+          "qwen3.5-32b": 91
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "65ae01540aeb69c5bc393d479bfa03bf39a4ee832ed5b23155714b22e6650857",
+        "bytes": 609,
+        "tokens": {
+          "gpt-5.6": 164,
+          "claude-opus-4.2": 172,
+          "gemini-3.0-pro": 157,
+          "qwen3.5-32b": 182
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "6aaf226ad7bba2d9aaba351d4914118dc107ebe83230f7baa0e813c641aed821",
+        "bytes": 331,
+        "tokens": {
+          "gpt-5.6": 89,
+          "claude-opus-4.2": 94,
+          "gemini-3.0-pro": 85,
+          "qwen3.5-32b": 99
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "2de4e734a921c36d7b06606317893913a3ef9c4e646c63e631020bc753238955",
+        "bytes": 241,
+        "tokens": {
+          "gpt-5.6": 65,
+          "claude-opus-4.2": 68,
+          "gemini-3.0-pro": 62,
+          "qwen3.5-32b": 72
+        }
+      }
+    ],
+    "indexSha256": "7bade58ec44e0e241626e1d1f7e5d0ab0b663e5b686d2a0aa8b1e59dab74bd45"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "6f6e59776c5a4bab010765c6331635c6c3cd4391d75e4087096c86d123dc058c"
+}

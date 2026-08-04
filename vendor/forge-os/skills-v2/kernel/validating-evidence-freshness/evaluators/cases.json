@@ -1,0 +1,20 @@
+[
+  {
+    "id": "validating-evidence-freshness-positive",
+    "kind": "application",
+    "input": "A task requiring Validating Evidence Freshness",
+    "expectedEvidence": [
+      "A stale passing receipt cannot open a gate.",
+      "Freshness rules vary by assurance and evidence type.",
+      "Clock time is not used as the only identity signal."
+    ],
+    "baselineFailure": "Checking only the evidence type string."
+  },
+  {
+    "id": "validating-evidence-freshness-anti-trigger",
+    "kind": "counter-example",
+    "input": "the evidence is informational and cannot change a decision",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

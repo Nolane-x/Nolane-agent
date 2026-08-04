@@ -1,0 +1,1 @@
+export function normalizeActivity(item={}){if(!item.id)throw new Error('activity id is required');return Object.freeze({id:String(item.id),type:String(item.type??'narrative'),summary:String(item.summary??''),groupId:item.groupId?String(item.groupId):null,attention:Boolean(item.attention),updatedAt:Number(item.updatedAt??0)})}

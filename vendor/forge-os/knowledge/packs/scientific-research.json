@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.scientific-research",
+  "domain": "scientific-research",
+  "title": "Scientific Research Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "hypotheses",
+    "literature",
+    "methods",
+    "experiments",
+    "statistics",
+    "reproducibility",
+    "peer review",
+    "data management"
+  ],
+  "capabilities": [
+    "scientific-research.map-landscape",
+    "scientific-research.frame-problem",
+    "scientific-research.research-users",
+    "scientific-research.define-requirements",
+    "scientific-research.model-domain",
+    "scientific-research.compare-alternatives",
+    "scientific-research.design-concept",
+    "scientific-research.prototype-critical-flow",
+    "scientific-research.validate-prototype",
+    "scientific-research.design-architecture",
+    "scientific-research.model-data",
+    "scientific-research.model-threats",
+    "scientific-research.plan-delivery",
+    "scientific-research.implement-core",
+    "scientific-research.integrate-dependencies",
+    "scientific-research.verify-contracts",
+    "scientific-research.test-boundaries",
+    "scientific-research.test-resilience",
+    "scientific-research.test-performance",
+    "scientific-research.test-security",
+    "scientific-research.audit-accessibility",
+    "scientific-research.optimize-quality",
+    "scientific-research.optimize-cost",
+    "scientific-research.document-system",
+    "scientific-research.prepare-migration",
+    "scientific-research.plan-rollout",
+    "scientific-research.instrument-observability",
+    "scientific-research.operate-lifecycle",
+    "scientific-research.respond-incidents",
+    "scientific-research.govern-evolution",
+    "scientific-research.measure-outcomes",
+    "scientific-research.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "nvidia-skills",
+      "title": "NVIDIA Agent Skills",
+      "url": "https://github.com/NVIDIA/skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "Mixed",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

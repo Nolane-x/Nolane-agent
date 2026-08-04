@@ -1,0 +1,236 @@
+#!/usr/bin/env node
+import { mkdir, readFile, readdir, rename, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { execFileSync, spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+
+const ISOLATED_TESTS = new Set([
+  'electron-packaging.test.mjs',
+  'packaging.test.mjs',
+  'performance.test.mjs',
+  'project-manifest-generation.test.mjs',
+  'release-artifacts.test.mjs',
+  'release-tooling.test.mjs',
+  'source-reconstruction.test.mjs',
+  'update-release-tools.test.mjs',
+  'worktree-integration-service.test.mjs',
+  'nolane-program-registry.test.mjs',
+  'vscode-collaboration-experience.test.mjs',
+  'vscode-legacy-migration.test.mjs',
+  'vscode-local-worktree-handoff.test.mjs',
+  'vscode-mission-state-bridge.test.mjs',
+  'vscode-security-certification-state.test.mjs',
+  'tool-broker.test.mjs',
+  'terminal-service.test.mjs',
+  'adaptive-microkernel-app-wiring.test.mjs',
+  'model-provider.test.mjs',
+  'nolane-native-capability-pack.test.mjs',
+  'small-model-checkpoint-6-foundation.test.mjs',
+  'small-model-checkpoint-7-foundation.test.mjs',
+  'small-model-checkpoint-7-http.test.mjs',
+]);
+const PARALLEL_BATCH_SIZE = 32;
+const SERIAL_TESTS = new Set([
+  'packaging.test.mjs',
+  'release-artifacts.test.mjs',
+  'release-tooling.test.mjs',
+  'nolane-program-registry.test.mjs',
+  'vscode-collaboration-experience.test.mjs',
+  'vscode-legacy-migration.test.mjs',
+  'vscode-local-worktree-handoff.test.mjs',
+  'vscode-mission-state-bridge.test.mjs',
+  'vscode-security-certification-state.test.mjs',
+  'adaptive-microkernel-app-wiring.test.mjs',
+  'model-provider.test.mjs',
+  'nolane-native-capability-pack.test.mjs',
+  'small-model-checkpoint-6-foundation.test.mjs',
+  'small-model-checkpoint-7-foundation.test.mjs',
+  'small-model-checkpoint-7-http.test.mjs',
+]);
+
+export async function buildNodeTestPlan(testsDirectory = path.resolve('tests')) {
+  const entries = await readdir(testsDirectory, { withFileTypes: true });
+  const discovered = entries
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.test.mjs'))
+    .map((entry) => path.join(testsDirectory, entry.name))
+    .sort();
+
+  const isolated = discovered.filter((file) => ISOLATED_TESTS.has(path.basename(file)));
+  const parallel = discovered.filter((file) => !ISOLATED_TESTS.has(path.basename(file)));
+  const scheduled = [...parallel, ...isolated];
+
+  if (scheduled.length !== discovered.length || new Set(scheduled).size !== discovered.length) {
+    throw new Error('Node test plan must schedule every discovered test exactly once');
+  }
+  if (isolated.length !== ISOLATED_TESTS.size) {
+    const missing = [...ISOLATED_TESTS].filter((name) => !isolated.some((file) => path.basename(file) === name));
+    throw new Error(`Missing isolated test files: ${missing.join(', ')}`);
+  }
+
+  const parallelBatches = [];
+  for (let index = 0; index < parallel.length; index += PARALLEL_BATCH_SIZE) {
+    parallelBatches.push(Object.freeze(parallel.slice(index, index + PARALLEL_BATCH_SIZE)));
+  }
+
+  const serial = isolated.filter((file) => SERIAL_TESTS.has(path.basename(file)));
+  const isolatedBatch = isolated.filter((file) => !SERIAL_TESTS.has(path.basename(file)));
+  if (serial.length !== SERIAL_TESTS.size) {
+    const missing = [...SERIAL_TESTS].filter((name) => !serial.some((file) => path.basename(file) === name));
+    throw new Error(`Missing serial test files: ${missing.join(', ')}`);
+  }
+
+  return Object.freeze({
+    testsDirectory,
+    discovered: Object.freeze(discovered),
+    parallel: Object.freeze(parallel),
+    parallelBatches: Object.freeze(parallelBatches),
+    isolated: Object.freeze(isolated),
+    isolatedBatch: Object.freeze(isolatedBatch),
+    serial: Object.freeze(serial),
+  });
+}
+
+export function buildNodeTestArgs(files, { concurrency }) {
+  return [
+    '--test',
+    `--test-concurrency=${concurrency}`,
+    '--test-reporter=dot',
+    '--test-force-exit',
+    ...files,
+  ];
+}
+
+export function countDotReporterTests(output) {
+  return String(output)
+    .replace(/\u001B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g, '')
+    .split(/\r?\n/)
+    .filter((line) => /^[.X]+$/.test(line))
+    .reduce((total, line) => total + line.length, 0);
+}
+
+export function runNodeTests(files, { concurrency, label, quiet = false }) {
+  if (files.length === 0) return Promise.resolve(0);
+  const args = buildNodeTestArgs(files, { concurrency });
+  if (!quiet) process.stdout.write(`\n=== ${label}: ${files.length} test files (concurrency ${concurrency}) ===\n`);
+  return new Promise((resolve, reject) => {
+    const childEnv = { ...process.env };
+    delete childEnv.NODE_TEST_CONTEXT;
+    const child = spawn(process.execPath, args, {
+      cwd: process.cwd(),
+      stdio: ['ignore', 'pipe', 'inherit'],
+      env: childEnv,
+    });
+    let output = '';
+    child.stdout.on('data', (chunk) => {
+      const text = chunk.toString();
+      output += text;
+      if (!quiet) process.stdout.write(text);
+    });
+    child.once('error', reject);
+    child.once('close', (code, signal) => {
+      if (code === 0) {
+        resolve(countDotReporterTests(output));
+        return;
+      }
+      reject(new Error(`${label} failed with ${signal ? `signal ${signal}` : `exit code ${code}`}\n${output}`));
+    });
+  });
+}
+
+async function createTestCache() {
+  let commit = 'unknown';
+  try { commit = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(); } catch {}
+  const cacheDirectory = path.resolve('release/.cache/node-test-suite');
+  const cachePath = path.join(cacheDirectory, `${commit}-${process.platform}-${process.arch}-${process.version.replaceAll('/', '_')}.json`);
+  await mkdir(cacheDirectory, { recursive: true });
+  let state = { schema: 'nolane.node-test-cache.v1', commit, platform: process.platform, arch: process.arch, node: process.version, passed: {} };
+  try {
+    const parsed = JSON.parse(await readFile(cachePath, 'utf8'));
+    if (parsed.commit === commit && parsed.platform === process.platform && parsed.arch === process.arch && parsed.node === process.version) state = parsed;
+  } catch (error) { if (error.code !== 'ENOENT') throw error; }
+  let saveChain = Promise.resolve();
+  const persist = () => {
+    saveChain = saveChain.then(async () => {
+      const temporary = `${cachePath}.${process.pid}.tmp`;
+      await writeFile(temporary, `${JSON.stringify(state, null, 2)}\n`);
+      await rename(temporary, cachePath);
+    });
+    return saveChain;
+  };
+  return {
+    commit,
+    cachePath,
+    has(file) { return Number.isInteger(state.passed[path.relative(process.cwd(), file)]); },
+    count(file) { return Number(state.passed[path.relative(process.cwd(), file)] ?? 0); },
+    async record(file, count) { state.passed[path.relative(process.cwd(), file)] = Number(count); await persist(); },
+    async flush() { await saveChain; },
+    summary() { return { cachedFiles: Object.keys(state.passed).length, cachePath: path.relative(process.cwd(), cachePath), commit }; },
+  };
+}
+
+export async function runNodeTestFilePool(files, { concurrency = 8, label = 'Parallel file pool', cache = null } = {}) {
+  if (files.length === 0) return 0;
+  const workerCount = Math.max(1, Math.min(Number(concurrency) || 1, files.length));
+  const cached = cache ? files.filter((file) => cache.has(file)) : [];
+  const pending = cache ? files.filter((file) => !cache.has(file)) : files;
+  process.stdout.write(`\n=== ${label}: ${files.length} isolated test files (workers ${workerCount}, cached ${cached.length}) ===\n`);
+  let cursor = 0;
+  let completed = cached.length;
+  let passedTests = cached.reduce((sum, file) => sum + cache.count(file), 0);
+  if (cached.length) process.stdout.write(`Reused ${cached.length} same-commit file receipts.\n`);
+  let failure = null;
+  const worker = async () => {
+    while (!failure) {
+      const index = cursor++;
+      if (index >= pending.length) return;
+      const file = pending[index];
+      try {
+        const count = await runNodeTests([file], { concurrency: 1, label: path.basename(file), quiet: true });
+        passedTests += count;
+        await cache?.record(file, count);
+        completed += 1;
+        process.stdout.write(completed % 50 === 0 ? `. ${completed}/${files.length}\n` : '.');
+      } catch (error) {
+        failure = error;
+        throw error;
+      }
+    }
+  };
+  await Promise.all(Array.from({ length: workerCount }, worker));
+  await cache?.flush();
+  if (completed % 50 !== 0) process.stdout.write(` ${completed}/${files.length}\n`);
+  return passedTests;
+}
+
+async function runCachedSingle(file, cache, label) {
+  if (cache.has(file)) {
+    process.stdout.write(`\n=== ${label}: cached same-commit receipt ===\n`);
+    return cache.count(file);
+  }
+  const count = await runNodeTests([file], { concurrency: 1, label });
+  await cache.record(file, count);
+  return count;
+}
+
+export async function runNodeTestSuite() {
+  const plan = await buildNodeTestPlan();
+  const cache = await createTestCache();
+  process.stdout.write(`Discovered ${plan.discovered.length} Node test files; every file is scheduled exactly once.\n`);
+  process.stdout.write(`Test cache: ${cache.summary().cachePath} @ ${cache.commit}\n`);
+  let passedTests = 0;
+  const parallelWorkers = process.env.NOLANE_AGENT_CLEAN_ROOM === '1' ? 32 : 8;
+  passedTests += await runNodeTestFilePool(plan.parallel, { concurrency: parallelWorkers, label: 'Parallel isolated-file pool', cache });
+  passedTests += await runNodeTestFilePool(plan.isolatedBatch, { concurrency: 4, label: 'Bounded packaging and integration pool', cache });
+  for (const file of plan.serial) passedTests += await runCachedSingle(file, cache, `Serial ${path.basename(file)}`);
+  await cache.flush();
+  process.stdout.write(`\nNode test suite complete: ${passedTests} tests across ${plan.discovered.length}/${plan.discovered.length} files passed.\n`);
+  process.stdout.write(`Cached receipts: ${cache.summary().cachedFiles}/${plan.discovered.length} files.\n`);
+}
+
+const isMain = process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
+if (isMain) {
+  runNodeTestSuite().catch((error) => {
+    console.error(error?.stack ?? error);
+    process.exitCode = 1;
+  });
+}

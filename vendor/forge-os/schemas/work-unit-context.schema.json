@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forgeos.dev/schemas/v0.6/work-unit-contexts.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": 2
+    },
+    "model": {
+      "type": "string"
+    },
+    "hardInputLimit": {
+      "type": "integer"
+    },
+    "outputReserve": {
+      "type": "integer"
+    },
+    "safetyReserve": {
+      "type": "integer"
+    },
+    "availableInputTokens": {
+      "type": "integer"
+    },
+    "totalEstimatedTokens": {
+      "type": "integer"
+    },
+    "contexts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "omissions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "contextReceiptSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "model",
+    "hardInputLimit",
+    "outputReserve",
+    "safetyReserve",
+    "availableInputTokens",
+    "totalEstimatedTokens",
+    "contexts",
+    "omissions",
+    "contextReceiptSha256"
+  ]
+}

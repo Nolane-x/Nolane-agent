@@ -1,0 +1,38 @@
+{
+  "schema": "nolane.small-model.checkpoint-10-evidence-bundle.v1",
+  "allowed": true,
+  "portfolioReceiptSha256": "bd208d63c1111a0edc2f71a587975d1a9a1d9a3bf269343b111c6a5b3a45c9ab",
+  "typescriptSkillReceiptSha256": "0b7523738cfc22d496b33731243739bed8b4bee6fcfa765a811bc10468c874ad",
+  "transferReceiptSha256": "abd2ce023079f440900a9a1a1d83ba40d71d8d68cc23795a87c7d802c54a86d7",
+  "propertyReceiptSha256": "445df59f316579ce18fc29a49ae94760116a1b8842e9f95d1c880ff5fc69a3a4",
+  "crossLanguageReceiptSha256": "ec576e80246e70a2bf11d1d6421a41088cd4b445ee5f4dd987d56104c795da60",
+  "process": {
+    "schema": "nolane.small-model.checkpoint-10-process-evidence.v1",
+    "allowed": true,
+    "portfolioReceiptSha256": "bd208d63c1111a0edc2f71a587975d1a9a1d9a3bf269343b111c6a5b3a45c9ab",
+    "value": 53,
+    "receiptSha256": "5746b8f30b571f50601265951cb636b56074b729376b9b750c22389bf429874a"
+  },
+  "cost": {
+    "schema": "nolane.small-model.checkpoint-10-cost-evidence.v1",
+    "allowed": true,
+    "portfolioReceiptSha256": "bd208d63c1111a0edc2f71a587975d1a9a1d9a3bf269343b111c6a5b3a45c9ab",
+    "totalCostRatio": 0.3532110091743119,
+    "candidateCostLower": true,
+    "externalCompetitorMeasured": false,
+    "receiptSha256": "76570c8122168ca09cfffbef84a6661263899527f0a24fa7c26048b42fd525dd"
+  },
+  "safety": {
+    "baselineViolations": 0,
+    "candidateViolations": 0,
+    "noRegression": true
+  },
+  "claims": {
+    "boundedTypeScriptAndCrossLanguageMigration": true,
+    "externalRepositoryGeneralization": false,
+    "generalCodingIntelligence": false,
+    "frontierParity": false,
+    "competitorSuperiority": false
+  },
+  "receiptSha256": "60dbaba22bf3ead4b5762b373eba1e1c0a7ccf32a626ef813caa9d025571244e"
+}

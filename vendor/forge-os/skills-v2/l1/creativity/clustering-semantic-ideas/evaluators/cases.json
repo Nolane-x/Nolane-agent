@@ -1,0 +1,38 @@
+[
+  {
+    "id": "clustering-semantic-ideas-application",
+    "kind": "application",
+    "input": "Task directly requiring clustering semantic ideas within creativity lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "clustering-semantic-ideas-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require clustering semantic ideas within creativity lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "clustering-semantic-ideas-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "clustering-semantic-ideas-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "clustering-semantic-ideas-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "clustering-semantic-ideas-transfer",
+    "kind": "transfer",
+    "input": "Apply the clustering-semantic-ideas mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

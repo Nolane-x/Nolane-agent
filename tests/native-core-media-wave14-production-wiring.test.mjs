@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtemp, rm } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import { NolaneNativeOrchestrationService } from '../src/nolane-native/orchestration-service.mjs';
+import { createRoutes } from '../src/server/routes.mjs';
+
+async function fixture(t) { const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-wave14-production-')); t.after(() => rm(root, { recursive: true, force: true })); const service = new NolaneNativeOrchestrationService({ dataDir: path.join(root, '.data'), workspaceRoot: root }); await service.open(); service.registerNativeMediaProviderWave14({ id: 'image-fixture', kind: 'image', provider: { async generate({ prompt }) { return { mime: 'image/png', bytes: Buffer.from(`image:${prompt}`) }; } } }); service.registerNativeMediaProviderWave14({ id: 'tts-fixture', kind: 'tts', provider: { async *stream({ text }) { yield Buffer.from(text); } } }); return service; }
+const callFor = (service) => { const route = createRoutes({ nativeOrchestration: service }); return async ({ method = 'GET', pathname, body = null }) => { let status; let data = ''; const req = { method, forgePrincipal: { subject: 'alice' }, async *[Symbol.asyncIterator]() { if (body !== null) yield Buffer.from(JSON.stringify(body)); } }; const res = { writeHead(code) { status = code; }, end(chunk = '') { data += chunk; } }; await route(req, res, new URL(`http://local${pathname}`)); return { status, body: data ? JSON.parse(data) : null }; }; };
+
+test('orchestration production-wires media core wave14', async (t) => { const service = await fixture(t); const generated = await service.generateNativeMediaWave14({ providerId: 'image-fixture', prompt: 'cat', credentialRef: 'vault:image' }); assert.equal(generated.asset.mime, 'image/png'); const spoken = await service.speakNativeMediaWave14({ providerId: 'tts-fixture', text: 'hello' }); assert.equal(spoken.bytes, 5); service.startNativeVoicePlaybackWave14(spoken.asset.id); assert.equal(service.bargeInNativeVoiceWave14({ reason: 'user' }).playback, 'stopped'); assert.equal(service.status().mediaWave14.assets.assets, 2); });
+
+test('HTTP media wave14 routes expose bounded generation and status', async (t) => { const service = await fixture(t); const call = callFor(service); const generated = await call({ method: 'POST', pathname: '/api/nolane/native-core/media/wave14/generate', body: { providerId: 'image-fixture', prompt: 'cat', credentialRef: 'vault:image' } }); assert.equal(generated.status, 201); assert.equal(generated.body.asset.mime, 'image/png'); assert.equal(JSON.stringify(generated.body).includes('vault:image'), false); const status = await call({ pathname: '/api/nolane/native-core/media/wave14/status' }); assert.equal(status.body.assets.assets, 1); });

@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 2,
+  "id": "compiling-global-context",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Compiling Global Context",
+    "description": "Use when an agent request must combine system policy, task state, skill sections, code, artifacts, memory, tools, and references under one hard model-context budget.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "kernel"
+    ],
+    "keywords": [
+      "compiling-global-context",
+      "an",
+      "agent",
+      "request",
+      "must",
+      "combine",
+      "system",
+      "policy",
+      "task"
+    ],
+    "antiTriggers": [
+      "the complete request is already far below every category budget",
+      "archival storage with no model invocation"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "project-state",
+        "schema": "artifact://forgeos/project-state/v2"
+      }
+    ],
+    "produces": [
+      {
+        "type": "context-pack",
+        "schema": "artifact://forgeos/context-pack/v1"
+      }
+    ],
+    "invariants": [
+      "Total input is below the hard limit.",
+      "No source disappears without an omission record.",
+      "The receipt binds hashes of all included sections."
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "confirmed intent and current semantic revision exist"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Reserve output and safety capacity before selecting inputs.",
+        "evidence": "Total input is below the hard limit."
+      },
+      {
+        "id": "step-2",
+        "action": "Count every category with one model-specific accounting provider.",
+        "evidence": "No source disappears without an omission record."
+      },
+      {
+        "id": "step-3",
+        "action": "Select required items first and rank optional items by route value.",
+        "evidence": "The receipt binds hashes of all included sections."
+      },
+      {
+        "id": "step-4",
+        "action": "Emit a context receipt and omission manifest for every excluded source.",
+        "evidence": "The receipt binds hashes of all included sections."
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "context-pack is produced with current evidence or a blocker is recorded"
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Total input is below the hard limit.",
+      "No source disappears without an omission record.",
+      "The receipt binds hashes of all included sections."
+    ],
+    "reviewerRole": "kernel-skill-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "behavioral-eval-receipt",
+      "context-receipt"
+    ],
+    "evaluatorIds": [
+      "compiling-global-context-evaluator-v2"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 5,
+    "maxReferenceDepth": 2,
+    "targetTokens": 510,
+    "hardTokens": 895,
+    "outputReserveTokens": 256
+  },
+  "quality": {
+    "benchmarkIds": [
+      "compiling-global-context-public-v1"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L0",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "coverage-ledger",
+      "typed-preconditions",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionability-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.optimize-cost",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:l0:compiling-global-context",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.compiling-global-context",
+      "fitScore": 100,
+      "mappingEvidence": "reviewed:l0:compiling-global-context",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "895258ed819bd507f36bf97ac1801b1ffe19b43530161a6c393297fb64445f97",
+        "bytes": 874,
+        "tokens": {
+          "gpt-5.6": 235,
+          "claude-opus-4.2": 247,
+          "gemini-3.0-pro": 225,
+          "qwen3.5-32b": 261
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "3b91adcd54c88aaab7f3875a4c306dfc7e85526841cd93ab1883415cfe02ecca",
+        "bytes": 541,
+        "tokens": {
+          "gpt-5.6": 146,
+          "claude-opus-4.2": 153,
+          "gemini-3.0-pro": 139,
+          "qwen3.5-32b": 162
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "ce6b780e7111bd23302b7787a5ac03cd99f1711936b70d624202d73da690a469",
+        "bytes": 391,
+        "tokens": {
+          "gpt-5.6": 106,
+          "claude-opus-4.2": 111,
+          "gemini-3.0-pro": 101,
+          "qwen3.5-32b": 117
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "569371467d5e398409029a5134c0be574cc26e6ff2010edc09b1f39f0fef236c",
+        "bytes": 240,
+        "tokens": {
+          "gpt-5.6": 65,
+          "claude-opus-4.2": 68,
+          "gemini-3.0-pro": 62,
+          "qwen3.5-32b": 72
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "5602a03535b0c146497839101da65dce6b140bc90df14f4146b96cf3e8c2925b",
+        "bytes": 211,
+        "tokens": {
+          "gpt-5.6": 57,
+          "claude-opus-4.2": 60,
+          "gemini-3.0-pro": 55,
+          "qwen3.5-32b": 63
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "424927f755b1fa5d61be42176214cf998061293b272cd5a7e86b620be1e1ab79",
+        "bytes": 349,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 99,
+          "gemini-3.0-pro": 90,
+          "qwen3.5-32b": 105
+        }
+      }
+    ],
+    "indexSha256": "77c2424c613f77dd31c2a0658d4504f6eeb966f1964766734d0bd0f6a8f6acc6"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "e05dbfba5aaa3ece2e26bb9b6f2d3a9706dfc72bf1203dad2f9c1a6eb57fdf9b"
+}

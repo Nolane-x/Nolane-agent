@@ -1,0 +1,154 @@
+{
+  "name": "designing-production-visual-systems",
+  "version": "0.2.0",
+  "kind": "domain",
+  "pack": "domain",
+  "domain": "visual-design",
+  "status": "candidate",
+  "stages": [
+    "product-definition",
+    "ux-design",
+    "architecture",
+    "planning",
+    "implementation",
+    "verification",
+    "release-readiness"
+  ],
+  "domains": [
+    "visual-design"
+  ],
+  "consumes": [
+    "product-definition"
+  ],
+  "produces": [
+    "domain-blueprint",
+    "domain-evidence"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:domain-blueprint",
+    "downstream:domain-evidence"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/domains/visual-design.md",
+  "method": {
+    "focus": "turn a verified product brief into an accessible, reusable visual system rather than a one-off mockup",
+    "steps": [
+      "Establish audience, brand constraints, target surfaces, accessibility obligations, and measurable visual outcomes.",
+      "Define semantic color, typography, spacing, elevation, icon, motion, and content tokens with contrast and state rules.",
+      "Compose representative components and layouts for normal, empty, loading, error, dense, and narrow-screen states.",
+      "Review visual hierarchy, keyboard focus, text scaling, localization expansion, and image or font licensing against the system.",
+      "Package source files, export rules, token references, review decisions, and the open questions required before implementation."
+    ],
+    "verification": [
+      "Can every essential state be understood without color alone?",
+      "Do representative foreground and background combinations meet the stated contrast target?",
+      "Can a developer identify the reusable token and component behind each visual choice?",
+      "Does the delivery distinguish a design specification from a rendered or deployed product?"
+    ],
+    "evidence": [
+      "visual-system specification",
+      "token inventory",
+      "state and accessibility review",
+      "asset provenance register"
+    ],
+    "traps": [
+      "treating a static mockup as an implemented interface",
+      "copying third-party brand assets without rights",
+      "using color as the only status signal"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Read the confirmed product definition, domain context, assurance profile, and active findings.",
+    "Identify the domain objects, actors, state transitions, regulations, provider boundaries, and operational constraints owned by this skill.",
+    "Establish audience, brand constraints, target surfaces, accessibility obligations, and measurable visual outcomes.",
+    "Define semantic color, typography, spacing, elevation, icon, motion, and content tokens with contrast and state rules.",
+    "Compose representative components and layouts for normal, empty, loading, error, dense, and narrow-screen states.",
+    "Review visual hierarchy, keyboard focus, text scaling, localization expansion, and image or font licensing against the system.",
+    "Package source files, export rules, token references, review decisions, and the open questions required before implementation.",
+    "Model normal, boundary, failure, recovery, permission, concurrency, migration, and abuse behavior before implementation.",
+    "Define stable contracts and explicit non-goals; do not leak domain concerns into unrelated modules.",
+    "Create executable acceptance, negative, resilience, and compatibility checks proportional to risk.",
+    "Publish the domain artifact, evidence packet, unresolved assumptions, and downstream invalidations."
+  ],
+  "gate": {
+    "reviewerRole": "visual-design-reviewer",
+    "rules": [
+      "The output directly and completely performs designing production visual systems within its declared boundary.",
+      "Can every essential state be understood without color alone?",
+      "Do representative foreground and background combinations meet the stated contrast target?",
+      "Can a developer identify the reusable token and component behind each visual choice?",
+      "Does the delivery distinguish a design specification from a rendered or deployed product?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "domain-blueprint",
+        "domain-evidence"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "visual-system specification",
+      "token inventory",
+      "state and accessibility review",
+      "asset provenance register"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1924,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "treating a static mockup as an implemented interface",
+    "copying third-party brand assets without rights",
+    "using color as the only status signal"
+  ],
+  "optionalConsumes": [
+    "architecture-decision",
+    "verified-build"
+  ],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when designing production visual systems is required during visual-design product work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "nolane.small-model.datalog-property-verification.v1",
+  "status": "pass",
+  "seeds": [
+    3,
+    11,
+    29
+  ],
+  "casesPerSeed": 6,
+  "trials": 18,
+  "convergedCases": 18,
+  "counterexamples": [],
+  "referenceAgreement": true,
+  "trialReceipts": [
+    "09fe4846f1de6b91945d91cc170328184724696002fd16ee9522ec808e185ed1",
+    "9c31a3ddafbdf032e8d0c2391a1b82e94bde6ac34854f47da780f869dc6ed4ff",
+    "6918c40f9af7259bb62527a78884b19fde1ecf9d8a63882b8ccbb802150f0457",
+    "7261ef3e3326dafdba7bd7c538b1bddf1ca9dafdf14b52441478ce39e2efb858",
+    "6703760349f28ed53c83e9c894e64b5c9a786822a11f333c97c5ae317a3eed40",
+    "8e2d4886c1ca2762b48caf3bf4ca0621467a24bebd8e22fcd64f95f768c4b0ba",
+    "ec021d7c9a943c25403bd9933b8e7681bd4a297dad462ca1b03fcb2978235802",
+    "044aa8e4b4aab687beb89e3810ea30bd11c9ab06852383d085e64465d4a5b85f",
+    "9adec3e22c3c8c539931a8a2aabb56e20e0679dcbc25df39ad95f0f2dafa2251",
+    "959558aad763aa972d4c253fbab3b20277e85488957a254c7c33e017ed8127d7",
+    "fdc8270fc4fcc85ef2519833b6d854fc9d797da968fff5659d98b18404d7b0e8",
+    "c0aee1034fe2d27f80638d4fe054ec6b4612e3ba2d7232802da10b605be5372c",
+    "3e265f35a0f6420cee429daf5447a26cacc330a38741cb5f83ca2a24f4407cea",
+    "23a96d5dbfc9a1c8035fa9ae3c04e56a2635d4684ed080c60ddc6fd82797e347",
+    "d3b8f258a7d82f87f68ca106e77212693a42fa60751f21b493c4f6eff09fbfe9",
+    "98393d2eec2c2ce36e224c99404f018e6909db6eeee6df34918d9208ef31a568",
+    "bf67a5e27156200d766d45c7116bed7084ac39f60002fa009c49d4539801464f",
+    "2fd8c30f2e7881a89b97bcf56b3833ebb92d3d4bc0849f49be6d881cc8a549eb"
+  ],
+  "budgets": {
+    "maxIterations": 64,
+    "maxFacts": 256
+  },
+  "hiddenChainOfThoughtStored": false,
+  "claims": {
+    "boundedPropertyVerification": true,
+    "generalDatalogSolver": false,
+    "generalCodingIntelligence": false
+  },
+  "receiptSha256": "2c26552a8044a9d79640878fb8313e5b288701321c709eb1f84d1ebecc754dae"
+}

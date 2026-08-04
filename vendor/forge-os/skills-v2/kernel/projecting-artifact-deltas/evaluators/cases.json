@@ -1,0 +1,20 @@
+[
+  {
+    "id": "projecting-artifact-deltas-positive",
+    "kind": "application",
+    "input": "A task requiring Projecting Artifact Deltas",
+    "expectedEvidence": [
+      "Invalidated and superseded artifacts are never projected as active.",
+      "Reference depth is enforced.",
+      "Every delta identifies its source and current hash."
+    ],
+    "baselineFailure": "Sending the complete history for one changed field."
+  },
+  {
+    "id": "projecting-artifact-deltas-anti-trigger",
+    "kind": "counter-example",
+    "input": "no checkpoint exists and the full artifact is explicitly required",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

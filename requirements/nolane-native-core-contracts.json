@@ -1,0 +1,3031 @@
+{
+  "claimPolicy": {
+    "completeParityRequiresNoOpenCandidates": true,
+    "externalBehaviorRequiresExternalReceipt": true,
+    "fileExistenceIsProof": false
+  },
+  "contracts": [
+    {
+      "domain": "agent-kernel",
+      "entrypoints": [
+        "src/native-core/turn-state-machine.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-AGENT-TURN-KERNEL",
+      "negativeTests": [
+        "tests/native-core-runtime-kernel.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "TurnStateMachine",
+          "path": "src/nolane-native/agent-loop.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-runtime-kernel.test.mjs"
+      ],
+      "title": "Bounded turn lifecycle, tool loop, verification and receipts",
+      "upstreamPathPatterns": [
+        "^(run_agent\\.py|agent/(conversation_loop|turn_context|turn_finalizer|turn_retry_state|iteration_budget|bounded_response)\\.py)$"
+      ]
+    },
+    {
+      "domain": "agent-kernel",
+      "entrypoints": [
+        "src/native-core/goal-evidence-contract.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-GOAL-EVIDENCE-COMPLETION",
+      "negativeTests": [
+        "tests/native-core-goal-evidence.test.mjs"
+      ],
+      "priority": 180,
+      "productionWiring": [
+        {
+          "contains": "GoalEvidenceContract",
+          "path": "src/nolane-native/agent-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-goal-evidence.test.mjs"
+      ],
+      "title": "Independent evidence-gated goal completion without hidden reasoning",
+      "upstreamPathPatterns": [
+        "^agent/(verification_stop|verification_evidence|verify_hooks)\\.py$"
+      ]
+    },
+    {
+      "domain": "agent-kernel",
+      "entrypoints": [
+        "src/native-core/runtime-receipt-ledger.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-AGENT-RUNTIME-ISOLATION",
+      "negativeTests": [
+        "tests/native-core-runtime-kernel.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "RuntimeReceiptLedger",
+          "path": "src/nolane-native/runtime-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-runtime-kernel.test.mjs"
+      ],
+      "title": "Native worker lifecycle, protocol handshake and fail-closed runtime",
+      "upstreamPathPatterns": [
+        "^agent/(agent_init|agent_runtime_helpers|async_utils|process_bootstrap|runtime_cwd)\\.py$"
+      ]
+    },
+    {
+      "domain": "prompt-context",
+      "entrypoints": [
+        "src/native-core/prompt-tier-assembler.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-PROMPT-CONTEXT-FABRIC",
+      "negativeTests": [
+        "tests/native-core-context-provider.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "PromptTierAssembler",
+          "path": "src/agent/context-builder.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-context-provider.test.mjs"
+      ],
+      "title": "Tiered context, compression, references and cache boundaries",
+      "upstreamPathPatterns": [
+        "^(trajectory_compressor\\.py|agent/(coding_context|context_breakdown|context_compressor|context_engine|context_references|conversation_compression|manual_compression_feedback|prompt_builder|prompt_caching|system_prompt|turn_summary)\\.py)$"
+      ]
+    },
+    {
+      "domain": "provider-fabric",
+      "entrypoints": [
+        "src/native-core/provider-fallback-fabric.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-PROVIDER-PROTOCOL",
+      "negativeTests": [
+        "tests/native-core-context-provider.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "ProviderFallbackFabric",
+          "path": "src/nolane-native/provider-registry.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-context-provider.test.mjs"
+      ],
+      "title": "Provider registry, aliases, credentials, retry classification and usage accounting",
+      "upstreamPathPatterns": [
+        "^(model_tools\\.py|agent/(aux_accounting|backend_identity|credential_pool|credential_sources|error_classifier|model_metadata|models_dev|rate_limit_tracker|retry_utils|usage_pricing)\\.py)$"
+      ]
+    },
+    {
+      "domain": "provider-fabric",
+      "entrypoints": [
+        "src/providers/provider-registry.mjs"
+      ],
+      "externalCondition": "Run each provider adapter with real credentials or local endpoint and attach replayable request, usage, rate-limit and cancellation receipts.",
+      "id": "NATIVE-PROVIDER-REAL-CERTIFICATION",
+      "negativeTests": [
+        "tests/direct-api-providers.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "new ProviderRegistry",
+          "path": "src/app.mjs"
+        }
+      ],
+      "status": "external_gate",
+      "tests": [
+        "tests/direct-api-providers.test.mjs"
+      ],
+      "title": "Provider-specific transports and real credential execution",
+      "upstreamPathPatterns": [
+        "^(providers/.*|agent/(anthropic_adapter|azure_identity_adapter|bedrock_adapter|codex_responses_adapter|codex_runtime|gemini_native_adapter|gemini_schema|lmstudio_reasoning|moonshot_schema|nous_rate_guard|vertex_adapter|transports/(anthropic|bedrock|codex|codex_app_server|codex_app_server_session|nolane_native_tools_mcp_server))\\.py)$",
+        "^plugins/model-providers/.*$"
+      ]
+    },
+    {
+      "domain": "tool-execution",
+      "entrypoints": [
+        "src/native-core/tool-execution-fabric.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-TOOL-EXECUTION",
+      "negativeTests": [
+        "tests/native-core-tool-execution.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "ToolExecutionFabric",
+          "path": "src/execution/tool-broker.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-tool-execution.test.mjs"
+      ],
+      "title": "Tool discovery, approval, timeout, process registry and normalized results",
+      "upstreamPathPatterns": [
+        "^(toolsets|toolset_distributions)\\.py$|^tools/(approval|close_terminal_tool|code_execution_tool|env_passthrough|env_probe|interrupt|managed_tool_gateway|process_registry|read_terminal_tool|registry|terminal_tool|tool_backend_helpers|tool_output_limits|tool_result_storage)\\.py$"
+      ]
+    },
+    {
+      "domain": "tool-execution",
+      "entrypoints": [
+        "src/sandbox/local-resource-sandbox-service.mjs"
+      ],
+      "externalCondition": "Exercise each remote backend with real infrastructure, quotas, teardown and credential-isolation receipts.",
+      "id": "NATIVE-REMOTE-EXECUTION-CERTIFICATION",
+      "negativeTests": [
+        "tests/local-resource-sandbox-service.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "new LocalResourceSandboxService",
+          "path": "src/app.mjs"
+        }
+      ],
+      "status": "external_gate",
+      "tests": [
+        "tests/local-resource-sandbox-service.test.mjs"
+      ],
+      "title": "Remote and hosted execution backends",
+      "upstreamPathPatterns": [
+        "^tools/environments/(daytona|managed_modal|modal|modal_utils|singularity|ssh)\\.py$"
+      ]
+    },
+    {
+      "domain": "repository-files",
+      "entrypoints": [
+        "src/workroom/file-service.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-REPOSITORY-FILE-TRANSACTIONS",
+      "negativeTests": [
+        "tests/file-service.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "new FileService",
+          "path": "src/app.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/file-service.test.mjs"
+      ],
+      "title": "Safe file reads, writes, patches, checkpoints and diff projection",
+      "upstreamPathPatterns": [
+        "^agent/file_safety\\.py$|^tools/(checkpoint_manager|file_operations|file_state|file_tools|patch_parser|path_security|project_tools|read_extract|working_diff)\\.py$"
+      ]
+    },
+    {
+      "domain": "repository-files",
+      "entrypoints": [
+        "src/repository/lsp-client.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-LSP-CODE-INTELLIGENCE",
+      "negativeTests": [
+        "tests/lsp-intelligence.test.mjs"
+      ],
+      "priority": 180,
+      "productionWiring": [
+        {
+          "contains": "CodeIntelligenceService.pooled",
+          "path": "src/app.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/lsp-intelligence.test.mjs"
+      ],
+      "title": "Bounded LSP lifecycle, definitions, references, rename, diagnostics and fallback",
+      "upstreamPathPatterns": [
+        "^agent/lsp/.*\\.py$"
+      ]
+    },
+    {
+      "domain": "media-voice",
+      "entrypoints": [
+        "src/native-core/media-core-wave14.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-MEDIA-PROVIDER-FRAMEWORK-WAVE14",
+      "negativeTests": [
+        "tests/native-core-media-wave14.test.mjs"
+      ],
+      "priority": 580,
+      "productionWiring": [
+        {
+          "contains": "MediaCoreRuntimeWave14",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-media-wave14.test.mjs"
+      ],
+      "title": "Content-addressed media, provider registry, transcription, streaming TTS and cancellation core",
+      "upstreamPathPatterns": [
+        "^agent/(image_gen_provider|image_gen_registry|image_routing|transcription_provider|transcription_registry|tts_provider|tts_registry|video_gen_provider|video_gen_registry).py$|^tools/(image_source|tts_streaming|tts_tool|vision_tools|voice_mode).py$"
+      ]
+    },
+    {
+      "domain": "security",
+      "entrypoints": [
+        "src/native-core/trust-core-wave13.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-SECRET-PROVIDER-FRAMEWORK-WAVE13",
+      "negativeTests": [
+        "tests/native-core-trust-wave13.test.mjs"
+      ],
+      "priority": 560,
+      "productionWiring": [
+        {
+          "contains": "TrustCoreRuntimeWave13",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-trust-wave13.test.mjs"
+      ],
+      "title": "Reference-only environment, file and command secret provider contract",
+      "upstreamPathPatterns": [
+        "^agent/secret_sources/(__init__|base|registry|_cache|command).py$"
+      ]
+    },
+    {
+      "domain": "security",
+      "entrypoints": [
+        "src/native-core/trust-core-wave13.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-DASHBOARD-AUTH-TRUST-WAVE13",
+      "negativeTests": [
+        "tests/native-core-trust-wave13.test.mjs"
+      ],
+      "priority": 560,
+      "productionWiring": [
+        {
+          "contains": "TrustCoreRuntimeWave13",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-trust-wave13.test.mjs"
+      ],
+      "title": "Profile-scoped dashboard authentication, session tickets, audit and revoke-safe permissions",
+      "upstreamPathPatterns": [
+        "^nolane_native_cli/dashboard_auth/(__init__|base|registry|middleware|audit|routes|prefix|public_paths|token_auth|cookies|ws_tickets|native_flow).py$"
+      ]
+    },
+    {
+      "domain": "memory-learning",
+      "entrypoints": [
+        "src/native-core/adapter-ecosystem-wave12.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-MEMORY-ADAPTER-FRAMEWORK-WAVE12",
+      "negativeTests": [
+        "tests/native-core-adapter-ecosystem-wave12.test.mjs"
+      ],
+      "priority": 540,
+      "productionWiring": [
+        {
+          "contains": "AdapterEcosystemRuntimeWave12",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-adapter-ecosystem-wave12.test.mjs"
+      ],
+      "title": "Durable versioned local memory adapter contract, retention and provider TCK",
+      "upstreamPathPatterns": [
+        "^plugins/memory/(__init__|config_schema|query_rewrite).py$"
+      ]
+    },
+    {
+      "domain": "plugin-system",
+      "entrypoints": [
+        "src/native-core/adapter-ecosystem-wave12.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-SIGNED-PLUGIN-PACKAGE-WAVE12",
+      "negativeTests": [
+        "tests/native-core-adapter-ecosystem-wave12.test.mjs"
+      ],
+      "priority": 540,
+      "productionWiring": [
+        {
+          "contains": "AdapterEcosystemRuntimeWave12",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-adapter-ecosystem-wave12.test.mjs"
+      ],
+      "title": "Signed plugin package verification, capabilities, transparency log, disable and rollback",
+      "upstreamPathPatterns": [
+        "^plugins/plugin_utils.py$"
+      ]
+    },
+    {
+      "domain": "scheduler",
+      "entrypoints": [
+        "src/native-core/adapter-ecosystem-wave12.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-DURABLE-ADAPTER-SCHEDULER-WAVE12",
+      "negativeTests": [
+        "tests/native-core-adapter-ecosystem-wave12.test.mjs"
+      ],
+      "priority": 540,
+      "productionWiring": [
+        {
+          "contains": "AdapterEcosystemRuntimeWave12",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-adapter-ecosystem-wave12.test.mjs"
+      ],
+      "title": "Durable adapter scheduling with skew-safe idempotent delivery",
+      "upstreamPathPatterns": [
+        "^plugins/cron_providers/chronos/(__init__|verify).py$|^plugins/cron_providers/chronos/plugin.yaml$"
+      ]
+    },
+    {
+      "domain": "multi-agent",
+      "entrypoints": [
+        "src/native-core/adapter-ecosystem-wave12.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-KANBAN-SYNC-WAVE12",
+      "negativeTests": [
+        "tests/native-core-adapter-ecosystem-wave12.test.mjs"
+      ],
+      "priority": 540,
+      "productionWiring": [
+        {
+          "contains": "AdapterEcosystemRuntimeWave12",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-adapter-ecosystem-wave12.test.mjs"
+      ],
+      "title": "Conflict-safe versioned Kanban synchronization and duplicate suppression",
+      "upstreamPathPatterns": [
+        "^plugins/kanban/dashboard/(manifest.json|plugin_api.py)$"
+      ]
+    },
+    {
+      "domain": "observability-operations",
+      "entrypoints": [
+        "src/native-core/adapter-ecosystem-wave12.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-OBSERVABILITY-ADAPTER-FRAMEWORK-WAVE12",
+      "negativeTests": [
+        "tests/native-core-adapter-ecosystem-wave12.test.mjs"
+      ],
+      "priority": 540,
+      "productionWiring": [
+        {
+          "contains": "AdapterEcosystemRuntimeWave12",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-adapter-ecosystem-wave12.test.mjs"
+      ],
+      "title": "Redacted observability adapter queue, backpressure, disconnect and flush contract",
+      "upstreamPathPatterns": [
+        "^plugins/observability/[^/]+/plugin.yaml$"
+      ]
+    },
+    {
+      "domain": "browser-computer-use",
+      "entrypoints": [
+        "src/native-core/browser-engine-wave11.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-BROWSER-ENGINE-WAVE11",
+      "negativeTests": [
+        "tests/native-core-browser-wave11.test.mjs"
+      ],
+      "priority": 520,
+      "productionWiring": [
+        {
+          "contains": "BrowserEngineWave11",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-browser-wave11.test.mjs"
+      ],
+      "title": "Profile-isolated browser engine, action policy, selectors, quarantine, recovery and replay",
+      "upstreamPathPatterns": [
+        "^agent/(browser_registry|browser_provider).py$|^tools/computer_use/.*.py$"
+      ]
+    },
+    {
+      "domain": "browser-computer-use",
+      "entrypoints": [
+        "src/browser/browser-agent-service.mjs"
+      ],
+      "externalCondition": "Run Playwright/CDP, search-provider and computer-use journeys on a real desktop/browser with visual, download and permission receipts.",
+      "id": "NATIVE-BROWSER-COMPUTER-USE-CERTIFICATION",
+      "negativeTests": [
+        "tests/browser-agent-service.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "new BrowserAgentService",
+          "path": "src/app.mjs"
+        }
+      ],
+      "status": "external_gate",
+      "tests": [
+        "tests/browser-agent-service.test.mjs"
+      ],
+      "title": "Browser and computer-use actions with approvals and bounded output",
+      "upstreamPathPatterns": [
+        "^agent/browser_.*\\.py$|^tools/(browser_.*|computer_use/.*|computer_use_tool)\\.py$|^plugins/(browser|web)/.*$"
+      ]
+    },
+    {
+      "domain": "sessions",
+      "entrypoints": [
+        "src/native-core/session-memory-learning-fabric.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-SESSION-PERSISTENCE",
+      "negativeTests": [
+        "tests/native-core-state-learning.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "SessionMemoryLearningFabric",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-state-learning.test.mjs"
+      ],
+      "title": "Durable sessions, lineage, search and corrupt-primary recovery",
+      "upstreamPathPatterns": [
+        "^nolane_native_state\\.py$|^agent/(replay_cleanup|thread_scoped_output|title_generator)\\.py$|^tools/session_search_tool\\.py$"
+      ]
+    },
+    {
+      "domain": "memory-learning",
+      "entrypoints": [
+        "src/native-core/session-memory-learning-fabric.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-MEMORY-LEARNING",
+      "negativeTests": [
+        "tests/native-core-state-learning.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "SessionMemoryLearningFabric",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-state-learning.test.mjs"
+      ],
+      "title": "Bounded memory, provenance, consolidation and verified learning",
+      "upstreamPathPatterns": [
+        "^agent/(background_review|curator|curator_backup|learn_prompt|learning_graph|learning_graph_render|learning_mutations|memory_manager|memory_provider)\\.py$|^tools/memory_tool\\.py$"
+      ]
+    },
+    {
+      "domain": "memory-learning",
+      "entrypoints": [
+        "src/native-core/native-adapter-tck.mjs"
+      ],
+      "externalCondition": "Run each memory provider with real storage, restart, conflict, deletion and credential-redaction receipts.",
+      "id": "NATIVE-MEMORY-PROVIDER-CERTIFICATION",
+      "negativeTests": [
+        "tests/native-core-adapter-tck.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "NativeAdapterTck",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "external_gate",
+      "tests": [
+        "tests/native-core-adapter-tck.test.mjs"
+      ],
+      "title": "External memory provider adapters behind the native memory contract",
+      "upstreamPathPatterns": [
+        "^plugins/memory/.*$"
+      ]
+    },
+    {
+      "domain": "plugin-system",
+      "entrypoints": [
+        "src/native-core/extension-automation-fabric.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-PLUGIN-HOST",
+      "negativeTests": [
+        "tests/native-core-extension-automation.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "ExtensionAutomationFabric",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-extension-automation.test.mjs"
+      ],
+      "title": "Plugin manifests, capability quarantine, activation and typed dispatch",
+      "upstreamPathPatterns": [
+        "^plugins/(__init__\\.py|plugin_utils\\.py)$"
+      ]
+    },
+    {
+      "domain": "plugin-system",
+      "entrypoints": [
+        "src/native-core/native-adapter-tck.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-ADAPTER-TCK",
+      "negativeTests": [
+        "tests/native-core-adapter-tck.test.mjs"
+      ],
+      "priority": 180,
+      "productionWiring": [
+        {
+          "contains": "NativeAdapterTck",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-adapter-tck.test.mjs"
+      ],
+      "title": "Typed adapter manifests, lifecycle, permission bounds, timeout, redaction and receipts",
+      "upstreamPathPatterns": [
+        "^plugins/(dashboard_auth|nolane_native-achievements)/.+/plugin\\.yaml$"
+      ]
+    },
+    {
+      "domain": "plugin-system",
+      "entrypoints": [
+        "src/native-core/native-adapter-tck.mjs"
+      ],
+      "externalCondition": "Run each optional plugin against its real auth or dashboard surface and attach lifecycle, permission and rollback receipts.",
+      "id": "NATIVE-PLUGIN-AUTH-CERTIFICATION",
+      "negativeTests": [
+        "tests/native-core-adapter-tck.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "NativeAdapterTck",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "external_gate",
+      "tests": [
+        "tests/native-core-adapter-tck.test.mjs"
+      ],
+      "title": "Dashboard authentication and optional plugin behavior",
+      "upstreamPathPatterns": [
+        "^plugins/(dashboard_auth|nolane_native-achievements)/.*$"
+      ]
+    },
+    {
+      "domain": "mcp",
+      "entrypoints": [
+        "src/native-core/extension-automation-fabric.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-MCP-FABRIC",
+      "negativeTests": [
+        "tests/native-core-extension-automation.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "ExtensionAutomationFabric",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-extension-automation.test.mjs"
+      ],
+      "title": "MCP stdio/HTTP lifecycle, OAuth, filtering and reconnect",
+      "upstreamPathPatterns": [
+        "^mcp_serve\\.py$|^tools/mcp_(dashboard_oauth|oauth|oauth_manager|stdio_watchdog|tool)\\.py$"
+      ]
+    },
+    {
+      "domain": "scheduler",
+      "entrypoints": [
+        "src/native-core/extension-automation-fabric.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-DURABLE-SCHEDULER",
+      "negativeTests": [
+        "tests/native-core-extension-automation.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "ExtensionAutomationFabric",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-extension-automation.test.mjs"
+      ],
+      "title": "Persistent schedules, duplicate prevention, retry and restart recovery",
+      "upstreamPathPatterns": [
+        "^cron/.*\\.py$|^tools/cronjob_tools\\.py$|^plugins/cron_providers/__init__\\.py$"
+      ]
+    },
+    {
+      "domain": "scheduler",
+      "entrypoints": [
+        "src/native-core/native-adapter-tck.mjs"
+      ],
+      "externalCondition": "Run each external scheduler with real clock, retry, pause, resume, stale-lease and delivery receipts.",
+      "id": "NATIVE-CRON-PROVIDER-CERTIFICATION",
+      "negativeTests": [
+        "tests/native-core-adapter-tck.test.mjs"
+      ],
+      "priority": 50,
+      "productionWiring": [
+        {
+          "contains": "NativeAdapterTck",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "external_gate",
+      "tests": [
+        "tests/native-core-adapter-tck.test.mjs"
+      ],
+      "title": "External scheduler provider adapters",
+      "upstreamPathPatterns": [
+        "^plugins/cron_providers/.*$"
+      ]
+    },
+    {
+      "domain": "multi-agent",
+      "entrypoints": [
+        "src/native-core/extension-automation-fabric.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-MULTI-AGENT-ORCHESTRATION",
+      "negativeTests": [
+        "tests/native-core-extension-automation.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "ExtensionAutomationFabric",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-extension-automation.test.mjs"
+      ],
+      "title": "Delegation, workers, leases, blackboard, verification and synthesis",
+      "upstreamPathPatterns": [
+        "^(batch_runner|mini_swe_runner)\\.py$|^agent/(delegation_context|kanban_stop|subagent_lifecycle)\\.py$|^tools/(async_delegation|delegate_tool|delegation_live_log|kanban_tools)\\.py$"
+      ]
+    },
+    {
+      "domain": "multi-agent",
+      "entrypoints": [
+        "src/native-core/mixture-of-agents-coordinator.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-MIXTURE-OF-AGENTS",
+      "negativeTests": [
+        "tests/native-core-mixture-of-agents.test.mjs"
+      ],
+      "priority": 180,
+      "productionWiring": [
+        {
+          "contains": "MixtureOfAgentsCoordinator",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-mixture-of-agents.test.mjs"
+      ],
+      "title": "Independent proposal, disagreement-preserving synthesis and verifier-gated completion",
+      "upstreamPathPatterns": [
+        "^agent/(moa_loop|moa_trace)\\.py$|^nolane_native_cli/moa_config\\.py$"
+      ]
+    },
+    {
+      "domain": "gateway-integrations",
+      "entrypoints": [
+        "src/native-core/gateway-api-surface.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-GATEWAY-CORE",
+      "negativeTests": [
+        "tests/native-core-gateway-api.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "GatewayApiSurface",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-gateway-api.test.mjs"
+      ],
+      "title": "Gateway registry, authorization, delivery, pairing, draining and streaming",
+      "upstreamPathPatterns": [
+        "^gateway/(channel_directory|code_skew|config|dead_targets|delivery|delivery_ledger|drain_control|hooks|mirror|pairing|platform_registry|profile_routing|readiness|response_filters|restart|restart_loop_guard|rich_sent_store|run|scale_to_zero|stream_consumer|stream_dispatch|stream_events|turn_lease|wake)\\.py$"
+      ]
+    },
+    {
+      "domain": "gateway-integrations",
+      "entrypoints": [
+        "src/native-core/native-adapter-tck.mjs"
+      ],
+      "externalCondition": "Run every platform adapter against its real service with credential, rate-limit, attachment, reconnect and delivery receipts.",
+      "id": "NATIVE-MESSAGING-PLATFORM-ADAPTERS",
+      "negativeTests": [
+        "tests/native-core-adapter-tck.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "NativeAdapterTck",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "external_gate",
+      "tests": [
+        "tests/native-core-adapter-tck.test.mjs"
+      ],
+      "title": "Platform-specific messaging adapters and credential certification",
+      "upstreamPathPatterns": [
+        "^gateway/platforms/(?!__init__\\.py$|_http_client_limits\\.py$|api_server\\.py$|base\\.py$|helpers\\.py$).+\\.py$",
+        "^plugins/(platforms|teams_pipeline)/.*$",
+        "^scripts/whatsapp-bridge/.*$"
+      ]
+    },
+    {
+      "domain": "acp-api",
+      "entrypoints": [
+        "src/native-core/gateway-api-surface.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-ACP-API",
+      "negativeTests": [
+        "tests/native-core-gateway-api.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "/api/nolane/native-core/status",
+          "path": "src/server/routes.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-gateway-api.test.mjs"
+      ],
+      "title": "ACP/JSON-RPC and OpenAI-compatible streaming API surface",
+      "upstreamPathPatterns": [
+        "^acp_adapter/.*\\.py$|^gateway/platforms/(api_server|base|helpers|_http_client_limits)\\.py$|^agent/transports/(base|chat_completions|codex_event_projector|types)\\.py$"
+      ]
+    },
+    {
+      "domain": "acp-api",
+      "entrypoints": [
+        "src/native-core/gateway-api-surface.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-STREAM-SINGLE-WRITER",
+      "negativeTests": [
+        "tests/native-core-gateway-api.test.mjs"
+      ],
+      "priority": 180,
+      "productionWiring": [
+        {
+          "contains": "GatewayApiSurface",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-gateway-api.test.mjs"
+      ],
+      "title": "Ordered single-writer event projection with idempotency and bounded delivery",
+      "upstreamPathPatterns": [
+        "^agent/stream_single_writer\\.py$"
+      ]
+    },
+    {
+      "domain": "media-voice",
+      "entrypoints": [
+        "src/nolane-native/media-provider-registry.mjs"
+      ],
+      "externalCondition": "Run real media, meeting and voice providers with credential redaction, byte limits, cancellation and output receipts.",
+      "id": "NATIVE-MEDIA-VOICE-CERTIFICATION",
+      "negativeTests": [
+        "tests/nolane-native-capability-pack.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "MediaProviderRegistry",
+          "path": "src/nolane-native/capability-pack.mjs"
+        }
+      ],
+      "status": "external_gate",
+      "tests": [
+        "tests/nolane-native-capability-pack.test.mjs"
+      ],
+      "title": "Media, vision, image, video, meeting, STT and TTS provider routing",
+      "upstreamPathPatterns": [
+        "^agent/(image_gen_provider|image_gen_registry|image_routing|transcription_provider|transcription_registry|tts_provider|tts_registry|video_gen_provider|video_gen_registry)\\.py$|^tools/(image_source|transcription_tools|tts_streaming|tts_tool|vision_tools|voice_mode)\\.py$|^plugins/(image_gen|video_gen|spotify|google_meet)/.*$"
+      ]
+    },
+    {
+      "domain": "observability-operations",
+      "entrypoints": [
+        "src/native-core/operations-security-fabric.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-OBSERVABILITY-OPERATIONS",
+      "negativeTests": [
+        "tests/native-core-operations-security.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "OperationsSecurityFabric",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-operations-security.test.mjs"
+      ],
+      "title": "Usage, traces, diagnostics, health, recovery and tamper-evident evidence",
+      "upstreamPathPatterns": [
+        "^nolane_native_logging\\.py$|^agent/(account_usage|billing_links|billing_usage|billing_view|credits_tracker|insights|stream_diag|trace_upload)\\.py$|^gateway/(memory_monitor|shutdown_forensics|shutdown_watchdog|status|systemd_notify)\\.py$"
+      ]
+    },
+    {
+      "domain": "observability-operations",
+      "entrypoints": [
+        "src/native-core/native-adapter-tck.mjs"
+      ],
+      "externalCondition": "Run each observability adapter against a real sink and verify redaction, backpressure, disconnect and retention receipts.",
+      "id": "NATIVE-OBSERVABILITY-PLUGIN-CERTIFICATION",
+      "negativeTests": [
+        "tests/native-core-adapter-tck.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "NativeAdapterTck",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "external_gate",
+      "tests": [
+        "tests/native-core-adapter-tck.test.mjs"
+      ],
+      "title": "External observability and maintenance adapters",
+      "upstreamPathPatterns": [
+        "^plugins/(observability|disk-cleanup)/.*$"
+      ]
+    },
+    {
+      "domain": "security",
+      "entrypoints": [
+        "src/native-core/operations-security-fabric.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-SECURITY-BOUNDARY",
+      "negativeTests": [
+        "tests/native-core-operations-security.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "OperationsSecurityFabric",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-operations-security.test.mjs"
+      ],
+      "title": "Secrets, redaction, approvals, egress and adversarial boundary enforcement",
+      "upstreamPathPatterns": [
+        "^agent/(credential_persistence|message_sanitization|redact|secret_scope|ssl_guard|ssl_verify|tool_guardrails)\\.py$|^tools/(credential_files|osv_check|threat_patterns|tirith_security|url_safety|write_approval)\\.py$|^gateway/(authz_mixin|slash_access)\\.py$"
+      ]
+    },
+    {
+      "domain": "security",
+      "entrypoints": [
+        "src/native-core/operations-security-fabric.mjs"
+      ],
+      "externalCondition": "Run each secret or OAuth provider with real credential references, revocation, expiry, redaction and audit receipts.",
+      "id": "NATIVE-SECRET-AUTH-PROVIDER-CERTIFICATION",
+      "negativeTests": [
+        "tests/native-core-operations-security.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "OperationsSecurityFabric",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "external_gate",
+      "tests": [
+        "tests/native-core-operations-security.test.mjs"
+      ],
+      "title": "External secret stores, OAuth and dashboard authentication",
+      "upstreamPathPatterns": [
+        "^agent/secret_sources/.*$|^nolane_native_cli/(dashboard_auth/.*|.*auth.*\\.py|secrets_cli\\.py|secret_prompt\\.py|onepassword_secrets_cli\\.py)$|^plugins/security-guidance/.*$|^gateway/relay/auth\\.py$"
+      ]
+    },
+    {
+      "domain": "product-surfaces",
+      "entrypoints": [
+        "src/native-core/gateway-api-surface.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-PRODUCT-SURFACES",
+      "negativeTests": [
+        "tests/native-core-gateway-api.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "/api/nolane/native-core/status",
+          "path": "src/server/routes.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-gateway-api.test.mjs"
+      ],
+      "title": "CLI, web and TUI consume the shared runtime and state",
+      "upstreamPathPatterns": [
+        "^cli\\.py$|^nolane_native$|^nolane_native_cli/(active_sessions|commands|completion|doctor|input_sanitize|logs|main|session_listing|status|stdio|tools_config)\\.py$"
+      ]
+    },
+    {
+      "domain": "product-surfaces",
+      "entrypoints": [
+        "src/terminal/terminal-manager.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-TERMINAL-SURFACE",
+      "negativeTests": [
+        "tests/terminal-manager.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "new TerminalManager",
+          "path": "src/app.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/terminal-manager.test.mjs"
+      ],
+      "title": "Terminal and TUI lifecycle with bounded output and process cleanup",
+      "upstreamPathPatterns": [
+        "^nolane_native_cli/(console_engine|curses_ui|focus_view|pty_bridge|pty_session|win_pty_bridge)\\.py$|^tui_gateway/.*\\.(py|ts|js)$"
+      ]
+    },
+    {
+      "domain": "product-surfaces",
+      "entrypoints": [
+        "desktop/main.cjs"
+      ],
+      "externalCondition": "Build and execute the signed NSIS installer on Windows, then attach update, performance, accessibility and recovery receipts.",
+      "id": "NATIVE-DESKTOP-WINDOWS-CERTIFICATION",
+      "negativeTests": [
+        "tests/electron-runtime-supervisor.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "BrowserWindow",
+          "path": "desktop/main.cjs"
+        }
+      ],
+      "status": "external_gate",
+      "tests": [
+        "tests/electron-runtime-supervisor.test.mjs"
+      ],
+      "title": "Electron desktop installer, update and real Windows runtime certification",
+      "upstreamPathPatterns": [
+        "^apps/desktop/.*\\.(ts|tsx|js|mjs|cjs)$"
+      ]
+    },
+    {
+      "domain": "product-surfaces",
+      "entrypoints": [
+        "src/native-core/gateway-api-surface.mjs"
+      ],
+      "externalCondition": "Run keyboard, screen-reader, responsive, visual-regression, CLI and TUI journeys against the shared runtime on Windows.",
+      "id": "NATIVE-UI-SURFACE-CERTIFICATION",
+      "negativeTests": [
+        "tests/native-core-gateway-api.test.mjs"
+      ],
+      "priority": 50,
+      "productionWiring": [
+        {
+          "contains": "/api/nolane/native-core/status",
+          "path": "src/server/routes.mjs"
+        }
+      ],
+      "status": "external_gate",
+      "tests": [
+        "tests/native-core-gateway-api.test.mjs"
+      ],
+      "title": "CLI, TUI and web behavioral and accessibility certification",
+      "upstreamPathPatterns": [
+        "^(ui-tui/src|web/src|apps/shared/src|nolane_native_cli/.*|agent/(pet/.*|i18n\\.py|display\\.py|onboarding\\.py|reactions\\.py|battery\\.py|markdown_tables\\.py))$"
+      ]
+    },
+    {
+      "domain": "configuration",
+      "entrypoints": [
+        "src/settings/settings-service.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-CONFIGURATION-PROFILES",
+      "negativeTests": [
+        "tests/settings-service.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "new SettingsService",
+          "path": "src/adoption/trust-adoption-foundation.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/settings-service.test.mjs"
+      ],
+      "title": "Layered settings, profiles, migrations and secret references",
+      "upstreamPathPatterns": [
+        "^nolane_native_(bootstrap|constants)\\.py$|^nolane_native_cli/(config|env_loader|managed_scope|migrate|profiles|setup)\\.py$|^cli-config\\.yaml\\.example$"
+      ]
+    },
+    {
+      "domain": "configuration",
+      "entrypoints": [
+        "src/update/update-service.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-UPDATE-RECOVERY",
+      "negativeTests": [
+        "tests/update-service.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "new UpdateService",
+          "path": "src/app.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/update-service.test.mjs"
+      ],
+      "title": "Signed update policy, recovery markers and user-data preservation",
+      "upstreamPathPatterns": [
+        "^nolane_native_cli/(relaunch|service_manager|uninstall)\\.py$|^nolane_native_cli/subcommands/(uninstall|update)\\.py$"
+      ]
+    },
+    {
+      "domain": "configuration",
+      "entrypoints": [
+        "electron-builder.config.cjs"
+      ],
+      "externalCondition": "Build, install, upgrade, uninstall and recover on each supported operating system with data-preservation receipts.",
+      "id": "NATIVE-INSTALLER-BOOTSTRAP-CERTIFICATION",
+      "negativeTests": [
+        "tests/electron-installer-config.test.mjs"
+      ],
+      "priority": 100,
+      "productionWiring": [
+        {
+          "contains": "nsis",
+          "path": "electron-builder.config.cjs"
+        }
+      ],
+      "status": "external_gate",
+      "tests": [
+        "tests/electron-installer-config.test.mjs"
+      ],
+      "title": "Installer and bootstrap journeys across supported operating systems",
+      "upstreamPathPatterns": [
+        "^apps/bootstrap-installer/.*$"
+      ]
+    },
+    {
+      "domain": "prompt-context",
+      "entrypoints": [
+        "src/native-core/delegation-context-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-DELEGATION-CONTEXT-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-runtime-wave3.test.mjs"
+      ],
+      "priority": 260,
+      "productionWiring": [
+        {
+          "contains": "DelegationContextRuntime",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-runtime-wave3.test.mjs"
+      ],
+      "title": "Bounded delegation context with omissions, safe paths and no hidden reasoning",
+      "upstreamPathPatterns": [
+        "^(plugins/context_engine/__init__.py|agent/(delegation_context|learn_prompt|turn_context).py)$"
+      ]
+    },
+    {
+      "domain": "provider-fabric",
+      "entrypoints": [
+        "src/native-core/provider-protocol-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-PROVIDER-PROTOCOL-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-runtime-wave3.test.mjs"
+      ],
+      "priority": 260,
+      "productionWiring": [
+        {
+          "contains": "ProviderProtocolRuntime",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-runtime-wave3.test.mjs"
+      ],
+      "title": "Provider protocol normalization, streamed text/tool assembly, cancellation and secret isolation",
+      "upstreamPathPatterns": [
+        "^agent/(plugin_llm|web_search_provider|chat_completion_helpers).py$"
+      ]
+    },
+    {
+      "domain": "repository-files",
+      "entrypoints": [
+        "src/native-core/repository-intelligence-fabric.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-REPOSITORY-INTELLIGENCE-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-runtime-wave3.test.mjs"
+      ],
+      "priority": 260,
+      "productionWiring": [
+        {
+          "contains": "repositoryIndex.search",
+          "path": "src/app.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-runtime-wave3.test.mjs"
+      ],
+      "title": "Bounded repository search, code symbols, safe hints and content-addressed file-sync planning",
+      "upstreamPathPatterns": [
+        "^tools/(x_search_tool|tool_search|environments/file_sync|credential_files).py$|^agent/subdirectory_hints.py$"
+      ]
+    },
+    {
+      "domain": "browser-computer-use",
+      "entrypoints": [
+        "src/native-core/browser-computer-use-fabric.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-BROWSER-REGISTRY-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-surface-wave3.test.mjs"
+      ],
+      "priority": 260,
+      "productionWiring": [
+        {
+          "contains": "nativeOrchestration.attachRuntimeWave3",
+          "path": "src/app.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-surface-wave3.test.mjs"
+      ],
+      "title": "Approved browser actions and bounded web-search provider registry",
+      "upstreamPathPatterns": [
+        "^agent/web_search_registry.py$"
+      ]
+    },
+    {
+      "domain": "acp-api",
+      "entrypoints": [
+        "src/native-core/acp-streaming-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-ACP-STREAMING-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-runtime-wave3.test.mjs"
+      ],
+      "priority": 260,
+      "productionWiring": [
+        {
+          "contains": "/api/nolane/native-core/acp",
+          "path": "src/server/routes.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-runtime-wave3.test.mjs"
+      ],
+      "title": "JSON-RPC 2.0 request lifecycle, ordered event receipts, replay and cancellation",
+      "upstreamPathPatterns": [
+        "^agent/(copilot_acp_client|stream_diag).py$|^agent/transports/__init__.py$"
+      ]
+    },
+    {
+      "domain": "gateway-integrations",
+      "entrypoints": [
+        "src/native-core/gateway-adapter-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-GATEWAY-ADAPTER-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-surface-wave3.test.mjs"
+      ],
+      "priority": 260,
+      "productionWiring": [
+        {
+          "contains": "GatewayAdapterRuntime",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-surface-wave3.test.mjs"
+      ],
+      "title": "Gateway adapter lifecycle, inbound normalization and exactly-once delivery",
+      "upstreamPathPatterns": [
+        "^gateway/(session|session_context|message_timestamps|status|slash_access|slash_commands).py$",
+        "^gateway/platforms/(base|helpers|api_server|_http_client_limits).py$",
+        "^gateway/relay/(transport|ws_transport|adapter|descriptor).py$",
+        "^tui_gateway/(transport|ws|event_publisher|server|entry).py$",
+        "^apps/shared/src/(json-rpc-gateway|websocket-url).ts$",
+        "^ui-tui/src/(gatewayClient|gatewayTypes).ts$",
+        "^web/src/lib/gatewayClient.ts$",
+        "^apps/desktop/src/lib/(gateway-events|gateway-rpc).ts$"
+      ]
+    },
+    {
+      "domain": "product-surfaces",
+      "entrypoints": [
+        "src/native-core/command-surface-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-COMMAND-SURFACE-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-surface-wave3.test.mjs"
+      ],
+      "priority": 260,
+      "productionWiring": [
+        {
+          "contains": "/api/nolane/native-core/commands/execute",
+          "path": "src/server/routes.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-surface-wave3.test.mjs"
+      ],
+      "title": "Shared CLI/TUI/web/Electron command registry, ordered events and ANSI-safe bounded output",
+      "upstreamPathPatterns": [
+        "^ui-tui/src/app/slash/(registry|types|commands/(core|ops|debug|setup|subscription|topup)).ts$",
+        "^ui-tui/src/app/createSlashHandler.ts$",
+        "^ui-tui/src/lib/(rpc|messages|liveProgress|terminalParity|inputMetrics|gracefulExit).ts$",
+        "^web/src/lib/(slashExec|api|chat-activation|chat-title|log-classify|clipboard|pty-reconnect).ts$"
+      ]
+    },
+    {
+      "domain": "observability-operations",
+      "entrypoints": [
+        "src/native-core/usage-observability-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-USAGE-OBSERVABILITY-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-surface-wave3.test.mjs"
+      ],
+      "priority": 260,
+      "productionWiring": [
+        {
+          "contains": "UsageObservabilityRuntime",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-surface-wave3.test.mjs"
+      ],
+      "title": "Provider usage, pricing, cost budgets, latency and tamper-evident accounting",
+      "upstreamPathPatterns": [
+        "^(agent/(subscription_view|usage_pricing|aux_accounting).py|nolane_native_time.py)$"
+      ]
+    },
+    {
+      "domain": "agent-kernel",
+      "entrypoints": [
+        "src/native-core/agent-behavior-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-AGENT-BEHAVIOR-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-agent-behavior-wave4.test.mjs"
+      ],
+      "priority": 320,
+      "productionWiring": [
+        {
+          "contains": "AgentBehaviorRuntime",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-agent-behavior-wave4.test.mjs"
+      ],
+      "title": "Public message normalization, deterministic titles, bounded one-shot execution, independent review and replay cleanup",
+      "upstreamPathPatterns": [
+        "^agent/(think_scrubber|title_generator|message_content|portal_tags|background_review|replay_cleanup|turn_summary|trajectory|reasoning_timeouts|oneshot|thinking_timeout_guidance|error_classifier|thread_scoped_output|errors|auxiliary_client|retry_utils|__init__).py$"
+      ]
+    },
+    {
+      "domain": "sessions",
+      "entrypoints": [
+        "src/native-core/session-lifecycle-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-SESSION-LIFECYCLE-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-session-lifecycle-wave4.test.mjs"
+      ],
+      "priority": 320,
+      "productionWiring": [
+        {
+          "contains": "SessionLifecycleRuntime",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-session-lifecycle-wave4.test.mjs"
+      ],
+      "title": "Persistent session metadata, search, branching, rewind, history, prompt queues and safe export",
+      "upstreamPathPatterns": [
+        "^tools/session_search_tool.py$",
+        "^nolane_native_cli/(session_export(?:_md|_html)?|session_listing|session_recap|session_recovery|active_sessions|session_filters).py$",
+        "^web/src/lib/(session-refresh|session-import).ts$",
+        "^ui-tui/src/(hooks/(useInputHistory|useVirtualHistory)|lib/history|app/(useSessionLifecycle|spawnHistoryStore|slash/commands/session)).tsx?$",
+        "^apps/desktop/src/(lib/(session-search|session-ids|session-signatures|session-export|session-branch-tree|session-date-groups|session-link-title|session-source)|store/(composer-input-history|session-states|session-pin-sync|session-color|session-switcher)|app/session/hooks/(use-session-state-cache|use-background-queue-drain|use-session-list-actions|use-session-actions/index|use-prompt-actions/(rewind|resolve-target-session|submit))).tsx?$"
+      ]
+    },
+    {
+      "domain": "tool-execution",
+      "entrypoints": [
+        "src/native-core/tool-governance-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-TOOL-GOVERNANCE-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-tool-governance-wave4.test.mjs"
+      ],
+      "priority": 320,
+      "productionWiring": [
+        {
+          "contains": "ToolGovernanceRuntime",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-tool-governance-wave4.test.mjs"
+      ],
+      "title": "Schema sanitization, URL and path safety, ANSI-safe output, diff/checkpoint receipts and execution budgets",
+      "upstreamPathPatterns": [
+        "^tools/(schema_sanitizer|url_safety|ansi_strip|path_security|working_diff|checkpoint_manager|hook_output_spill|budget_config|fuzzy_match|thread_context|debug_helpers|threat_patterns|website_policy).py$",
+        "^agent/tool_result_classification.py$"
+      ]
+    },
+    {
+      "domain": "configuration",
+      "entrypoints": [
+        "src/native-core/profile-configuration-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-PROFILE-CONFIGURATION-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-profile-oauth-wave4.test.mjs"
+      ],
+      "priority": 320,
+      "productionWiring": [
+        {
+          "contains": "ProfileConfigurationRuntime",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-profile-oauth-wave4.test.mjs"
+      ],
+      "title": "Profile-scoped versioned configuration, credential references, migration-safe export and lifecycle",
+      "upstreamPathPatterns": [
+        "^nolane_native_cli/(subcommands/(profile|config)|profile_describer|profile_distribution|fallback_config|mcp_config|skills_config|tools_config).py$",
+        "^web/src/contexts/(profile-context|ProfileProvider|useProfileScope).tsx?$",
+        "^web/src/(pages/(ProfilesPage|ProfileBuilderPage)|components/(ProfileSwitcher|ProfileScopeBanner)).tsx$",
+        "^ui-tui/src/(config/(limits|timing|env)|app/useConfigSync).tsx?$",
+        "^apps/desktop/src/(store/profile|lib/profile-color|app/profiles/(index|create-profile-dialog|rename-profile-dialog|delete-profile-dialog)|app/hooks/(use-config-record|use-on-profile-switch)|app/settings/(config-settings|model-settings|keybind-settings|appearance-settings|notifications-settings|providers-settings|fallback-models-field|toolset-config-panel|memory/(provider-config-panel|provider-config-modal|field-control|connect)|env-credentials|credential-key-ui|config-field|types|helpers|constants|primitives|quick-entry-settings|computer-use-panel|gateway-settings|plugins-settings|sessions-settings|ssh-host-selection|custom-endpoints-settings)|app/chat/sidebar/(profile-switcher|use-profile-prewarm)|app/chat/profile-tag).tsx?$"
+      ]
+    },
+    {
+      "domain": "security",
+      "entrypoints": [
+        "src/native-core/oauth-security-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-OAUTH-SECURITY-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-profile-oauth-wave4.test.mjs"
+      ],
+      "priority": 320,
+      "productionWiring": [
+        {
+          "contains": "/api/nolane/native-core/oauth/begin",
+          "path": "src/server/routes.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-profile-oauth-wave4.test.mjs"
+      ],
+      "title": "PKCE authorization state, callback validation, one-time completion, credential references and revocation receipts",
+      "upstreamPathPatterns": [
+        "^apps/desktop/electron/(native-oauth-login|native-oauth|native-auth-decisions|oauth-net-request).ts$",
+        "^apps/desktop/src/lib/(desktop-remote-auth|mcp-dashboard-oauth).ts$",
+        "^web/src/lib/mcp-dashboard-oauth.ts$"
+      ]
+    },
+    {
+      "domain": "observability-operations",
+      "entrypoints": [
+        "src/native-core/local-observability-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-LOCAL-OBSERVABILITY-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-runtime-wave5.test.mjs"
+      ],
+      "priority": 380,
+      "productionWiring": [
+        {
+          "contains": "LocalObservabilityRuntime",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-runtime-wave5.test.mjs"
+      ],
+      "title": "Redacted local JSONL telemetry, rotation, backpressure and disk cleanup",
+      "upstreamPathPatterns": [
+        "^plugins/disk-cleanup/(__init__.py|disk_cleanup.py|plugin.yaml)$"
+      ]
+    },
+    {
+      "domain": "memory-learning",
+      "entrypoints": [
+        "src/native-core/skill-bundle-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-SKILL-BUNDLE-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-runtime-wave5.test.mjs"
+      ],
+      "priority": 380,
+      "productionWiring": [
+        {
+          "contains": "SkillBundleRuntime",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-runtime-wave5.test.mjs"
+      ],
+      "title": "Safe skill preprocessing, immutable bundles, permissions and provenance hashes",
+      "upstreamPathPatterns": [
+        "^agent/(skill_commands|skill_preprocessing|skill_bundles|skill_utils).py$"
+      ]
+    },
+    {
+      "domain": "plugin-system",
+      "entrypoints": [
+        "src/native-core/dashboard-auth-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-DASHBOARD-AUTH-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-runtime-wave5.test.mjs"
+      ],
+      "priority": 380,
+      "productionWiring": [
+        {
+          "contains": "DashboardAuthRuntime",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-runtime-wave5.test.mjs"
+      ],
+      "title": "Local dashboard authentication, role authorization and drain mode without token leakage",
+      "upstreamPathPatterns": [
+        "^plugins/dashboard_auth/(basic|self_hosted|drain)/__init__.py$"
+      ]
+    },
+    {
+      "domain": "repository-files",
+      "entrypoints": [
+        "src/native-core/session-search-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-SESSION-SEARCH-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-runtime-wave5.test.mjs"
+      ],
+      "priority": 380,
+      "productionWiring": [
+        {
+          "contains": "/api/nolane/native-core/session-search",
+          "path": "src/server/routes.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-runtime-wave5.test.mjs"
+      ],
+      "title": "Bounded public session indexing, profile filters and hidden-reasoning exclusion",
+      "upstreamPathPatterns": [
+        "^tools/session_search_tool.py$"
+      ]
+    },
+    {
+      "domain": "provider-fabric",
+      "entrypoints": [
+        "src/native-core/json-fast-path-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-JSON-FAST-PATH-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-runtime-wave5.test.mjs"
+      ],
+      "priority": 380,
+      "productionWiring": [
+        {
+          "contains": "JsonFastPathRuntime",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-runtime-wave5.test.mjs"
+      ],
+      "title": "Bounded JSON parsing with duplicate-key rejection and safe fallback receipts",
+      "upstreamPathPatterns": [
+        "^agent/jiter_preload.py$"
+      ]
+    },
+    {
+      "domain": "tool-execution",
+      "entrypoints": [
+        "src/native-core/mcp-oauth-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-MCP-OAUTH-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-runtime-wave6.test.mjs"
+      ],
+      "priority": 440,
+      "productionWiring": [
+        {
+          "contains": "beginNativeMcpOAuth",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-runtime-wave6.test.mjs"
+      ],
+      "title": "Persistent one-time PKCE lifecycle, credential references and replay-safe MCP authorization",
+      "upstreamPathPatterns": [
+        "^tools/(mcp_oauth_manager|mcp_oauth|mcp_dashboard_oauth).py$"
+      ]
+    },
+    {
+      "domain": "tool-execution",
+      "entrypoints": [
+        "src/native-core/browser-supervisor-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-BROWSER-SUPERVISOR-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-runtime-wave6.test.mjs"
+      ],
+      "priority": 440,
+      "productionWiring": [
+        {
+          "contains": "executeNativeSupervisedBrowser",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-runtime-wave6.test.mjs"
+      ],
+      "title": "Serialized browser actions, dialog lifecycle, crash state and bounded recovery receipts",
+      "upstreamPathPatterns": [
+        "^tools/(browser_supervisor|browser_dialog_tool|browser_camofox_state).py$"
+      ]
+    },
+    {
+      "domain": "tool-execution",
+      "entrypoints": [
+        "src/native-core/async-delegation-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-ASYNC-DELEGATION-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-runtime-wave6.test.mjs"
+      ],
+      "priority": 440,
+      "productionWiring": [
+        {
+          "contains": "spawnNativeDelegation",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-runtime-wave6.test.mjs"
+      ],
+      "title": "Persistent delegated task leases, bounded live logs, stale-worker recovery and verified completion",
+      "upstreamPathPatterns": [
+        "^tools/(async_delegation|delegation_live_log).py$"
+      ]
+    },
+    {
+      "domain": "sessions",
+      "entrypoints": [
+        "src/native-core/pty-session-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-PTY-SESSION-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-runtime-wave6.test.mjs"
+      ],
+      "priority": 440,
+      "productionWiring": [
+        {
+          "contains": "startNativePtySession",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-runtime-wave6.test.mjs"
+      ],
+      "title": "Bounded PTY session lifecycle, ordered replay and deterministic retry policy",
+      "upstreamPathPatterns": [
+        "^nolane_native_cli/pty_session.py$",
+        "^agent/turn_retry_state.py$"
+      ]
+    },
+    {
+      "domain": "gateway-integrations",
+      "entrypoints": [
+        "src/native-core/gateway-recovery-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-GATEWAY-RECOVERY-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-runtime-wave6.test.mjs"
+      ],
+      "priority": 440,
+      "productionWiring": [
+        {
+          "contains": "heartbeatNativeGatewayHost",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-runtime-wave6.test.mjs"
+      ],
+      "title": "Gateway heartbeat, memory pressure, drain shutdown and tamper-evident forensics",
+      "upstreamPathPatterns": [
+        "^gateway/(shutdown_watchdog|memory_monitor|shutdown_forensics|systemd_notify|status_phrases|runtime_footer).py$",
+        "^apps/desktop/electron/remote-liveness.ts$"
+      ]
+    },
+    {
+      "domain": "media-voice",
+      "entrypoints": [
+        "src/native-core/local-media-pipeline-runtime.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-LOCAL-MEDIA-PIPELINE-RUNTIME",
+      "negativeTests": [
+        "tests/native-core-runtime-wave6.test.mjs"
+      ],
+      "priority": 440,
+      "productionWiring": [
+        {
+          "contains": "putNativeLocalMedia",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-runtime-wave6.test.mjs"
+      ],
+      "title": "Content-addressed local media assets, bounded playback queue and voice barge-in state",
+      "upstreamPathPatterns": [
+        "^apps/desktop/src/lib/(voice-playback|voice-barge-in|media|generated-images|embedded-images|svg-image).ts$",
+        "^apps/desktop/src/store/(voice-playback|voice-prefs).ts$",
+        "^apps/desktop/src/hooks/use-image-download.ts$"
+      ]
+    },
+    {
+      "domain": "acp-api",
+      "entrypoints": [
+        "src/native-core/provider-transport-runtime-wave9.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-ACP-PROXY-TRANSPORT",
+      "negativeTests": [
+        "tests/native-core-provider-wave9.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "ProviderTransportRuntimeWave9",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-provider-wave9.test.mjs"
+      ],
+      "title": "Acp Proxy Transport",
+      "upstreamPathPatterns": [
+        "^(?:agent/proxy_sources/__init__\\.py|agent/proxy_sources/iron_proxy\\.py)$"
+      ]
+    },
+    {
+      "domain": "acp-api",
+      "entrypoints": [
+        "src/native-core/provider-transport-runtime-wave9.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-ANTHROPIC-ACP-TRANSPORT",
+      "negativeTests": [
+        "tests/native-core-provider-wave9.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "ProviderTransportRuntimeWave9",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-provider-wave9.test.mjs"
+      ],
+      "title": "Anthropic Acp Transport",
+      "upstreamPathPatterns": [
+        "^(?:agent/transports/anthropic\\.py)$"
+      ]
+    },
+    {
+      "domain": "acp-api",
+      "entrypoints": [
+        "src/native-core/provider-transport-runtime-wave9.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-BEDROCK-ACP-TRANSPORT",
+      "negativeTests": [
+        "tests/native-core-provider-wave9.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "ProviderTransportRuntimeWave9",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-provider-wave9.test.mjs"
+      ],
+      "title": "Bedrock Acp Transport",
+      "upstreamPathPatterns": [
+        "^(?:agent/transports/bedrock\\.py)$"
+      ]
+    },
+    {
+      "domain": "configuration",
+      "entrypoints": [
+        "src/native-core/product-configuration-runtime-wave15.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-BOOTSTRAP-CONNECTION-CONFIG",
+      "negativeTests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "priority": 600,
+      "productionWiring": [
+        {
+          "contains": "ProductConfigurationRuntimeWave15",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "title": "Bootstrap Connection Config",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/electron/bootstrap-platform\\.ts|apps/desktop/electron/bootstrap-runner\\.ts|apps/desktop/electron/connection-config\\.ts|apps/desktop/electron/ssh-bootstrap-coordinator\\.ts|apps/desktop/electron/ssh-config\\.ts|apps/desktop/src/app/settings/terminal-backend-panel\\.tsx)$"
+      ]
+    },
+    {
+      "domain": "acp-api",
+      "entrypoints": [
+        "src/native-core/provider-transport-runtime-wave9.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-CODEX-APP-SERVER-TRANSPORT",
+      "negativeTests": [
+        "tests/native-core-provider-wave9.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "ProviderTransportRuntimeWave9",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-provider-wave9.test.mjs"
+      ],
+      "title": "Codex App Server Transport",
+      "upstreamPathPatterns": [
+        "^(?:agent/transports/codex\\.py|agent/transports/codex_app_server\\.py|agent/transports/codex_app_server_session\\.py)$"
+      ]
+    },
+    {
+      "domain": "sessions",
+      "entrypoints": [
+        "src/native-core/session-product-runtime-wave8.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-CONVERSATION-CORRECTION",
+      "negativeTests": [
+        "tests/native-core-session-wave8.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "SessionProductRuntimeWave8",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-session-wave8.test.mjs"
+      ],
+      "title": "Conversation Correction",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/e2e/correction-session-switch\\.spec\\.ts|apps/desktop/src/app/chat/composer/undo-history\\.ts|apps/desktop/src/app/session/hooks/use-prompt-actions/index\\.ts|apps/desktop/src/app/session/hooks/use-prompt-actions/slash\\.ts|apps/desktop/src/app/session/hooks/use-prompt-actions/utils\\.ts)$"
+      ]
+    },
+    {
+      "domain": "tool-execution",
+      "entrypoints": [
+        "src/native-core/execution/daemon-pool.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-DAEMON-POOL-LIFECYCLE",
+      "negativeTests": [
+        "tests/native-core-execution-wave7.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "ExecutionRuntimeWave7",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-execution-wave7.test.mjs"
+      ],
+      "title": "Daemon Pool Lifecycle",
+      "upstreamPathPatterns": [
+        "^(?:tools/daemon_pool\\.py|tools/mcp_stdio_watchdog\\.py)$"
+      ]
+    },
+    {
+      "domain": "configuration",
+      "entrypoints": [
+        "src/native-core/product-configuration-runtime-wave15.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-DESKTOP-SETTINGS-SURFACE",
+      "negativeTests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "priority": 600,
+      "productionWiring": [
+        {
+          "contains": "ProductConfigurationRuntimeWave15",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "title": "Desktop Settings Surface",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/playwright\\.config\\.ts|apps/desktop/src/app/session/hooks/use-nolane_native-config\\.ts|apps/desktop/src/app/settings/about-settings\\.tsx|apps/desktop/src/app/settings/field-copy\\.ts|apps/desktop/src/app/settings/index\\.tsx|apps/desktop/src/app/settings/pet-settings\\.tsx|apps/desktop/src/app/settings/uninstall-section\\.tsx|apps/desktop/src/app/settings/use-deep-link-highlight\\.ts)$"
+      ]
+    },
+    {
+      "domain": "configuration",
+      "entrypoints": [
+        "src/native-core/product-configuration-runtime-wave15.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-ENTITLEMENT-CONFIG",
+      "negativeTests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "priority": 600,
+      "productionWiring": [
+        {
+          "contains": "ProductConfigurationRuntimeWave15",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "title": "Entitlement Config",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/src/app/settings/billing/account-row-value\\.tsx|apps/desktop/src/app/settings/billing/api\\.ts|apps/desktop/src/app/settings/billing/auto-reload-row\\.tsx|apps/desktop/src/app/settings/billing/billing-amounts\\.ts|apps/desktop/src/app/settings/billing/current-plan-card\\.tsx|apps/desktop/src/app/settings/billing/dev-fixtures\\.ts|apps/desktop/src/app/settings/billing/errors\\.ts|apps/desktop/src/app/settings/billing/fixtures\\.test-util\\.ts|apps/desktop/src/app/settings/billing/index\\.tsx|apps/desktop/src/app/settings/billing/inline-feedback\\.tsx|apps/desktop/src/app/settings/billing/open-external\\.ts|apps/desktop/src/app/settings/billing/plans-view\\.tsx|apps/desktop/src/app/settings/billing/simulated-api\\.ts|apps/desktop/src/app/settings/billing/tier-art\\.tsx|apps/desktop/src/app/settings/billing/types\\.ts|apps/desktop/src/app/settings/billing/use-billing-state\\.ts|apps/desktop/src/app/settings/billing/use-charge-poller\\.ts|apps/desktop/src/app/settings/billing/use-step-up\\.ts|apps/desktop/src/app/settings/billing/use-subscription-change\\.ts)$"
+      ]
+    },
+    {
+      "domain": "product-surfaces",
+      "entrypoints": [
+        "src/native-core/entitlement-policy.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-ENTITLEMENT-POLICY",
+      "negativeTests": [
+        "tests/native-core-residual-decomposition.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "EntitlementPolicy",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-residual-decomposition.test.mjs"
+      ],
+      "title": "Entitlement Policy",
+      "upstreamPathPatterns": [
+        "^(?:apps/shared/src/billing-payment-method\\.test-d\\.ts|apps/shared/src/billing-policy\\.ts|apps/shared/src/billing-types\\.ts|apps/shared/src/charge-settlement\\.ts|ui-tui/src/components/billingOverlay\\.tsx|ui-tui/src/components/subscriptionOverlay\\.tsx|ui-tui/src/lib/billingDialog\\.ts)$"
+      ]
+    },
+    {
+      "domain": "tool-execution",
+      "entrypoints": [
+        "src/native-core/execution-runtime-wave7.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-EXECUTION-ENVIRONMENT-BACKENDS",
+      "negativeTests": [
+        "tests/native-core-execution-wave7.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "ExecutionRuntimeWave7",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-execution-wave7.test.mjs"
+      ],
+      "title": "Execution Environment Backends",
+      "upstreamPathPatterns": [
+        "^(?:tools/environments/base\\.py|tools/environments/docker\\.py|tools/environments/local\\.py)$"
+      ]
+    },
+    {
+      "domain": "gateway-integrations",
+      "entrypoints": [
+        "src/native-core/gateway-messaging-runtime-wave10.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-GATEWAY-COMMAND-MANIFEST",
+      "negativeTests": [
+        "tests/native-core-gateway-wave10.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "GatewayMessagingRuntimeWave10",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-gateway-wave10.test.mjs"
+      ],
+      "title": "Gateway Command Manifest",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/src/app/session/hooks/use-message-stream/gateway-event\\.ts|tui_gateway/slash_worker\\.py|tui_gateway/synthetic_turn\\.py|tui_gateway/turn_marker\\.py|ui-tui/src/app/createGatewayEventHandler\\.ts)$"
+      ]
+    },
+    {
+      "domain": "gateway-integrations",
+      "entrypoints": [
+        "src/native-core/gateway-messaging-runtime-wave10.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-GATEWAY-HOST-SUPERVISION",
+      "negativeTests": [
+        "tests/native-core-gateway-wave10.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "GatewayMessagingRuntimeWave10",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-gateway-wave10.test.mjs"
+      ],
+      "title": "Gateway Host Supervision",
+      "upstreamPathPatterns": [
+        "^(?:gateway/cgroup_cleanup\\.py|gateway/cwd_placeholder\\.py|tui_gateway/_stdin_recovery\\.py|tui_gateway/compute_host\\.py|tui_gateway/git_probe\\.py|tui_gateway/host_supervisor\\.py|tui_gateway/loop_noise\\.py|tui_gateway/project_tree\\.py|ui-tui/src/app/gatewayRecovery\\.ts)$"
+      ]
+    },
+    {
+      "domain": "gateway-integrations",
+      "entrypoints": [
+        "src/native-core/gateway-messaging-runtime-wave10.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-GATEWAY-PAIRING-ENROLLMENT",
+      "negativeTests": [
+        "tests/native-core-gateway-wave10.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "GatewayMessagingRuntimeWave10",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-gateway-wave10.test.mjs"
+      ],
+      "title": "Gateway Pairing Enrollment",
+      "upstreamPathPatterns": [
+        "^(?:nolane_native_cli/gateway\\.py|nolane_native_cli/gateway_enroll\\.py|nolane_native_cli/gateway_windows\\.py)$"
+      ]
+    },
+    {
+      "domain": "security",
+      "entrypoints": [
+        "src/native-core/trust-core-wave13.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-GATEWAY-PAIRING-SECURITY",
+      "negativeTests": [
+        "tests/native-core-trust-wave13.test.mjs"
+      ],
+      "priority": 560,
+      "productionWiring": [
+        {
+          "contains": "TrustCoreRuntimeWave13",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-trust-wave13.test.mjs"
+      ],
+      "title": "Gateway Pairing Security",
+      "upstreamPathPatterns": [
+        "^(?:gateway/pairing\\.py)$"
+      ]
+    },
+    {
+      "domain": "gateway-integrations",
+      "entrypoints": [
+        "src/native-core/gateway-messaging-runtime-wave10.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-GATEWAY-RELAY-NORMALIZATION",
+      "negativeTests": [
+        "tests/native-core-gateway-wave10.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "GatewayMessagingRuntimeWave10",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-gateway-wave10.test.mjs"
+      ],
+      "title": "Gateway Relay Normalization",
+      "upstreamPathPatterns": [
+        "^(?:gateway/assets/status_phrases\\.yaml|gateway/display_config\\.py|gateway/relay/__init__\\.py|gateway/relay/command_manifest\\.py|gateway/relay/media\\.py|gateway/sticker_cache\\.py|gateway/whatsapp_identity\\.py)$"
+      ]
+    },
+    {
+      "domain": "gateway-integrations",
+      "entrypoints": [
+        "src/native-core/gateway-messaging-runtime-wave10.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-GATEWAY-REMOTE-LIFECYCLE",
+      "negativeTests": [
+        "tests/native-core-gateway-wave10.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "GatewayMessagingRuntimeWave10",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-gateway-wave10.test.mjs"
+      ],
+      "title": "Gateway Remote Lifecycle",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/electron/gateway-ws-probe\\.ts|apps/desktop/electron/remote-lifecycle\\.ts|apps/desktop/electron/windows-remote-lifecycle\\.ts|apps/desktop/src/app/gateway/hooks/gateway-hmr-survivor\\.ts|apps/desktop/src/app/gateway/hooks/use-gateway-boot\\.ts|apps/desktop/src/app/gateway/hooks/use-gateway-request\\.ts|apps/desktop/src/app/shell/gateway-menu-panel\\.tsx|apps/desktop/src/components/first-run-remote-form\\.tsx|apps/desktop/src/components/gateway-connecting-overlay\\.tsx|apps/desktop/src/components/remote-display-banner\\.tsx|apps/desktop/src/store/gateway-switch\\.ts|apps/desktop/src/store/gateway\\.ts)$"
+      ]
+    },
+    {
+      "domain": "gateway-integrations",
+      "entrypoints": [
+        "src/native-core/gateway-messaging-runtime-wave10.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-GATEWAY-TUI-PROJECTION",
+      "negativeTests": [
+        "tests/native-core-gateway-wave10.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "GatewayMessagingRuntimeWave10",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-gateway-wave10.test.mjs"
+      ],
+      "title": "Gateway Tui Projection",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/src/app/right-sidebar/files/remote-picker\\.tsx|gateway/__init__\\.py|gateway/builtin_hooks/__init__\\.py|gateway/kanban_watchers\\.py|gateway/platforms/__init__\\.py|nolane_native_cli/subcommands/gateway\\.py|tui_gateway/__init__\\.py|tui_gateway/render\\.py|ui-tui/src/app/gatewayContext\\.tsx)$"
+      ]
+    },
+    {
+      "domain": "media-voice",
+      "entrypoints": [
+        "src/native-core/media-core-wave14.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-GENERATED-MEDIA-PROJECTION",
+      "negativeTests": [
+        "tests/native-core-media-wave14.test.mjs"
+      ],
+      "priority": 580,
+      "productionWiring": [
+        {
+          "contains": "MediaCoreRuntimeWave14",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-media-wave14.test.mjs"
+      ],
+      "title": "Generated Media Projection",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/e2e/image-attachment-resume\\.spec\\.ts|apps/desktop/electron/wsl-clipboard-image\\.ts|apps/desktop/src/app/pet-generate/lib/read-reference-image\\.ts|apps/desktop/src/components/chat/generated-image-result\\.tsx|apps/desktop/src/components/chat/image-generation-placeholder\\.tsx|apps/desktop/src/components/chat/zoomable-image\\.tsx|apps/desktop/src/hooks/use-media-query\\.ts|web/src/lib/chatImagePaste\\.ts)$"
+      ]
+    },
+    {
+      "domain": "tool-execution",
+      "entrypoints": [
+        "src/native-core/execution/lazy-dependency-resolver.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-LAZY-DEPENDENCY-RESOLUTION",
+      "negativeTests": [
+        "tests/native-core-execution-wave7.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "ExecutionRuntimeWave7",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-execution-wave7.test.mjs"
+      ],
+      "title": "Lazy Dependency Resolution",
+      "upstreamPathPatterns": [
+        "^(?:native/fts5_cjk/fts5_cjk\\.c|tools/__init__\\.py|tools/binary_extensions\\.py|tools/environments/__init__\\.py|tools/lazy_deps\\.py)$"
+      ]
+    },
+    {
+      "domain": "acp-api",
+      "entrypoints": [
+        "src/native-core/provider-transport-runtime-wave9.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-MCP-TOOLS-SERVER-TRANSPORT",
+      "negativeTests": [
+        "tests/native-core-provider-wave9.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "ProviderTransportRuntimeWave9",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-provider-wave9.test.mjs"
+      ],
+      "title": "Mcp Tools Server Transport",
+      "upstreamPathPatterns": [
+        "^(?:agent/transports/nolane_native_tools_mcp_server\\.py)$"
+      ]
+    },
+    {
+      "domain": "media-voice",
+      "entrypoints": [
+        "src/native-core/media-core-wave14.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-MEDIA-GENERATION-PROVIDER-TCK",
+      "negativeTests": [
+        "tests/native-core-media-wave14.test.mjs"
+      ],
+      "priority": 580,
+      "productionWiring": [
+        {
+          "contains": "MediaCoreRuntimeWave14",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-media-wave14.test.mjs"
+      ],
+      "title": "Media Generation Provider Tck",
+      "upstreamPathPatterns": [
+        "^(?:nolane_native_cli/voice\\.py|tools/image_generation_tool\\.py|tools/neutts_synth\\.py|tools/video_generation_tool\\.py|tools/xai_video_tools\\.py)$"
+      ]
+    },
+    {
+      "domain": "product-surfaces",
+      "entrypoints": [
+        "src/native-core/product-configuration-runtime-wave15.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-MODEL-PROFILE-SURFACE",
+      "negativeTests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "priority": 600,
+      "productionWiring": [
+        {
+          "contains": "ProductConfigurationRuntimeWave15",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "title": "Model Profile Surface",
+      "upstreamPathPatterns": [
+        "^(?:ui-tui/src/components/modelPicker\\.tsx|ui-tui/src/domain/providers\\.ts|ui-tui/src/lib/model-search-text\\.ts|web/src/components/ModelInfoCard\\.tsx|web/src/components/ModelPickerDialog\\.tsx|web/src/components/ModelReloadConfirm\\.tsx|web/src/components/ReasoningPicker\\.tsx|web/src/lib/model-picker-filter\\.ts|web/src/lib/model-search-text\\.ts|web/src/lib/reasoning-effort\\.ts|web/src/pages/ModelsPage\\.tsx)$"
+      ]
+    },
+    {
+      "domain": "observability-operations",
+      "entrypoints": [
+        "src/native-core/adapter-ecosystem-wave12.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-OPERATIONS-UTILITY-COMPAT",
+      "negativeTests": [
+        "tests/native-core-adapter-ecosystem-wave12.test.mjs"
+      ],
+      "priority": 540,
+      "productionWiring": [
+        {
+          "contains": "AdapterEcosystemRuntimeWave12",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-adapter-ecosystem-wave12.test.mjs"
+      ],
+      "title": "Operations Utility Compat",
+      "upstreamPathPatterns": [
+        "^(?:utils\\.py)$"
+      ]
+    },
+    {
+      "domain": "product-surfaces",
+      "entrypoints": [
+        "src/native-core/product-configuration-runtime-wave15.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-PLUGIN-SURFACE-PROJECTION",
+      "negativeTests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "priority": 600,
+      "productionWiring": [
+        {
+          "contains": "ProductConfigurationRuntimeWave15",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "title": "Plugin Surface Projection",
+      "upstreamPathPatterns": [
+        "^(?:ui-tui/src/components/pluginsHub\\.tsx|web/src/pages/PluginsPage\\.tsx|web/src/plugins/PluginPage\\.tsx|web/src/plugins/index\\.ts|web/src/plugins/registry\\.ts|web/src/plugins/sdk\\.d\\.ts|web/src/plugins/slots\\.ts|web/src/plugins/types\\.ts|web/src/plugins/usePlugins\\.ts)$"
+      ]
+    },
+    {
+      "domain": "configuration",
+      "entrypoints": [
+        "src/native-core/product-configuration-runtime-wave15.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-PROFILE-MODEL-CONFIG",
+      "negativeTests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "priority": 600,
+      "productionWiring": [
+        {
+          "contains": "ProductConfigurationRuntimeWave15",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "title": "Profile Model Config",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/electron/profile-delete-routing\\.ts|apps/desktop/scripts/perf/scenarios/profile-switch\\.mjs|apps/desktop/scripts/profile-model-picker\\.mjs|apps/desktop/src/app/settings/env-var-actions-menu\\.tsx|apps/desktop/src/app/settings/keys-settings\\.tsx|nolane_native_cli/moa_config\\.py|web/src/components/ToolsetConfigDrawer\\.tsx|web/src/pages/ConfigPage\\.tsx)$"
+      ]
+    },
+    {
+      "domain": "security",
+      "entrypoints": [
+        "src/native-core/trust-core-wave13.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-REAUTHENTICATION-FLOW",
+      "negativeTests": [
+        "tests/native-core-trust-wave13.test.mjs"
+      ],
+      "priority": 560,
+      "productionWiring": [
+        {
+          "contains": "TrustCoreRuntimeWave13",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-trust-wave13.test.mjs"
+      ],
+      "title": "Reauthentication Flow",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/src/components/boot-failure-reauth\\.ts|web/src/components/AuthWidget\\.tsx|web/src/components/OAuthLoginModal\\.tsx|web/src/components/OAuthProvidersCard\\.tsx)$"
+      ]
+    },
+    {
+      "domain": "sessions",
+      "entrypoints": [
+        "src/native-core/session-product-runtime-wave8.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-SESSION-CONTEXT-DRIFT",
+      "negativeTests": [
+        "tests/native-core-session-wave8.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "SessionProductRuntimeWave8",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-session-wave8.test.mjs"
+      ],
+      "title": "Session Context Drift",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/src/app/session/hooks/session-context-drift\\.ts|apps/desktop/src/app/session/hooks/use-context-suggestions\\.ts|apps/desktop/src/app/session/hooks/use-cwd-actions\\.ts|apps/desktop/src/app/session/hooks/use-model-controls\\.ts|apps/desktop/src/app/session/hooks/use-preview-routing\\.ts|apps/desktop/src/app/session/hooks/use-route-resume\\.ts)$"
+      ]
+    },
+    {
+      "domain": "sessions",
+      "entrypoints": [
+        "src/native-core/session-product-runtime-wave8.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-SESSION-PERFORMANCE-SCENARIOS",
+      "negativeTests": [
+        "tests/native-core-session-wave8.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "SessionProductRuntimeWave8",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-session-wave8.test.mjs"
+      ],
+      "title": "Session Performance Scenarios",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/e2e/real-session-builder\\.ts|apps/desktop/scripts/perf/scenarios/session-switch\\.mjs)$"
+      ]
+    },
+    {
+      "domain": "sessions",
+      "entrypoints": [
+        "src/native-core/session-product-runtime-wave8.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-SESSION-PRODUCT-LIFECYCLE",
+      "negativeTests": [
+        "tests/native-core-session-wave8.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "SessionProductRuntimeWave8",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-session-wave8.test.mjs"
+      ],
+      "title": "Session Product Lifecycle",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/e2e/session-compression-and-queue-stop\\.spec\\.ts|apps/desktop/scripts/click-session\\.mjs|apps/desktop/src/app/chat/session-status-dot\\.tsx|apps/desktop/src/app/chat/session-view\\.tsx|apps/desktop/src/app/learning/archive-skill-confirm-dialog\\.tsx|apps/desktop/src/app/session/hooks/use-session-actions/utils\\.ts|apps/desktop/src/lib/session-refs\\.ts|apps/desktop/src/lib/use-session-slice\\.ts|apps/desktop/src/lib/yolo-session\\.ts)$"
+      ]
+    },
+    {
+      "domain": "sessions",
+      "entrypoints": [
+        "src/native-core/session-product-runtime-wave8.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-SESSION-STREAM-COORDINATION",
+      "negativeTests": [
+        "tests/native-core-session-wave8.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "SessionProductRuntimeWave8",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-session-wave8.test.mjs"
+      ],
+      "title": "Session Stream Coordination",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/e2e/hidden-history-messages\\.spec\\.ts|apps/desktop/e2e/large-session-resume\\.spec\\.ts|apps/desktop/scripts/perf/scenarios/stream-history\\.mjs|apps/desktop/src/app/session/hooks/use-message-stream/index\\.ts|apps/desktop/src/app/session/hooks/use-message-stream/utils\\.ts|apps/desktop/src/store/session-sync\\.ts|apps/desktop/src/store/session\\.ts)$"
+      ]
+    },
+    {
+      "domain": "sessions",
+      "entrypoints": [
+        "src/native-core/session-product-runtime-wave8.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-SESSION-TERMINAL-BINDING",
+      "negativeTests": [
+        "tests/native-core-session-wave8.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "SessionProductRuntimeWave8",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-session-wave8.test.mjs"
+      ],
+      "title": "Session Terminal Binding",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/src/app/right-sidebar/terminal/use-terminal-session\\.ts)$"
+      ]
+    },
+    {
+      "domain": "sessions",
+      "entrypoints": [
+        "src/native-core/session-product-runtime-wave8.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-SESSION-VIRTUAL-LIST",
+      "negativeTests": [
+        "tests/native-core-session-wave8.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "SessionProductRuntimeWave8",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-session-wave8.test.mjs"
+      ],
+      "title": "Session Virtual List",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/src/app/chat/session-drag\\.ts|apps/desktop/src/app/chat/session-tile-actions\\.ts|apps/desktop/src/app/chat/session-tile\\.tsx|apps/desktop/src/app/chat/sidebar/session-actions-menu\\.tsx|apps/desktop/src/app/chat/sidebar/session-row-state\\.ts|apps/desktop/src/app/chat/sidebar/session-row\\.tsx|apps/desktop/src/app/chat/sidebar/sessions-section\\.tsx|apps/desktop/src/app/chat/sidebar/virtual-session-list\\.tsx|apps/desktop/src/app/contrib/hooks/use-session-tile-delegate\\.ts|apps/desktop/src/app/session-picker-overlay\\.tsx|apps/desktop/src/app/session-switcher\\.tsx|apps/desktop/src/components/pane-shell/tree/renderer/drag-session\\.ts|apps/desktop/src/components/session-picker\\.tsx|ui-tui/src/components/activeSessionSwitcher\\.tsx|web/src/components/ChatSessionList\\.tsx|web/src/pages/SessionsPage\\.tsx)$"
+      ]
+    },
+    {
+      "domain": "sessions",
+      "entrypoints": [
+        "src/native-core/session-product-runtime-wave8.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-SESSION-WINDOW-LEASE",
+      "negativeTests": [
+        "tests/native-core-session-wave8.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "SessionProductRuntimeWave8",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-session-wave8.test.mjs"
+      ],
+      "title": "Session Window Lease",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/electron/session-windows\\.ts|apps/desktop/src/app/session/workspace-session-target\\.ts)$"
+      ]
+    },
+    {
+      "domain": "product-surfaces",
+      "entrypoints": [
+        "src/native-core/product-configuration-runtime-wave15.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-SHARED-PRODUCT-MODEL",
+      "negativeTests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "priority": 600,
+      "productionWiring": [
+        {
+          "contains": "ProductConfigurationRuntimeWave15",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "title": "Shared Product Model",
+      "upstreamPathPatterns": [
+        "^(?:apps/shared/package\\.json|apps/shared/src/index\\.ts|apps/shared/src/skin\\.ts)$"
+      ]
+    },
+    {
+      "domain": "tool-execution",
+      "entrypoints": [
+        "src/native-core/execution/shell-hook-policy.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-SHELL-HOOK-POLICY",
+      "negativeTests": [
+        "tests/native-core-execution-wave7.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "ExecutionRuntimeWave7",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-execution-wave7.test.mjs"
+      ],
+      "title": "Shell Hook Policy",
+      "upstreamPathPatterns": [
+        "^(?:agent/shell_hooks\\.py|tools/clarify_gateway\\.py|tools/clarify_tool\\.py|tools/osv_check\\.py|tools/skills_guard\\.py|tools/slash_confirm\\.py|tools/tirith_security\\.py|tools/write_approval\\.py)$"
+      ]
+    },
+    {
+      "domain": "tool-execution",
+      "entrypoints": [
+        "src/native-core/tool-execution-fabric.mjs"
+      ],
+      "externalCondition": "Complete the dedicated NATIVE-SKILL-TOOL-OPERATIONS scenario certification with replayable environment receipts in its assigned wave.",
+      "id": "NATIVE-SKILL-TOOL-OPERATIONS",
+      "negativeTests": [
+        "tests/native-core-tool-execution.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "ToolExecutionFabric",
+          "path": "src/execution/tool-broker.mjs"
+        }
+      ],
+      "status": "external_gate",
+      "tests": [
+        "tests/native-core-tool-execution.test.mjs"
+      ],
+      "title": "Skill Tool Operations",
+      "upstreamPathPatterns": [
+        "^(?:tools/skill_manager_tool\\.py|tools/skill_provenance\\.py|tools/skill_usage\\.py|tools/skills_ast_audit\\.py|tools/skills_hub\\.py|tools/skills_sync\\.py|tools/skills_tool\\.py)$"
+      ]
+    },
+    {
+      "domain": "tool-execution",
+      "entrypoints": [
+        "src/native-core/execution/tool-dispatch-pipeline.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-TOOL-DISPATCH-PIPELINE",
+      "negativeTests": [
+        "tests/native-core-execution-wave7.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "ExecutionRuntimeWave7",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-execution-wave7.test.mjs"
+      ],
+      "title": "Tool Dispatch Pipeline",
+      "upstreamPathPatterns": [
+        "^(?:agent/tool_dispatch_helpers\\.py|agent/tool_executor\\.py|tools/delegate_tool\\.py|tools/focus_pane_tool\\.py|tools/kanban_tools\\.py|tools/mcp_tool\\.py|tools/memory_tool\\.py|tools/open_preview_tool\\.py|tools/project_tools\\.py|tools/read_extract\\.py|tools/todo_tool\\.py)$"
+      ]
+    },
+    {
+      "domain": "tool-execution",
+      "entrypoints": [
+        "src/native-core/tool-execution-fabric.mjs"
+      ],
+      "externalCondition": "Complete the dedicated NATIVE-TOOL-INTEGRATION-ADAPTERS scenario certification with replayable environment receipts in its assigned wave.",
+      "id": "NATIVE-TOOL-INTEGRATION-ADAPTERS",
+      "negativeTests": [
+        "tests/native-core-tool-execution.test.mjs"
+      ],
+      "priority": 25,
+      "productionWiring": [
+        {
+          "contains": "ToolExecutionFabric",
+          "path": "src/execution/tool-broker.mjs"
+        }
+      ],
+      "status": "external_gate",
+      "tests": [
+        "tests/native-core-tool-execution.test.mjs"
+      ],
+      "title": "Tool Integration Adapters",
+      "upstreamPathPatterns": [
+        "^(?:tools/blueprints\\.py|tools/browser_camofox\\.py|tools/browser_cdp_tool\\.py|tools/browser_tool\\.py|tools/computer_use_tool\\.py|tools/cronjob_tools\\.py|tools/desktop_ui\\.py|tools/discord_tool\\.py|tools/fal_common\\.py|tools/feishu_doc_tool\\.py|tools/feishu_drive_tool\\.py|tools/homeassistant_tool\\.py|tools/microsoft_graph_auth\\.py|tools/microsoft_graph_client\\.py|tools/openrouter_client\\.py|tools/send_message_tool\\.py|tools/transcription_tools\\.py|tools/voice_mode\\.py|tools/web_tools\\.py|tools/xai_http\\.py|tools/yuanbao_tools\\.py)$"
+      ]
+    },
+    {
+      "domain": "product-surfaces",
+      "entrypoints": [
+        "src/native-core/product-configuration-runtime-wave15.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-TUI-PRODUCT-SURFACE",
+      "negativeTests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "priority": 600,
+      "productionWiring": [
+        {
+          "contains": "ProductConfigurationRuntimeWave15",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "title": "Tui Product Surface",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/components\\.json|apps/desktop/package\\.json|apps/desktop/scripts/perf/baseline\\.json|ui-tui/package\\.json|ui-tui/src/app\\.tsx|ui-tui/src/app/interfaces\\.ts|ui-tui/src/app/scroll\\.ts|ui-tui/src/app/setupHandoff\\.ts|ui-tui/src/app/useBatteryPoll\\.ts|ui-tui/src/app/useLongRunToolCharms\\.ts|ui-tui/src/app/usePet\\.ts|ui-tui/src/banner\\.ts|ui-tui/src/components/accordion\\.tsx|ui-tui/src/components/agentsOverlay\\.tsx|ui-tui/src/components/appChrome\\.tsx|ui-tui/src/components/appLayout\\.tsx|ui-tui/src/components/appOverlays\\.tsx|ui-tui/src/components/branding\\.tsx|ui-tui/src/components/fpsOverlay\\.tsx|ui-tui/src/components/gridStreamsDemo\\.tsx|ui-tui/src/components/gridTestOverlay\\.tsx|ui-tui/src/components/helpHint\\.tsx|ui-tui/src/components/journey\\.tsx|ui-tui/src/components/loaders\\.tsx|ui-tui/src/components/markdown\\.tsx|ui-tui/src/components/maskedPrompt\\.tsx|ui-tui/src/components/messageLine\\.tsx|ui-tui/src/components/overlay\\.tsx|ui-tui/src/components/overlayControls\\.tsx|ui-tui/src/components/overlayPrimitives\\.tsx|ui-tui/src/components/overlayScrollbar\\.tsx|ui-tui/src/components/petPicker\\.tsx|ui-tui/src/components/petSprite\\.tsx|ui-tui/src/components/prompts\\.tsx|ui-tui/src/components/queuedMessages\\.tsx|ui-tui/src/components/skillsHub\\.tsx|ui-tui/src/components/streamingAssistant\\.tsx|ui-tui/src/components/streamingMarkdown\\.tsx|ui-tui/src/components/textInput\\.tsx|ui-tui/src/components/themed\\.tsx|ui-tui/src/components/thinking\\.tsx|ui-tui/src/components/todoPanel\\.tsx|ui-tui/src/components/widgetGrid\\.tsx|ui-tui/src/content/charms\\.ts|ui-tui/src/content/faces\\.ts|ui-tui/src/content/fortunes\\.ts|ui-tui/src/content/hotkeys\\.ts|ui-tui/src/content/placeholders\\.ts|ui-tui/src/content/setup\\.ts|ui-tui/src/content/verbs\\.ts|ui-tui/src/domain/blockLayout\\.ts|ui-tui/src/domain/details\\.ts|ui-tui/src/domain/messages\\.ts|ui-tui/src/domain/paths\\.ts|ui-tui/src/domain/roles\\.ts|ui-tui/src/domain/slash\\.ts|ui-tui/src/domain/usage\\.ts|ui-tui/src/domain/viewport\\.ts|ui-tui/src/entry\\.tsx|ui-tui/src/hooks/useGitBranch\\.ts|ui-tui/src/lib/charts\\.ts|ui-tui/src/lib/circularBuffer\\.ts|ui-tui/src/lib/clipboard\\.ts|ui-tui/src/lib/color\\.ts|ui-tui/src/lib/editor\\.ts|ui-tui/src/lib/emoji\\.ts|ui-tui/src/lib/externalCli\\.ts|ui-tui/src/lib/externalLink\\.ts|ui-tui/src/lib/forceTruecolor\\.ts|ui-tui/src/lib/fuzzy\\.ts|ui-tui/src/lib/mathUnicode\\.ts|ui-tui/src/lib/memory\\.ts|ui-tui/src/lib/memoryMonitor\\.ts|ui-tui/src/lib/openExternalUrl\\.ts|ui-tui/src/lib/osc52\\.ts|ui-tui/src/lib/parentLog\\.ts|ui-tui/src/lib/perfPane\\.tsx|ui-tui/src/lib/platform\\.ts|ui-tui/src/lib/precisionWheel\\.ts|ui-tui/src/lib/prompt\\.ts|ui-tui/src/lib/reasoning\\.ts|ui-tui/src/lib/resizeCoalescer\\.ts|ui-tui/src/lib/starmapPalette\\.ts|ui-tui/src/lib/subagentTree\\.ts|ui-tui/src/lib/syntax\\.ts|ui-tui/src/lib/terminalModes\\.ts|ui-tui/src/lib/terminalSetup\\.ts|ui-tui/src/lib/termux\\.ts|ui-tui/src/lib/text\\.ts|ui-tui/src/lib/themeBoot\\.ts|ui-tui/src/lib/todo\\.ts|ui-tui/src/lib/virtualHeights\\.ts|ui-tui/src/lib/wheelAccel\\.ts|ui-tui/src/lib/widgetGrid\\.ts|ui-tui/src/protocol/interpolation\\.ts|ui-tui/src/protocol/paste\\.ts|ui-tui/src/sdk/apps/dialogTest\\.tsx|ui-tui/src/sdk/apps/gridTest\\.tsx|ui-tui/src/sdk/apps/gridTestState\\.ts|ui-tui/src/sdk/apps/index\\.ts|ui-tui/src/sdk/apps/ticker\\.tsx|ui-tui/src/sdk/apps/weather\\.tsx|ui-tui/src/sdk/host\\.tsx|ui-tui/src/sdk/index\\.ts|ui-tui/src/sdk/registry\\.ts|ui-tui/src/sdk/types\\.ts|ui-tui/src/sdk/userWidgets\\.ts|ui-tui/src/theme\\.ts|ui-tui/src/types\\.ts|ui-tui/src/types/nolane_native-ink\\.d\\.ts)$"
+      ]
+    },
+    {
+      "domain": "product-surfaces",
+      "entrypoints": [
+        "src/native-core/product-configuration-runtime-wave15.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-TUI-STATE-STORES",
+      "negativeTests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "priority": 600,
+      "productionWiring": [
+        {
+          "contains": "ProductConfigurationRuntimeWave15",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "title": "Tui State Stores",
+      "upstreamPathPatterns": [
+        "^(?:ui-tui/src/app/delegationStore\\.ts|ui-tui/src/app/inputSelectionStore\\.ts|ui-tui/src/app/overlayStore\\.ts|ui-tui/src/app/petFlashStore\\.ts|ui-tui/src/app/submissionCore\\.ts|ui-tui/src/app/turnController\\.ts|ui-tui/src/app/turnStore\\.ts|ui-tui/src/app/uiStore\\.ts|ui-tui/src/app/useComposerState\\.ts|ui-tui/src/app/useInputHandlers\\.ts|ui-tui/src/app/useMainApp\\.ts|ui-tui/src/app/useSubmission\\.ts|ui-tui/src/hooks/useCompletion\\.ts|ui-tui/src/hooks/useQueue\\.ts|ui-tui/src/lib/fpsStore\\.ts|ui-tui/src/lib/viewportStore\\.ts)$"
+      ]
+    },
+    {
+      "domain": "configuration",
+      "entrypoints": [
+        "src/native-core/product-configuration-runtime-wave15.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-UPDATE-LIFECYCLE",
+      "negativeTests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "priority": 600,
+      "productionWiring": [
+        {
+          "contains": "ProductConfigurationRuntimeWave15",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "title": "Update Lifecycle",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/electron/update-count\\.ts|apps/desktop/electron/update-marker\\.ts|apps/desktop/electron/update-rebuild\\.ts|apps/desktop/electron/update-relaunch\\.ts|apps/desktop/electron/update-remote\\.ts|apps/desktop/electron/updater-process\\.ts|apps/desktop/src/app/updates-overlay\\.tsx|apps/desktop/src/lib/update-copy\\.ts|apps/desktop/src/store/updates\\.ts)$"
+      ]
+    },
+    {
+      "domain": "media-voice",
+      "entrypoints": [
+        "src/native-core/media-core-wave14.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-VOICE-COMPOSER-STATE",
+      "negativeTests": [
+        "tests/native-core-media-wave14.test.mjs"
+      ],
+      "priority": 580,
+      "productionWiring": [
+        {
+          "contains": "MediaCoreRuntimeWave14",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-media-wave14.test.mjs"
+      ],
+      "title": "Voice Composer State",
+      "upstreamPathPatterns": [
+        "^(?:apps/desktop/src/app/chat/composer/hooks/use-composer-voice\\.ts|apps/desktop/src/app/chat/composer/hooks/use-voice-conversation\\.ts|apps/desktop/src/app/chat/composer/hooks/use-voice-recorder\\.ts|apps/desktop/src/app/chat/composer/voice-activity\\.tsx|apps/desktop/src/app/settings/voice-provider-fields\\.tsx)$"
+      ]
+    },
+    {
+      "domain": "product-surfaces",
+      "entrypoints": [
+        "src/native-core/product-configuration-runtime-wave15.mjs"
+      ],
+      "externalCondition": null,
+      "id": "NATIVE-WEB-DASHBOARD-SURFACE",
+      "negativeTests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "priority": 600,
+      "productionWiring": [
+        {
+          "contains": "ProductConfigurationRuntimeWave15",
+          "path": "src/nolane-native/orchestration-service.mjs"
+        }
+      ],
+      "status": "verified",
+      "tests": [
+        "tests/native-core-product-config-wave15.test.mjs"
+      ],
+      "title": "Web Dashboard Surface",
+      "upstreamPathPatterns": [
+        "^(?:web/package\\.json|web/src/App\\.tsx|web/src/components/AutoField\\.tsx|web/src/components/AutomationBlueprints\\.tsx|web/src/components/ChatSidebar\\.tsx|web/src/components/ConfirmDialog\\.tsx|web/src/components/DeleteConfirmDialog\\.tsx|web/src/components/NolaneNativeConsoleModal\\.tsx|web/src/components/LanguageSwitcher\\.tsx|web/src/components/Markdown\\.tsx|web/src/components/PlatformsCard\\.tsx|web/src/components/ScheduleBuilder\\.tsx|web/src/components/SidebarFooter\\.tsx|web/src/components/SidebarStatusStrip\\.tsx|web/src/components/SkillEditorDialog\\.tsx|web/src/components/SlashPopover\\.tsx|web/src/components/ThemeSwitcher\\.tsx|web/src/contexts/PageHeaderProvider\\.tsx|web/src/contexts/SystemActions\\.tsx|web/src/contexts/page-header-context\\.ts|web/src/contexts/system-actions-context\\.ts|web/src/contexts/usePageHeader\\.ts|web/src/contexts/useSystemActions\\.ts|web/src/hooks/useModalBehavior\\.ts|web/src/hooks/useSidebarStatus\\.ts|web/src/lib/cron-job\\.ts|web/src/lib/dashboard-flags\\.ts|web/src/lib/dashboard-modal-shell\\.ts|web/src/lib/format\\.ts|web/src/lib/fuzzy\\.ts|web/src/lib/mcp-server-create\\.ts|web/src/lib/nested\\.ts|web/src/lib/pty-mobile-input\\.ts|web/src/lib/resolve-page-title\\.ts|web/src/lib/schedule\\.ts|web/src/lib/utils\\.ts|web/src/main\\.tsx|web/src/pages/AnalyticsPage\\.tsx|web/src/pages/ChannelsPage\\.tsx|web/src/pages/ChatPage\\.tsx|web/src/pages/CronPage\\.tsx|web/src/pages/DocsPage\\.tsx|web/src/pages/EnvPage\\.tsx|web/src/pages/FilesPage\\.tsx|web/src/pages/LogsPage\\.tsx|web/src/pages/McpPage\\.tsx|web/src/pages/PairingPage\\.tsx|web/src/pages/SkillsPage\\.tsx|web/src/pages/SystemPage\\.tsx|web/src/pages/WebhooksPage\\.tsx|web/src/themes/context\\.tsx|web/src/themes/fonts\\.ts|web/src/themes/index\\.ts|web/src/themes/presets\\.ts|web/src/themes/types\\.ts)$"
+      ]
+    }
+  ],
+  "product": "Nolane Agent",
+  "productVersion": "5.0.0-beta.7",
+  "receiptSha256": "4e87add77c3de1df0921b9bc8a04b5925071e7e437735d9663eeb3e3b6fa063c",
+  "schema": "nolane.native-core.contract-catalog.v1"
+}

@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.cloud-platforms",
+  "domain": "cloud-platforms",
+  "title": "Cloud Platforms Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "infrastructure",
+    "identity",
+    "networking",
+    "autoscaling",
+    "availability",
+    "regions",
+    "cost",
+    "policy"
+  ],
+  "capabilities": [
+    "cloud-platforms.map-landscape",
+    "cloud-platforms.frame-problem",
+    "cloud-platforms.research-users",
+    "cloud-platforms.define-requirements",
+    "cloud-platforms.model-domain",
+    "cloud-platforms.compare-alternatives",
+    "cloud-platforms.design-concept",
+    "cloud-platforms.prototype-critical-flow",
+    "cloud-platforms.validate-prototype",
+    "cloud-platforms.design-architecture",
+    "cloud-platforms.model-data",
+    "cloud-platforms.model-threats",
+    "cloud-platforms.plan-delivery",
+    "cloud-platforms.implement-core",
+    "cloud-platforms.integrate-dependencies",
+    "cloud-platforms.verify-contracts",
+    "cloud-platforms.test-boundaries",
+    "cloud-platforms.test-resilience",
+    "cloud-platforms.test-performance",
+    "cloud-platforms.test-security",
+    "cloud-platforms.audit-accessibility",
+    "cloud-platforms.optimize-quality",
+    "cloud-platforms.optimize-cost",
+    "cloud-platforms.document-system",
+    "cloud-platforms.prepare-migration",
+    "cloud-platforms.plan-rollout",
+    "cloud-platforms.instrument-observability",
+    "cloud-platforms.operate-lifecycle",
+    "cloud-platforms.respond-incidents",
+    "cloud-platforms.govern-evolution",
+    "cloud-platforms.measure-outcomes",
+    "cloud-platforms.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "opa",
+      "title": "Open Policy Agent",
+      "url": "https://github.com/open-policy-agent/opa",
+      "authority": "standards-body",
+      "trust": "verified",
+      "revision": "release:v1.16.2",
+      "license": {
+        "spdx": "Apache-2.0",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "nist-ssdf",
+      "title": "NIST Secure Software Development Framework",
+      "url": "https://csrc.nist.gov/projects/ssdf",
+      "authority": "standards-body",
+      "trust": "verified",
+      "revision": "web:2026-07-25",
+      "license": {
+        "spdx": "US-Government-Work",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

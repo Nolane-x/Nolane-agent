@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.data-engineering",
+  "domain": "data-engineering",
+  "title": "Data Engineering Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "pipelines",
+    "lineage",
+    "schemas",
+    "quality",
+    "streaming",
+    "batch",
+    "orchestration",
+    "governance"
+  ],
+  "capabilities": [
+    "data-engineering.map-landscape",
+    "data-engineering.frame-problem",
+    "data-engineering.research-users",
+    "data-engineering.define-requirements",
+    "data-engineering.model-domain",
+    "data-engineering.compare-alternatives",
+    "data-engineering.design-concept",
+    "data-engineering.prototype-critical-flow",
+    "data-engineering.validate-prototype",
+    "data-engineering.design-architecture",
+    "data-engineering.model-data",
+    "data-engineering.model-threats",
+    "data-engineering.plan-delivery",
+    "data-engineering.implement-core",
+    "data-engineering.integrate-dependencies",
+    "data-engineering.verify-contracts",
+    "data-engineering.test-boundaries",
+    "data-engineering.test-resilience",
+    "data-engineering.test-performance",
+    "data-engineering.test-security",
+    "data-engineering.audit-accessibility",
+    "data-engineering.optimize-quality",
+    "data-engineering.optimize-cost",
+    "data-engineering.document-system",
+    "data-engineering.prepare-migration",
+    "data-engineering.plan-rollout",
+    "data-engineering.instrument-observability",
+    "data-engineering.operate-lifecycle",
+    "data-engineering.respond-incidents",
+    "data-engineering.govern-evolution",
+    "data-engineering.measure-outcomes",
+    "data-engineering.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "nvidia-skills",
+      "title": "NVIDIA Agent Skills",
+      "url": "https://github.com/NVIDIA/skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "Mixed",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

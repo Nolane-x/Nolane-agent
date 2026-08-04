@@ -1,0 +1,54 @@
+{
+  "schema": "nolane.checkpoint-14.source-truth-ledger.v1",
+  "baselineCommit": "72f35b57aa32299bb4369eb84759c489b03ce697",
+  "entries": [
+    {
+      "id": "progressive-ui-v3",
+      "state": "implemented-and-wired",
+      "source": "ui-v3",
+      "productionProjection": "ui-dist",
+      "evidence": ["scripts/build-ui-v3.mjs", "scripts/verify-checkpoint-13-progressive-experience.mjs"]
+    },
+    {
+      "id": "legacy-ui",
+      "state": "compatibility-only",
+      "source": "ui",
+      "notes": "Retained for recovery and legacy behavior until parity and retirement gates pass."
+    },
+    {
+      "id": "experience-switcher-cp13",
+      "state": "implemented-but-incomplete",
+      "source": "ui-v3/app.mjs",
+      "notes": "Cyclic cache-backed switching exists; direct persistent switching is Checkpoint 14 work."
+    },
+    {
+      "id": "personalization-settings",
+      "state": "implemented-but-not-runtime-consumed",
+      "source": "src/settings/settings-catalog.mjs",
+      "notes": "Canonical fields exist in layered Settings; profile projection and bounded runtime context are Checkpoint 14 work."
+    },
+    {
+      "id": "desktop-update-trust",
+      "state": "implemented-and-wired",
+      "source": "src/update/update-service.mjs",
+      "notes": "Signature, repository, identity, hash and PE checks exist; background coordination and complete relaunch certification remain."
+    },
+    {
+      "id": "windows-update-replay",
+      "state": "external-certification-required",
+      "notes": "Must pass on a real Windows installation before Checkpoint 14 complete delivery."
+    },
+    {
+      "id": "forge-os-substrate",
+      "state": "compatibility-only",
+      "source": "vendor/forge-os",
+      "notes": "Still packaged and consumed through ForgeOsBridge; removal requires replacement receipts."
+    },
+    {
+      "id": "model-profile-plane",
+      "state": "implemented-but-converging",
+      "source": "src/model-profiles, src/providers/model-profile-registry.mjs, src/model-management",
+      "notes": "Checkpoint 14 converges existing truth, compatibility and management planes instead of creating a fourth registry."
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://forgeos.dev/schemas/skill-section.schema.json",
+  "type":"object","additionalProperties":false,
+  "required":["id","path","sha256","bytes","tokens"],
+  "properties":{"id":{"type":"string","pattern":"^[a-z0-9]+(?:-[a-z0-9]+)*$"},"path":{"type":"string","pattern":"^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"},"sha256":{"type":"string","pattern":"^[a-f0-9]{64}$"},"bytes":{"type":"integer","minimum":0},"tokens":{"type":"object","additionalProperties":{"type":"integer","minimum":0}}}
+}

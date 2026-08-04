@@ -1,0 +1,38 @@
+[
+  {
+    "id": "rehearsing-data-migrations-application",
+    "kind": "application",
+    "input": "Task directly requiring rehearsing data migrations within operations lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "rehearsing-data-migrations-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require rehearsing data migrations within operations lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "rehearsing-data-migrations-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "rehearsing-data-migrations-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "rehearsing-data-migrations-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "rehearsing-data-migrations-transfer",
+    "kind": "transfer",
+    "input": "Apply the rehearsing-data-migrations mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

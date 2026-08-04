@@ -1,0 +1,38 @@
+[
+  {
+    "id": "compressing-project-artifacts-application",
+    "kind": "application",
+    "input": "Task directly requiring compressing project artifacts within meta lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "compressing-project-artifacts-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require compressing project artifacts within meta lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "compressing-project-artifacts-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "compressing-project-artifacts-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "compressing-project-artifacts-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "compressing-project-artifacts-transfer",
+    "kind": "transfer",
+    "input": "Apply the compressing-project-artifacts mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

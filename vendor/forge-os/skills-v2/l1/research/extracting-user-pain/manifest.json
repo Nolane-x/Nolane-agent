@@ -1,0 +1,305 @@
+{
+  "schemaVersion": 2,
+  "id": "extracting-user-pain",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Extracting User Pain",
+    "description": "Use when extracting user pain within research lifecycle boundaries, especially when does the artifact make the owned decision for extracting user pain explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "research"
+    ],
+    "keywords": [
+      "extracting-user-pain",
+      "extracting",
+      "user",
+      "pain",
+      "within",
+      "research",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require extracting user pain within research lifecycle boundaries",
+      "the typed inputs for extracting-user-pain are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "confirmed-intent",
+        "schema": "artifact://forgeos/confirmed-intent/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "research-evidence",
+        "schema": "artifact://forgeos/research-evidence/v1"
+      },
+      {
+        "type": "problem-discovery",
+        "schema": "artifact://forgeos/problem-discovery/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for extracting user pain explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by extracting user pain.",
+        "evidence": "extracting-user-pain-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to extracting user pain.",
+        "evidence": "extracting-user-pain-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply extracting user pain only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "extracting-user-pain-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "extracting-user-pain-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if extracting user pain were incomplete or implemented incorrectly.",
+        "evidence": "extracting-user-pain-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for extracting user pain explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "extracting-user-pain-decision-table",
+      "extracting-user-pain-verification-report",
+      "extracting-user-pain-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "extracting-user-pain-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 679,
+    "hardTokens": 1070,
+    "outputReserveTokens": 267
+  },
+  "quality": {
+    "benchmarkIds": [
+      "extracting-user-pain-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "scientific-research.map-landscape",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:extracting-user-pain",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "8a99f0b38e9eed214936d6b147817e95ab28bfde14cfd7fea0999b3650f8fdc3",
+        "bytes": 895,
+        "tokens": {
+          "gpt-5.6": 241,
+          "claude-opus-4.2": 253,
+          "gemini-3.0-pro": 230,
+          "qwen3.5-32b": 268
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "5a4c36d39bce3d30327e56c3f4d55fb73dd6360911e0c718116bd2ca9238b686",
+        "bytes": 686,
+        "tokens": {
+          "gpt-5.6": 185,
+          "claude-opus-4.2": 194,
+          "gemini-3.0-pro": 176,
+          "qwen3.5-32b": 205
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "f36142d6b1693b414c59d3c0b26ac1b5b76b58e001e0021507f71654467225cc",
+        "bytes": 296,
+        "tokens": {
+          "gpt-5.6": 80,
+          "claude-opus-4.2": 84,
+          "gemini-3.0-pro": 76,
+          "qwen3.5-32b": 89
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "ae7d1ffaab1757c6a54825933460a4211fe1864c34ea22c4d1d5e1790ba236f8",
+        "bytes": 581,
+        "tokens": {
+          "gpt-5.6": 157,
+          "claude-opus-4.2": 164,
+          "gemini-3.0-pro": 149,
+          "qwen3.5-32b": 174
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "799eed94d634ef9643856ad8847ba747a028a516748684832a048b32284332eb",
+        "bytes": 324,
+        "tokens": {
+          "gpt-5.6": 88,
+          "claude-opus-4.2": 92,
+          "gemini-3.0-pro": 84,
+          "qwen3.5-32b": 97
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "b22f3c73ef096a79b8cd0c3fd41b25310c72681808f9081857990c2059ccf867",
+        "bytes": 234,
+        "tokens": {
+          "gpt-5.6": 63,
+          "claude-opus-4.2": 66,
+          "gemini-3.0-pro": 60,
+          "qwen3.5-32b": 70
+        }
+      }
+    ],
+    "indexSha256": "a7ff895dfd798a231e916527820a8b5b7d41c1095aebf3679d1134d91d7dc4c6"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "c903b4ca0e213960f9ed6004982e9ce3e608806c1510503fd0a9d1df796fbd07"
+}

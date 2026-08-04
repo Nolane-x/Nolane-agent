@@ -1,0 +1,145 @@
+{
+  "name": "testing-skill-behavior",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "meta",
+  "domain": null,
+  "status": "stable",
+  "stages": [
+    "discovery",
+    "planning",
+    "implementation",
+    "verification"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "behavioral-baseline",
+    "candidate-change"
+  ],
+  "produces": [
+    "skill-evaluation"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:skill-evaluation"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/meta.md",
+  "method": {
+    "focus": "prove that a skill changes agent behavior under realistic pressure rather than merely sounding persuasive",
+    "steps": [
+      "Create a baseline scenario that exposes the target failure without the skill.",
+      "Record the agent’s exact choices, omissions, and rationalizations.",
+      "Add the smallest skill guidance that targets the observed failure form.",
+      "Repeat across task variations, pressure combinations, models, and context sizes.",
+      "Measure compliance, output quality, task success, token cost, and new failure modes before promotion."
+    ],
+    "verification": [
+      "Was a failing baseline observed?",
+      "Does the skill improve behavior beyond one prompt seed?",
+      "Does it create a new regression or context burden?",
+      "Can an agent recognize when the skill should not apply?"
+    ],
+    "evidence": [
+      "baseline transcripts",
+      "candidate transcripts",
+      "scored comparison",
+      "rationalization catalog"
+    ],
+    "traps": [
+      "testing only comprehension",
+      "editing the skill during the candidate run",
+      "promoting from one success"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Identify the measured agent failure or capability gap.",
+    "Write a baseline scenario that exposes the gap without the candidate skill.",
+    "Create a baseline scenario that exposes the target failure without the skill.",
+    "Record the agent’s exact choices, omissions, and rationalizations.",
+    "Add the smallest skill guidance that targets the observed failure form.",
+    "Repeat across task variations, pressure combinations, models, and context sizes.",
+    "Measure compliance, output quality, task success, token cost, and new failure modes before promotion.",
+    "Design the smallest skill or adapter change that targets the failure.",
+    "Run paired behavioral evaluations across representative agents.",
+    "Measure success, quality, context, cost, and new failure modes.",
+    "Promote, revise, deprecate, or quarantine based on evidence."
+  ],
+  "gate": {
+    "reviewerRole": "independent-reviewer",
+    "rules": [
+      "The output directly and completely performs testing skill behavior within its declared boundary.",
+      "Was a failing baseline observed?",
+      "Does the skill improve behavior beyond one prompt seed?",
+      "Does it create a new regression or context burden?",
+      "Can an agent recognize when the skill should not apply?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "skill-evaluation"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "baseline transcripts",
+      "candidate transcripts",
+      "scored comparison",
+      "rationalization catalog"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1611,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "testing only comprehension",
+    "editing the skill during the candidate run",
+    "promoting from one success"
+  ],
+  "optionalConsumes": [],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when testing skill behavior is required during meta work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

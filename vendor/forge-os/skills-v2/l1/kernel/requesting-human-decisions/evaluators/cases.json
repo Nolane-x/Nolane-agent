@@ -1,0 +1,38 @@
+[
+  {
+    "id": "requesting-human-decisions-application",
+    "kind": "application",
+    "input": "Task directly requiring requesting human decisions within kernel lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "requesting-human-decisions-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require requesting human decisions within kernel lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "requesting-human-decisions-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "requesting-human-decisions-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "requesting-human-decisions-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "requesting-human-decisions-transfer",
+    "kind": "transfer",
+    "input": "Apply the requesting-human-decisions mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

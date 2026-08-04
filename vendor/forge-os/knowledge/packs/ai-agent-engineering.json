@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.ai-agent-engineering",
+  "domain": "ai-agent-engineering",
+  "title": "AI Agent Engineering Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "tool use",
+    "memory",
+    "planning",
+    "skills",
+    "evaluation",
+    "prompt injection",
+    "multi-agent",
+    "human oversight"
+  ],
+  "capabilities": [
+    "ai-agent-engineering.map-landscape",
+    "ai-agent-engineering.frame-problem",
+    "ai-agent-engineering.research-users",
+    "ai-agent-engineering.define-requirements",
+    "ai-agent-engineering.model-domain",
+    "ai-agent-engineering.compare-alternatives",
+    "ai-agent-engineering.design-concept",
+    "ai-agent-engineering.prototype-critical-flow",
+    "ai-agent-engineering.validate-prototype",
+    "ai-agent-engineering.design-architecture",
+    "ai-agent-engineering.model-data",
+    "ai-agent-engineering.model-threats",
+    "ai-agent-engineering.plan-delivery",
+    "ai-agent-engineering.implement-core",
+    "ai-agent-engineering.integrate-dependencies",
+    "ai-agent-engineering.verify-contracts",
+    "ai-agent-engineering.test-boundaries",
+    "ai-agent-engineering.test-resilience",
+    "ai-agent-engineering.test-performance",
+    "ai-agent-engineering.test-security",
+    "ai-agent-engineering.audit-accessibility",
+    "ai-agent-engineering.optimize-quality",
+    "ai-agent-engineering.optimize-cost",
+    "ai-agent-engineering.document-system",
+    "ai-agent-engineering.prepare-migration",
+    "ai-agent-engineering.plan-rollout",
+    "ai-agent-engineering.instrument-observability",
+    "ai-agent-engineering.operate-lifecycle",
+    "ai-agent-engineering.respond-incidents",
+    "ai-agent-engineering.govern-evolution",
+    "ai-agent-engineering.measure-outcomes",
+    "ai-agent-engineering.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "anthropic-skills",
+      "title": "Anthropic Agent Skills",
+      "url": "https://github.com/anthropics/skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "Mixed",
+        "mode": "link-only"
+      }
+    },
+    {
+      "id": "superpowers",
+      "title": "Superpowers",
+      "url": "https://github.com/obra/superpowers",
+      "authority": "community",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "agentskills-spec",
+      "title": "Agent Skills specification",
+      "url": "https://agentskills.io/specification",
+      "authority": "standards-body",
+      "trust": "verified",
+      "revision": "web:2026-07-25",
+      "license": {
+        "spdx": "Reference",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

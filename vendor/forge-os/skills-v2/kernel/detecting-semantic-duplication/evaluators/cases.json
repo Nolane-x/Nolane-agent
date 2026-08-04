@@ -1,0 +1,20 @@
+[
+  {
+    "id": "detecting-semantic-duplication-positive",
+    "kind": "application",
+    "input": "A task requiring Detecting Semantic Skill Duplication",
+    "expectedEvidence": [
+      "Embedding similarity alone never auto-merges skills.",
+      "Specializations remain linked rather than collapsed.",
+      "Duplicate findings include evidence spans."
+    ],
+    "baselineFailure": "Treating shared headings as semantic duplication."
+  },
+  {
+    "id": "detecting-semantic-duplication-anti-trigger",
+    "kind": "counter-example",
+    "input": "two techniques share an outcome but use distinct mechanisms",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

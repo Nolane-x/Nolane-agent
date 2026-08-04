@@ -1,0 +1,141 @@
+{
+  "name": "selecting-winning-concept",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "product",
+  "domain": null,
+  "status": "stable",
+  "stages": [
+    "selection"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "scored-ideas"
+  ],
+  "produces": [
+    "selected-concept"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:selected-concept"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/product.md",
+  "method": {
+    "focus": "select a product direction through evidence, pairwise trade-offs, and explicit human ownership",
+    "steps": [
+      "Reject candidates that fail non-negotiable constraints before scoring.",
+      "Compare pairs separately on novelty, usefulness, feasibility, leverage, defensibility, testability, clarity, and evidence.",
+      "Run assumption sensitivity to identify candidates whose rank collapses under plausible changes.",
+      "Present practical, bold-plausible, and weirdly-useful finalists rather than one blended list.",
+      "Record the human selection, rationale, rejected alternatives, and invalidated downstream work."
+    ],
+    "verification": [
+      "Can the winner explain why it beats the runner-up?",
+      "Is a high novelty score hiding poor usefulness?",
+      "Has the human—not the worker—owned the final product direction?",
+      "Is the cheapest falsification experiment defined?"
+    ],
+    "evidence": [
+      "pairwise matrix",
+      "sensitivity report",
+      "selection decision",
+      "rejected-alternative record"
+    ],
+    "traps": [
+      "averaging incompatible criteria",
+      "letting the generator self-select",
+      "choosing the most polished prose"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Read confirmed evidence, selected concept, and unresolved assumptions.",
+    "Define the product decision this skill owns.",
+    "Reject candidates that fail non-negotiable constraints before scoring.",
+    "Compare pairs separately on novelty, usefulness, feasibility, leverage, defensibility, testability, clarity, and evidence.",
+    "Run assumption sensitivity to identify candidates whose rank collapses under plausible changes.",
+    "Present practical, bold-plausible, and weirdly-useful finalists rather than one blended list.",
+    "Record the human selection, rationale, rejected alternatives, and invalidated downstream work.",
+    "Model alternatives and explicit trade-offs.",
+    "Choose a testable position with non-goals.",
+    "Trace the decision to users, value, risks, and metrics.",
+    "Publish the decision artifact and downstream invalidations."
+  ],
+  "gate": {
+    "reviewerRole": "independent-reviewer",
+    "rules": [
+      "The output directly and completely performs selecting winning concept within its declared boundary.",
+      "Can the winner explain why it beats the runner-up?",
+      "Is a high novelty score hiding poor usefulness?",
+      "Has the human—not the worker—owned the final product direction?",
+      "Is the cheapest falsification experiment defined?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "selected-concept"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "pairwise matrix",
+      "sensitivity report",
+      "selection decision",
+      "rejected-alternative record"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1631,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "averaging incompatible criteria",
+    "letting the generator self-select",
+    "choosing the most polished prose"
+  ],
+  "optionalConsumes": [],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when selecting winning concept is required during product work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

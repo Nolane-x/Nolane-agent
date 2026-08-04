@@ -1,0 +1,156 @@
+{
+  "name": "testing-interactive-3d-performance",
+  "version": "0.2.0",
+  "kind": "domain",
+  "pack": "domain",
+  "domain": "interactive-3d",
+  "status": "candidate",
+  "stages": [
+    "product-definition",
+    "ux-design",
+    "architecture",
+    "planning",
+    "implementation",
+    "verification",
+    "release-readiness"
+  ],
+  "domains": [
+    "interactive-3d"
+  ],
+  "consumes": [
+    "product-definition"
+  ],
+  "produces": [
+    "domain-blueprint",
+    "domain-evidence"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:domain-blueprint",
+    "downstream:domain-evidence"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/domains/interactive-3d.md",
+  "method": {
+    "focus": "measure an implemented interactive 3D experience against declared budgets and preserve evidence for failures and fallbacks",
+    "steps": [
+      "Freeze the build identity, scene, browser or runtime version, device class, test path, and measurement method.",
+      "Exercise cold start, asset loading, camera movement, interaction bursts, resize, background or foreground recovery, and fallback activation.",
+      "Record frame-time distribution, startup, memory, errors, asset requests, visual defects, and input failures against explicit budgets.",
+      "Repeat representative checks across the declared device matrix and classify unsupported environments separately from regressions.",
+      "Publish raw traces or screenshots where available, summarized results, reproducible steps, limits, and release-blocking findings."
+    ],
+    "verification": [
+      "Can another reviewer identify the exact build, device class, scene, and test path?",
+      "Are p50 and tail latency, memory, startup, and error observations compared with written thresholds?",
+      "Was the fallback deliberately exercised rather than inferred from source code?",
+      "Are unsupported or untested devices reported as such instead of silently passed?"
+    ],
+    "evidence": [
+      "runtime test matrix",
+      "performance trace summary",
+      "fallback exercise record",
+      "reproducible defect log"
+    ],
+    "traps": [
+      "claiming universal frame-rate performance from one machine",
+      "testing only a warm cache",
+      "hiding a fallback failure behind a successful primary path"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Read the confirmed product definition, domain context, assurance profile, and active findings.",
+    "Identify the domain objects, actors, state transitions, regulations, provider boundaries, and operational constraints owned by this skill.",
+    "Freeze the build identity, scene, browser or runtime version, device class, test path, and measurement method.",
+    "Exercise cold start, asset loading, camera movement, interaction bursts, resize, background or foreground recovery, and fallback activation.",
+    "Record frame-time distribution, startup, memory, errors, asset requests, visual defects, and input failures against explicit budgets.",
+    "Repeat representative checks across the declared device matrix and classify unsupported environments separately from regressions.",
+    "Publish raw traces or screenshots where available, summarized results, reproducible steps, limits, and release-blocking findings.",
+    "Model normal, boundary, failure, recovery, permission, concurrency, migration, and abuse behavior before implementation.",
+    "Define stable contracts and explicit non-goals; do not leak domain concerns into unrelated modules.",
+    "Create executable acceptance, negative, resilience, and compatibility checks proportional to risk.",
+    "Publish the domain artifact, evidence packet, unresolved assumptions, and downstream invalidations."
+  ],
+  "gate": {
+    "reviewerRole": "interactive-3d-reviewer",
+    "rules": [
+      "The output directly and completely performs testing interactive 3d performance within its declared boundary.",
+      "Can another reviewer identify the exact build, device class, scene, and test path?",
+      "Are p50 and tail latency, memory, startup, and error observations compared with written thresholds?",
+      "Was the fallback deliberately exercised rather than inferred from source code?",
+      "Are unsupported or untested devices reported as such instead of silently passed?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "domain-blueprint",
+        "domain-evidence"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "runtime test matrix",
+      "performance trace summary",
+      "fallback exercise record",
+      "reproducible defect log"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1960,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "claiming universal frame-rate performance from one machine",
+    "testing only a warm cache",
+    "hiding a fallback failure behind a successful primary path"
+  ],
+  "optionalConsumes": [
+    "architecture-decision",
+    "verified-build"
+  ],
+  "requiredTools": [],
+  "optionalTools": [
+    "test-runner"
+  ],
+  "description": "Use when testing interactive 3d performance is required during interactive-3d product work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

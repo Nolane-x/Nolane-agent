@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.software-architecture",
+  "domain": "software-architecture",
+  "title": "Software Architecture Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "modularity",
+    "bounded contexts",
+    "interfaces",
+    "coupling",
+    "quality attributes",
+    "evolution",
+    "architecture decisions",
+    "dependency graphs"
+  ],
+  "capabilities": [
+    "software-architecture.map-landscape",
+    "software-architecture.frame-problem",
+    "software-architecture.research-users",
+    "software-architecture.define-requirements",
+    "software-architecture.model-domain",
+    "software-architecture.compare-alternatives",
+    "software-architecture.design-concept",
+    "software-architecture.prototype-critical-flow",
+    "software-architecture.validate-prototype",
+    "software-architecture.design-architecture",
+    "software-architecture.model-data",
+    "software-architecture.model-threats",
+    "software-architecture.plan-delivery",
+    "software-architecture.implement-core",
+    "software-architecture.integrate-dependencies",
+    "software-architecture.verify-contracts",
+    "software-architecture.test-boundaries",
+    "software-architecture.test-resilience",
+    "software-architecture.test-performance",
+    "software-architecture.test-security",
+    "software-architecture.audit-accessibility",
+    "software-architecture.optimize-quality",
+    "software-architecture.optimize-cost",
+    "software-architecture.document-system",
+    "software-architecture.prepare-migration",
+    "software-architecture.plan-rollout",
+    "software-architecture.instrument-observability",
+    "software-architecture.operate-lifecycle",
+    "software-architecture.respond-incidents",
+    "software-architecture.govern-evolution",
+    "software-architecture.measure-outcomes",
+    "software-architecture.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "superpowers",
+      "title": "Superpowers",
+      "url": "https://github.com/obra/superpowers",
+      "authority": "community",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "nist-ssdf",
+      "title": "NIST Secure Software Development Framework",
+      "url": "https://csrc.nist.gov/projects/ssdf",
+      "authority": "standards-body",
+      "trust": "verified",
+      "revision": "web:2026-07-25",
+      "license": {
+        "spdx": "US-Government-Work",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forgeos.dev/schemas/v0.4/federation-source.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "kind",
+    "authority",
+    "trust",
+    "title",
+    "url",
+    "revision",
+    "license",
+    "domains"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,159}$"
+    },
+    "kind": {
+      "enum": [
+        "local-skills",
+        "agent-skills-repository",
+        "skills-cli-repository",
+        "knowledge-index",
+        "mcp-registry",
+        "mcp-awesome-list",
+        "standards-index",
+        "vendor-documentation"
+      ]
+    },
+    "authority": {
+      "enum": [
+        "official",
+        "vendor",
+        "standards-body",
+        "community",
+        "local"
+      ]
+    },
+    "trust": {
+      "enum": [
+        "local",
+        "discovery",
+        "verified"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "revision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "license": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "spdx",
+        "mode"
+      ],
+      "properties": {
+        "spdx": {
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "vendor-allowed",
+            "link-only"
+          ]
+        },
+        "ambiguous": {
+          "type": "boolean"
+        }
+      }
+    },
+    "domains": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "syncPolicy": {
+      "type": "object"
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

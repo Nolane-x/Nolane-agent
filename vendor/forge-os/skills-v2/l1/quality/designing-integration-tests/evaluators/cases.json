@@ -1,0 +1,38 @@
+[
+  {
+    "id": "designing-integration-tests-application",
+    "kind": "application",
+    "input": "Task directly requiring designing integration tests within quality lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "designing-integration-tests-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require designing integration tests within quality lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "designing-integration-tests-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "designing-integration-tests-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "designing-integration-tests-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "designing-integration-tests-transfer",
+    "kind": "transfer",
+    "input": "Apply the designing-integration-tests mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

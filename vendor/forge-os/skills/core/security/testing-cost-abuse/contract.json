@@ -1,0 +1,143 @@
+{
+  "name": "testing-cost-abuse",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "security",
+  "domain": null,
+  "status": "stable",
+  "stages": [
+    "verification"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "threat-model",
+    "verified-build"
+  ],
+  "produces": [
+    "security-review"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:security-review"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/security.md",
+  "method": {
+    "focus": "find attacker-controlled paths that amplify metered compute, model, storage, notification, or third-party spend",
+    "steps": [
+      "Inventory every metered operation and calculate cost per request, retry, fan-out, and retained artifact.",
+      "Model attacker budget versus defender cost amplification.",
+      "Exercise burst, replay, concurrency, recursive workflows, oversized context, cache busting, and failed-payment paths.",
+      "Verify quotas, idempotency, backpressure, cancellation, spending caps, and anomaly alerts server-side.",
+      "Calculate worst-case daily exposure and require explicit acceptance when it exceeds the product risk budget."
+    ],
+    "verification": [
+      "Can one cheap request trigger many expensive downstream calls?",
+      "Can retries or partial failures double-charge?",
+      "Are per-user, per-tenant, and global caps independent?",
+      "Does cancellation stop already queued cost?"
+    ],
+    "evidence": [
+      "cost surface map",
+      "amplification calculations",
+      "abuse test logs",
+      "cap and alert evidence"
+    ],
+    "traps": [
+      "rate limits without cost modeling",
+      "average-case unit economics",
+      "alerts without hard caps"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Define assets, trust boundaries, actors, and abuse objectives.",
+    "Map the targeted control or attack surface.",
+    "Inventory every metered operation and calculate cost per request, retry, fan-out, and retained artifact.",
+    "Model attacker budget versus defender cost amplification.",
+    "Exercise burst, replay, concurrency, recursive workflows, oversized context, cache busting, and failed-payment paths.",
+    "Verify quotas, idempotency, backpressure, cancellation, spending caps, and anomaly alerts server-side.",
+    "Calculate worst-case daily exposure and require explicit acceptance when it exceeds the product risk budget.",
+    "Construct authorized, reproducible adversarial cases.",
+    "Verify server-side enforcement and least privilege.",
+    "Record exploitability, impact, remediation, and residual risk.",
+    "Block release readiness for unresolved critical findings."
+  ],
+  "gate": {
+    "reviewerRole": "security-reviewer",
+    "rules": [
+      "The output directly and completely performs testing cost abuse within its declared boundary.",
+      "Can one cheap request trigger many expensive downstream calls?",
+      "Can retries or partial failures double-charge?",
+      "Are per-user, per-tenant, and global caps independent?",
+      "Does cancellation stop already queued cost?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "security-review"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "cost surface map",
+      "amplification calculations",
+      "abuse test logs",
+      "cap and alert evidence"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1646,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "rate limits without cost modeling",
+    "average-case unit economics",
+    "alerts without hard caps"
+  ],
+  "optionalConsumes": [],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when testing cost abuse is required during security work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

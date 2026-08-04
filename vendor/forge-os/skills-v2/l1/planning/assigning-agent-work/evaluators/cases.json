@@ -1,0 +1,38 @@
+[
+  {
+    "id": "assigning-agent-work-application",
+    "kind": "application",
+    "input": "Task directly requiring assigning agent work within planning lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "assigning-agent-work-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require assigning agent work within planning lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "assigning-agent-work-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "assigning-agent-work-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "assigning-agent-work-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "assigning-agent-work-transfer",
+    "kind": "transfer",
+    "input": "Apply the assigning-agent-work mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

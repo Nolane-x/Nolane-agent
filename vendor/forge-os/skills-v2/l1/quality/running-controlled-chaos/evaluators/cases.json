@@ -1,0 +1,38 @@
+[
+  {
+    "id": "running-controlled-chaos-application",
+    "kind": "application",
+    "input": "Task directly requiring running controlled chaos within quality lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "running-controlled-chaos-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require running controlled chaos within quality lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "running-controlled-chaos-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "running-controlled-chaos-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "running-controlled-chaos-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "running-controlled-chaos-transfer",
+    "kind": "transfer",
+    "input": "Apply the running-controlled-chaos mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

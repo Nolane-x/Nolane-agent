@@ -1,0 +1,38 @@
+[
+  {
+    "id": "securing-software-supply-chain-application",
+    "kind": "application",
+    "input": "Task directly requiring securing software supply chain within security lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "securing-software-supply-chain-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require securing software supply chain within security lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "securing-software-supply-chain-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "securing-software-supply-chain-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "securing-software-supply-chain-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "securing-software-supply-chain-transfer",
+    "kind": "transfer",
+    "input": "Apply the securing-software-supply-chain mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

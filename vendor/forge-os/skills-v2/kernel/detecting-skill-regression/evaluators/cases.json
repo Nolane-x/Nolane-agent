@@ -1,0 +1,20 @@
+[
+  {
+    "id": "detecting-skill-regression-positive",
+    "kind": "application",
+    "input": "A task requiring Detecting Skill Regression",
+    "expectedEvidence": [
+      "Same corpus and seeds are used.",
+      "Model-specific regressions are not hidden by global averages.",
+      "Rollback target is content-addressed."
+    ],
+    "baselineFailure": "Testing only the model used by the author."
+  },
+  {
+    "id": "detecting-skill-regression-anti-trigger",
+    "kind": "counter-example",
+    "input": "no behavior-affecting content changed",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

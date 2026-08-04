@@ -1,0 +1,55 @@
+{
+  "schema": "nolane.agent.nolane-proof-intelligence-measurement.v1",
+  "version": "5.0.0-beta.6",
+  "proof": {
+    "deployDeniedBeforeEvidence": true,
+    "deployAllowedAfterEvidence": true,
+    "proofCoverage": 1,
+    "independentVerificationRequired": true,
+    "rollbackBound": true,
+    "receiptSha256": "b1c2a25f1b65adae1ec64c14819fa6e1232a7dec6b6767b6f8b58fb13362c331"
+  },
+  "repositoryTwin": {
+    "predictedTest": true,
+    "staleEdgeExcluded": true,
+    "observedCalibrationRecorded": true,
+    "falsePositiveDetected": true,
+    "receiptSha256": "4db7b6ab3a106d89d01eb8843916494a17e25a0a4ca65b41b824c99b48844713"
+  },
+  "tournament": {
+    "criticalCandidateRejected": true,
+    "independentCandidateSelected": true,
+    "automaticCommitAllowed": false,
+    "receiptSha256": "4d5c917423cc133d9b2208d0482096edf45c01e4d5dad29d5374b29669d87b50"
+  },
+  "modelGovernor": {
+    "easyUsesSmall": true,
+    "riskyUsesLarge": true,
+    "riskyUsesIndependentVerifier": true,
+    "privateUsesLocal": true,
+    "verifiedOutcomeLearned": true,
+    "automaticPromotionAllowed": false,
+    "receiptSha256": "458a6d1747516194ae32759e23210f0edf839d5a5a1f110dcb4ff45024020fe7"
+  },
+  "productionWiring": {
+    "decisionPlaneLazyIntegration": true,
+    "authenticatedHttpSurface": true,
+    "publicSnapshotReceiptSha256": "eac95561e6a01c0fccebcfc8298cd755245dcabbaf397d89df214b870f537eed"
+  },
+  "comparativeReadiness": {
+    "independentReferenceArtifactPresent": false,
+    "sameModelMachineTokenPermissionContractRequired": true,
+    "claimAllowed": false
+  },
+  "boundaries": {
+    "hiddenReasoningStored": false,
+    "rawPromptStored": false,
+    "rawModelOutputStored": false,
+    "automaticSourceMutationClaimed": false,
+    "automaticCommitClaimed": false,
+    "automaticDeploymentClaimed": false,
+    "automaticModelPromotionClaimed": false,
+    "comparativeSuperiorityClaimed": false
+  },
+  "receiptSha256": "7d8f4551c165af5d3352ec52f880443c7ce2fe55c752fd1c89181e5f21131f38"
+}

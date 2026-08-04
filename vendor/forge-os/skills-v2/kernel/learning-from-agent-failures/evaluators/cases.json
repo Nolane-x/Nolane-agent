@@ -1,0 +1,20 @@
+[
+  {
+    "id": "learning-from-agent-failures-positive",
+    "kind": "application",
+    "input": "A task requiring Learning from Agent Failures",
+    "expectedEvidence": [
+      "Learning artifacts cite raw failure receipts.",
+      "Project-specific details are removed safely.",
+      "No production rule changes without evaluation."
+    ],
+    "baselineFailure": "Turning every bug into a new skill."
+  },
+  {
+    "id": "learning-from-agent-failures-anti-trigger",
+    "kind": "counter-example",
+    "input": "the failure is caused by a known code bug",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

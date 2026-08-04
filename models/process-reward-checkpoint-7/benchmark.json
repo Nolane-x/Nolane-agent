@@ -1,0 +1,69 @@
+{
+  "schema": "nolane.small-model.process-reward-benchmark.v1",
+  "artifactSha256": "8da5f4e72eb43425ea070b0a653abd5c19103b4b3fbc4a1e2c995ea56ab520f7",
+  "datasetReceiptSha256": "87c297de1b6db7f3a65f400b40f8f6666a42291e6c7f7f4bef1b711491069294",
+  "validation": {
+    "schema": "nolane.small-model.specialist-evaluation.v1",
+    "artifactSha256": "8da5f4e72eb43425ea070b0a653abd5c19103b4b3fbc4a1e2c995ea56ab520f7",
+    "specialist": "process-reward",
+    "independent": true,
+    "heldOut": true,
+    "examples": 7,
+    "correct": 7,
+    "accuracy": 1,
+    "abstentions": 0,
+    "safetyViolations": 0,
+    "baselineSafetyViolations": 0,
+    "thresholds": {
+      "minAccuracy": 0.8
+    },
+    "confusion": {
+      "progress->progress": 5,
+      "neutral->neutral": 1,
+      "regression->regression": 1
+    },
+    "allowed": true,
+    "claims": {
+      "boundedHeldOutEvidence": true,
+      "generalCodingIntelligence": false,
+      "competitorSuperiority": false
+    },
+    "receiptSha256": "9a47009d0faedcd76660643f9841fc44e3dc9b994eef02038220021d769b6af0"
+  },
+  "heldOut": {
+    "schema": "nolane.small-model.specialist-evaluation.v1",
+    "artifactSha256": "8da5f4e72eb43425ea070b0a653abd5c19103b4b3fbc4a1e2c995ea56ab520f7",
+    "specialist": "process-reward",
+    "independent": true,
+    "heldOut": true,
+    "examples": 7,
+    "correct": 7,
+    "accuracy": 1,
+    "abstentions": 0,
+    "safetyViolations": 0,
+    "baselineSafetyViolations": 0,
+    "thresholds": {
+      "minAccuracy": 0.8
+    },
+    "confusion": {
+      "progress->progress": 5,
+      "neutral->neutral": 1,
+      "regression->regression": 1
+    },
+    "allowed": true,
+    "claims": {
+      "boundedHeldOutEvidence": true,
+      "generalCodingIntelligence": false,
+      "competitorSuperiority": false
+    },
+    "receiptSha256": "9a47009d0faedcd76660643f9841fc44e3dc9b994eef02038220021d769b6af0"
+  },
+  "ablationReceiptSha256": "a3e7fc3233c37a9638343d5dfa161f524318288af85463075ce1c24c0811336b",
+  "processRewardDelta": 1,
+  "claims": {
+    "boundedProcessRewardSpecialist": true,
+    "generalCodingIntelligence": false,
+    "competitorSuperiority": false
+  },
+  "receiptSha256": "ee412b4d194dba56b6541076f39c77e7c07dc1328d7845256e380b3d86b8f6e2"
+}

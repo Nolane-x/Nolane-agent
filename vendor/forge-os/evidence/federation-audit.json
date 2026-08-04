@@ -1,0 +1,513 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-25T18:29:53.259Z",
+  "catalogRevision": 1,
+  "inventory": {
+    "capabilities": 1024,
+    "sources": 29,
+    "knowledgePacks": 32,
+    "providers": 1291,
+    "firstPartyProcedural": 267,
+    "stableFirstPartyProcedural": 33,
+    "candidateFirstPartyProcedural": 234,
+    "knowledgeProviderMappings": 1024,
+    "builtInProviderMappings": 1291,
+    "externalProvidersImported": 0
+  },
+  "coverage": {
+    "missingAnyProvider": 0,
+    "missingKnowledge": 0,
+    "missingProcedural": 848,
+    "missingStableProcedural": 978,
+    "unresolvedKnowledgePack": 0
+  },
+  "trust": {
+    "blockers": [],
+    "staleProviders": [],
+    "duplicateClusters": [
+      {
+        "signature": "0361944bf939c22d1396fab04ed5bd84685b1074f5159ef3d671a9a0cdaec4a1",
+        "providerIds": [
+          "local-skill.designing-data-lineage",
+          "local-skill.designing-data-partitions",
+          "local-skill.designing-data-pipelines",
+          "local-skill.managing-schema-evolution",
+          "local-skill.operating-data-incidents",
+          "local-skill.securing-data-access",
+          "local-skill.testing-data-backfills",
+          "local-skill.testing-data-quality"
+        ]
+      },
+      {
+        "signature": "076a6e7be77941eaac515ce935bf38af4610c66000cb4dd2f49ba0f040f1ba78",
+        "providerIds": [
+          "local-skill.defining-product-non-goals",
+          "local-skill.defining-product-north-star",
+          "local-skill.defining-product-thesis",
+          "local-skill.designing-product-pricing",
+          "local-skill.mapping-business-model"
+        ]
+      },
+      {
+        "signature": "0dc48d3d87b2310f14976d4d8b89fd85956893a5e5a72b4d6eac71edf558e1d1",
+        "providerIds": [
+          "local-skill.running-canary-release",
+          "local-skill.testing-production-rollback"
+        ]
+      },
+      {
+        "signature": "1abefc68774f0bd908e4a881c1c1469dc36beef4796eb3da65a169dd54973e69",
+        "providerIds": [
+          "local-skill.controlling-code-complexity",
+          "local-skill.fixing-bugs-with-tdd",
+          "local-skill.implementing-contract-first",
+          "local-skill.managing-software-dependencies"
+        ]
+      },
+      {
+        "signature": "2c25794d400aaaeac1deba1ca9a0d149cd869be0db7b500f2dadbf3d982d5b6e",
+        "providerIds": [
+          "local-skill.designing-unit-tests",
+          "local-skill.measuring-mutation-resistance"
+        ]
+      },
+      {
+        "signature": "3089d1316aaa5276382b220f24781a9c60b46fb8b78c34a4655d52bebc785e58",
+        "providerIds": [
+          "local-skill.mapping-jobs-to-be-done",
+          "local-skill.scoping-product-research",
+          "local-skill.synthesizing-product-evidence"
+        ]
+      },
+      {
+        "signature": "349a79ccc7e8739110cc5b2210b1828df448695c92543d2264ce03e78100da1f",
+        "providerIds": [
+          "local-skill.designing-automation-retries",
+          "local-skill.modeling-automation-side-effects",
+          "local-skill.observing-automation-runs",
+          "local-skill.recovering-automation-workflows",
+          "local-skill.securing-automation-credentials",
+          "local-skill.testing-automation-schedules",
+          "local-skill.testing-automation-webhooks"
+        ]
+      },
+      {
+        "signature": "39478b7116daadd399a3bf10d621c44eeeb6dbe5ba4654a10acd9e941d97445a",
+        "providerIds": [
+          "local-skill.designing-integration-tests",
+          "local-skill.running-controlled-chaos",
+          "local-skill.running-differential-tests",
+          "local-skill.testing-concurrent-behavior",
+          "local-skill.testing-end-to-end-flows"
+        ]
+      },
+      {
+        "signature": "41bd16f11d4aec898b2f2123d7eb98676a62d47e2e6c78e4db809e29a448c10d",
+        "providerIds": [
+          "local-skill.building-evidence-backed-personas",
+          "local-skill.designing-responsive-experiences",
+          "local-skill.eliciting-user-workflows"
+        ]
+      },
+      {
+        "signature": "43eafef402035c4dd810e298063b4ce351f7c5f91d18e8d9868623a182f3101f",
+        "providerIds": [
+          "local-skill.analyzing-competing-products",
+          "local-skill.identifying-market-shifts",
+          "local-skill.maintaining-prior-art-map",
+          "local-skill.mapping-existing-solutions"
+        ]
+      },
+      {
+        "signature": "5393bed0b809b05f8d55f2a45ac0e49c4265e87fd667cb9c2a3118daa169f69a",
+        "providerIds": [
+          "local-skill.choosing-system-architecture",
+          "local-skill.decomposing-bounded-contexts",
+          "local-skill.designing-extension-points"
+        ]
+      },
+      {
+        "signature": "548de3498ca9415c2178a9d82ca850c2e4764188c37ce7633b595783e597d847",
+        "providerIds": [
+          "local-skill.enforcing-review-separation",
+          "local-skill.invalidating-dependent-proof",
+          "local-skill.validating-evidence-freshness"
+        ]
+      },
+      {
+        "signature": "56f22b3c45f9a49913f75f831f8f330ae2b4c6e2a6f1675e1b633f2a258fdddd",
+        "providerIds": [
+          "local-skill.benchmarking-skill-utility",
+          "local-skill.testing-skill-behavior"
+        ]
+      },
+      {
+        "signature": "57b9f3ea4fe33258d5a2f453423118abc3a88cd1deb1c32640a912c2d32fb69a",
+        "providerIds": [
+          "local-skill.mapping-acceptance-contracts",
+          "local-skill.sequencing-task-dependencies",
+          "local-skill.slicing-vertical-increments",
+          "local-skill.tracking-evidence-backed-progress"
+        ]
+      },
+      {
+        "signature": "5bcf83e879c60017502ee067226c15b3c2ebbb3a85f766d19ba23d62d396609f",
+        "providerIds": [
+          "local-skill.compiling-context-pack",
+          "local-skill.compiling-global-context",
+          "local-skill.enforcing-context-budgets",
+          "local-skill.optimizing-context-budget",
+          "local-skill.selecting-minimum-provider-set",
+          "local-skill.selecting-skill-sections"
+        ]
+      },
+      {
+        "signature": "5c70cac47c26e89961cd700fc64613265e53f4ba181b7a9b3678204720fe39aa",
+        "providerIds": [
+          "local-skill.designing-content-scripts",
+          "local-skill.testing-browser-store-readiness"
+        ]
+      },
+      {
+        "signature": "5df200d7f22e55222720de57620ca4fc2d4b9b869cb09865d954632b5e9c3cad",
+        "providerIds": [
+          "local-skill.choosing-deployment-strategy",
+          "local-skill.defining-error-budget-policy",
+          "local-skill.defining-service-objectives",
+          "local-skill.designing-ci-cd",
+          "local-skill.rehearsing-data-migrations"
+        ]
+      },
+      {
+        "signature": "62b4e993d0552d928dec997ccca03edcf3cbfe3fac2842be9e181455371d2a3f",
+        "providerIds": [
+          "local-skill.developing-features-with-tdd",
+          "local-skill.writing-minimal-sufficient-code"
+        ]
+      },
+      {
+        "signature": "639d1f2b78d1b07a0a290c67fbec2df9d31ba801309b5abb9a5f2066ebf309eb",
+        "providerIds": [
+          "local-skill.consolidating-project-memory",
+          "local-skill.projecting-artifact-deltas"
+        ]
+      },
+      {
+        "signature": "6800c6af3882b6107518164890690a56351b809ab626bfecd340c87848c44ae6",
+        "providerIds": [
+          "local-skill.testing-input-validation",
+          "local-skill.testing-prompt-injection",
+          "local-skill.testing-rate-limits",
+          "local-skill.testing-tenant-isolation"
+        ]
+      },
+      {
+        "signature": "713707d1db27d7af1660993b667af282292e84a808b09350000c8e2177bddf3d",
+        "providerIds": [
+          "local-skill.designing-saas-billing",
+          "local-skill.designing-saas-onboarding",
+          "local-skill.enforcing-saas-quotas",
+          "local-skill.measuring-saas-activation",
+          "local-skill.operating-saas-support",
+          "local-skill.reducing-saas-churn",
+          "local-skill.testing-saas-entitlements"
+        ]
+      },
+      {
+        "signature": "715964c7cb32ccaaa873eb4be71d4932887d64373dab8ad2214b1b06861f3373",
+        "providerIds": [
+          "local-skill.designing-developer-cli",
+          "local-skill.designing-developer-config",
+          "local-skill.designing-developer-plugins",
+          "local-skill.designing-filesystem-tools",
+          "local-skill.designing-ide-integrations",
+          "local-skill.measuring-developer-experience",
+          "local-skill.packaging-developer-binaries",
+          "local-skill.testing-developer-compatibility"
+        ]
+      },
+      {
+        "signature": "7bfbcb279fde0d895d4f294dd20fee5bd434f970f3eeaa2df6183bc9a1b8bf72",
+        "providerIds": [
+          "local-skill.refactoring-with-behavior-preservation",
+          "local-skill.reviewing-code-diffs"
+        ]
+      },
+      {
+        "signature": "8670fc24bc22d907e7d402157eb9c4c0bf472237c31b6bc564bc0c1913919f0c",
+        "providerIds": [
+          "local-skill.designing-enterprise-audit",
+          "local-skill.designing-enterprise-integrations",
+          "local-skill.designing-enterprise-policy",
+          "local-skill.designing-enterprise-rbac",
+          "local-skill.integrating-enterprise-sso",
+          "local-skill.operating-enterprise-support",
+          "local-skill.planning-enterprise-rollout",
+          "local-skill.testing-enterprise-isolation"
+        ]
+      },
+      {
+        "signature": "8810781f2e0d693056a96de64af16e6532e8ff6b38b2e2b4edcda34d02f84c36",
+        "providerIds": [
+          "local-skill.controlling-ai-cost",
+          "local-skill.designing-ai-fallbacks",
+          "local-skill.evaluating-ai-quality",
+          "local-skill.selecting-model-provider",
+          "local-skill.testing-ai-hallucinations",
+          "local-skill.testing-ai-prompt-injection"
+        ]
+      },
+      {
+        "signature": "8a9c8b14da93e570334d7f04e479243e2e3f05f2fb27778c670182f1f30f4147",
+        "providerIds": [
+          "local-skill.designing-extension-manifest",
+          "local-skill.designing-extension-messaging",
+          "local-skill.minimizing-extension-permissions",
+          "local-skill.securing-extension-storage",
+          "local-skill.testing-extension-cross-browser",
+          "local-skill.testing-extension-csp"
+        ]
+      },
+      {
+        "signature": "8da48ba59b6d26653947b4d89777195e34b2197522a83f6ad569f0fc55f95d50",
+        "providerIds": [
+          "local-skill.planning-performance-budgets",
+          "local-skill.reviewing-architecture-risks"
+        ]
+      },
+      {
+        "signature": "96065a8ea4d49d1f4528df9c601a406eeb0fd60fd60e8931bd648356eddd8f40",
+        "providerIds": [
+          "local-skill.backcasting-from-the-future",
+          "local-skill.breaking-hidden-assumptions",
+          "local-skill.clustering-semantic-ideas",
+          "local-skill.exploring-edge-users"
+        ]
+      },
+      {
+        "signature": "9b4b86b7a91a7d82b7eec47105a0325f7f15c9820a7218fdde563b8bfa0fb3f3",
+        "providerIds": [
+          "local-skill.designing-api-deprecation",
+          "local-skill.designing-api-developer-portal",
+          "local-skill.designing-api-idempotency",
+          "local-skill.generating-api-sdks",
+          "local-skill.measuring-api-reliability",
+          "local-skill.testing-api-backward-compatibility"
+        ]
+      },
+      {
+        "signature": "9c2b9cd49063e3c565fbcfebb79214673eb4ff8bfa3b0db566be6a35513bdeb8",
+        "providerIds": [
+          "local-skill.smoke-testing-production",
+          "local-skill.validating-observability"
+        ]
+      },
+      {
+        "signature": "9ec57701f896a89ad8e10952a582c60f312d3a4074b89df7a2238b74b29d814f",
+        "providerIds": [
+          "local-skill.designing-game-content-pipeline",
+          "local-skill.designing-game-economy",
+          "local-skill.designing-game-state",
+          "local-skill.designing-save-systems",
+          "local-skill.testing-game-balance",
+          "local-skill.testing-game-determinism",
+          "local-skill.testing-game-performance"
+        ]
+      },
+      {
+        "signature": "a21acdfe10f81fa54d9178e6e981e3b673a54ddd93fa88de124ec1dceb6c4a02",
+        "providerIds": [
+          "local-skill.assigning-agent-work",
+          "local-skill.classifying-delivery-risk",
+          "local-skill.deciding-release-scope",
+          "local-skill.isolating-development-work",
+          "local-skill.writing-executable-plans"
+        ]
+      },
+      {
+        "signature": "aaa7673edf413f643cc6405e7a8c41167a963143a5788d836f4f7b762953e4a2",
+        "providerIds": [
+          "local-skill.modeling-unit-economics",
+          "local-skill.planning-product-experiments",
+          "local-skill.running-product-go-no-go"
+        ]
+      },
+      {
+        "signature": "ae4126d82c220a3dd353680c992c4872bb10bc67fb4fcb8a42f433878b3a1f68",
+        "providerIds": [
+          "local-skill.binding-approvals-to-actions",
+          "local-skill.compressing-project-artifacts",
+          "local-skill.detecting-skill-regression",
+          "local-skill.evolving-skill-packs",
+          "local-skill.learning-from-agent-failures",
+          "local-skill.promoting-skill-providers"
+        ]
+      },
+      {
+        "signature": "b7fd43c79728d9328ba1b874366e0849c4952d27d666db785aa41bb1f0f35ee4",
+        "providerIds": [
+          "local-skill.designing-data-migrations",
+          "local-skill.designing-data-model"
+        ]
+      },
+      {
+        "signature": "b815a415c05ba4a15349f1bed2c04ceb5fcceaccf0b6684d2f631e73278af171",
+        "providerIds": [
+          "local-skill.routing-skill-graph",
+          "local-skill.using-forge-os"
+        ]
+      },
+      {
+        "signature": "c0d588d7827f134b1cd371a11c9ce26e17ba32269beb0044e82a9fe040d2c483",
+        "providerIds": [
+          "local-skill.testing-platform-compatibility",
+          "local-skill.testing-production-load",
+          "local-skill.testing-service-contracts",
+          "local-skill.testing-state-machines",
+          "local-skill.testing-state-models"
+        ]
+      },
+      {
+        "signature": "c407860305d467aa8d4ad7068b704fc7b9001590c959e3487a08c64992cc9c7c",
+        "providerIds": [
+          "local-skill.detecting-fake-novelty",
+          "local-skill.generating-divergent-concepts",
+          "local-skill.selecting-winning-concept"
+        ]
+      },
+      {
+        "signature": "c5d662957347af14c85d648ec943286a6a7cba4790df53808aecdc5a09df35b7",
+        "providerIds": [
+          "local-skill.designing-desktop-packaging",
+          "local-skill.designing-desktop-updates",
+          "local-skill.designing-os-integrations",
+          "local-skill.sandboxing-desktop-features",
+          "local-skill.signing-desktop-builds",
+          "local-skill.testing-desktop-cross-platform",
+          "local-skill.testing-desktop-file-associations",
+          "local-skill.testing-desktop-installation"
+        ]
+      },
+      {
+        "signature": "c732dc8b5fc9dd1b2c8db894fb5af493bf28d4ed0fabd2be2f6113360f6dfb2a",
+        "providerIds": [
+          "local-skill.composing-technique-workflows",
+          "local-skill.decomposing-multi-domain-work",
+          "local-skill.planning-parallel-agent-work",
+          "local-skill.routing-capability-graph"
+        ]
+      },
+      {
+        "signature": "c824d021dfe1ca295aaa8d3d94351b578cc283993d919c5781267926af2d7c1f",
+        "providerIds": [
+          "local-skill.certifying-platform-adapters",
+          "local-skill.expiring-stale-skills",
+          "local-skill.handling-uncertainty",
+          "local-skill.managing-project-state",
+          "local-skill.recovering-interrupted-runs",
+          "local-skill.requesting-human-decisions"
+        ]
+      },
+      {
+        "signature": "ccf95538c54f1ca45a5d4fa5e300d23ef7eb265d22007be00c2278bc2c7207aa",
+        "providerIds": [
+          "local-skill.designing-mobile-offline-mode",
+          "local-skill.designing-mobile-permissions",
+          "local-skill.designing-mobile-sync",
+          "local-skill.monitoring-mobile-crashes",
+          "local-skill.optimizing-mobile-battery",
+          "local-skill.preparing-mobile-store-release",
+          "local-skill.testing-mobile-deep-links",
+          "local-skill.testing-mobile-devices"
+        ]
+      },
+      {
+        "signature": "d24d179b7943ebe126823a28e2f4de90238ac442419761c3ea2dcca819c56390",
+        "providerIds": [
+          "local-skill.scoring-contextual-creativity",
+          "local-skill.using-denial-ladders"
+        ]
+      },
+      {
+        "signature": "d687f6dd21ba612da7df79b24b7c0f153fd0aa3ec675b884f6fd81f57c76a2b7",
+        "providerIds": [
+          "local-skill.designing-ecommerce-catalog",
+          "local-skill.designing-shopping-cart",
+          "local-skill.integrating-payment-providers",
+          "local-skill.managing-ecommerce-inventory",
+          "local-skill.preventing-ecommerce-fraud",
+          "local-skill.testing-ecommerce-refunds",
+          "local-skill.testing-ecommerce-tax"
+        ]
+      },
+      {
+        "signature": "de3312e88fd8454a691a1edf6588c561c0f47bc5a2a7d20c30d8115263a44214",
+        "providerIds": [
+          "local-skill.mapping-user-journeys",
+          "local-skill.prototyping-critical-flows",
+          "local-skill.reviewing-visual-regressions",
+          "local-skill.testing-product-usability",
+          "local-skill.verifying-interface-completeness"
+        ]
+      },
+      {
+        "signature": "e8b7ea7001671f07735b302d2d015a44eaecf67aa798d5561ab78cf09d734e85",
+        "providerIds": [
+          "local-skill.constructing-idea-genomes",
+          "local-skill.designing-invisible-interfaces"
+        ]
+      },
+      {
+        "signature": "f682e8fb17223f12b8599f9b9c492eeba25c0b28c9807b48c317f2c40724d30a",
+        "providerIds": [
+          "local-skill.modeling-security-threats",
+          "local-skill.planning-incident-response",
+          "local-skill.protecting-secrets",
+          "local-skill.reviewing-data-privacy",
+          "local-skill.reviewing-secure-design",
+          "local-skill.sandboxing-untrusted-execution"
+        ]
+      }
+    ],
+    "unresolvedSources": [],
+    "externalByStatus": {}
+  },
+  "sources": {
+    "byTrust": {
+      "discovery": 16,
+      "local": 2,
+      "verified": 11
+    },
+    "byAuthority": {
+      "community": 9,
+      "local": 2,
+      "official": 1,
+      "standards-body": 8,
+      "vendor": 9
+    },
+    "byKind": {
+      "agent-skills-repository": 11,
+      "knowledge-index": 1,
+      "local-skills": 1,
+      "mcp-awesome-list": 4,
+      "mcp-registry": 1,
+      "skills-cli-repository": 1,
+      "standards-index": 6,
+      "vendor-documentation": 4
+    }
+  },
+  "adversarial": {
+    "corpusSha256": "60bf52e23f45f3785743891c140d151b34928a006dd320c0ad48b64ab1240748",
+    "total": 18,
+    "passed": 18,
+    "failed": 0,
+    "failures": []
+  },
+  "claimsBoundary": {
+    "capabilityNodesAreContractsNotVendoredExpertPrompts": true,
+    "externalSourcesAreNotEnabledByDefault": true,
+    "knowledgeProvidersStoreReferencesNotRemoteContent": true,
+    "stableProceduralCoverageIsReportedSeparately": true
+  },
+  "reportSha256": "ed5641c2c130d7d64cb3e7a41dffe5e844f6151e9ecbbe56f9a1ccce2ba791b1"
+}

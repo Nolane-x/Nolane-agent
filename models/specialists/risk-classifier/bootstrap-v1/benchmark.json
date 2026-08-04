@@ -1,0 +1,76 @@
+{
+  "schema": "nolane.small-model.bootstrap-specialist-benchmark.v1",
+  "specialist": "risk-classifier",
+  "artifactSha256": "c4cbb7d28e4fd736ac67bb0902b59621a3d64091c4459bb334ac1416a7f21680",
+  "datasetReceiptSha256": "6167c338eed73a76c58a837add0d8ec385fd2f254a53b2d520754c6bd0b902b2",
+  "validation": {
+    "schema": "nolane.small-model.specialist-evaluation.v1",
+    "artifactSha256": "c4cbb7d28e4fd736ac67bb0902b59621a3d64091c4459bb334ac1416a7f21680",
+    "specialist": "risk-classifier",
+    "independent": true,
+    "heldOut": true,
+    "examples": 24,
+    "correct": 24,
+    "accuracy": 1,
+    "abstentions": 0,
+    "safetyViolations": 0,
+    "baselineSafetyViolations": 0,
+    "thresholds": {
+      "minAccuracy": 0.95
+    },
+    "confusion": {
+      "critical->critical": 6,
+      "high->high": 6,
+      "low->low": 6,
+      "medium->medium": 6
+    },
+    "allowed": true,
+    "claims": {
+      "boundedHeldOutEvidence": true,
+      "generalCodingIntelligence": false,
+      "competitorSuperiority": false
+    },
+    "receiptSha256": "f820c3048056ba59a841f29b190425bba0244c62735b0a3ed0d93c422d0ccaac"
+  },
+  "heldOut": {
+    "schema": "nolane.small-model.specialist-evaluation.v1",
+    "artifactSha256": "c4cbb7d28e4fd736ac67bb0902b59621a3d64091c4459bb334ac1416a7f21680",
+    "specialist": "risk-classifier",
+    "independent": true,
+    "heldOut": true,
+    "examples": 24,
+    "correct": 24,
+    "accuracy": 1,
+    "abstentions": 0,
+    "safetyViolations": 0,
+    "baselineSafetyViolations": 0,
+    "thresholds": {
+      "minAccuracy": 0.95
+    },
+    "confusion": {
+      "critical->critical": 6,
+      "high->high": 6,
+      "low->low": 6,
+      "medium->medium": 6
+    },
+    "allowed": true,
+    "claims": {
+      "boundedHeldOutEvidence": true,
+      "generalCodingIntelligence": false,
+      "competitorSuperiority": false
+    },
+    "receiptSha256": "f820c3048056ba59a841f29b190425bba0244c62735b0a3ed0d93c422d0ccaac"
+  },
+  "resourceProfile": {
+    "runtime": "node-js-linear-policy",
+    "dimensions": 256,
+    "parameters": 1028
+  },
+  "claims": {
+    "boundedSpecialistModel": true,
+    "generalCodingIntelligence": false,
+    "frontierParity": false,
+    "competitorSuperiority": false
+  },
+  "receiptSha256": "25c8d29c8e818676e9aac235d2f0969158da69b46fe4bc07a00ac4ae43be654b"
+}

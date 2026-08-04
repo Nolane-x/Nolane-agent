@@ -1,0 +1,311 @@
+{
+  "schemaVersion": 2,
+  "id": "running-differential-tests",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Running Differential Tests",
+    "description": "Use when running differential tests within quality lifecycle boundaries, especially when does the artifact make the owned decision for running differential tests explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "quality"
+    ],
+    "keywords": [
+      "running-differential-tests",
+      "running",
+      "differential",
+      "tests",
+      "within",
+      "quality",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require running differential tests within quality lifecycle boundaries",
+      "the typed inputs for running-differential-tests are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "test-plan",
+        "schema": "artifact://forgeos/test-plan/v1"
+      },
+      {
+        "type": "verified-build",
+        "schema": "artifact://forgeos/verified-build/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "verification-report",
+        "schema": "artifact://forgeos/verification-report/v1"
+      },
+      {
+        "type": "ux-evidence",
+        "schema": "artifact://forgeos/ux-evidence/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for running differential tests explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [
+      "test-runner"
+    ],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by running differential tests.",
+        "evidence": "running-differential-tests-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to running differential tests.",
+        "evidence": "running-differential-tests-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply running differential tests only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "running-differential-tests-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "running-differential-tests-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if running differential tests were incomplete or implemented incorrectly.",
+        "evidence": "running-differential-tests-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for running differential tests explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "quality-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "running-differential-tests-decision-table",
+      "running-differential-tests-verification-report",
+      "running-differential-tests-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "running-differential-tests-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 702,
+    "hardTokens": 1098,
+    "outputReserveTokens": 274
+  },
+  "quality": {
+    "benchmarkIds": [
+      "running-differential-tests-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "software-testing.verify-contracts",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:running-differential-tests",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "f6d269e596b9799309f9efef6642f86da718350cf8a5579eada2f8e3285cc129",
+        "bytes": 934,
+        "tokens": {
+          "gpt-5.6": 252,
+          "claude-opus-4.2": 264,
+          "gemini-3.0-pro": 240,
+          "qwen3.5-32b": 279
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "71c87bed8cfc3f87da62cba705e3a7941ed4032073959f172a0176ede9356223",
+        "bytes": 710,
+        "tokens": {
+          "gpt-5.6": 191,
+          "claude-opus-4.2": 200,
+          "gemini-3.0-pro": 183,
+          "qwen3.5-32b": 212
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "ee885b46ff353636cd230ec68405be83ae3b9c452d5a2261fd06f7daab7685c5",
+        "bytes": 302,
+        "tokens": {
+          "gpt-5.6": 82,
+          "claude-opus-4.2": 86,
+          "gemini-3.0-pro": 78,
+          "qwen3.5-32b": 91
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "7f0be0c79ca860404f0e71522de5989afb3ffe46b409681c50fb34d1951e93e9",
+        "bytes": 605,
+        "tokens": {
+          "gpt-5.6": 163,
+          "claude-opus-4.2": 171,
+          "gemini-3.0-pro": 156,
+          "qwen3.5-32b": 181
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "1ab49d334172a390c718acd81a3e672249e88cf5956d015056dbfd7d722f28a4",
+        "bytes": 330,
+        "tokens": {
+          "gpt-5.6": 89,
+          "claude-opus-4.2": 93,
+          "gemini-3.0-pro": 85,
+          "qwen3.5-32b": 99
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "faa585e93a4e4182124f8fc792b22328a3bfc1ff56200113410257671d6dd766",
+        "bytes": 240,
+        "tokens": {
+          "gpt-5.6": 65,
+          "claude-opus-4.2": 68,
+          "gemini-3.0-pro": 62,
+          "qwen3.5-32b": 72
+        }
+      }
+    ],
+    "indexSha256": "c5a13fb85b5364e4619b3f7131901eecc3d780402be8b5736f17e2b75dddf9bc"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "6257e1af5588f78acc81e09e858a783fe49f996445b801b77e4258409fc40b40"
+}

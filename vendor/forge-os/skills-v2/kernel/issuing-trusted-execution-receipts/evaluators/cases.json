@@ -1,0 +1,20 @@
+[
+  {
+    "id": "issuing-trusted-execution-receipts-positive",
+    "kind": "application",
+    "input": "A task requiring Issuing Trusted Execution Receipts",
+    "expectedEvidence": [
+      "Caller cannot set pass status or digest.",
+      "Receipt subject matches current semantic revision.",
+      "Raw evidence remains independently retrievable."
+    ],
+    "baselineFailure": "Accepting a label-only security review."
+  },
+  {
+    "id": "issuing-trusted-execution-receipts-anti-trigger",
+    "kind": "counter-example",
+    "input": "a human opinion is the evidence type",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

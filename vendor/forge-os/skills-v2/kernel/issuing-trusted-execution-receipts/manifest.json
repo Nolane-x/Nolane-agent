@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 2,
+  "id": "issuing-trusted-execution-receipts",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Issuing Trusted Execution Receipts",
+    "description": "Use when a command, test, scanner, brokered tool, or sandbox run must produce evidence whose pass status and digest cannot be chosen by the requesting agent.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "kernel"
+    ],
+    "keywords": [
+      "issuing-trusted-execution-receipts",
+      "a",
+      "command",
+      "test",
+      "scanner",
+      "brokered",
+      "tool",
+      "or",
+      "sandbox"
+    ],
+    "antiTriggers": [
+      "a human opinion is the evidence type",
+      "the provider is not authorized for the requested evidence method"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "project-state",
+        "schema": "artifact://forgeos/project-state/v2"
+      }
+    ],
+    "produces": [
+      {
+        "type": "trusted-execution-receipt",
+        "schema": "artifact://forgeos/trusted-execution-receipt/v1"
+      }
+    ],
+    "invariants": [
+      "Caller cannot set pass status or digest.",
+      "Receipt subject matches current semantic revision.",
+      "Raw evidence remains independently retrievable."
+    ],
+    "requiredTools": [
+      "sandbox"
+    ],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "confirmed intent and current semantic revision exist"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Authorize the evidence type and bind the request to a subject hash.",
+        "evidence": "Caller cannot set pass status or digest."
+      },
+      {
+        "id": "step-2",
+        "action": "Execute through a trusted provider with bounded resources.",
+        "evidence": "Receipt subject matches current semantic revision."
+      },
+      {
+        "id": "step-3",
+        "action": "Derive status, output digest, timing, and environment from actual execution.",
+        "evidence": "Raw evidence remains independently retrievable."
+      },
+      {
+        "id": "step-4",
+        "action": "Sign or content-address the immutable receipt before returning metadata.",
+        "evidence": "Raw evidence remains independently retrievable."
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "trusted-execution-receipt is produced with current evidence or a blocker is recorded"
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Caller cannot set pass status or digest.",
+      "Receipt subject matches current semantic revision.",
+      "Raw evidence remains independently retrievable."
+    ],
+    "reviewerRole": "kernel-skill-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "behavioral-eval-receipt",
+      "context-receipt"
+    ],
+    "evaluatorIds": [
+      "issuing-trusted-execution-receipts-evaluator-v2"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 5,
+    "maxReferenceDepth": 2,
+    "targetTokens": 519,
+    "hardTokens": 907,
+    "outputReserveTokens": 256
+  },
+  "quality": {
+    "benchmarkIds": [
+      "issuing-trusted-execution-receipts-public-v1"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L0",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "coverage-ledger",
+      "typed-preconditions",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionability-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.verify-contracts",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:l0:issuing-trusted-execution-receipts",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.issuing-trusted-execution-receipts",
+      "fitScore": 100,
+      "mappingEvidence": "reviewed:l0:issuing-trusted-execution-receipts",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "45225627cd3570dca15667657a5d1408cfe5ebb80293fda1201fb5e76f010c53",
+        "bytes": 891,
+        "tokens": {
+          "gpt-5.6": 240,
+          "claude-opus-4.2": 251,
+          "gemini-3.0-pro": 229,
+          "qwen3.5-32b": 266
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "696bd9eb2ca5965d888a340cf0cfc8c2e402c4a73035370210e9d71003e3537c",
+        "bytes": 552,
+        "tokens": {
+          "gpt-5.6": 149,
+          "claude-opus-4.2": 156,
+          "gemini-3.0-pro": 142,
+          "qwen3.5-32b": 165
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "ce6b780e7111bd23302b7787a5ac03cd99f1711936b70d624202d73da690a469",
+        "bytes": 391,
+        "tokens": {
+          "gpt-5.6": 106,
+          "claude-opus-4.2": 111,
+          "gemini-3.0-pro": 101,
+          "qwen3.5-32b": 117
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "039da295c618e7bb4a35c282b7004609e77393924e2a35225d0c5d066516033c",
+        "bytes": 243,
+        "tokens": {
+          "gpt-5.6": 66,
+          "claude-opus-4.2": 69,
+          "gemini-3.0-pro": 63,
+          "qwen3.5-32b": 73
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "0b6cfbdb1db67f1c038de43f47d6322f4172c12a84e99f91c40ad9b462eb6702",
+        "bytes": 208,
+        "tokens": {
+          "gpt-5.6": 56,
+          "claude-opus-4.2": 59,
+          "gemini-3.0-pro": 54,
+          "qwen3.5-32b": 63
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "e666c0b2516968cff3ad71f9be52d7b8254a0ee8d0b3da8b897f8230badad6e0",
+        "bytes": 362,
+        "tokens": {
+          "gpt-5.6": 98,
+          "claude-opus-4.2": 102,
+          "gemini-3.0-pro": 93,
+          "qwen3.5-32b": 109
+        }
+      }
+    ],
+    "indexSha256": "19606012825b761870faf41642aba5653046374e073501e2c8a42c991171db16"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "f2f3e39cd3508e826bedbe5d7c3ffdc31dfb3cae4977f56128231ea6efe2338a"
+}

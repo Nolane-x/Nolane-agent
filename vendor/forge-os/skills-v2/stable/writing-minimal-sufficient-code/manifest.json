@@ -1,0 +1,292 @@
+{
+  "schemaVersion": 2,
+  "id": "writing-minimal-sufficient-code",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "stable",
+  "identity": {
+    "title": "Writing Minimal Sufficient Code",
+    "description": "Use when minimize code, dependencies, layers, and state while fully satisfying contracts, risks, and operability, especially when does every public abstraction have at least one real consumer?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "implementation"
+    ],
+    "keywords": [
+      "writing-minimal-sufficient-code",
+      "minimize",
+      "code",
+      "dependencies",
+      "layers",
+      "and",
+      "state",
+      "while",
+      "fully"
+    ],
+    "antiTriggers": [
+      "a deliberate framework migration requiring broader change",
+      "generated code whose size is fixed by schema"
+    ]
+  },
+  "relations": {
+    "requires": [
+      "execution-plan",
+      "acceptance-contracts"
+    ],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "execution-plan",
+        "schema": "artifact://forgeos/execution-plan/v1"
+      },
+      {
+        "type": "acceptance-contracts",
+        "schema": "artifact://forgeos/acceptance-contracts/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "implemented-increment",
+        "schema": "artifact://forgeos/implemented-increment/v1"
+      }
+    ],
+    "invariants": [
+      "Output remains within the writing-minimal-sufficient-code responsibility boundary",
+      "Every pass claim is backed by current trusted evidence"
+    ],
+    "requiredTools": [
+      "filesystem",
+      "shell"
+    ],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "List required behaviors, quality attributes, and extension points that have current consumers.",
+        "evidence": "complexity budget"
+      },
+      {
+        "id": "step-2",
+        "action": "Choose the fewest concepts that make invalid states hard to represent.",
+        "evidence": "deleted-code diff"
+      },
+      {
+        "id": "step-3",
+        "action": "Delete duplicate paths, speculative flags, pass-through layers, and narration-shaped abstractions.",
+        "evidence": "behavior regression report"
+      },
+      {
+        "id": "step-4",
+        "action": "Measure complexity through public surface, branches, state transitions, dependencies, and change amplification—not line count alone.",
+        "evidence": "behavior regression report"
+      },
+      {
+        "id": "step-5",
+        "action": "Verify behavior and readability after simplification.",
+        "evidence": "behavior regression report"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required tool, input, or approval is unavailable",
+        "action": "stop and record a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does every public abstraction have at least one real consumer?",
+      "Can a layer be removed without losing a contract or boundary?",
+      "Is configuration replacing a missing product decision?",
+      "Did simplification preserve tests, observability, and security?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "complexity budget",
+      "deleted-code diff",
+      "behavior regression report"
+    ],
+    "evaluatorIds": [
+      "writing-minimal-sufficient-code-evaluator"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 652,
+    "hardTokens": 1068,
+    "outputReserveTokens": 267
+  },
+  "quality": {
+    "benchmarkIds": [
+      "v04-writing-minimal-sufficient-code-behavior"
+    ],
+    "minimumSkillDepthScore": 82,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2"
+  ],
+  "capabilityMappings": [
+    {
+      "capabilityId": "backend-engineering.implement-core",
+      "fitScore": 98,
+      "mappingEvidence": "reviewed:v0.5:writing-minimal-sufficient-code",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "software-architecture.optimize-quality",
+      "fitScore": 98,
+      "mappingEvidence": "reviewed:v0.5:writing-minimal-sufficient-code",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.writing-minimal-sufficient-code",
+      "fitScore": 98,
+      "mappingEvidence": "reviewed:v0.5:writing-minimal-sufficient-code",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "3487bf5b920f6bc5085f772ba6496f77ca412db8ac23d9f563352da49666c3b9",
+        "bytes": 883,
+        "tokens": {
+          "gpt-5.6": 238,
+          "claude-opus-4.2": 249,
+          "gemini-3.0-pro": 227,
+          "qwen3.5-32b": 264
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "f22fa3bd8a4c85e13b573a336bc9285b1df5b47ca00c523de44c1ff50b6eff3c",
+        "bytes": 824,
+        "tokens": {
+          "gpt-5.6": 222,
+          "claude-opus-4.2": 233,
+          "gemini-3.0-pro": 212,
+          "qwen3.5-32b": 246
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "f9bfe6ef36de59d9db6341e6221b617221c90ebbc72b538c413f967f5f21581a",
+        "bytes": 346,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 98,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 104
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "7d132e1b52de03fa7846a62ca5625b3bceae9e5a4f7a3fc52b2275540c002cf5",
+        "bytes": 357,
+        "tokens": {
+          "gpt-5.6": 96,
+          "claude-opus-4.2": 101,
+          "gemini-3.0-pro": 92,
+          "qwen3.5-32b": 107
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "c8a87022ce7180a8803496e67e3a6cf14525cd01cfa7a229d34dd75446b23563",
+        "bytes": 255,
+        "tokens": {
+          "gpt-5.6": 69,
+          "claude-opus-4.2": 72,
+          "gemini-3.0-pro": 66,
+          "qwen3.5-32b": 77
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "ec7ddc85867dfbef8986c2a8f5ff8ecac2084497ad29985e86ce482f263e6f0c",
+        "bytes": 344,
+        "tokens": {
+          "gpt-5.6": 93,
+          "claude-opus-4.2": 97,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 103
+        }
+      }
+    ],
+    "indexSha256": "9e611cdd4a8b814b7dcfc8f37bf6dad08205ce915668ae743f7b7bfd32abf4c1"
+  },
+  "manifestSha256": "da5f82a9cd71b6e6e5a595e47ca4806d900c1e22a83b8e80ad8daf42138f0093",
+  "kernelLevel": "L1"
+}

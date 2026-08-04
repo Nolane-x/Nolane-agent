@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forgeos.dev/schemas/v0.5/compiled-context.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "model",
+    "budget",
+    "context",
+    "accounting",
+    "omissions",
+    "omissionManifest",
+    "contextReceipt",
+    "contextReceiptSha256"
+  ],
+  "properties": {
+    "model": {
+      "type": "string"
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "accounting": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "omissions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "omissionManifest": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "contextReceipt": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "contextReceiptSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

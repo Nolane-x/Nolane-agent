@@ -1,0 +1,22 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+const index = await readFile(new URL('../ui/index.html', import.meta.url), 'utf8');
+const app = await readFile(new URL('../ui/app.js', import.meta.url), 'utf8');
+const moduleSource = await readFile(new URL('../ui/repository-intelligence-center.js', import.meta.url), 'utf8').catch(() => '');
+const css = await readFile(new URL('../ui/repository-intelligence-center.css', import.meta.url), 'utf8').catch(() => '');
+test('Repository Intelligence Center is a lazy futuristic evidence surface', () => {
+  assert.match(index, /id="repository-intelligence-button"/);
+  assert.match(index, /symbol id="i-search"/);
+  assert.match(app, /repositoryIntelligence:\s*\['\/repository-intelligence-center\.js'/);
+  assert.match(moduleSource, /Architecture/);
+  assert.match(moduleSource, /Toolchain/);
+  assert.match(moduleSource, /Commands/);
+  assert.match(moduleSource, /Evidence/);
+  assert.match(moduleSource, /Unknowns/);
+  assert.match(moduleSource, /\/api\/repository-discovery/);
+  assert.match(css, /repo-neural-grid/);
+  assert.match(css, /repo-architecture-orbit/);
+  assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
+  assert.doesNotMatch(moduleSource, /localStorage.*token|sessionStorage.*token/i);
+});

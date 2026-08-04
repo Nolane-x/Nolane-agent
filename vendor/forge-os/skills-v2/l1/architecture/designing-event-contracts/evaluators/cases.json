@@ -1,0 +1,38 @@
+[
+  {
+    "id": "designing-event-contracts-application",
+    "kind": "application",
+    "input": "Task directly requiring designing event contracts within architecture lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "designing-event-contracts-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require designing event contracts within architecture lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "designing-event-contracts-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "designing-event-contracts-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "designing-event-contracts-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "designing-event-contracts-transfer",
+    "kind": "transfer",
+    "input": "Apply the designing-event-contracts mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

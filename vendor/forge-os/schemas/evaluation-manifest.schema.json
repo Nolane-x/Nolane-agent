@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forgeos.dev/schemas/v0.5/evaluation-manifest.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "skillId",
+    "maturity",
+    "evaluatorIds",
+    "publicCaseCount",
+    "publicCaseIds",
+    "publicCasesSha256",
+    "baselineStatus",
+    "holdout"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 2
+    },
+    "skillId": {
+      "type": "string"
+    },
+    "maturity": {
+      "type": "string"
+    },
+    "evaluatorIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "publicCaseCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "publicCaseIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "publicCasesSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "baselineStatus": {
+      "type": "string"
+    },
+    "holdout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "vendored",
+        "disclosure"
+      ],
+      "properties": {
+        "vendored": {
+          "const": false
+        },
+        "disclosure": {
+          "const": "hash-and-aggregate-only"
+        }
+      }
+    }
+  }
+}

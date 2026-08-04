@@ -1,0 +1,38 @@
+[
+  {
+    "id": "designing-responsive-experiences-application",
+    "kind": "application",
+    "input": "Task directly requiring designing responsive experiences within ux lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "designing-responsive-experiences-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require designing responsive experiences within ux lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "designing-responsive-experiences-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "designing-responsive-experiences-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "designing-responsive-experiences-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "designing-responsive-experiences-transfer",
+    "kind": "transfer",
+    "input": "Apply the designing-responsive-experiences mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

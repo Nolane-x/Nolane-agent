@@ -1,0 +1,27 @@
+{
+  "schema": "nolane.small-model.repository-specialist-dataset-receipt.v1",
+  "specialist": "test-selector",
+  "trajectoryDatasetReceiptSha256": "c08a63762070d3358522bddad2bc481e437d9890239d75ce4985e8971f4d58f2",
+  "datasetReceiptSha256": "646006489d975b57cc25bce63603e63cc242321d1ad2ff8a6d07f8fe9f9345d6",
+  "splitReceiptSha256": "1e69e0435358b98bd3280530c015cfd9fb705393af7a518fd890853e55757b34",
+  "labels": [
+    "full",
+    "integration",
+    "mutation",
+    "unit"
+  ],
+  "counts": {
+    "total": 32,
+    "train": 24,
+    "validation": 4,
+    "heldOut": 4
+  },
+  "disjointBy": "scenarioGroup",
+  "groupCounts": {
+    "train": 24,
+    "validation": 4,
+    "heldOut": 4
+  },
+  "hiddenChainOfThoughtStored": false,
+  "receiptSha256": "d7f785c1b274bcf0115d872aeda8c2a0440467c30ac14c45a80c3f4dafd7c42e"
+}

@@ -1,0 +1,30 @@
+name: CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run generate:v06
+      - run: npm run v06:audit
+      - run: npm run skills:v2:audit
+      - run: npm run skills:certification-audit
+      - run: npm run test:mutation-critical
+      - run: npm run router:benchmark
+      - run: npm run context:benchmark
+      - run: npm run federation:eval
+      - run: npm run federation:audit
+      - run: npm run validate
+      - run: npm run smoke
+      - run: FORGEOS_ADAPTER_TCK_OUTPUT=dist/ci/adapter-tck.json npm run adapter:tck
+      - run: npm run test:coverage
+      - run: git diff --exit-code

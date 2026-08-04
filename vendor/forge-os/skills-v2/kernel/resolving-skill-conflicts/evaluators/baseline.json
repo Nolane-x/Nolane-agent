@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "status": "red-baseline-recorded",
+  "scenarios": [
+    {
+      "caseId": "resolving-skill-conflicts-positive",
+      "observedFailure": "Treating low similarity as conflict."
+    },
+    {
+      "caseId": "resolving-skill-conflicts-anti-trigger",
+      "observedFailure": "superficial keyword activation"
+    }
+  ],
+  "note": "Candidate status only. Independent multi-model holdout is required before stable promotion."
+}

@@ -1,0 +1,345 @@
+{
+  "schemaVersion": 1,
+  "benchmarkId": "forgeos-router-public-v1",
+  "cases": 16,
+  "metrics": {
+    "precisionAt1": 0.9375,
+    "precisionAt3": 1,
+    "recallAt6": 1,
+    "unsafeActivationRate": 0,
+    "determinism": 1
+  },
+  "rows": [
+    {
+      "id": "api-contract",
+      "expected": [
+        "technique.designing-api-contracts"
+      ],
+      "selected": [
+        "technique.designing-api-contracts",
+        "technique.designing-api-versioning",
+        "technique.designing-interaction-contracts",
+        "technique.running-security-release-gate",
+        "technique.selecting-winning-concept",
+        "technique.writing-executable-plans"
+      ],
+      "precisionAt1": true,
+      "precisionAt3": true,
+      "recallAt6": true,
+      "unsafe": false,
+      "deterministic": true,
+      "blockers": [],
+      "routePlanSha256": "a883623d6d9e7c09e2d9e2ee05de8fb29709c71e40e559a724b5ae1d23d55da5"
+    },
+    {
+      "id": "api-versioning",
+      "expected": [
+        "technique.designing-api-versioning"
+      ],
+      "selected": [
+        "technique.designing-api-versioning",
+        "technique.designing-api-contracts",
+        "technique.packaging-release-evidence",
+        "technique.routing-skill-graph",
+        "technique.selecting-winning-concept",
+        "technique.running-security-release-gate"
+      ],
+      "precisionAt1": true,
+      "precisionAt3": true,
+      "recallAt6": true,
+      "unsafe": false,
+      "deterministic": true,
+      "blockers": [],
+      "routePlanSha256": "ec8bd719889d94d9a9c777e77278ca7bd6d9142d9364018936d60ca9d45681e0"
+    },
+    {
+      "id": "intent",
+      "expected": [
+        "technique.resolving-user-intent"
+      ],
+      "selected": [
+        "technique.resolving-user-intent",
+        "technique.designing-interaction-contracts",
+        "technique.modeling-security-threats",
+        "technique.designing-api-contracts",
+        "technique.packaging-release-evidence",
+        "technique.choosing-system-architecture"
+      ],
+      "precisionAt1": true,
+      "precisionAt3": true,
+      "recallAt6": true,
+      "unsafe": false,
+      "deterministic": true,
+      "blockers": [],
+      "routePlanSha256": "9f2141e19af6ea2435c7a7e94d10c28fc73609dd439ad25bc9a0a7e614de978d"
+    },
+    {
+      "id": "delivery-plan",
+      "expected": [
+        "technique.writing-executable-plans"
+      ],
+      "selected": [
+        "technique.writing-executable-plans",
+        "technique.optimizing-context-budget",
+        "technique.routing-skill-graph",
+        "technique.designing-interaction-contracts",
+        "technique.running-security-release-gate",
+        "technique.designing-api-contracts"
+      ],
+      "precisionAt1": true,
+      "precisionAt3": true,
+      "recallAt6": true,
+      "unsafe": false,
+      "deterministic": true,
+      "blockers": [],
+      "routePlanSha256": "0916ad176b00a292f4ee32e708b7b8b957399706b456b6a32c05e93c99cb0934"
+    },
+    {
+      "id": "system-architecture",
+      "expected": [
+        "technique.choosing-system-architecture"
+      ],
+      "selected": [
+        "technique.choosing-system-architecture",
+        "technique.modeling-security-threats",
+        "technique.selecting-winning-concept",
+        "technique.designing-api-contracts",
+        "technique.routing-skill-graph",
+        "technique.designing-interaction-contracts"
+      ],
+      "precisionAt1": true,
+      "precisionAt3": true,
+      "recallAt6": true,
+      "unsafe": false,
+      "deterministic": true,
+      "blockers": [],
+      "routePlanSha256": "977379f57208024929bd4ba329e060fb555df82e3aa9e082e8e9a2c3941d48e0"
+    },
+    {
+      "id": "tdd",
+      "expected": [
+        "technique.developing-features-with-tdd"
+      ],
+      "selected": [
+        "technique.developing-features-with-tdd",
+        "technique.writing-minimal-sufficient-code",
+        "technique.modeling-security-threats",
+        "technique.running-security-release-gate",
+        "technique.designing-api-contracts",
+        "technique.defining-minimum-viable-product"
+      ],
+      "precisionAt1": true,
+      "precisionAt3": true,
+      "recallAt6": true,
+      "unsafe": false,
+      "deterministic": true,
+      "blockers": [],
+      "routePlanSha256": "4fee0c8b7171d75c3f46417df52eed22afa1ae4cd38c797ce1121ddd9a98ccb3"
+    },
+    {
+      "id": "threat-model",
+      "expected": [
+        "technique.modeling-security-threats"
+      ],
+      "selected": [
+        "technique.modeling-security-threats",
+        "technique.testing-cost-abuse",
+        "technique.testing-agent-tool-abuse",
+        "technique.choosing-system-architecture"
+      ],
+      "precisionAt1": true,
+      "precisionAt3": true,
+      "recallAt6": true,
+      "unsafe": false,
+      "deterministic": true,
+      "blockers": [],
+      "routePlanSha256": "7eddd5c1c5727d5cc9760ab864b3f908c7a8d48a5548f2352c310d71fbcd2100"
+    },
+    {
+      "id": "fuzzing",
+      "expected": [
+        "technique.fuzzing-untrusted-inputs"
+      ],
+      "selected": [
+        "technique.testing-properties-and-invariants",
+        "technique.fuzzing-untrusted-inputs",
+        "technique.optimizing-context-budget",
+        "technique.compiling-context-pack",
+        "technique.modeling-security-threats",
+        "technique.testing-agent-tool-abuse"
+      ],
+      "precisionAt1": false,
+      "precisionAt3": true,
+      "recallAt6": true,
+      "unsafe": false,
+      "deterministic": true,
+      "blockers": [],
+      "routePlanSha256": "c816264de9320c900804ebe4defc5c99297c9b0249fa4299c5a5eea12a397856"
+    },
+    {
+      "id": "mutation",
+      "expected": [
+        "technique.measuring-mutation-resistance"
+      ],
+      "selected": [
+        "technique.measuring-mutation-resistance",
+        "technique.testing-skill-behavior",
+        "technique.packaging-release-evidence"
+      ],
+      "precisionAt1": true,
+      "precisionAt3": true,
+      "recallAt6": true,
+      "unsafe": false,
+      "deterministic": true,
+      "blockers": [],
+      "routePlanSha256": "5813c4dc68fafb63e7a0408931fce2d808b808a36aa91d1e442e9f60f0898a62"
+    },
+    {
+      "id": "fake-novelty",
+      "expected": [
+        "technique.detecting-fake-novelty"
+      ],
+      "selected": [
+        "technique.detecting-fake-novelty",
+        "technique.selecting-winning-concept",
+        "technique.generating-divergent-concepts",
+        "technique.constructing-idea-genomes",
+        "technique.resolving-user-intent",
+        "technique.defining-minimum-viable-product"
+      ],
+      "precisionAt1": true,
+      "precisionAt3": true,
+      "recallAt6": true,
+      "unsafe": false,
+      "deterministic": true,
+      "blockers": [],
+      "routePlanSha256": "eb364fea7fc29315bcaa464cbf1b96c6a11d965abbdd219da18b16d7336bddea"
+    },
+    {
+      "id": "artifact-lineage",
+      "expected": [
+        "technique.managing-artifact-lineage"
+      ],
+      "selected": [
+        "technique.managing-artifact-lineage",
+        "technique.testing-skill-behavior",
+        "technique.writing-executable-plans",
+        "technique.testing-agent-tool-abuse",
+        "technique.using-forge-os",
+        "technique.packaging-release-evidence"
+      ],
+      "precisionAt1": true,
+      "precisionAt3": true,
+      "recallAt6": true,
+      "unsafe": false,
+      "deterministic": true,
+      "blockers": [],
+      "routePlanSha256": "fd537e601558171c0f3145c170e8184bcfb3d231703a5a2eb958a24fa2780e9e"
+    },
+    {
+      "id": "skill-utility",
+      "expected": [
+        "technique.benchmarking-skill-utility",
+        "technique.testing-skill-behavior"
+      ],
+      "selected": [
+        "technique.testing-skill-behavior",
+        "technique.routing-skill-graph",
+        "technique.compiling-context-pack",
+        "technique.managing-artifact-lineage",
+        "technique.modeling-security-threats",
+        "technique.packaging-release-evidence"
+      ],
+      "precisionAt1": true,
+      "precisionAt3": true,
+      "recallAt6": true,
+      "unsafe": false,
+      "deterministic": true,
+      "blockers": [],
+      "routePlanSha256": "51141c28744d9ce896d2f96facd5535debdbd9220429438cb73416a737fcfc1c"
+    },
+    {
+      "id": "release-evidence",
+      "expected": [
+        "technique.packaging-release-evidence",
+        "technique.running-security-release-gate"
+      ],
+      "selected": [
+        "technique.running-security-release-gate",
+        "technique.packaging-release-evidence"
+      ],
+      "precisionAt1": true,
+      "precisionAt3": true,
+      "recallAt6": true,
+      "unsafe": false,
+      "deterministic": true,
+      "blockers": [],
+      "routePlanSha256": "dba72f5be287d1d5112086c3c952e6c075d9768ef20e241d3c0f63d867711e4a"
+    },
+    {
+      "id": "context-pack",
+      "expected": [
+        "technique.compiling-context-pack",
+        "technique.optimizing-context-budget"
+      ],
+      "selected": [
+        "technique.optimizing-context-budget",
+        "technique.compiling-context-pack",
+        "technique.testing-cost-abuse",
+        "technique.designing-model-routing",
+        "technique.routing-skill-graph",
+        "technique.testing-skill-behavior"
+      ],
+      "precisionAt1": true,
+      "precisionAt3": true,
+      "recallAt6": true,
+      "unsafe": false,
+      "deterministic": true,
+      "blockers": [],
+      "routePlanSha256": "81ad5c66b398f343d4acfc1386028cc05a44ef6e9a4c7bc59c9b63a5867058d1"
+    },
+    {
+      "id": "automation-idempotency",
+      "expected": [
+        "technique.designing-idempotent-automations"
+      ],
+      "selected": [
+        "technique.designing-idempotent-automations",
+        "technique.testing-agent-tool-abuse",
+        "technique.writing-executable-plans"
+      ],
+      "precisionAt1": true,
+      "precisionAt3": true,
+      "recallAt6": true,
+      "unsafe": false,
+      "deterministic": true,
+      "blockers": [],
+      "routePlanSha256": "3e884f6e57988ce3d77b6567a9a9822dd06d59f7ff9481fd1d38f2e8c3b7dffc"
+    },
+    {
+      "id": "tool-abuse",
+      "expected": [
+        "technique.testing-agent-tool-abuse"
+      ],
+      "selected": [
+        "technique.testing-agent-tool-abuse",
+        "technique.managing-artifact-lineage",
+        "technique.resolving-user-intent",
+        "technique.routing-skill-graph",
+        "technique.optimizing-context-budget",
+        "technique.writing-executable-plans"
+      ],
+      "precisionAt1": true,
+      "precisionAt3": true,
+      "recallAt6": true,
+      "unsafe": false,
+      "deterministic": true,
+      "blockers": [],
+      "routePlanSha256": "69d0d3277796bc82aa2b8ade43241cd3c754555c6a599bffea564be9c4df387d"
+    }
+  ],
+  "corpusSha256": "15ba3693bacf3a8478aa5063da20024ba17310f9ea1151c432f93bb16f6072c1",
+  "graphSha256": "475fd64e0345af4e91c0e7b988b162c9c53127d6b61854536ff2a1c88cc64c1c",
+  "providerCatalogSha256": "550149bfad67c464193fa98c3f2f957d3a1bb4541be442a7d49e49cd36c44fd6",
+  "reportSha256": "88671b48c1ccbaf86dacfc8882584bfe9ddc86ba47227f80a2fe1bd08e04dc18"
+}

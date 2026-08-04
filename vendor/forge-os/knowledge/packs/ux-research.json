@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.ux-research",
+  "domain": "ux-research",
+  "title": "UX Research Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "interviews",
+    "usability",
+    "journeys",
+    "personas",
+    "behavior",
+    "accessibility",
+    "synthesis",
+    "experiments"
+  ],
+  "capabilities": [
+    "ux-research.map-landscape",
+    "ux-research.frame-problem",
+    "ux-research.research-users",
+    "ux-research.define-requirements",
+    "ux-research.model-domain",
+    "ux-research.compare-alternatives",
+    "ux-research.design-concept",
+    "ux-research.prototype-critical-flow",
+    "ux-research.validate-prototype",
+    "ux-research.design-architecture",
+    "ux-research.model-data",
+    "ux-research.model-threats",
+    "ux-research.plan-delivery",
+    "ux-research.implement-core",
+    "ux-research.integrate-dependencies",
+    "ux-research.verify-contracts",
+    "ux-research.test-boundaries",
+    "ux-research.test-resilience",
+    "ux-research.test-performance",
+    "ux-research.test-security",
+    "ux-research.audit-accessibility",
+    "ux-research.optimize-quality",
+    "ux-research.optimize-cost",
+    "ux-research.document-system",
+    "ux-research.prepare-migration",
+    "ux-research.plan-rollout",
+    "ux-research.instrument-observability",
+    "ux-research.operate-lifecycle",
+    "ux-research.respond-incidents",
+    "ux-research.govern-evolution",
+    "ux-research.measure-outcomes",
+    "ux-research.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "anthropic-skills",
+      "title": "Anthropic Agent Skills",
+      "url": "https://github.com/anthropics/skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "Mixed",
+        "mode": "link-only"
+      }
+    },
+    {
+      "id": "w3c-wcag",
+      "title": "W3C WCAG",
+      "url": "https://www.w3.org/WAI/standards-guidelines/wcag/",
+      "authority": "standards-body",
+      "trust": "verified",
+      "revision": "web:2026-07-25",
+      "license": {
+        "spdx": "W3C-Document",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

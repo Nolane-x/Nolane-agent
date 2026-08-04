@@ -1,0 +1,143 @@
+{
+  "name": "modeling-security-threats",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "security",
+  "domain": null,
+  "status": "stable",
+  "stages": [
+    "architecture"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "system-boundaries",
+    "product-definition"
+  ],
+  "produces": [
+    "threat-model"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:threat-model"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/security.md",
+  "method": {
+    "focus": "model assets, trust boundaries, actors, entry points, abuse cases, controls, and residual risk before implementation",
+    "steps": [
+      "Draw data and control flows across human, agent, tool, network, storage, and third-party boundaries.",
+      "Enumerate assets and attacker goals, including cost, privacy, integrity, availability, and model manipulation.",
+      "Apply threat categories to each boundary and state transition.",
+      "Map preventive, detective, and recovery controls to concrete tests and owners.",
+      "Prioritize by plausible impact and exposure; record residual risk and review triggers."
+    ],
+    "verification": [
+      "Does the model include the AI agent and tool outputs as untrusted?",
+      "Are cross-tenant and confused-deputy paths covered?",
+      "Are cost and supply-chain attacks represented?",
+      "Does every high risk map to a test or accepted residual risk?"
+    ],
+    "evidence": [
+      "threat model",
+      "abuse-case catalog",
+      "control-to-test matrix",
+      "residual-risk register"
+    ],
+    "traps": [
+      "checklist without system flows",
+      "ignoring insiders and automation",
+      "treating the model provider as trusted code"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Define assets, trust boundaries, actors, and abuse objectives.",
+    "Map the targeted control or attack surface.",
+    "Draw data and control flows across human, agent, tool, network, storage, and third-party boundaries.",
+    "Enumerate assets and attacker goals, including cost, privacy, integrity, availability, and model manipulation.",
+    "Apply threat categories to each boundary and state transition.",
+    "Map preventive, detective, and recovery controls to concrete tests and owners.",
+    "Prioritize by plausible impact and exposure; record residual risk and review triggers.",
+    "Construct authorized, reproducible adversarial cases.",
+    "Verify server-side enforcement and least privilege.",
+    "Record exploitability, impact, remediation, and residual risk.",
+    "Block release readiness for unresolved critical findings."
+  ],
+  "gate": {
+    "reviewerRole": "security-reviewer",
+    "rules": [
+      "The output directly and completely performs modeling security threats within its declared boundary.",
+      "Does the model include the AI agent and tool outputs as untrusted?",
+      "Are cross-tenant and confused-deputy paths covered?",
+      "Are cost and supply-chain attacks represented?",
+      "Does every high risk map to a test or accepted residual risk?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "threat-model"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "threat model",
+      "abuse-case catalog",
+      "control-to-test matrix",
+      "residual-risk register"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1643,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "checklist without system flows",
+    "ignoring insiders and automation",
+    "treating the model provider as trusted code"
+  ],
+  "optionalConsumes": [],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when modeling security threats is required during security work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

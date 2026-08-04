@@ -1,0 +1,20 @@
+[
+  {
+    "id": "explaining-route-decisions-positive",
+    "kind": "application",
+    "input": "A task requiring Explaining Route Decisions",
+    "expectedEvidence": [
+      "Explanation can be read in under one minute.",
+      "Every selected and rejected candidate is accounted for.",
+      "No private prompt or secret is disclosed."
+    ],
+    "baselineFailure": "Dumping raw score vectors without interpretation."
+  },
+  {
+    "id": "explaining-route-decisions-anti-trigger",
+    "kind": "counter-example",
+    "input": "no route has been compiled",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

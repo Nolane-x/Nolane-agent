@@ -1,0 +1,20 @@
+[
+  {
+    "id": "managing-artifact-lineage-positive",
+    "kind": "application",
+    "input": "A task requiring Managing Artifact Lineage",
+    "expectedEvidence": [
+      "The artifact graph remains acyclic.",
+      "Exactly one active version exists per typed slot.",
+      "Tampering with lifecycle metadata is detectable."
+    ],
+    "baselineFailure": "Treating hash as protection when metadata is outside the hash."
+  },
+  {
+    "id": "managing-artifact-lineage-anti-trigger",
+    "kind": "counter-example",
+    "input": "ephemeral notes with no downstream consumer",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

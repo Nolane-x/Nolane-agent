@@ -1,0 +1,38 @@
+[
+  {
+    "id": "certifying-platform-adapters-application",
+    "kind": "application",
+    "input": "Task directly requiring certifying platform adapters within meta lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "certifying-platform-adapters-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require certifying platform adapters within meta lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "certifying-platform-adapters-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "certifying-platform-adapters-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "certifying-platform-adapters-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "certifying-platform-adapters-transfer",
+    "kind": "transfer",
+    "input": "Apply the certifying-platform-adapters mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

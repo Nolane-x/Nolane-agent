@@ -1,0 +1,139 @@
+{
+  "name": "exploring-edge-users",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "creativity",
+  "domain": null,
+  "status": "candidate",
+  "stages": [
+    "divergence"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "creative-brief"
+  ],
+  "produces": [
+    "candidate-ideas"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:candidate-ideas"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/creativity.md",
+  "method": {
+    "focus": "exploring edge users within creativity lifecycle boundaries",
+    "source": "generated-specific",
+    "steps": [
+      "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by exploring edge users.",
+      "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to exploring edge users.",
+      "Apply exploring edge users only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+      "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+      "Create reproducible checks that would fail if exploring edge users were incomplete or implemented incorrectly."
+    ],
+    "verification": [
+      "Does the artifact make the owned decision for exploring edge users explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "evidence": [
+      "exploring-edge-users-decision-table",
+      "exploring-edge-users-verification-report",
+      "exploring-edge-users-handoff-envelope"
+    ],
+    "traps": [
+      "treating exploring edge users as a naming exercise",
+      "covering only the happy path",
+      "creating extension points without a current contract or consumer"
+    ]
+  },
+  "procedure": [
+    "Freeze the challenge, constraints, forbidden defaults, and evaluation frame.",
+    "Generate independent mechanism-level candidates before cross-contamination.",
+    "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by exploring edge users.",
+    "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to exploring edge users.",
+    "Apply exploring edge users only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+    "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+    "Create reproducible checks that would fail if exploring edge users were incomplete or implemented incorrectly.",
+    "Apply the named divergence or mutation operation.",
+    "Represent candidates as structured idea genomes.",
+    "Remove semantic duplicates and fake novelty.",
+    "Hand off distinct candidates without selecting a winner prematurely."
+  ],
+  "gate": {
+    "reviewerRole": "independent-reviewer",
+    "rules": [
+      "The output directly and completely performs exploring edge users within its declared boundary.",
+      "Does the artifact make the owned decision for exploring edge users explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "candidate-ideas"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "exploring-edge-users-decision-table",
+      "exploring-edge-users-verification-report",
+      "exploring-edge-users-handoff-envelope"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1847,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "treating exploring edge users as a naming exercise",
+    "covering only the happy path",
+    "creating extension points without a current contract or consumer"
+  ],
+  "optionalConsumes": [],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when exploring edge users is required during creativity work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

@@ -1,0 +1,285 @@
+{
+  "schemaVersion": 1,
+  "productVersion": "0.6.1",
+  "sourceCommit": "42c3b4a0fbdc7a4d5fc6f5e64a9d8f39afaba749",
+  "generatedAt": "2026-07-25T18:30:12.642Z",
+  "scope": "Local executable protocol checks and documentation presence; not external vendor certification.",
+  "capabilities": [
+    "typed-artifacts",
+    "artifact-lineage",
+    "risk-aware-routing",
+    "evidence-gates",
+    "mcp-tools",
+    "mcp-app-ui",
+    "a2a-discovery",
+    "agent-skills",
+    "human-approval-capabilities",
+    "behavioral-evals"
+  ],
+  "adapters": [
+    {
+      "id": "chatgpt",
+      "label": "ChatGPT",
+      "verification": "documentation",
+      "evidence": [
+        "adapters/chatgpt/README.md"
+      ],
+      "description": "MCP Apps integration guide; protocol behavior is tested separately, not vendor-certified.",
+      "status": "documented",
+      "checks": {
+        "evidenceFiles": true
+      }
+    },
+    {
+      "id": "codex",
+      "label": "Codex",
+      "verification": "executable",
+      "config": ".mcp.json",
+      "evidence": [
+        "adapters/codex/README.md",
+        "adapters/codex/AGENTS.md"
+      ],
+      "description": "Executable stdio MCP configuration plus repository instructions.",
+      "status": "pass",
+      "protocolVersion": "2025-11-25",
+      "toolCount": 50,
+      "checks": {
+        "processStarted": true,
+        "initialize": true,
+        "readyNotification": true,
+        "toolsList": true
+      }
+    },
+    {
+      "id": "claude-code",
+      "label": "Claude Code",
+      "verification": "executable",
+      "config": ".mcp.json",
+      "evidence": [
+        "adapters/claude-code/README.md",
+        ".claude-plugin/plugin.json"
+      ],
+      "description": "Executable stdio MCP configuration plus plugin packaging.",
+      "status": "pass",
+      "protocolVersion": "2025-11-25",
+      "toolCount": 50,
+      "checks": {
+        "processStarted": true,
+        "initialize": true,
+        "readyNotification": true,
+        "toolsList": true
+      }
+    },
+    {
+      "id": "cursor",
+      "label": "Cursor",
+      "verification": "executable",
+      "config": "adapters/cursor/mcp.json",
+      "evidence": [
+        "adapters/cursor/README.md"
+      ],
+      "description": "Executable project MCP configuration.",
+      "status": "pass",
+      "protocolVersion": "2025-11-25",
+      "toolCount": 50,
+      "checks": {
+        "processStarted": true,
+        "initialize": true,
+        "readyNotification": true,
+        "toolsList": true
+      }
+    },
+    {
+      "id": "opencode",
+      "label": "OpenCode",
+      "verification": "executable",
+      "config": "adapters/opencode/opencode.json",
+      "evidence": [
+        "adapters/opencode/README.md"
+      ],
+      "description": "Executable local MCP configuration.",
+      "status": "pass",
+      "protocolVersion": "2025-11-25",
+      "toolCount": 50,
+      "checks": {
+        "processStarted": true,
+        "initialize": true,
+        "readyNotification": true,
+        "toolsList": true
+      }
+    },
+    {
+      "id": "gemini-cli",
+      "label": "Gemini CLI",
+      "verification": "documentation",
+      "evidence": [
+        "adapters/gemini-cli/README.md",
+        "adapters/gemini-cli/GEMINI.md"
+      ],
+      "description": "Documented workflow; not executable in this repository's CI.",
+      "status": "documented",
+      "checks": {
+        "evidenceFiles": true
+      }
+    },
+    {
+      "id": "copilot-cli",
+      "label": "GitHub Copilot CLI",
+      "verification": "documentation",
+      "evidence": [
+        "adapters/copilot-cli/README.md",
+        "adapters/copilot-cli/AGENTS.md"
+      ],
+      "description": "Documented workflow; not executable in this repository's CI.",
+      "status": "documented",
+      "checks": {
+        "evidenceFiles": true
+      }
+    },
+    {
+      "id": "cline",
+      "label": "Cline",
+      "verification": "executable",
+      "config": "adapters/cline/mcp.json",
+      "evidence": [
+        "adapters/cline/README.md"
+      ],
+      "description": "Executable project MCP configuration.",
+      "status": "pass",
+      "protocolVersion": "2025-11-25",
+      "toolCount": 50,
+      "checks": {
+        "processStarted": true,
+        "initialize": true,
+        "readyNotification": true,
+        "toolsList": true
+      }
+    },
+    {
+      "id": "roo-code",
+      "label": "Roo Code",
+      "verification": "executable",
+      "config": "adapters/roo-code/mcp.json",
+      "evidence": [
+        "adapters/roo-code/README.md"
+      ],
+      "description": "Executable project MCP configuration.",
+      "status": "pass",
+      "protocolVersion": "2025-11-25",
+      "toolCount": 50,
+      "checks": {
+        "processStarted": true,
+        "initialize": true,
+        "readyNotification": true,
+        "toolsList": true
+      }
+    },
+    {
+      "id": "windsurf",
+      "label": "Windsurf",
+      "verification": "executable",
+      "config": "adapters/windsurf/mcp.json",
+      "evidence": [
+        "adapters/windsurf/README.md"
+      ],
+      "description": "Executable project MCP configuration.",
+      "status": "pass",
+      "protocolVersion": "2025-11-25",
+      "toolCount": 50,
+      "checks": {
+        "processStarted": true,
+        "initialize": true,
+        "readyNotification": true,
+        "toolsList": true
+      }
+    },
+    {
+      "id": "continue",
+      "label": "Continue",
+      "verification": "executable",
+      "config": "adapters/continue/mcp.json",
+      "evidence": [
+        "adapters/continue/README.md"
+      ],
+      "description": "Executable project MCP configuration.",
+      "status": "pass",
+      "protocolVersion": "2025-11-25",
+      "toolCount": 50,
+      "checks": {
+        "processStarted": true,
+        "initialize": true,
+        "readyNotification": true,
+        "toolsList": true
+      }
+    },
+    {
+      "id": "nolane_native",
+      "label": "NolaneNative Agent",
+      "verification": "documentation",
+      "evidence": [
+        "adapters/nolane_native/README.md",
+        "adapters/nolane_native/skills.json"
+      ],
+      "description": "Agent Skills and MCP integration guide.",
+      "status": "documented",
+      "checks": {
+        "evidenceFiles": true
+      }
+    },
+    {
+      "id": "openclaw",
+      "label": "OpenClaw",
+      "verification": "documentation",
+      "evidence": [
+        "adapters/openclaw/README.md",
+        "adapters/openclaw/skills.json"
+      ],
+      "description": "Agent Skills and MCP integration guide.",
+      "status": "documented",
+      "checks": {
+        "evidenceFiles": true
+      }
+    },
+    {
+      "id": "pi",
+      "label": "Pi",
+      "verification": "documentation",
+      "evidence": [
+        "adapters/pi/README.md",
+        "adapters/pi/AGENTS.md"
+      ],
+      "description": "Skill discovery and MCP integration guide.",
+      "status": "documented",
+      "checks": {
+        "evidenceFiles": true
+      }
+    },
+    {
+      "id": "generic",
+      "label": "Generic MCP Host",
+      "verification": "executable",
+      "config": ".mcp.json",
+      "evidence": [
+        "adapters/generic/README.md",
+        "adapters/generic/manifest.json"
+      ],
+      "description": "Portable stdio MCP contract; HTTP and A2A are verified by smoke tests.",
+      "status": "pass",
+      "protocolVersion": "2025-11-25",
+      "toolCount": 50,
+      "checks": {
+        "processStarted": true,
+        "initialize": true,
+        "readyNotification": true,
+        "toolsList": true
+      }
+    }
+  ],
+  "summary": {
+    "total": 15,
+    "executed": 9,
+    "documented": 6,
+    "passed": 9,
+    "failed": 0
+  }
+}

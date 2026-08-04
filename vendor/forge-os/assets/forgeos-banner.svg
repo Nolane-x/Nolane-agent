@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="520" viewBox="0 0 1600 520" role="img" aria-labelledby="title desc">
+<title id="title">ForgeOS</title><desc id="desc">Federated trust control plane for AI product engineering.</desc>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050816"/><stop offset=".48" stop-color="#111d3c"/><stop offset="1" stop-color="#281142"/></linearGradient>
+  <linearGradient id="glow" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#62e8ff"/><stop offset=".55" stop-color="#8aa2ff"/><stop offset="1" stop-color="#c47cff"/></linearGradient>
+  <filter id="blur"><feGaussianBlur stdDeviation="34"/></filter>
+  <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse"><path d="M44 0H0V44" fill="none" stroke="#8aa2ff" stroke-opacity=".08"/></pattern>
+</defs>
+<rect width="1600" height="520" rx="34" fill="url(#bg)"/><rect width="1600" height="520" rx="34" fill="url(#grid)"/>
+<circle cx="250" cy="60" r="190" fill="#2de2e6" fill-opacity=".14" filter="url(#blur)"/><circle cx="1390" cy="460" r="240" fill="#c47cff" fill-opacity=".15" filter="url(#blur)"/>
+<g transform="translate(115 95)"><rect width="92" height="92" rx="24" fill="none" stroke="url(#glow)" stroke-width="6"/><path d="M24 57L45 35l23 23M25 70h43" fill="none" stroke="url(#glow)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="69" cy="23" r="7" fill="#62e8ff"/></g>
+<text x="240" y="160" fill="#f8faff" font-family="Inter,Segoe UI,Arial,sans-serif" font-weight="800" font-size="86" letter-spacing="-4">ForgeOS</text>
+<text x="120" y="260" fill="url(#glow)" font-family="Inter,Segoe UI,Arial,sans-serif" font-weight="750" font-size="42">Resolve trusted capability. Build with agents. Ship with proof.</text>
+<text x="120" y="320" fill="#aebbd8" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24">1K typed capabilities · trusted providers · evidence-gated delivery.</text>
+<g transform="translate(120 385)" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="19" font-weight="700">
+  <rect width="190" height="54" rx="27" fill="#0d1529" stroke="#3b5478"/><text x="28" y="34" fill="#62e8ff">Skill Intelligence · 62 Deep Techniques</text>
+  <rect x="210" width="190" height="54" rx="27" fill="#0d1529" stroke="#3b5478"/><text x="244" y="34" fill="#89f0ba">Trust Kernel</text>
+  <rect x="420" width="190" height="54" rx="27" fill="#0d1529" stroke="#3b5478"/><text x="463" y="34" fill="#b79bff">MCP · A2A</text>
+  <rect x="630" width="390" height="54" rx="27" fill="#0d1529" stroke="#3b5478"/><text x="657" y="34" fill="#ffd166">Global Context · Deterministic Fabric · Federation</text>
+</g>
+</svg>

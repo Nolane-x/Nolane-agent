@@ -1,0 +1,145 @@
+{
+  "name": "designing-api-contracts",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "architecture",
+  "domain": null,
+  "status": "stable",
+  "stages": [
+    "architecture"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "system-boundaries",
+    "product-definition"
+  ],
+  "produces": [
+    "architecture-decision"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:architecture-decision"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/architecture.md",
+  "method": {
+    "focus": "define stable request, response, error, idempotency, authorization, pagination, versioning, and observability contracts before implementation",
+    "steps": [
+      "Map API operations to user and domain capabilities rather than database tables.",
+      "Define schemas, constraints, examples, errors, side effects, authorization, and idempotency semantics.",
+      "Specify pagination, filtering, concurrency control, rate limits, retries, and backward compatibility.",
+      "Generate consumer and provider contract tests from the same specification.",
+      "Review sensitive fields, tenant boundaries, and logging behavior before implementation."
+    ],
+    "verification": [
+      "Can a client recover from every documented error?",
+      "Are retries safe and duplicate requests defined?",
+      "Does authorization apply to each object and action?",
+      "Can an old client continue after a compatible server change?"
+    ],
+    "evidence": [
+      "API specification",
+      "contract tests",
+      "error catalog",
+      "compatibility report"
+    ],
+    "traps": [
+      "CRUD-shaped APIs",
+      "undocumented 500 responses",
+      "breaking optional fields"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Read product capabilities, quality attributes, and domain constraints.",
+    "Define boundaries and stable contracts before implementation details.",
+    "Map API operations to user and domain capabilities rather than database tables.",
+    "Define schemas, constraints, examples, errors, side effects, authorization, and idempotency semantics.",
+    "Specify pagination, filtering, concurrency control, rate limits, retries, and backward compatibility.",
+    "Generate consumer and provider contract tests from the same specification.",
+    "Review sensitive fields, tenant boundaries, and logging behavior before implementation.",
+    "Model data, failures, extension points, and operational behavior.",
+    "Evaluate at least two viable alternatives and trade-offs.",
+    "Threat-model the selected design and its dependencies.",
+    "Publish an architecture decision with validation evidence."
+  ],
+  "gate": {
+    "reviewerRole": "independent-reviewer",
+    "rules": [
+      "The output directly and completely performs designing api contracts within its declared boundary.",
+      "Can a client recover from every documented error?",
+      "Are retries safe and duplicate requests defined?",
+      "Does authorization apply to each object and action?",
+      "Can an old client continue after a compatible server change?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "architecture-decision"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "API specification",
+      "contract tests",
+      "error catalog",
+      "compatibility report"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1649,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "CRUD-shaped APIs",
+    "undocumented 500 responses",
+    "breaking optional fields"
+  ],
+  "optionalConsumes": [
+    "ux-contract",
+    "domain-blueprint"
+  ],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when designing api contracts is required during architecture work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

@@ -1,0 +1,290 @@
+{
+  "schemaVersion": 2,
+  "id": "modeling-security-threats",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "stable",
+  "identity": {
+    "title": "Modeling Security Threats",
+    "description": "Use when model assets, trust boundaries, actors, entry points, abuse cases, controls, and residual risk before implementation, especially when does the model include the AI agent and tool outputs as untrusted?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "security"
+    ],
+    "keywords": [
+      "modeling-security-threats",
+      "model",
+      "assets",
+      "trust",
+      "boundaries",
+      "actors",
+      "entry",
+      "points",
+      "abuse"
+    ],
+    "antiTriggers": [
+      "a cosmetic UI change with no trust-boundary impact",
+      "a vulnerability already reproduced and ready for remediation"
+    ]
+  },
+  "relations": {
+    "requires": [
+      "system-boundaries",
+      "product-definition"
+    ],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "system-boundaries",
+        "schema": "artifact://forgeos/system-boundaries/v1"
+      },
+      {
+        "type": "product-definition",
+        "schema": "artifact://forgeos/product-definition/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "threat-model",
+        "schema": "artifact://forgeos/threat-model/v1"
+      }
+    ],
+    "invariants": [
+      "Output remains within the modeling-security-threats responsibility boundary",
+      "Every pass claim is backed by current trusted evidence"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Draw data and control flows across human, agent, tool, network, storage, and third-party boundaries.",
+        "evidence": "threat model"
+      },
+      {
+        "id": "step-2",
+        "action": "Enumerate assets and attacker goals, including cost, privacy, integrity, availability, and model manipulation.",
+        "evidence": "abuse-case catalog"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply threat categories to each boundary and state transition.",
+        "evidence": "control-to-test matrix"
+      },
+      {
+        "id": "step-4",
+        "action": "Map preventive, detective, and recovery controls to concrete tests and owners.",
+        "evidence": "residual-risk register"
+      },
+      {
+        "id": "step-5",
+        "action": "Prioritize by plausible impact and exposure; record residual risk and review triggers.",
+        "evidence": "residual-risk register"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required tool, input, or approval is unavailable",
+        "action": "stop and record a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the model include the AI agent and tool outputs as untrusted?",
+      "Are cross-tenant and confused-deputy paths covered?",
+      "Are cost and supply-chain attacks represented?",
+      "Does every high risk map to a test or accepted residual risk?"
+    ],
+    "reviewerRole": "security-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "threat model",
+      "abuse-case catalog",
+      "control-to-test matrix",
+      "residual-risk register"
+    ],
+    "evaluatorIds": [
+      "modeling-security-threats-evaluator"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 660,
+    "hardTokens": 1081,
+    "outputReserveTokens": 270
+  },
+  "quality": {
+    "benchmarkIds": [
+      "v04-modeling-security-threats-behavior"
+    ],
+    "minimumSkillDepthScore": 82,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2"
+  ],
+  "capabilityMappings": [
+    {
+      "capabilityId": "cybersecurity.model-threats",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:modeling-security-threats",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "software-architecture.model-threats",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:modeling-security-threats",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.modeling-security-threats",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:modeling-security-threats",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "9c31e65b9bf8328b4ca70519b2de4e53a2abc0f6fffde0d008112b3f8b429ed1",
+        "bytes": 910,
+        "tokens": {
+          "gpt-5.6": 245,
+          "claude-opus-4.2": 257,
+          "gemini-3.0-pro": 234,
+          "qwen3.5-32b": 272
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "3772f3f147a604e7090d168b9d96af295473ae1410953333a06838e3c76d320a",
+        "bytes": 823,
+        "tokens": {
+          "gpt-5.6": 222,
+          "claude-opus-4.2": 232,
+          "gemini-3.0-pro": 212,
+          "qwen3.5-32b": 246
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "f9bfe6ef36de59d9db6341e6221b617221c90ebbc72b538c413f967f5f21581a",
+        "bytes": 346,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 98,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 104
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "58967b029057118fa3cee052de8322591ddfed547003be22b3c151b593b7a66d",
+        "bytes": 358,
+        "tokens": {
+          "gpt-5.6": 97,
+          "claude-opus-4.2": 101,
+          "gemini-3.0-pro": 92,
+          "qwen3.5-32b": 107
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "8a45b98370eeac1fdf58384927c1311c2be8243a6640f7ee0ff8da0a06cb7343",
+        "bytes": 287,
+        "tokens": {
+          "gpt-5.6": 78,
+          "claude-opus-4.2": 81,
+          "gemini-3.0-pro": 74,
+          "qwen3.5-32b": 86
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "50126d8bec373903372eb49b613e653008be0232adef31737900f52457074e2b",
+        "bytes": 329,
+        "tokens": {
+          "gpt-5.6": 89,
+          "claude-opus-4.2": 93,
+          "gemini-3.0-pro": 85,
+          "qwen3.5-32b": 99
+        }
+      }
+    ],
+    "indexSha256": "cdf52b505480b92cec618d33eb6fe43b14a52e9e4272d7b0fa8ee6ebd47b6525"
+  },
+  "manifestSha256": "08a5a9223c476aab74306f70dd22b16a95872744672fb35232c03ffd9dc72d8d",
+  "kernelLevel": "L1"
+}

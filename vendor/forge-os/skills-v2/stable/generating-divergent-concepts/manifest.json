@@ -1,0 +1,285 @@
+{
+  "schemaVersion": 2,
+  "id": "generating-divergent-concepts",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "stable",
+  "identity": {
+    "title": "Generating Divergent Concepts",
+    "description": "Use when produce mechanism-distinct concepts while delaying cross-agent anchoring and selection, especially when do candidates differ in causal mechanism rather than wording?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "creativity"
+    ],
+    "keywords": [
+      "generating-divergent-concepts",
+      "produce",
+      "mechanism",
+      "distinct",
+      "concepts",
+      "while",
+      "delaying",
+      "cross",
+      "agent"
+    ],
+    "antiTriggers": [
+      "a confirmed implementation plan",
+      "a task where only one legally valid solution exists"
+    ]
+  },
+  "relations": {
+    "requires": [
+      "creative-brief"
+    ],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "creative-brief",
+        "schema": "artifact://forgeos/creative-brief/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "candidate-ideas",
+        "schema": "artifact://forgeos/candidate-ideas/v1"
+      }
+    ],
+    "invariants": [
+      "Output remains within the generating-divergent-concepts responsibility boundary",
+      "Every pass claim is backed by current trusted evidence"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Freeze the creative brief, forbidden defaults, resource limits, and evaluation frame.",
+        "evidence": "idea genomes"
+      },
+      {
+        "id": "step-2",
+        "action": "Dispatch independent lenses that cannot see one another’s candidates during the first pass.",
+        "evidence": "lens provenance"
+      },
+      {
+        "id": "step-3",
+        "action": "Require each candidate to specify user, hidden problem, trigger, mechanism, interface, incentive, distribution, assumptions, and cheapest experiment.",
+        "evidence": "semantic clusters"
+      },
+      {
+        "id": "step-4",
+        "action": "Force a second pass through inversion, removal, extreme constraints, and cross-domain mechanism transfer.",
+        "evidence": "forbidden-pattern report"
+      },
+      {
+        "id": "step-5",
+        "action": "Cluster by mechanism and regenerate any region represented only by naming or feature variation.",
+        "evidence": "forbidden-pattern report"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required tool, input, or approval is unavailable",
+        "action": "stop and record a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Do candidates differ in causal mechanism rather than wording?",
+      "Did any candidate merely add AI, automation, or gamification?",
+      "Were independent branches preserved before synthesis?",
+      "Can every candidate be falsified cheaply?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "idea genomes",
+      "lens provenance",
+      "semantic clusters",
+      "forbidden-pattern report"
+    ],
+    "evaluatorIds": [
+      "generating-divergent-concepts-evaluator"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 666,
+    "hardTokens": 1087,
+    "outputReserveTokens": 271
+  },
+  "quality": {
+    "benchmarkIds": [
+      "v04-generating-divergent-concepts-behavior"
+    ],
+    "minimumSkillDepthScore": 82,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2"
+  ],
+  "capabilityMappings": [
+    {
+      "capabilityId": "product-management.compare-alternatives",
+      "fitScore": 98,
+      "mappingEvidence": "reviewed:v0.5:generating-divergent-concepts",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "product-management.design-concept",
+      "fitScore": 98,
+      "mappingEvidence": "reviewed:v0.5:generating-divergent-concepts",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.generating-divergent-concepts",
+      "fitScore": 98,
+      "mappingEvidence": "reviewed:v0.5:generating-divergent-concepts",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "87dc405b06373a2af692d23febeeb7f9b950e08744f4b1d39da7e27dcdd7b2ad",
+        "bytes": 825,
+        "tokens": {
+          "gpt-5.6": 222,
+          "claude-opus-4.2": 233,
+          "gemini-3.0-pro": 212,
+          "qwen3.5-32b": 247
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "d0d0f39b2d47f47ec40c39662a8bb6fcd30c2592542d829582579e0e78dba5ea",
+        "bytes": 946,
+        "tokens": {
+          "gpt-5.6": 255,
+          "claude-opus-4.2": 267,
+          "gemini-3.0-pro": 243,
+          "qwen3.5-32b": 283
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "f9bfe6ef36de59d9db6341e6221b617221c90ebbc72b538c413f967f5f21581a",
+        "bytes": 346,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 98,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 104
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "0a71912f67af6e33a40650a703b94419c82b43df4cb7dcae7c8366f48841fa5b",
+        "bytes": 344,
+        "tokens": {
+          "gpt-5.6": 93,
+          "claude-opus-4.2": 97,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 103
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "466cfc4f58ffedf06d6187674f13c9f195ba98ed504afcacdcc7b4d1c41662ec",
+        "bytes": 281,
+        "tokens": {
+          "gpt-5.6": 76,
+          "claude-opus-4.2": 80,
+          "gemini-3.0-pro": 73,
+          "qwen3.5-32b": 84
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "8c5ed0b87071a5d10a9bcb6bb00d7705dfde51855e8f529e04d24d0010a5ff1d",
+        "bytes": 336,
+        "tokens": {
+          "gpt-5.6": 91,
+          "claude-opus-4.2": 95,
+          "gemini-3.0-pro": 87,
+          "qwen3.5-32b": 101
+        }
+      }
+    ],
+    "indexSha256": "01e48020c0e5ff570c20432c060e7b1b323e70f710deda4b1bd00173058f135f"
+  },
+  "manifestSha256": "bc30c43db2054c4a4993d52672e84bd8619406dbe9d5e3236720b1bd3323e395",
+  "kernelLevel": "L1"
+}

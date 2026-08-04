@@ -1,0 +1,145 @@
+{
+  "name": "running-product-go-no-go",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "product",
+  "domain": null,
+  "status": "candidate",
+  "stages": [
+    "product-definition"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "selected-concept"
+  ],
+  "produces": [
+    "product-definition",
+    "product-thesis",
+    "capability-map"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:product-definition",
+    "downstream:product-thesis",
+    "downstream:capability-map"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/product.md",
+  "method": {
+    "focus": "running product go no go within product lifecycle boundaries",
+    "source": "generated-specific",
+    "steps": [
+      "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by running product go no go.",
+      "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to running product go no go.",
+      "Apply running product go no go only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+      "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+      "Create reproducible checks that would fail if running product go no go were incomplete or implemented incorrectly."
+    ],
+    "verification": [
+      "Does the artifact make the owned decision for running product go no go explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "evidence": [
+      "running-product-go-no-go-decision-table",
+      "running-product-go-no-go-verification-report",
+      "running-product-go-no-go-handoff-envelope"
+    ],
+    "traps": [
+      "treating running product go no go as a naming exercise",
+      "covering only the happy path",
+      "creating extension points without a current contract or consumer"
+    ]
+  },
+  "procedure": [
+    "Read confirmed evidence, selected concept, and unresolved assumptions.",
+    "Define the product decision this skill owns.",
+    "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by running product go no go.",
+    "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to running product go no go.",
+    "Apply running product go no go only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+    "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+    "Create reproducible checks that would fail if running product go no go were incomplete or implemented incorrectly.",
+    "Model alternatives and explicit trade-offs.",
+    "Choose a testable position with non-goals.",
+    "Trace the decision to users, value, risks, and metrics.",
+    "Publish the decision artifact and downstream invalidations."
+  ],
+  "gate": {
+    "reviewerRole": "independent-reviewer",
+    "rules": [
+      "The output directly and completely performs running product go no go within its declared boundary.",
+      "Does the artifact make the owned decision for running product go no go explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "product-definition",
+        "product-thesis",
+        "capability-map"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "running-product-go-no-go-decision-table",
+      "running-product-go-no-go-verification-report",
+      "running-product-go-no-go-handoff-envelope"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1877,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "treating running product go no go as a naming exercise",
+    "covering only the happy path",
+    "creating extension points without a current contract or consumer"
+  ],
+  "optionalConsumes": [],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when running product go no go is required during product work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

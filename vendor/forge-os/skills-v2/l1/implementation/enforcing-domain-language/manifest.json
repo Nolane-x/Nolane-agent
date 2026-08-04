@@ -1,0 +1,308 @@
+{
+  "schemaVersion": 2,
+  "id": "enforcing-domain-language",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Enforcing Domain Language",
+    "description": "Use when enforcing domain language within implementation lifecycle boundaries, especially when does the artifact make the owned decision for enforcing domain language explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "implementation"
+    ],
+    "keywords": [
+      "enforcing-domain-language",
+      "enforcing",
+      "domain",
+      "language",
+      "within",
+      "implementation",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require enforcing domain language within implementation lifecycle boundaries",
+      "the typed inputs for enforcing-domain-language are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "execution-plan",
+        "schema": "artifact://forgeos/execution-plan/v1"
+      },
+      {
+        "type": "acceptance-contracts",
+        "schema": "artifact://forgeos/acceptance-contracts/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "implemented-increment",
+        "schema": "artifact://forgeos/implemented-increment/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for enforcing domain language explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [
+      "filesystem",
+      "shell"
+    ],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by enforcing domain language.",
+        "evidence": "enforcing-domain-language-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to enforcing domain language.",
+        "evidence": "enforcing-domain-language-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply enforcing domain language only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "enforcing-domain-language-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "enforcing-domain-language-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if enforcing domain language were incomplete or implemented incorrectly.",
+        "evidence": "enforcing-domain-language-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for enforcing domain language explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "enforcing-domain-language-decision-table",
+      "enforcing-domain-language-verification-report",
+      "enforcing-domain-language-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "enforcing-domain-language-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 703,
+    "hardTokens": 1098,
+    "outputReserveTokens": 274
+  },
+  "quality": {
+    "benchmarkIds": [
+      "enforcing-domain-language-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "backend-engineering.implement-core",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:enforcing-domain-language",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "fc908b8363052edb124e6e8badb1b31da669e361ac99ba38d8547e0519729a88",
+        "bytes": 948,
+        "tokens": {
+          "gpt-5.6": 255,
+          "claude-opus-4.2": 268,
+          "gemini-3.0-pro": 244,
+          "qwen3.5-32b": 283
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "df8455676894e10c8b33e7eeae31848ff5ff5ccab0d7134c57fd30a51d1fd323",
+        "bytes": 706,
+        "tokens": {
+          "gpt-5.6": 190,
+          "claude-opus-4.2": 199,
+          "gemini-3.0-pro": 182,
+          "qwen3.5-32b": 211
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "b888517777035c6198907b82ac5b52d2aaeba0ea16740395b7cced486fd65d44",
+        "bytes": 301,
+        "tokens": {
+          "gpt-5.6": 81,
+          "claude-opus-4.2": 85,
+          "gemini-3.0-pro": 78,
+          "qwen3.5-32b": 90
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "2a84c77086afa1ba17a2629791f810f92c03dbee382a756ba0ffb2b58370fb3a",
+        "bytes": 601,
+        "tokens": {
+          "gpt-5.6": 162,
+          "claude-opus-4.2": 170,
+          "gemini-3.0-pro": 155,
+          "qwen3.5-32b": 180
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "a4cdd60c8022737fc750257356a015b86052199c5129854af9b9d566125dea37",
+        "bytes": 329,
+        "tokens": {
+          "gpt-5.6": 89,
+          "claude-opus-4.2": 93,
+          "gemini-3.0-pro": 85,
+          "qwen3.5-32b": 99
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "50259666782f15d3700c5f956fc33823a4bcabf8d4eac62b77aacaccc8124286",
+        "bytes": 239,
+        "tokens": {
+          "gpt-5.6": 65,
+          "claude-opus-4.2": 68,
+          "gemini-3.0-pro": 62,
+          "qwen3.5-32b": 72
+        }
+      }
+    ],
+    "indexSha256": "5ab8f75e66648156ea0922998c1fb3a29c97d90418c7dd0de1b4b484026d777a"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "e957dd8b52c8f6d8f2a76f476476cf69163d9c1a2480e2eacf947ea34b55d5f2"
+}

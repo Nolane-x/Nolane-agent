@@ -1,0 +1,309 @@
+{
+  "schemaVersion": 2,
+  "id": "assigning-agent-work",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Assigning Agent Work",
+    "description": "Use when assigning agent work within planning lifecycle boundaries, especially when does the artifact make the owned decision for assigning agent work explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "planning"
+    ],
+    "keywords": [
+      "assigning-agent-work",
+      "assigning",
+      "agent",
+      "work",
+      "within",
+      "planning",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require assigning agent work within planning lifecycle boundaries",
+      "the typed inputs for assigning-agent-work are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "architecture-decision",
+        "schema": "artifact://forgeos/architecture-decision/v1"
+      },
+      {
+        "type": "threat-model",
+        "schema": "artifact://forgeos/threat-model/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "execution-plan",
+        "schema": "artifact://forgeos/execution-plan/v1"
+      },
+      {
+        "type": "acceptance-contracts",
+        "schema": "artifact://forgeos/acceptance-contracts/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for assigning agent work explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by assigning agent work.",
+        "evidence": "assigning-agent-work-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to assigning agent work.",
+        "evidence": "assigning-agent-work-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply assigning agent work only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "assigning-agent-work-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "assigning-agent-work-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if assigning agent work were incomplete or implemented incorrectly.",
+        "evidence": "assigning-agent-work-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for assigning agent work explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "assigning-agent-work-decision-table",
+      "assigning-agent-work-verification-report",
+      "assigning-agent-work-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "assigning-agent-work-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 679,
+    "hardTokens": 1070,
+    "outputReserveTokens": 267
+  },
+  "quality": {
+    "benchmarkIds": [
+      "assigning-agent-work-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "product-management.plan-delivery",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:assigning-agent-work",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "0b1608d9d59624405f05eb03a8cb6f510c948b43de91743dc019e148da79b99d",
+        "bytes": 895,
+        "tokens": {
+          "gpt-5.6": 241,
+          "claude-opus-4.2": 253,
+          "gemini-3.0-pro": 230,
+          "qwen3.5-32b": 268
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "c1d8aa494d6aa072fb5dd3e8010310b1a955846ce70e293b7f6dd5b7a7cb81b7",
+        "bytes": 686,
+        "tokens": {
+          "gpt-5.6": 185,
+          "claude-opus-4.2": 194,
+          "gemini-3.0-pro": 176,
+          "qwen3.5-32b": 205
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "af608013001f0e58c2320955534e10b9a25ed87114d6f574c90e595ac1f13679",
+        "bytes": 296,
+        "tokens": {
+          "gpt-5.6": 80,
+          "claude-opus-4.2": 84,
+          "gemini-3.0-pro": 76,
+          "qwen3.5-32b": 89
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "6408a187f832d2e782c737d1b2522e81f6f97d6a7f1bc40ea62b70390d2dddfc",
+        "bytes": 581,
+        "tokens": {
+          "gpt-5.6": 157,
+          "claude-opus-4.2": 164,
+          "gemini-3.0-pro": 149,
+          "qwen3.5-32b": 174
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "6980cc701c1b3238918b106449cea26459a6cb6c5f93647fb326caf0eef0b8ec",
+        "bytes": 324,
+        "tokens": {
+          "gpt-5.6": 88,
+          "claude-opus-4.2": 92,
+          "gemini-3.0-pro": 84,
+          "qwen3.5-32b": 97
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "8f0331f431327201e5a5ac646a547900434d1115bf94a9df423137e4b55e59d4",
+        "bytes": 234,
+        "tokens": {
+          "gpt-5.6": 63,
+          "claude-opus-4.2": 66,
+          "gemini-3.0-pro": 60,
+          "qwen3.5-32b": 70
+        }
+      }
+    ],
+    "indexSha256": "8fe95a74347858050533b81796f262e0e82a730d8dcaff25ff96cb3bdfc8e109"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "8c55309386155507f6b97f3b8519772dba799a06b40241e2e78d0b7d0b7b62a4"
+}

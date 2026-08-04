@@ -1,0 +1,307 @@
+{
+  "schemaVersion": 2,
+  "id": "designing-responsive-experiences",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Designing Responsive Experiences",
+    "description": "Use when designing responsive experiences within ux lifecycle boundaries, especially when does the artifact make the owned decision for designing responsive experiences explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "ux"
+    ],
+    "keywords": [
+      "designing-responsive-experiences",
+      "designing",
+      "responsive",
+      "experiences",
+      "within",
+      "ux",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require designing responsive experiences within ux lifecycle boundaries",
+      "the typed inputs for designing-responsive-experiences are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "product-definition",
+        "schema": "artifact://forgeos/product-definition/v1"
+      },
+      {
+        "type": "user-workflows",
+        "schema": "artifact://forgeos/user-workflows/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "ux-contract",
+        "schema": "artifact://forgeos/ux-contract/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for designing responsive experiences explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": [
+      "browser"
+    ]
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by designing responsive experiences.",
+        "evidence": "designing-responsive-experiences-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to designing responsive experiences.",
+        "evidence": "designing-responsive-experiences-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply designing responsive experiences only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "designing-responsive-experiences-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "designing-responsive-experiences-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if designing responsive experiences were incomplete or implemented incorrectly.",
+        "evidence": "designing-responsive-experiences-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for designing responsive experiences explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "designing-responsive-experiences-decision-table",
+      "designing-responsive-experiences-verification-report",
+      "designing-responsive-experiences-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "designing-responsive-experiences-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 723,
+    "hardTokens": 1124,
+    "outputReserveTokens": 281
+  },
+  "quality": {
+    "benchmarkIds": [
+      "designing-responsive-experiences-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ux-research.research-users",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:designing-responsive-experiences",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "142a67089ebf5916b16d9de79483d06406e210e9badef5b7338cf38d4751aedc",
+        "bytes": 961,
+        "tokens": {
+          "gpt-5.6": 259,
+          "claude-opus-4.2": 271,
+          "gemini-3.0-pro": 247,
+          "qwen3.5-32b": 287
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "bc86ca89de7ef48da603f2395ee89b6f39044558cb017f04fd45ffc632a6efff",
+        "bytes": 734,
+        "tokens": {
+          "gpt-5.6": 198,
+          "claude-opus-4.2": 207,
+          "gemini-3.0-pro": 189,
+          "qwen3.5-32b": 220
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "cdca8e728055b99efe8275fc13a84704cecb64b9e941add4fbbb32e540cbe0b1",
+        "bytes": 308,
+        "tokens": {
+          "gpt-5.6": 83,
+          "claude-opus-4.2": 87,
+          "gemini-3.0-pro": 79,
+          "qwen3.5-32b": 92
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "a3ec56f639f7b9908449b5bea00f591a65582cbf523902ff6fafd125911f95c8",
+        "bytes": 629,
+        "tokens": {
+          "gpt-5.6": 170,
+          "claude-opus-4.2": 178,
+          "gemini-3.0-pro": 162,
+          "qwen3.5-32b": 188
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "4d2683b8817c9d6dbcd5fa8f510492778dba72bda3da090fb161f9ac5c0945de",
+        "bytes": 336,
+        "tokens": {
+          "gpt-5.6": 91,
+          "claude-opus-4.2": 95,
+          "gemini-3.0-pro": 87,
+          "qwen3.5-32b": 101
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "b85011439ce47f50c4dafafa5e26a75acbb9c85b33938e3b16af72443f85954a",
+        "bytes": 246,
+        "tokens": {
+          "gpt-5.6": 67,
+          "claude-opus-4.2": 70,
+          "gemini-3.0-pro": 64,
+          "qwen3.5-32b": 74
+        }
+      }
+    ],
+    "indexSha256": "8d2e1522e2f58324f29f5e4fa6de50ec1bb82467a8de72c255733e824ca3bf08"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "6b7ff6a158b21d7019bccd51e4b78da6f20c99cdbfa5e1f0bd7337b8246e498b"
+}

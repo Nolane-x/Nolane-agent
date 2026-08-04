@@ -1,0 +1,38 @@
+[
+  {
+    "id": "maintaining-prior-art-map-application",
+    "kind": "application",
+    "input": "Task directly requiring maintaining prior art map within research lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "maintaining-prior-art-map-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require maintaining prior art map within research lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "maintaining-prior-art-map-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "maintaining-prior-art-map-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "maintaining-prior-art-map-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "maintaining-prior-art-map-transfer",
+    "kind": "transfer",
+    "input": "Apply the maintaining-prior-art-map mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

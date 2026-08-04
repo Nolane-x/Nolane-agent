@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 2,
+  "id": "selecting-minimum-provider-set",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Selecting the Minimum Provider Set",
+    "description": "Use when a route has several procedural, knowledge, MCP, or tool providers and must choose the smallest trusted combination that satisfies all outputs and evidence obligations.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "kernel"
+    ],
+    "keywords": [
+      "selecting-minimum-provider-set",
+      "a",
+      "route",
+      "has",
+      "several",
+      "procedural",
+      "knowledge",
+      "mcp",
+      "or"
+    ],
+    "antiTriggers": [
+      "the selected technique has one mandatory provider",
+      "provider choice is fixed by tenant policy"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "project-state",
+        "schema": "artifact://forgeos/project-state/v2"
+      }
+    ],
+    "produces": [
+      {
+        "type": "provider-set",
+        "schema": "artifact://forgeos/provider-set/v1"
+      }
+    ],
+    "invariants": [
+      "No selected provider is redundant for the current route.",
+      "Knowledge mappings are not counted as procedural execution.",
+      "Credential scope is minimal."
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "confirmed intent and current semantic revision exist"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Filter by tenant, status, freshness, license, tools, and trust blockers.",
+        "evidence": "No selected provider is redundant for the current route."
+      },
+      {
+        "id": "step-2",
+        "action": "Build coverage sets for required outputs, evidence, and tool operations.",
+        "evidence": "Knowledge mappings are not counted as procedural execution."
+      },
+      {
+        "id": "step-3",
+        "action": "Solve for minimum provider coverage with conflict and token penalties.",
+        "evidence": "Credential scope is minimal."
+      },
+      {
+        "id": "step-4",
+        "action": "Record why each remaining provider was excluded.",
+        "evidence": "Credential scope is minimal."
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "provider-set is produced with current evidence or a blocker is recorded"
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "No selected provider is redundant for the current route.",
+      "Knowledge mappings are not counted as procedural execution.",
+      "Credential scope is minimal."
+    ],
+    "reviewerRole": "kernel-skill-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "behavioral-eval-receipt",
+      "context-receipt"
+    ],
+    "evaluatorIds": [
+      "selecting-minimum-provider-set-evaluator-v2"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 5,
+    "maxReferenceDepth": 2,
+    "targetTokens": 513,
+    "hardTokens": 898,
+    "outputReserveTokens": 256
+  },
+  "quality": {
+    "benchmarkIds": [
+      "selecting-minimum-provider-set-public-v1"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L0",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "coverage-ledger",
+      "typed-preconditions",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionability-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.optimize-cost",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:l0:selecting-minimum-provider-set",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.selecting-minimum-provider-set",
+      "fitScore": 100,
+      "mappingEvidence": "reviewed:l0:selecting-minimum-provider-set",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "a4bf29db24e08fdd8f0e31b8f50c261d5b88d10aa2fcc53a9b3d364608f7606f",
+        "bytes": 877,
+        "tokens": {
+          "gpt-5.6": 236,
+          "claude-opus-4.2": 248,
+          "gemini-3.0-pro": 225,
+          "qwen3.5-32b": 262
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "68cdbaf96e820c2c1d64808990ea734658228f2e6027518ce20aed26c929135c",
+        "bytes": 541,
+        "tokens": {
+          "gpt-5.6": 146,
+          "claude-opus-4.2": 153,
+          "gemini-3.0-pro": 139,
+          "qwen3.5-32b": 162
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "ce6b780e7111bd23302b7787a5ac03cd99f1711936b70d624202d73da690a469",
+        "bytes": 391,
+        "tokens": {
+          "gpt-5.6": 106,
+          "claude-opus-4.2": 111,
+          "gemini-3.0-pro": 101,
+          "qwen3.5-32b": 117
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "6901698e507ec48458c16cbeb568253571504328c712d4e0d2abe7298f5e5997",
+        "bytes": 249,
+        "tokens": {
+          "gpt-5.6": 67,
+          "claude-opus-4.2": 71,
+          "gemini-3.0-pro": 64,
+          "qwen3.5-32b": 75
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "69f666c19f6a7aecd550666651b3db35d42eb84cb6c73a694ad079aab7996eab",
+        "bytes": 212,
+        "tokens": {
+          "gpt-5.6": 57,
+          "claude-opus-4.2": 60,
+          "gemini-3.0-pro": 55,
+          "qwen3.5-32b": 64
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "8635aa40482942f4f29bd71bd3dc0b6b0ae85a3aa7379149524f84db0ee7ba79",
+        "bytes": 349,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 99,
+          "gemini-3.0-pro": 90,
+          "qwen3.5-32b": 105
+        }
+      }
+    ],
+    "indexSha256": "cfd146613fbde4b4b148d95d47df95dd59cccfd93b0ef62777909cadf91cd200"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "3ce6cb051f6415cd5821f1ac17b47535ecbb09510adb14de85dc8a017a05cefa"
+}

@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import path from 'node:path';import os from 'node:os';import {mkdtemp,rm} from 'node:fs/promises';
+import {verifyMissionCompletionRuntimeReadiness} from '../src/release/mission-completion-runtime-readiness-verifier.mjs';
+const ITEMS=['1.2','1.3','1.4','1.14','1.18','1.23','2.3','2.10','2.14','2.15','2.16','2.18','2.19','2.20','2.29','4.3','7.22','21.11','21.12','21.14'];
+test('mission completion runtime readiness release gate verifies all remaining partial items',async(t)=>{const out=await mkdtemp(path.join(os.tmpdir(),'forge-214-gate-'));t.after(()=>rm(out,{recursive:true,force:true}));const report=await verifyMissionCompletionRuntimeReadiness({rootDirectory:path.resolve('.'),version:'2.14.0',outputFile:path.join(out,'receipt.json')});assert.equal(report.status,'pass');assert.deepEqual(report.verifiedItems,ITEMS);assert.match(report.receiptSha256,/^[a-f0-9]{64}$/);});

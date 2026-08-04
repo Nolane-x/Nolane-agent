@@ -1,0 +1,259 @@
+[
+  {
+    "id": "forgeos-local",
+    "kind": "local-skills",
+    "authority": "local",
+    "trust": "local",
+    "title": "ForgeOS first-party skills",
+    "url": "https://github.com/forgeos/forge-os",
+    "revision": "release:v0.4.0",
+    "license": {
+      "spdx": "MIT",
+      "mode": "vendor-allowed"
+    },
+    "domains": [
+      "all"
+    ]
+  },
+  {
+    "id": "anthropic-skills",
+    "kind": "agent-skills-repository",
+    "authority": "vendor",
+    "trust": "discovery",
+    "title": "Anthropic Agent Skills",
+    "url": "https://github.com/anthropics/skills",
+    "revision": "resolve-on-sync",
+    "license": {
+      "spdx": "Mixed",
+      "mode": "link-only"
+    },
+    "domains": [
+      "design",
+      "documents",
+      "engineering",
+      "enterprise"
+    ]
+  },
+  {
+    "id": "superpowers",
+    "kind": "agent-skills-repository",
+    "authority": "community",
+    "trust": "discovery",
+    "title": "Superpowers",
+    "url": "https://github.com/obra/superpowers",
+    "revision": "resolve-on-sync",
+    "license": {
+      "spdx": "MIT",
+      "mode": "vendor-allowed"
+    },
+    "domains": [
+      "engineering",
+      "testing",
+      "planning"
+    ]
+  },
+  {
+    "id": "vercel-skills-cli",
+    "kind": "skills-cli-repository",
+    "authority": "vendor",
+    "trust": "discovery",
+    "title": "Vercel open agent skills ecosystem",
+    "url": "https://github.com/vercel-labs/skills",
+    "revision": "resolve-on-sync",
+    "license": {
+      "spdx": "MIT",
+      "mode": "vendor-allowed"
+    },
+    "domains": [
+      "engineering",
+      "design",
+      "platform"
+    ]
+  },
+  {
+    "id": "vercel-agent-skills",
+    "kind": "agent-skills-repository",
+    "authority": "vendor",
+    "trust": "discovery",
+    "title": "Vercel Agent Skills",
+    "url": "https://github.com/vercel-labs/agent-skills",
+    "revision": "resolve-on-sync",
+    "license": {
+      "spdx": "UNKNOWN",
+      "mode": "link-only"
+    },
+    "domains": [
+      "frontend-engineering",
+      "ui-design",
+      "ux-research"
+    ]
+  },
+  {
+    "id": "block-agent-skills",
+    "kind": "agent-skills-repository",
+    "authority": "vendor",
+    "trust": "discovery",
+    "title": "Block Agent Skills",
+    "url": "https://github.com/block/agent-skills",
+    "revision": "resolve-on-sync",
+    "license": {
+      "spdx": "Apache-2.0",
+      "mode": "vendor-allowed"
+    },
+    "domains": [
+      "engineering",
+      "business"
+    ]
+  },
+  {
+    "id": "google-skills",
+    "kind": "agent-skills-repository",
+    "authority": "vendor",
+    "trust": "discovery",
+    "title": "Google Agent Skills",
+    "url": "https://github.com/google/skills",
+    "revision": "resolve-on-sync",
+    "license": {
+      "spdx": "Apache-2.0",
+      "mode": "vendor-allowed"
+    },
+    "domains": [
+      "cloud-platforms",
+      "data-engineering",
+      "database-engineering",
+      "ai-agent-engineering",
+      "devops-sre"
+    ]
+  },
+  {
+    "id": "microsoft-skills",
+    "kind": "agent-skills-repository",
+    "authority": "vendor",
+    "trust": "discovery",
+    "title": "Microsoft Agent Skills",
+    "url": "https://github.com/microsoft/skills",
+    "revision": "resolve-on-sync",
+    "license": {
+      "spdx": "Mixed",
+      "mode": "link-only"
+    },
+    "domains": [
+      "cloud-platforms",
+      "ai-agent-engineering",
+      "api-integration",
+      "backend-engineering",
+      "devops-sre"
+    ]
+  },
+  {
+    "id": "nvidia-skills",
+    "kind": "agent-skills-repository",
+    "authority": "vendor",
+    "trust": "discovery",
+    "title": "NVIDIA Agent Skills",
+    "url": "https://github.com/NVIDIA/skills",
+    "revision": "resolve-on-sync",
+    "license": {
+      "spdx": "Mixed",
+      "mode": "link-only"
+    },
+    "domains": [
+      "ai",
+      "optimization",
+      "accelerated-computing",
+      "industrial-design",
+      "hardware-embedded",
+      "automation-robotics",
+      "physical-ai"
+    ]
+  },
+  {
+    "id": "qt-agent-skills",
+    "kind": "agent-skills-repository",
+    "authority": "vendor",
+    "trust": "discovery",
+    "title": "Qt AI Engineering Skills",
+    "url": "https://github.com/TheQtCompanyRnD/agent-skills",
+    "revision": "resolve-on-sync",
+    "license": {
+      "spdx": "Mixed",
+      "mode": "link-only"
+    },
+    "domains": [
+      "desktop",
+      "embedded",
+      "ui"
+    ]
+  },
+  {
+    "id": "mblode-agent-skills",
+    "kind": "agent-skills-repository",
+    "authority": "community",
+    "trust": "discovery",
+    "title": "Software shipping skills",
+    "url": "https://github.com/mblode/agent-skills",
+    "revision": "resolve-on-sync",
+    "license": {
+      "spdx": "MIT",
+      "mode": "vendor-allowed"
+    },
+    "domains": [
+      "engineering",
+      "design"
+    ]
+  },
+  {
+    "id": "peterhdd-agent-skills",
+    "kind": "agent-skills-repository",
+    "authority": "community",
+    "trust": "discovery",
+    "title": "Engineering agent skills",
+    "url": "https://github.com/PeterHdd/agent-skills",
+    "revision": "resolve-on-sync",
+    "license": {
+      "spdx": "MIT",
+      "mode": "vendor-allowed"
+    },
+    "domains": [
+      "engineering"
+    ]
+  },
+  {
+    "id": "simota-agent-skills",
+    "kind": "agent-skills-repository",
+    "authority": "community",
+    "trust": "discovery",
+    "title": "Specialized AI agent skills",
+    "url": "https://github.com/simota/agent-skills",
+    "revision": "resolve-on-sync",
+    "license": {
+      "spdx": "MIT",
+      "mode": "vendor-allowed"
+    },
+    "domains": [
+      "engineering",
+      "security",
+      "design",
+      "finops",
+      "compliance"
+    ]
+  },
+  {
+    "id": "neurofoo-agent-skills",
+    "kind": "agent-skills-repository",
+    "authority": "community",
+    "trust": "discovery",
+    "title": "Thinking framework skills",
+    "url": "https://github.com/neurofoo/agent-skills",
+    "revision": "resolve-on-sync",
+    "license": {
+      "spdx": "UNKNOWN",
+      "mode": "link-only"
+    },
+    "domains": [
+      "thinking",
+      "planning",
+      "creative"
+    ]
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "enforcing-domain-language-application",
+    "kind": "application",
+    "input": "Task directly requiring enforcing domain language within implementation lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "enforcing-domain-language-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require enforcing domain language within implementation lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "enforcing-domain-language-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "enforcing-domain-language-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "enforcing-domain-language-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "enforcing-domain-language-transfer",
+    "kind": "transfer",
+    "input": "Apply the enforcing-domain-language mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

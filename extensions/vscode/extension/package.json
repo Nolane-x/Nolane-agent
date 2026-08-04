@@ -1,0 +1,193 @@
+{
+  "name": "nolane-agent",
+  "displayName": "Nolane Agent",
+  "description": "Nolane Agent governed engineering client",
+  "version": "5.0.0-beta.6",
+  "publisher": "nolane-agent",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Machine Learning",
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "onCommand:nolane.connect",
+    "onView:nolane.tasks",
+    "onCommand:nolane.transferTaskLocal",
+    "onCommand:nolane.openWorktree",
+    "onCommand:nolane.showCollaboration",
+    "onCommand:nolane.reviewApprove",
+    "onCommand:nolane.steerPause",
+    "onCommand:nolane.steerResume",
+    "onCommand:nolane.showSecurityCertification"
+  ],
+  "main": "./dist/extension.js",
+  "nolaneAgentProtocolVersion": "0.8",
+  "contributes": {
+    "commands": [
+      {
+        "command": "nolane.connect",
+        "title": "Nolane Agent: Connect"
+      },
+      {
+        "command": "nolane.runTask",
+        "title": "Nolane Agent: Run Task"
+      },
+      {
+        "command": "nolane.pause",
+        "title": "Nolane Agent: Pause Task"
+      },
+      {
+        "command": "nolane.resume",
+        "title": "Nolane Agent: Resume Task"
+      },
+      {
+        "command": "nolane.stop",
+        "title": "Nolane Agent: Stop Task"
+      },
+      {
+        "command": "nolane.approve",
+        "title": "Nolane Agent: Approve Action"
+      },
+      {
+        "command": "nolane.reject",
+        "title": "Nolane Agent: Reject Action"
+      },
+      {
+        "command": "nolane.showDiff",
+        "title": "Nolane Agent: Show Diff"
+      },
+      {
+        "command": "nolane.showLogs",
+        "title": "Nolane Agent: Show Logs"
+      },
+      {
+        "command": "nolane.retry",
+        "title": "Nolane Agent: Retry Task"
+      },
+      {
+        "command": "nolane.refresh",
+        "title": "Nolane Agent: Refresh Tasks"
+      },
+      {
+        "command": "nolane.selectRun",
+        "title": "Nolane Agent: Select Run"
+      },
+      {
+        "command": "nolane.transferTaskLocal",
+        "title": "Nolane Agent: Transfer Task to Local"
+      },
+      {
+        "command": "nolane.openWorktree",
+        "title": "Nolane Agent: Open Task Worktree"
+      },
+      {
+        "command": "nolane.showCollaboration",
+        "title": "Nolane Agent: Show Collaboration State"
+      },
+      {
+        "command": "nolane.showSecurityCertification",
+        "title": "Nolane Agent: Show Security & Certification State"
+      },
+      {
+        "command": "nolane.reviewApprove",
+        "title": "Nolane Agent: Approve Review Item"
+      },
+      {
+        "command": "nolane.steerPause",
+        "title": "Nolane Agent: Steer Pause"
+      },
+      {
+        "command": "nolane.steerResume",
+        "title": "Nolane Agent: Steer Resume"
+      }
+    ],
+    "configuration": {
+      "title": "Nolane Agent",
+      "properties": {
+        "nolaneAgent.baseUrl": {
+          "type": "string",
+          "default": "http://127.0.0.1:8787",
+          "description": "Loopback or HTTPS Nolane Agent endpoint."
+        },
+        "nolaneAgent.organizationId": {
+          "type": "string",
+          "default": "local"
+        },
+        "nolaneAgent.workspaceId": {
+          "type": "string",
+          "default": "default"
+        },
+        "nolaneAgent.projectId": {
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "nolaneAgent",
+          "title": "Nolane Agent",
+          "icon": "media/nolane.svg"
+        }
+      ]
+    },
+    "views": {
+      "nolaneAgent": [
+        {
+          "id": "nolane.tasks",
+          "name": "Agent Tasks"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "nolane.refresh",
+          "when": "view == nolane.tasks",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "nolane.pause",
+          "when": "view == nolane.tasks && viewItem == nolaneAgentRun",
+          "group": "inline"
+        },
+        {
+          "command": "nolane.stop",
+          "when": "view == nolane.tasks && viewItem == nolaneAgentRun",
+          "group": "inline"
+        },
+        {
+          "command": "nolane.transferTaskLocal",
+          "when": "view == nolane.tasks && viewItem == nolaneAgentRun",
+          "group": "navigation@3"
+        },
+        {
+          "command": "nolane.openWorktree",
+          "when": "view == nolane.tasks && viewItem == nolaneAgentRun",
+          "group": "navigation@4"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.95.0",
+    "@vscode/vsce": "^3.2.1",
+    "typescript": "^5.7.2"
+  },
+  "license": "MIT",
+  "files": [
+    "dist/**",
+    "media/**",
+    "README.md"
+  ]
+}

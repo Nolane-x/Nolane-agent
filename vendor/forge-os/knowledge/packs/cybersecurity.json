@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.cybersecurity",
+  "domain": "cybersecurity",
+  "title": "Cybersecurity Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "threat modeling",
+    "identity",
+    "authorization",
+    "secrets",
+    "supply chain",
+    "abuse cases",
+    "incident response",
+    "privacy"
+  ],
+  "capabilities": [
+    "cybersecurity.map-landscape",
+    "cybersecurity.frame-problem",
+    "cybersecurity.research-users",
+    "cybersecurity.define-requirements",
+    "cybersecurity.model-domain",
+    "cybersecurity.compare-alternatives",
+    "cybersecurity.design-concept",
+    "cybersecurity.prototype-critical-flow",
+    "cybersecurity.validate-prototype",
+    "cybersecurity.design-architecture",
+    "cybersecurity.model-data",
+    "cybersecurity.model-threats",
+    "cybersecurity.plan-delivery",
+    "cybersecurity.implement-core",
+    "cybersecurity.integrate-dependencies",
+    "cybersecurity.verify-contracts",
+    "cybersecurity.test-boundaries",
+    "cybersecurity.test-resilience",
+    "cybersecurity.test-performance",
+    "cybersecurity.test-security",
+    "cybersecurity.audit-accessibility",
+    "cybersecurity.optimize-quality",
+    "cybersecurity.optimize-cost",
+    "cybersecurity.document-system",
+    "cybersecurity.prepare-migration",
+    "cybersecurity.plan-rollout",
+    "cybersecurity.instrument-observability",
+    "cybersecurity.operate-lifecycle",
+    "cybersecurity.respond-incidents",
+    "cybersecurity.govern-evolution",
+    "cybersecurity.measure-outcomes",
+    "cybersecurity.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "owasp-asvs",
+      "title": "OWASP ASVS",
+      "url": "https://owasp.org/www-project-application-security-verification-standard/",
+      "authority": "standards-body",
+      "trust": "verified",
+      "revision": "web:2026-07-25",
+      "license": {
+        "spdx": "CC-BY-SA-4.0",
+        "mode": "link-only"
+      }
+    },
+    {
+      "id": "nist-ssdf",
+      "title": "NIST Secure Software Development Framework",
+      "url": "https://csrc.nist.gov/projects/ssdf",
+      "authority": "standards-body",
+      "trust": "verified",
+      "revision": "web:2026-07-25",
+      "license": {
+        "spdx": "US-Government-Work",
+        "mode": "link-only"
+      }
+    },
+    {
+      "id": "openssf-scorecard",
+      "title": "OpenSSF Scorecard",
+      "url": "https://github.com/ossf/scorecard",
+      "authority": "standards-body",
+      "trust": "verified",
+      "revision": "release:current-2026-07-25",
+      "license": {
+        "spdx": "Apache-2.0",
+        "mode": "vendor-allowed"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

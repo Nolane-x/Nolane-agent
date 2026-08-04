@@ -1,0 +1,38 @@
+{
+  "schema": "nolane.checkpoint-14.execution-story-contract.v1",
+  "milestone": "Checkpoint 14 — Trust, Adoption & Autonomy",
+  "deliverySlice": "Foundation 3 — Unified Execution Story",
+  "baselineCommit": "8ae3281150cdf778593d8d9eca065bb99588fff4",
+  "implemented": [
+    "single-durable-event-ledger-projection",
+    "execution-story-event-schema",
+    "execution-story-phase-schema",
+    "mission-task-run-lane-correlation",
+    "privacy-redacted-event-normalization",
+    "level-specific-detail-projection",
+    "everyday-aggregate-activity-counts",
+    "workspace-phase-story",
+    "studio-file-command-test-details",
+    "expert-redacted-source-metadata",
+    "story-phase-aggregation",
+    "cursor-based-replay",
+    "immutable-story-export-receipt",
+    "progressive-activity-story-ui"
+  ],
+  "requiredRoutes": [
+    "GET /api/execution-story",
+    "GET /api/execution-story/export"
+  ],
+  "requiredSchemas": [
+    "nolane.execution-story.v1",
+    "nolane.execution-story-event.v1",
+    "nolane.execution-story-phase.v1",
+    "nolane.execution-story-export.v1"
+  ],
+  "externalOrLaterGates": [
+    "full-event-source-adapter-certification",
+    "long-duration-story-ledger-dogfood",
+    "cross-device-story-sync",
+    "external-accessibility-audit"
+  ]
+}

@@ -1,0 +1,3 @@
+#!/usr/bin/env node
+import { mkdir, writeFile } from 'node:fs/promises'; import path from 'node:path';
+const output=path.resolve('docs/ui-v3/performance-baseline.json');const report={schema:'nolane.ui.performance-baseline.v1',status:'pending-external',machine:{os:'pending',ramGb:8,description:'Windows 11 x64 reference machine not attached'},metrics:null,windows8GbCertified:false,nonClaim:'No synthetic or zero measurements are accepted as Windows certification.'};await mkdir(path.dirname(output),{recursive:true});await writeFile(output,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));

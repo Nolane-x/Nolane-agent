@@ -1,0 +1,307 @@
+{
+  "schemaVersion": 2,
+  "id": "designing-unit-tests",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Designing Unit Tests",
+    "description": "Use when designing unit tests within quality lifecycle boundaries, especially when does the artifact make the owned decision for designing unit tests explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "quality"
+    ],
+    "keywords": [
+      "designing-unit-tests",
+      "designing",
+      "unit",
+      "tests",
+      "within",
+      "quality",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require designing unit tests within quality lifecycle boundaries",
+      "the typed inputs for designing-unit-tests are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "verified-build",
+        "schema": "artifact://forgeos/verified-build/v1"
+      },
+      {
+        "type": "acceptance-contracts",
+        "schema": "artifact://forgeos/acceptance-contracts/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "test-plan",
+        "schema": "artifact://forgeos/test-plan/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for designing unit tests explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [
+      "test-runner"
+    ],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by designing unit tests.",
+        "evidence": "designing-unit-tests-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to designing unit tests.",
+        "evidence": "designing-unit-tests-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply designing unit tests only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "designing-unit-tests-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "designing-unit-tests-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if designing unit tests were incomplete or implemented incorrectly.",
+        "evidence": "designing-unit-tests-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for designing unit tests explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "quality-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "designing-unit-tests-decision-table",
+      "designing-unit-tests-verification-report",
+      "designing-unit-tests-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "designing-unit-tests-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 678,
+    "hardTokens": 1069,
+    "outputReserveTokens": 267
+  },
+  "quality": {
+    "benchmarkIds": [
+      "designing-unit-tests-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "software-testing.verify-contracts",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:designing-unit-tests",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "d679a46f8941f72aa6e018c2b7a714d388b4165c3732c57dbec347b89c2c03b0",
+        "bytes": 892,
+        "tokens": {
+          "gpt-5.6": 240,
+          "claude-opus-4.2": 252,
+          "gemini-3.0-pro": 229,
+          "qwen3.5-32b": 267
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "1321e5911e621bec930f99193acfeba5d444a51bb324849ffd534547b3d7f8f5",
+        "bytes": 686,
+        "tokens": {
+          "gpt-5.6": 185,
+          "claude-opus-4.2": 194,
+          "gemini-3.0-pro": 176,
+          "qwen3.5-32b": 205
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "2d9a0bf63e5b8181b2e0eee0ae6c98400a2c90bc1676def7a1536967720f1768",
+        "bytes": 296,
+        "tokens": {
+          "gpt-5.6": 80,
+          "claude-opus-4.2": 84,
+          "gemini-3.0-pro": 76,
+          "qwen3.5-32b": 89
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "d9a47aba4c7761d94f50e3fa039e911ae283de43502f5766ec849baa5b70127d",
+        "bytes": 581,
+        "tokens": {
+          "gpt-5.6": 157,
+          "claude-opus-4.2": 164,
+          "gemini-3.0-pro": 149,
+          "qwen3.5-32b": 174
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "c8d19bab8c7a12b9ac11e022d7dfaece1d7eadcec9b5c62079892d6ebddbfe36",
+        "bytes": 324,
+        "tokens": {
+          "gpt-5.6": 88,
+          "claude-opus-4.2": 92,
+          "gemini-3.0-pro": 84,
+          "qwen3.5-32b": 97
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "0eeb6b0f4fd95f62e9fc3764a378ac13d5e4e338ca525c0d4907eba6160e8e34",
+        "bytes": 234,
+        "tokens": {
+          "gpt-5.6": 63,
+          "claude-opus-4.2": 66,
+          "gemini-3.0-pro": 60,
+          "qwen3.5-32b": 70
+        }
+      }
+    ],
+    "indexSha256": "0bd002437f1f2a972a5857555a8fa7ad9c3b8ecbed99caa15276be807acdd7a6"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "4a36f76aa52712e463c4f255715d4fa18d8281bb77727c88cc357bd7f5206d43"
+}

@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 2,
+  "id": "calibrating-token-estimates",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Calibrating Token Estimates",
+    "description": "Use when estimated token counts differ systematically from provider-reported usage across models, content classes, languages, or tool schemas.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "kernel"
+    ],
+    "keywords": [
+      "calibrating-token-estimates",
+      "estimated",
+      "token",
+      "counts",
+      "differ",
+      "systematically",
+      "from",
+      "provider",
+      "reported"
+    ],
+    "antiTriggers": [
+      "the provider exposes an exact offline tokenizer already in use",
+      "one isolated observation is the only evidence"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "project-state",
+        "schema": "artifact://forgeos/project-state/v2"
+      }
+    ],
+    "produces": [
+      {
+        "type": "token-calibration",
+        "schema": "artifact://forgeos/token-calibration/v1"
+      }
+    ],
+    "invariants": [
+      "Calibration cannot reduce safety below policy minimum.",
+      "p95 error is reported by model family.",
+      "Old model versions do not calibrate new versions silently."
+    ],
+    "requiredTools": [
+      "model"
+    ],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "confirmed intent and current semantic revision exist"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Record estimated and actual usage with model version and content class.",
+        "evidence": "Calibration cannot reduce safety below policy minimum."
+      },
+      {
+        "id": "step-2",
+        "action": "Compute absolute and relative error without storing sensitive content.",
+        "evidence": "p95 error is reported by model family."
+      },
+      {
+        "id": "step-3",
+        "action": "Update bounded calibration factors using recent weighted observations.",
+        "evidence": "Old model versions do not calibrate new versions silently."
+      },
+      {
+        "id": "step-4",
+        "action": "Increase safety margin when uncertainty or model drift rises.",
+        "evidence": "Old model versions do not calibrate new versions silently."
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "token-calibration is produced with current evidence or a blocker is recorded"
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Calibration cannot reduce safety below policy minimum.",
+      "p95 error is reported by model family.",
+      "Old model versions do not calibrate new versions silently."
+    ],
+    "reviewerRole": "kernel-skill-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "behavioral-eval-receipt",
+      "context-receipt"
+    ],
+    "evaluatorIds": [
+      "calibrating-token-estimates-evaluator-v2"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 5,
+    "maxReferenceDepth": 2,
+    "targetTokens": 514,
+    "hardTokens": 905,
+    "outputReserveTokens": 256
+  },
+  "quality": {
+    "benchmarkIds": [
+      "calibrating-token-estimates-public-v1"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L0",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "coverage-ledger",
+      "typed-preconditions",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionability-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.measure-outcomes",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:l0:calibrating-token-estimates",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.calibrating-token-estimates",
+      "fitScore": 100,
+      "mappingEvidence": "reviewed:l0:calibrating-token-estimates",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "c5d11b8ab4e33d5750cb69efc498f7c8b7606cde71377e68a86cf38bf8dd14a7",
+        "bytes": 862,
+        "tokens": {
+          "gpt-5.6": 232,
+          "claude-opus-4.2": 243,
+          "gemini-3.0-pro": 222,
+          "qwen3.5-32b": 258
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "f0a457131a047171191db6bcd4408aab9ad8cc9e3b2276eb4a4f66ce5874105c",
+        "bytes": 551,
+        "tokens": {
+          "gpt-5.6": 149,
+          "claude-opus-4.2": 156,
+          "gemini-3.0-pro": 142,
+          "qwen3.5-32b": 165
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "ce6b780e7111bd23302b7787a5ac03cd99f1711936b70d624202d73da690a469",
+        "bytes": 391,
+        "tokens": {
+          "gpt-5.6": 106,
+          "claude-opus-4.2": 111,
+          "gemini-3.0-pro": 101,
+          "qwen3.5-32b": 117
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "3ae91f995146fd9e2f25b9d32e518a77c490a723a8c9c25e43d1ac12475336ca",
+        "bytes": 256,
+        "tokens": {
+          "gpt-5.6": 69,
+          "claude-opus-4.2": 73,
+          "gemini-3.0-pro": 66,
+          "qwen3.5-32b": 77
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "3985fd6574149b49c5aaab14686d2f80ce7f6cf6307763d105d9ece63c0e90c8",
+        "bytes": 224,
+        "tokens": {
+          "gpt-5.6": 61,
+          "claude-opus-4.2": 64,
+          "gemini-3.0-pro": 58,
+          "qwen3.5-32b": 67
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "cc7f21db1c4ad72accd4e9cdfdbdc8339fb49d897aa3231ce1a85077422184d0",
+        "bytes": 354,
+        "tokens": {
+          "gpt-5.6": 96,
+          "claude-opus-4.2": 100,
+          "gemini-3.0-pro": 91,
+          "qwen3.5-32b": 106
+        }
+      }
+    ],
+    "indexSha256": "a83d44cb505f3c0e479a832654edc4ef18afbcd07e9b3e047200a0eb3643c186"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "7967c374f028762aba89b0c6a96e779b0b773b42c64d1c641ea9cafc02d9e587"
+}

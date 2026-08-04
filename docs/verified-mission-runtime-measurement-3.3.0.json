@@ -1,0 +1,79 @@
+{
+  "schema": "forge.studio.verified-mission-runtime-measurement.v1",
+  "version": "3.3.0",
+  "promotedRequirementIds": [
+    "29.3",
+    "29.8",
+    "29.13",
+    "29.14",
+    "29.16",
+    "34.9",
+    "34.11",
+    "34.12",
+    "34.13",
+    "34.14",
+    "40.4",
+    "40.12",
+    "40.18"
+  ],
+  "outcomes": {
+    "scopeScores": {
+      "task": 3,
+      "milestone": 3,
+      "mission": 3
+    },
+    "contextTokensActuallyUseful": 120,
+    "costBoundToDecision": true
+  },
+  "objective": {
+    "correctnessFirst": true,
+    "rewardHackingBlocked": true
+  },
+  "effects": {
+    "falseSuccessDetected": true,
+    "commitAllowed": false
+  },
+  "confidence": {
+    "lanes": [
+      "execution",
+      "hypothesis",
+      "patch",
+      "plan",
+      "requirement",
+      "retrieval",
+      "verification"
+    ],
+    "weakestLaneControlsBase": true,
+    "correlatedEvidenceDeduplicated": true
+  },
+  "stateMachine": {
+    "observationRequiredBeforeCommit": true,
+    "finalState": "committed"
+  },
+  "progress": {
+    "churnOnlyDetected": true,
+    "status": "stalled"
+  },
+  "resources": {
+    "taskRssMbSeconds": 150,
+    "missionRssMbSeconds": 150
+  },
+  "logs": {
+    "rawRecordsStoredInMemory": false,
+    "redactionVerified": true,
+    "restartRecoveryVerified": true
+  },
+  "processes": {
+    "realTreeCleanupVerified": true,
+    "unregisteredProcessKillAllowed": false
+  },
+  "boundaries": {
+    "externalGateCountChanged": false,
+    "unverifiedOutcomeCreatesValue": false,
+    "unregisteredProcessKillAllowed": false,
+    "autonomousMergeOrPublishClaimed": false,
+    "comparativeSuperiorityClaimed": false,
+    "independentProductionBenchmarkClaimed": false
+  },
+  "receiptSha256": "8109f15fa8cb67cbd227242b27146e1dcb6ec53c7b18c793b3f9ae8ddebb80c2"
+}

@@ -1,0 +1,7 @@
+import { PluginSigningService } from './plugin-signing-service.mjs';
+export class PluginTrustStore {
+  constructor({ signingService = new PluginSigningService() } = {}) { this.signingService = signingService; this.keys = new Map(); }
+  addPublisher({ publisherId, keyId, publicKey, scopes = ['*'] } = {}) { const key = `${publisherId}:${keyId}`; this.keys.set(key, { publisherId: String(publisherId), keyId: String(keyId), publicKey, scopes: [...scopes].map(String), revoked: false }); }
+  revokeKey({ publisherId, keyId, reason = 'revoked' } = {}) { const record = this.keys.get(`${publisherId}:${keyId}`); if (!record) throw new Error('Publisher key not found'); record.revoked = true; record.reason = String(reason); }
+  async evaluateBundle({ bundle, directory, pluginId } = {}) { const publisherId = bundle?.manifest?.publisherId; const keyId = bundle?.manifest?.keyId; const record = this.keys.get(`${publisherId}:${keyId}`); if (!record) throw new Error('Publisher key is not trusted'); if (record.revoked) throw new Error(`Publisher key revoked: ${record.reason}`); if (!record.scopes.includes('*') && !record.scopes.includes(String(pluginId))) throw new Error('Publisher key scope does not cover plugin'); await this.signingService.verifyBundle({ bundle, directory, publicKey: record.publicKey }); return Object.freeze({ trusted: true, publisherId, keyId, pluginId: String(pluginId), rootHash: bundle.rootHash }); }
+}

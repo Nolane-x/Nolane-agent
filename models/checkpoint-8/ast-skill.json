@@ -1,0 +1,65 @@
+{
+  "schema": "nolane.small-model.ast-skill.v2",
+  "id": "rename-legacy-name",
+  "version": "2",
+  "kind": "ast-codemod",
+  "language": "javascript",
+  "operations": [
+    {
+      "op": "rename-identifier",
+      "from": "legacyName",
+      "to": "canonicalName",
+      "scope": "program"
+    }
+  ],
+  "rollbackOperations": [
+    {
+      "op": "rename-identifier",
+      "from": "canonicalName",
+      "to": "legacyName",
+      "scope": "program"
+    }
+  ],
+  "allowedPaths": [
+    "src/value.mjs"
+  ],
+  "maxChangedTokens": 4,
+  "verifierObligations": [
+    "baseline-pass",
+    "mutation-fail",
+    "repair-pass",
+    "parse-valid",
+    "rollback-restores-mutation-hash",
+    "tracked-source-unchanged"
+  ],
+  "soundnessScope": [
+    "javascript-lossless-token-tree",
+    "program-scope-identifier-rename",
+    "path:src/value.mjs"
+  ],
+  "knownIncompleteness": [
+    "does-not-claim-full-ecmascript-binding-analysis",
+    "abstains-on-shadowed-or-out-of-scope-identifiers",
+    "does-not-rewrite-comments-strings-or-template-literals"
+  ],
+  "inductionMissionIds": [
+    "checkpoint-8-ast-induction-a:declared-repair",
+    "checkpoint-8-ast-induction-b:declared-repair"
+  ],
+  "inductionReceiptSha256": [
+    "7ead4b2981a75d48aa1b10b73c343789e88929f7dd77d95008a04fedb155e3f5",
+    "d267f6dea46bd14c5ae8e0fdb8a2573790cc638a446ecc5c93fcc4515c2c5460"
+  ],
+  "sourceRepositoryIds": [
+    "checkpoint-8-ast-induction-a",
+    "checkpoint-8-ast-induction-b"
+  ],
+  "hiddenChainOfThoughtStored": false,
+  "claims": {
+    "boundedAstSkill": true,
+    "externalRepositoryGeneralization": false,
+    "generalCodingIntelligence": false,
+    "competitorSuperiority": false
+  },
+  "receiptSha256": "4af016eafc821f016f1192ad84ed8bebc15ac0458ce7ec5cc31a478a6b9dca8e"
+}

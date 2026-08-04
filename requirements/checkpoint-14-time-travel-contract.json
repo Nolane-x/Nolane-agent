@@ -1,0 +1,54 @@
+{
+  "schema": "nolane.checkpoint-14.time-travel-contract.v1",
+  "milestone": "Checkpoint 14 — Trust, Adoption & Autonomy",
+  "deliverySlice": "Foundation 4 — Time Travel",
+  "baselineCommit": "8ae3281150cdf778593d8d9eca065bb99588fff4",
+  "implemented": [
+    "durable-versioned-checkpoint-index",
+    "content-addressed-working-tree-blobs",
+    "git-commit-plus-dirty-manifest-checkpoints",
+    "bounded-file-count-size-and-total-bytes",
+    "sensitive-path-and-symlink-exclusion",
+    "checkpoint-to-current-state-comparison",
+    "single-file-restore-plan",
+    "explicit-overwrite-confirmation",
+    "pre-restore-content-addressed-backup",
+    "atomic-file-restore",
+    "new-worktree-from-checkpoint",
+    "new-mission-replay-with-task-dependency-remap",
+    "immutable-time-travel-action-receipts",
+    "execution-story-correlated-evidence-export",
+    "workspace-read-oriented-timeline",
+    "studio-and-expert-restore-controls",
+    "workspace-trust-on-read-and-mutating-routes"
+  ],
+  "requiredRoutes": [
+    "GET /api/time-travel/checkpoints",
+    "POST /api/time-travel/checkpoints",
+    "GET /api/time-travel/checkpoints/:id",
+    "GET /api/time-travel/checkpoints/:id/compare",
+    "POST /api/time-travel/checkpoints/:id/restore-file",
+    "POST /api/time-travel/checkpoints/:id/branch",
+    "POST /api/time-travel/checkpoints/:id/replay",
+    "GET /api/time-travel/checkpoints/:id/export"
+  ],
+  "requiredSchemas": [
+    "nolane.time-travel-index.v1",
+    "nolane.time-travel-checkpoint.v1",
+    "nolane.time-travel-comparison.v1",
+    "nolane.time-travel-restore-plan.v1",
+    "nolane.time-travel-restore-receipt.v1",
+    "nolane.time-travel-branch-receipt.v1",
+    "nolane.time-travel-replay-receipt.v1",
+    "nolane.time-travel-evidence-bundle.v1"
+  ],
+  "externalOrLaterGates": [
+    "full-repository-checkpoint-capture-beyond-dirty-manifest",
+    "cross-version-checkpoint-migration-certification",
+    "large-repository-performance-dogfood",
+    "binary-and-lfs-artifact-specialized-diff",
+    "multi-user-or-remote-checkpoint-sync",
+    "real-windows-worktree-and-restore-certification",
+    "external-accessibility-audit"
+  ]
+}

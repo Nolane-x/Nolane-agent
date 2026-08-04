@@ -1,0 +1,27 @@
+{
+  "schema": "nolane.small-model.bootstrap-specialist-dataset-receipt.v1",
+  "specialist": "test-selector",
+  "datasetReceiptSha256": "742d690333c8db19d1dce6d034acf3fde5e70710d624a353eb14dd098571ba2b",
+  "splitReceiptSha256": "47744ab70eb8bec9c38c30cad71179bf01026ab08ff89902b555ae42ad03af0b",
+  "labels": [
+    "full",
+    "integration",
+    "mutation",
+    "unit"
+  ],
+  "variants": 30,
+  "counts": {
+    "total": 120,
+    "train": 72,
+    "validation": 24,
+    "heldOut": 24
+  },
+  "disjointBy": "scenarioGroup",
+  "groupCounts": {
+    "train": 18,
+    "validation": 6,
+    "heldOut": 6
+  },
+  "hiddenChainOfThoughtStored": false,
+  "receiptSha256": "8cae312f53e377e511919091fc31e756da2a2befb772a7653bbe640bbcabcb6f"
+}

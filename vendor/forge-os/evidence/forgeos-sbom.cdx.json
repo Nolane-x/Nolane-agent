@@ -1,0 +1,39 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:d1855f3d-91e4-4658-a4b3-42adb2648d5f",
+  "version": 1,
+  "metadata": {
+    "timestamp": "1970-01-01T00:00:00.000Z",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "name": "ForgeOS SBOM Generator",
+          "version": "0.6.1"
+        }
+      ]
+    },
+    "component": {
+      "type": "application",
+      "name": "forge-os",
+      "version": "0.6.1",
+      "purl": "pkg:npm/forge-os@0.6.1"
+    }
+  },
+  "components": [
+    {
+      "type": "application",
+      "name": "forge-os",
+      "version": "0.6.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/forge-os@0.6.1"
+    }
+  ]
+}

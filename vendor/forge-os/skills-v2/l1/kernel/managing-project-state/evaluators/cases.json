@@ -1,0 +1,38 @@
+[
+  {
+    "id": "managing-project-state-application",
+    "kind": "application",
+    "input": "Task directly requiring managing project state within kernel lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "managing-project-state-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require managing project state within kernel lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "managing-project-state-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "managing-project-state-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "managing-project-state-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "managing-project-state-transfer",
+    "kind": "transfer",
+    "input": "Apply the managing-project-state mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

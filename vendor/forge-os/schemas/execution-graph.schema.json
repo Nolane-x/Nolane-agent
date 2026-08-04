@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forgeos.dev/schemas/v0.6/execution-graph.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": 2
+    },
+    "technique": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "executionMode": {
+      "type": "string"
+    },
+    "workUnits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "workUnitIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "failurePolicy": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "graphSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "technique",
+    "executionMode",
+    "workUnits",
+    "workUnitIds",
+    "nodes",
+    "edges",
+    "failurePolicy",
+    "graphSha256"
+  ]
+}

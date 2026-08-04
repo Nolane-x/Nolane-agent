@@ -1,0 +1,67 @@
+{
+  "schema": "forge.studio.construction-safety-completion-measurement.v1",
+  "version": "3.4.0",
+  "promotedRequirementIds": [
+    "34.16",
+    "35.6",
+    "35.7",
+    "35.11",
+    "35.12",
+    "35.13",
+    "35.15",
+    "36.4",
+    "36.5",
+    "36.6",
+    "36.11",
+    "36.14",
+    "36.16",
+    "37.4",
+    "37.5",
+    "37.11",
+    "37.15",
+    "46.9",
+    "46.11",
+    "46.13",
+    "46.16"
+  ],
+  "construction": {
+    "contractFirst": true,
+    "verticalCheckpointsRequired": true,
+    "obsoleteTaskRevoked": true,
+    "boundedOwnership": true,
+    "realCandidateWorktrees": true,
+    "exactStateResume": true
+  },
+  "changeSafety": {
+    "semanticApiDimensionsCovered": true,
+    "citedBlastRadius": true,
+    "duplicateAbstractionDetected": true,
+    "migrationRollbackRequired": true,
+    "candidatesComparedUnderOneContract": true,
+    "independentReviewRequired": true
+  },
+  "verification": {
+    "mutationCaught": true,
+    "bytesRestoredExactly": true,
+    "reviewerIndependent": true,
+    "journeyArtifactsHashed": true,
+    "hiddenExpectedEncrypted": true,
+    "hiddenExpectedExecutorBlind": true
+  },
+  "counterfactual": {
+    "singleVariableIntervention": true,
+    "heldConstantsVerified": true,
+    "effectDimensionsCovered": true,
+    "imagineVerifyExecuteEnforced": true,
+    "improvedOutcomeMeasured": true,
+    "worsenedOutcomeMeasured": true
+  },
+  "boundaries": {
+    "externalGateCountChanged": false,
+    "comparativeSuperiorityClaimed": false,
+    "simulationClaimedAsObserved": false,
+    "selfReviewAccepted": false,
+    "hiddenExpectedExposed": false
+  },
+  "receiptSha256": "6dd3f82e529ccb544b6c24b714402ce6ed63d556caffb022f2821095f49ebefc"
+}

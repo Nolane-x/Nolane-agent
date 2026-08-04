@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.graphic-design",
+  "domain": "graphic-design",
+  "title": "Graphic Design Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "composition",
+    "typography",
+    "color theory",
+    "imagery",
+    "print",
+    "digital assets",
+    "visual hierarchy",
+    "production"
+  ],
+  "capabilities": [
+    "graphic-design.map-landscape",
+    "graphic-design.frame-problem",
+    "graphic-design.research-users",
+    "graphic-design.define-requirements",
+    "graphic-design.model-domain",
+    "graphic-design.compare-alternatives",
+    "graphic-design.design-concept",
+    "graphic-design.prototype-critical-flow",
+    "graphic-design.validate-prototype",
+    "graphic-design.design-architecture",
+    "graphic-design.model-data",
+    "graphic-design.model-threats",
+    "graphic-design.plan-delivery",
+    "graphic-design.implement-core",
+    "graphic-design.integrate-dependencies",
+    "graphic-design.verify-contracts",
+    "graphic-design.test-boundaries",
+    "graphic-design.test-resilience",
+    "graphic-design.test-performance",
+    "graphic-design.test-security",
+    "graphic-design.audit-accessibility",
+    "graphic-design.optimize-quality",
+    "graphic-design.optimize-cost",
+    "graphic-design.document-system",
+    "graphic-design.prepare-migration",
+    "graphic-design.plan-rollout",
+    "graphic-design.instrument-observability",
+    "graphic-design.operate-lifecycle",
+    "graphic-design.respond-incidents",
+    "graphic-design.govern-evolution",
+    "graphic-design.measure-outcomes",
+    "graphic-design.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "anthropic-skills",
+      "title": "Anthropic Agent Skills",
+      "url": "https://github.com/anthropics/skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "Mixed",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

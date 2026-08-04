@@ -1,0 +1,38 @@
+[
+  {
+    "id": "testing-accessibility-application",
+    "kind": "application",
+    "input": "Task directly requiring testing accessibility within quality lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "testing-accessibility-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require testing accessibility within quality lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "testing-accessibility-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "testing-accessibility-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "testing-accessibility-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "testing-accessibility-transfer",
+    "kind": "transfer",
+    "input": "Apply the testing-accessibility mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

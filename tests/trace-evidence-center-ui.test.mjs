@@ -1,0 +1,23 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+const index = await readFile(new URL('../ui/index.html', import.meta.url), 'utf8');
+const app = await readFile(new URL('../ui/app.js', import.meta.url), 'utf8');
+const moduleSource = await readFile(new URL('../ui/trace-evidence-center.js', import.meta.url), 'utf8').catch(() => '');
+const css = await readFile(new URL('../ui/trace-evidence-center.css', import.meta.url), 'utf8').catch(() => '');
+test('Trace and Evidence Center is a lazy futuristic observability surface', () => {
+  assert.match(index, /id="trace-evidence-button"/);
+  assert.match(app, /traceEvidence:\s*\['\/trace-evidence-center\.js'/);
+  assert.match(moduleSource, /Timeline/);
+  assert.match(moduleSource, /Receipt Graph/);
+  assert.match(moduleSource, /Failures/);
+  assert.match(moduleSource, /Claims/);
+  assert.match(moduleSource, /Exports/);
+  assert.match(moduleSource, /\/api\/trace-evidence/);
+  assert.match(moduleSource, /method:\s*'POST'/);
+  assert.match(css, /trace-aurora/);
+  assert.match(css, /trace-graph-grid/);
+  assert.match(css, /trace-pulse-orbit/);
+  assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
+  assert.doesNotMatch(moduleSource, /localStorage.*token|sessionStorage.*token/i);
+});

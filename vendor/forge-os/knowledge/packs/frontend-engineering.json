@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.frontend-engineering",
+  "domain": "frontend-engineering",
+  "title": "Frontend Engineering Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "components",
+    "state",
+    "rendering",
+    "performance",
+    "accessibility",
+    "browser compatibility",
+    "forms",
+    "design systems"
+  ],
+  "capabilities": [
+    "frontend-engineering.map-landscape",
+    "frontend-engineering.frame-problem",
+    "frontend-engineering.research-users",
+    "frontend-engineering.define-requirements",
+    "frontend-engineering.model-domain",
+    "frontend-engineering.compare-alternatives",
+    "frontend-engineering.design-concept",
+    "frontend-engineering.prototype-critical-flow",
+    "frontend-engineering.validate-prototype",
+    "frontend-engineering.design-architecture",
+    "frontend-engineering.model-data",
+    "frontend-engineering.model-threats",
+    "frontend-engineering.plan-delivery",
+    "frontend-engineering.implement-core",
+    "frontend-engineering.integrate-dependencies",
+    "frontend-engineering.verify-contracts",
+    "frontend-engineering.test-boundaries",
+    "frontend-engineering.test-resilience",
+    "frontend-engineering.test-performance",
+    "frontend-engineering.test-security",
+    "frontend-engineering.audit-accessibility",
+    "frontend-engineering.optimize-quality",
+    "frontend-engineering.optimize-cost",
+    "frontend-engineering.document-system",
+    "frontend-engineering.prepare-migration",
+    "frontend-engineering.plan-rollout",
+    "frontend-engineering.instrument-observability",
+    "frontend-engineering.operate-lifecycle",
+    "frontend-engineering.respond-incidents",
+    "frontend-engineering.govern-evolution",
+    "frontend-engineering.measure-outcomes",
+    "frontend-engineering.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "vercel-skills-cli",
+      "title": "Vercel open agent skills ecosystem",
+      "url": "https://github.com/vercel-labs/skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "mblode-agent-skills",
+      "title": "Software shipping skills",
+      "url": "https://github.com/mblode/agent-skills",
+      "authority": "community",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

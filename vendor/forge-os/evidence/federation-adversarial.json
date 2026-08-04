@@ -1,0 +1,315 @@
+{
+  "schemaVersion": 1,
+  "corpusSha256": "60bf52e23f45f3785743891c140d151b34928a006dd320c0ad48b64ab1240748",
+  "summary": {
+    "total": 18,
+    "passed": 18,
+    "failed": 0
+  },
+  "results": [
+    {
+      "id": "skill-clean",
+      "category": "skill-scan",
+      "passed": true,
+      "expected": {
+        "blocked": false,
+        "codes": []
+      },
+      "actual": {
+        "blocked": false,
+        "codes": []
+      }
+    },
+    {
+      "id": "skill-prompt-injection",
+      "category": "skill-scan",
+      "passed": true,
+      "expected": {
+        "blocked": true,
+        "codes": [
+          "instruction-override"
+        ]
+      },
+      "actual": {
+        "blocked": true,
+        "codes": [
+          "instruction-override"
+        ]
+      }
+    },
+    {
+      "id": "skill-path-traversal",
+      "category": "skill-scan",
+      "passed": true,
+      "expected": {
+        "blocked": true,
+        "codes": [
+          "path-traversal"
+        ]
+      },
+      "actual": {
+        "blocked": true,
+        "codes": [
+          "path-traversal"
+        ]
+      }
+    },
+    {
+      "id": "skill-hidden-executable",
+      "category": "skill-scan",
+      "passed": true,
+      "expected": {
+        "blocked": true,
+        "codes": [
+          "hidden-executable"
+        ]
+      },
+      "actual": {
+        "blocked": true,
+        "codes": [
+          "hidden-executable"
+        ]
+      }
+    },
+    {
+      "id": "skill-secret-material",
+      "category": "skill-scan",
+      "passed": true,
+      "expected": {
+        "blocked": true,
+        "codes": [
+          "secret-material"
+        ]
+      },
+      "actual": {
+        "blocked": true,
+        "codes": [
+          "secret-material"
+        ]
+      }
+    },
+    {
+      "id": "skill-private-network",
+      "category": "skill-scan",
+      "passed": true,
+      "expected": {
+        "blocked": true,
+        "codes": [
+          "unsafe-network-target"
+        ]
+      },
+      "actual": {
+        "blocked": true,
+        "codes": [
+          "unsafe-network-target"
+        ]
+      }
+    },
+    {
+      "id": "skill-pipe-shell",
+      "category": "skill-scan",
+      "passed": true,
+      "expected": {
+        "blocked": true,
+        "codes": [
+          "remote-pipe-execution"
+        ]
+      },
+      "actual": {
+        "blocked": true,
+        "codes": [
+          "remote-pipe-execution"
+        ]
+      }
+    },
+    {
+      "id": "license-mit",
+      "category": "license",
+      "passed": true,
+      "expected": {
+        "mode": "vendor-allowed",
+        "ambiguous": false,
+        "spdx": "MIT"
+      },
+      "actual": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed",
+        "ambiguous": false
+      }
+    },
+    {
+      "id": "license-ambiguous",
+      "category": "license",
+      "passed": true,
+      "expected": {
+        "mode": "link-only",
+        "ambiguous": true
+      },
+      "actual": {
+        "spdx": "Apache-2.0 OR MIT",
+        "mode": "link-only",
+        "ambiguous": true
+      }
+    },
+    {
+      "id": "mcp-safe-official",
+      "category": "mcp-assess",
+      "passed": true,
+      "expected": {
+        "status": "candidate",
+        "codes": []
+      },
+      "actual": {
+        "status": "candidate",
+        "codes": [],
+        "trustScore": 100
+      }
+    },
+    {
+      "id": "mcp-private-transport",
+      "category": "mcp-assess",
+      "passed": true,
+      "expected": {
+        "status": "quarantined",
+        "codes": [
+          "unsafe-transport-url"
+        ]
+      },
+      "actual": {
+        "status": "quarantined",
+        "codes": [
+          "unsafe-transport-url"
+        ],
+        "trustScore": 60
+      }
+    },
+    {
+      "id": "mcp-unverified-publisher",
+      "category": "mcp-assess",
+      "passed": true,
+      "expected": {
+        "status": "quarantined",
+        "codes": [
+          "unverified-publisher"
+        ]
+      },
+      "actual": {
+        "status": "quarantined",
+        "codes": [
+          "unverified-publisher"
+        ],
+        "trustScore": 60
+      }
+    },
+    {
+      "id": "mcp-dangerous-tool",
+      "category": "mcp-assess",
+      "passed": true,
+      "expected": {
+        "status": "quarantined",
+        "codes": [
+          "high-risk-tool-name"
+        ]
+      },
+      "actual": {
+        "status": "quarantined",
+        "codes": [
+          "high-risk-tool-name"
+        ],
+        "trustScore": 60
+      }
+    },
+    {
+      "id": "provider-stale",
+      "category": "provider-eval",
+      "passed": true,
+      "expected": {
+        "status": "fail",
+        "codes": [
+          "source-stale"
+        ]
+      },
+      "actual": {
+        "status": "fail",
+        "codes": [
+          "source-stale"
+        ],
+        "receiptSha256": "00958ace05c273360dd38a9c6f5de02d41ac8cb38a68d966a48a1ba969f12afd"
+      }
+    },
+    {
+      "id": "provider-quality-regression",
+      "category": "provider-eval",
+      "passed": true,
+      "expected": {
+        "status": "fail",
+        "codes": [
+          "quality-regression"
+        ]
+      },
+      "actual": {
+        "status": "fail",
+        "codes": [
+          "quality-regression"
+        ],
+        "receiptSha256": "a22816d9990f252c89aa35e088e4e56973847e2e027716f49e850a43a2e420a8"
+      }
+    },
+    {
+      "id": "provider-token-inflation",
+      "category": "provider-eval",
+      "passed": true,
+      "expected": {
+        "status": "pass",
+        "codes": [
+          "token-inflation"
+        ]
+      },
+      "actual": {
+        "status": "pass",
+        "codes": [
+          "token-inflation"
+        ],
+        "receiptSha256": "9ca7b2b85a4c6948498e3dede136e191e4b969150640f84ca9827bbd94a4c36b"
+      }
+    },
+    {
+      "id": "provider-capability-mismatch",
+      "category": "provider-eval",
+      "passed": true,
+      "expected": {
+        "status": "fail",
+        "codes": [
+          "capability-mismatch"
+        ]
+      },
+      "actual": {
+        "status": "fail",
+        "codes": [
+          "capability-mismatch"
+        ],
+        "receiptSha256": "c708c4ff7636e01a8925d35f0a646cdd95b1287a695f7616fc0515f92f2889ae"
+      }
+    },
+    {
+      "id": "provider-semantic-duplicate",
+      "category": "dedup",
+      "passed": true,
+      "expected": {
+        "clusterSizes": [
+          2,
+          1
+        ],
+        "duplicateClusterCount": 1
+      },
+      "actual": {
+        "clusterSizes": [
+          2,
+          1
+        ],
+        "duplicateClusterCount": 1
+      }
+    }
+  ],
+  "failures": []
+}

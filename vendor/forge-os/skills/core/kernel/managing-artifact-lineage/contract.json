@@ -1,0 +1,156 @@
+{
+  "name": "managing-artifact-lineage",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "kernel",
+  "domain": null,
+  "status": "stable",
+  "stages": [
+    "intent",
+    "discovery",
+    "research",
+    "divergence",
+    "synthesis",
+    "selection",
+    "product-definition",
+    "ux-design",
+    "architecture",
+    "planning",
+    "implementation",
+    "verification",
+    "release-readiness"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "project-state",
+    "gate-state"
+  ],
+  "produces": [
+    "routing-decision"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:routing-decision"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/kernel.md",
+  "method": {
+    "focus": "preserve immutable provenance, dependency edges, supersession, verification, and downstream invalidation",
+    "steps": [
+      "Assign stable project-scoped IDs and canonical content hashes.",
+      "Record producing skill, agent identity, consumed artifacts, decisions, evidence, and residual risks.",
+      "Append new versions; never mutate previously verified content in place.",
+      "When upstream content changes, compute descendants and mark only affected artifacts invalidated.",
+      "Require independent verification before changing state to verified."
+    ],
+    "verification": [
+      "Does the same canonical content produce the same hash?",
+      "Can every output reconstruct its input lineage?",
+      "Are unaffected branches preserved during invalidation?",
+      "Can a worker verify its own artifact?"
+    ],
+    "evidence": [
+      "lineage graph",
+      "hash manifest",
+      "invalidation report",
+      "verification record"
+    ],
+    "traps": [
+      "overwriting verified artifacts",
+      "global invalidation",
+      "missing decision provenance"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Read the current project state and active gate.",
+    "Resolve only the minimum missing state required for routing.",
+    "Assign stable project-scoped IDs and canonical content hashes.",
+    "Record producing skill, agent identity, consumed artifacts, decisions, evidence, and residual risks.",
+    "Append new versions; never mutate previously verified content in place.",
+    "When upstream content changes, compute descendants and mark only affected artifacts invalidated.",
+    "Require independent verification before changing state to verified.",
+    "Compile a bounded context pack from direct dependencies.",
+    "Execute the contracted operation without authoring unrelated artifacts.",
+    "Record decisions, provenance, and audit events.",
+    "Emit the next eligible skill set and stop condition."
+  ],
+  "gate": {
+    "reviewerRole": "independent-reviewer",
+    "rules": [
+      "The output directly and completely performs managing artifact lineage within its declared boundary.",
+      "Does the same canonical content produce the same hash?",
+      "Can every output reconstruct its input lineage?",
+      "Are unaffected branches preserved during invalidation?",
+      "Can a worker verify its own artifact?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "routing-decision"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "lineage graph",
+      "hash manifest",
+      "invalidation report",
+      "verification record"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1629,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "overwriting verified artifacts",
+    "global invalidation",
+    "missing decision provenance"
+  ],
+  "optionalConsumes": [
+    "confirmed-intent"
+  ],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when managing artifact lineage is required during kernel work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

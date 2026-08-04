@@ -1,0 +1,305 @@
+{
+  "schemaVersion": 2,
+  "id": "reviewing-secure-design",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Reviewing Secure Design",
+    "description": "Use when reviewing secure design within security lifecycle boundaries, especially when does the artifact make the owned decision for reviewing secure design explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "security"
+    ],
+    "keywords": [
+      "reviewing-secure-design",
+      "reviewing",
+      "secure",
+      "design",
+      "within",
+      "security",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require reviewing secure design within security lifecycle boundaries",
+      "the typed inputs for reviewing-secure-design are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "system-boundaries",
+        "schema": "artifact://forgeos/system-boundaries/v1"
+      },
+      {
+        "type": "product-definition",
+        "schema": "artifact://forgeos/product-definition/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "threat-model",
+        "schema": "artifact://forgeos/threat-model/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for reviewing secure design explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by reviewing secure design.",
+        "evidence": "reviewing-secure-design-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to reviewing secure design.",
+        "evidence": "reviewing-secure-design-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply reviewing secure design only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "reviewing-secure-design-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "reviewing-secure-design-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if reviewing secure design were incomplete or implemented incorrectly.",
+        "evidence": "reviewing-secure-design-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for reviewing secure design explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "security-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "reviewing-secure-design-decision-table",
+      "reviewing-secure-design-verification-report",
+      "reviewing-secure-design-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "reviewing-secure-design-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 691,
+    "hardTokens": 1084,
+    "outputReserveTokens": 271
+  },
+  "quality": {
+    "benchmarkIds": [
+      "reviewing-secure-design-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "cybersecurity.test-security",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:reviewing-secure-design",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "cbdfda63e27e9918b828ca0661aa383fc13709ad0394cb7d65f3272cd4b88c1d",
+        "bytes": 916,
+        "tokens": {
+          "gpt-5.6": 247,
+          "claude-opus-4.2": 259,
+          "gemini-3.0-pro": 235,
+          "qwen3.5-32b": 274
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "56f24eccc73e635682b87c04bdb16d83260abe550ae8d2b048278874526c3751",
+        "bytes": 698,
+        "tokens": {
+          "gpt-5.6": 188,
+          "claude-opus-4.2": 197,
+          "gemini-3.0-pro": 179,
+          "qwen3.5-32b": 209
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "aec5852da17bc506c5ae10343c95196dd53eca7fbe297275da85aab3b37e0582",
+        "bytes": 299,
+        "tokens": {
+          "gpt-5.6": 81,
+          "claude-opus-4.2": 85,
+          "gemini-3.0-pro": 77,
+          "qwen3.5-32b": 90
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "61d422ca4f9b2c6e4cc36c51945d0572b24b22ba782ffbd1e1d9b965e1b7e642",
+        "bytes": 593,
+        "tokens": {
+          "gpt-5.6": 160,
+          "claude-opus-4.2": 168,
+          "gemini-3.0-pro": 153,
+          "qwen3.5-32b": 178
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "e406eab681e7d8fc610f06a942fa6d6e317e643d0394e2f68983c8c5b0cd64ee",
+        "bytes": 327,
+        "tokens": {
+          "gpt-5.6": 88,
+          "claude-opus-4.2": 93,
+          "gemini-3.0-pro": 84,
+          "qwen3.5-32b": 98
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "f7e8782a853fa8f9294ab155fc8e066f61199ce5de6b6ee594ed38abac6b75ec",
+        "bytes": 237,
+        "tokens": {
+          "gpt-5.6": 64,
+          "claude-opus-4.2": 67,
+          "gemini-3.0-pro": 61,
+          "qwen3.5-32b": 71
+        }
+      }
+    ],
+    "indexSha256": "5cfd7aad2acd8df82f8f390111db546eac07f085e5fb34af1ad872a5ce266aea"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "40fadcad7545cc5626137b937310cdb38d414c72521e466d5a0185a9bce6384a"
+}

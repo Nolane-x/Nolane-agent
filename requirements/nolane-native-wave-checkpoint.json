@@ -1,0 +1,250 @@
+{
+  "schema": "nolane.nolane_native-native-waves.checkpoint.v1",
+  "checkpointVersion": "5.0.0-beta.6-wave15-checkpoint.1",
+  "productVersion": "5.0.0-beta.7",
+  "generatedAt": null,
+  "environment": {
+    "platform": "linux",
+    "machine": {
+      "label": "local-sandbox",
+      "ramGb": null
+    }
+  },
+  "localCore": {
+    "wavesCompletedThrough": 15,
+    "contracts": 115,
+    "verifiedContracts": 100,
+    "verifiedPaths": 873,
+    "mappedPaths": 2110
+  },
+  "external": {
+    "externalContracts": 15,
+    "externalPaths": 1237,
+    "unmappedPaths": 0,
+    "contracts": [
+      {
+        "id": "NATIVE-BROWSER-COMPUTER-USE-CERTIFICATION",
+        "domains": [
+          "browser-computer-use"
+        ],
+        "pathCount": 35
+      },
+      {
+        "id": "NATIVE-CRON-PROVIDER-CERTIFICATION",
+        "domains": [
+          "scheduler"
+        ],
+        "pathCount": 1
+      },
+      {
+        "id": "NATIVE-DESKTOP-WINDOWS-CERTIFICATION",
+        "domains": [
+          "product-surfaces"
+        ],
+        "pathCount": 679
+      },
+      {
+        "id": "NATIVE-INSTALLER-BOOTSTRAP-CERTIFICATION",
+        "domains": [
+          "configuration"
+        ],
+        "pathCount": 27
+      },
+      {
+        "id": "NATIVE-MEDIA-VOICE-CERTIFICATION",
+        "domains": [
+          "media-voice"
+        ],
+        "pathCount": 39
+      },
+      {
+        "id": "NATIVE-MEMORY-PROVIDER-CERTIFICATION",
+        "domains": [
+          "memory-learning"
+        ],
+        "pathCount": 29
+      },
+      {
+        "id": "NATIVE-MESSAGING-PLATFORM-ADAPTERS",
+        "domains": [
+          "gateway-integrations"
+        ],
+        "pathCount": 115
+      },
+      {
+        "id": "NATIVE-OBSERVABILITY-PLUGIN-CERTIFICATION",
+        "domains": [
+          "observability-operations"
+        ],
+        "pathCount": 2
+      },
+      {
+        "id": "NATIVE-PLUGIN-AUTH-CERTIFICATION",
+        "domains": [
+          "plugin-system"
+        ],
+        "pathCount": 3
+      },
+      {
+        "id": "NATIVE-PROVIDER-REAL-CERTIFICATION",
+        "domains": [
+          "provider-fabric"
+        ],
+        "pathCount": 77
+      },
+      {
+        "id": "NATIVE-REMOTE-EXECUTION-CERTIFICATION",
+        "domains": [
+          "tool-execution"
+        ],
+        "pathCount": 6
+      },
+      {
+        "id": "NATIVE-SECRET-AUTH-PROVIDER-CERTIFICATION",
+        "domains": [
+          "security"
+        ],
+        "pathCount": 17
+      },
+      {
+        "id": "NATIVE-SKILL-TOOL-OPERATIONS",
+        "domains": [
+          "tool-execution"
+        ],
+        "pathCount": 7
+      },
+      {
+        "id": "NATIVE-TOOL-INTEGRATION-ADAPTERS",
+        "domains": [
+          "tool-execution"
+        ],
+        "pathCount": 21
+      },
+      {
+        "id": "NATIVE-UI-SURFACE-CERTIFICATION",
+        "domains": [
+          "product-surfaces"
+        ],
+        "pathCount": 179
+      }
+    ],
+    "openNolaneRequirements": [
+      {
+        "id": "NOL-AUDIT-012",
+        "group": "Proof-driven audit",
+        "title": "Run provider-real dogfooding on Windows with replayable receipts",
+        "status": "external_gate"
+      },
+      {
+        "id": "NOL-UI-002",
+        "group": "UI v3",
+        "title": "Capture a machine-labelled Windows 8 GB performance and visual baseline",
+        "status": "external_gate"
+      },
+      {
+        "id": "NOL-UI-030",
+        "group": "UI v3",
+        "title": "Meet WCAG 2.2 AA, keyboard, focus, live-region and reduced-motion requirements",
+        "status": "external_gate"
+      },
+      {
+        "id": "NOL-UI-031",
+        "group": "UI v3",
+        "title": "Meet responsive desktop layouts from 640 px through 1440 px and above",
+        "status": "external_gate"
+      },
+      {
+        "id": "NOL-UI-032",
+        "group": "UI v3",
+        "title": "Pass DOM, memory, idle CPU, long-task, latency and visual release budgets",
+        "status": "external_gate"
+      }
+    ]
+  },
+  "waves": {
+    "wave16": {
+      "status": "blocked_external",
+      "title": "Windows Desktop, Installer and Accessibility Certification",
+      "requiredPlatform": "win32",
+      "machineRequirements": [
+        "Windows 11 x64",
+        "machine-labelled 8 GB RAM",
+        "keyboard and screen-reader evidence"
+      ],
+      "blockedReasons": [
+        "current environment is not a labelled Windows 11 x64 certification machine",
+        "Authenticode and Nolane update-signing credentials are unavailable",
+        "NVDA/Narrator, visual regression and real installer upgrade evidence have not run"
+      ]
+    },
+    "wave17": {
+      "status": "blocked_external",
+      "title": "Real Provider and Integration Certification Matrix",
+      "lanes": [
+        "NATIVE-BROWSER-COMPUTER-USE-CERTIFICATION",
+        "NATIVE-CRON-PROVIDER-CERTIFICATION",
+        "NATIVE-DESKTOP-WINDOWS-CERTIFICATION",
+        "NATIVE-INSTALLER-BOOTSTRAP-CERTIFICATION",
+        "NATIVE-MEDIA-VOICE-CERTIFICATION",
+        "NATIVE-MEMORY-PROVIDER-CERTIFICATION",
+        "NATIVE-MESSAGING-PLATFORM-ADAPTERS",
+        "NATIVE-OBSERVABILITY-PLUGIN-CERTIFICATION",
+        "NATIVE-PLUGIN-AUTH-CERTIFICATION",
+        "NATIVE-PROVIDER-REAL-CERTIFICATION",
+        "NATIVE-REMOTE-EXECUTION-CERTIFICATION",
+        "NATIVE-SECRET-AUTH-PROVIDER-CERTIFICATION",
+        "NATIVE-SKILL-TOOL-OPERATIONS",
+        "NATIVE-TOOL-INTEGRATION-ADAPTERS",
+        "NATIVE-UI-SURFACE-CERTIFICATION"
+      ],
+      "verifiedReceipts": 0,
+      "receiptSchema": "nolane.external-certification-receipt.v1"
+    },
+    "wave18": {
+      "status": "blocked_external",
+      "title": "Provider-Real Dogfood, Adversarial Replay and Parity Freeze",
+      "dogfoodScenarios": [
+        "bug-fix-with-reproduction-test",
+        "feature-with-hidden-acceptance-test",
+        "security-audit-and-remediation",
+        "browser-computer-use-journey",
+        "multi-agent-delegated-task",
+        "scheduled-background-task",
+        "messaging-triggered-task",
+        "media-voice-task",
+        "remote-execution-task",
+        "update-restart-resume-task"
+      ],
+      "adversarialScenarios": [
+        "prompt-injection",
+        "tool-result-injection",
+        "secret-exfiltration",
+        "path-traversal",
+        "symlink-escape",
+        "malicious-plugin",
+        "oauth-replay",
+        "messaging-duplicate-reorder",
+        "browser-malicious-download",
+        "provider-disconnect",
+        "worker-crash",
+        "corrupted-session-store"
+      ],
+      "executedScenarios": 0
+    },
+    "wave19": {
+      "status": "blocked_external",
+      "title": "Final Stable Audit and Nolane 5.0.0",
+      "blockers": [
+        "15 external behavioral contracts remain",
+        "5 Nolane acceptance requirements remain open",
+        "Windows and provider-real evidence is absent",
+        "independent parity review is absent"
+      ]
+    }
+  },
+  "claims": {
+    "completeParityClaimAllowed": false,
+    "superiorityClaimAllowed": false
+  },
+  "receiptSha256": "7c3b70410f6ac53120a52fd8413e83bd01cbc3e313d6509e984ad2ae05f08d9a"
+}

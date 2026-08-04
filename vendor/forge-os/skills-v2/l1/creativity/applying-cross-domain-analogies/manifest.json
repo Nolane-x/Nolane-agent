@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 2,
+  "id": "applying-cross-domain-analogies",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Applying Cross Domain Analogies",
+    "description": "Use when applying cross domain analogies within creativity lifecycle boundaries, especially when does the artifact make the owned decision for applying cross domain analogies explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "creativity"
+    ],
+    "keywords": [
+      "applying-cross-domain-analogies",
+      "applying",
+      "cross",
+      "domain",
+      "analogies",
+      "within",
+      "creativity",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require applying cross domain analogies within creativity lifecycle boundaries",
+      "the typed inputs for applying-cross-domain-analogies are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "creative-brief",
+        "schema": "artifact://forgeos/creative-brief/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "candidate-ideas",
+        "schema": "artifact://forgeos/candidate-ideas/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for applying cross domain analogies explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by applying cross domain analogies.",
+        "evidence": "applying-cross-domain-analogies-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to applying cross domain analogies.",
+        "evidence": "applying-cross-domain-analogies-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply applying cross domain analogies only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "applying-cross-domain-analogies-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "applying-cross-domain-analogies-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if applying cross domain analogies were incomplete or implemented incorrectly.",
+        "evidence": "applying-cross-domain-analogies-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for applying cross domain analogies explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "applying-cross-domain-analogies-decision-table",
+      "applying-cross-domain-analogies-verification-report",
+      "applying-cross-domain-analogies-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "applying-cross-domain-analogies-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 725,
+    "hardTokens": 1125,
+    "outputReserveTokens": 281
+  },
+  "quality": {
+    "benchmarkIds": [
+      "applying-cross-domain-analogies-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "graphic-design.design-concept",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:applying-cross-domain-analogies",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "f0c457529ceac6df3ca6cf57c99ca37246d2094c69c779f6d8c50fa37155a139",
+        "bytes": 978,
+        "tokens": {
+          "gpt-5.6": 263,
+          "claude-opus-4.2": 276,
+          "gemini-3.0-pro": 251,
+          "qwen3.5-32b": 292
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "fa219c5ee06d34b5c7d4047b58c04818ad8d95b564905e830c05485d9766e334",
+        "bytes": 730,
+        "tokens": {
+          "gpt-5.6": 197,
+          "claude-opus-4.2": 206,
+          "gemini-3.0-pro": 188,
+          "qwen3.5-32b": 218
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "3ce2fcfb9414a7f2f691d43d8f008915a5236d696382a9dccdb8edcee807fc61",
+        "bytes": 307,
+        "tokens": {
+          "gpt-5.6": 83,
+          "claude-opus-4.2": 87,
+          "gemini-3.0-pro": 79,
+          "qwen3.5-32b": 92
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "ba288ebc92310bceb30ce0e5b4ce5f4c33ca81e2893d6315b1d3f3d7d2e4939c",
+        "bytes": 625,
+        "tokens": {
+          "gpt-5.6": 169,
+          "claude-opus-4.2": 177,
+          "gemini-3.0-pro": 161,
+          "qwen3.5-32b": 187
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "8a2d9687738f6164c7a3b85bedcb908bc27b267e03990f4f2fb0be59136b4c93",
+        "bytes": 335,
+        "tokens": {
+          "gpt-5.6": 91,
+          "claude-opus-4.2": 95,
+          "gemini-3.0-pro": 86,
+          "qwen3.5-32b": 100
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "220419f17de2605dfab8b8496dd032d841a470d942e2e6188f7e794c1d0f81bf",
+        "bytes": 245,
+        "tokens": {
+          "gpt-5.6": 66,
+          "claude-opus-4.2": 70,
+          "gemini-3.0-pro": 63,
+          "qwen3.5-32b": 74
+        }
+      }
+    ],
+    "indexSha256": "938ac2f0b2b601722bfae2f2d10479de30cd6a31e276cb17d95be6aaad85de47"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "32e045af95842062e0af4b2fdbec9d297e3acbca4512eff897b98d75685b3d86"
+}

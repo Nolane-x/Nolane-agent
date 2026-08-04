@@ -1,0 +1,143 @@
+{
+  "name": "testing-agent-tool-abuse",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "security",
+  "domain": null,
+  "status": "stable",
+  "stages": [
+    "verification"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "threat-model",
+    "verified-build"
+  ],
+  "produces": [
+    "security-review"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:security-review"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/security.md",
+  "method": {
+    "focus": "verify that untrusted prompts, retrieved content, and agent outputs cannot exceed tool authority or bypass human decisions",
+    "steps": [
+      "Enumerate tools, permissions, side effects, irreversible actions, and authority delegation paths.",
+      "Construct indirect prompt injection, tool argument manipulation, cross-context, replay, and confused-deputy scenarios.",
+      "Verify server-side schema, authorization, scope, idempotency, and human confirmation independently of model compliance.",
+      "Test least-privilege degradation when a tool or model is compromised.",
+      "Record exploit traces without exposing live credentials or harming external systems."
+    ],
+    "verification": [
+      "Can content from a file or webpage cause a privileged call?",
+      "Can the model invent a confirmation token?",
+      "Are read-only and destructive annotations truthful?",
+      "Can tool output inject a second instruction into the agent?"
+    ],
+    "evidence": [
+      "abuse-case suite",
+      "tool permission matrix",
+      "blocked exploit traces",
+      "residual-risk report"
+    ],
+    "traps": [
+      "prompt-only defenses",
+      "trusting model refusal",
+      "testing against production accounts"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Define assets, trust boundaries, actors, and abuse objectives.",
+    "Map the targeted control or attack surface.",
+    "Enumerate tools, permissions, side effects, irreversible actions, and authority delegation paths.",
+    "Construct indirect prompt injection, tool argument manipulation, cross-context, replay, and confused-deputy scenarios.",
+    "Verify server-side schema, authorization, scope, idempotency, and human confirmation independently of model compliance.",
+    "Test least-privilege degradation when a tool or model is compromised.",
+    "Record exploit traces without exposing live credentials or harming external systems.",
+    "Construct authorized, reproducible adversarial cases.",
+    "Verify server-side enforcement and least privilege.",
+    "Record exploitability, impact, remediation, and residual risk.",
+    "Block release readiness for unresolved critical findings."
+  ],
+  "gate": {
+    "reviewerRole": "security-reviewer",
+    "rules": [
+      "The output directly and completely performs testing agent tool abuse within its declared boundary.",
+      "Can content from a file or webpage cause a privileged call?",
+      "Can the model invent a confirmation token?",
+      "Are read-only and destructive annotations truthful?",
+      "Can tool output inject a second instruction into the agent?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "security-review"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "abuse-case suite",
+      "tool permission matrix",
+      "blocked exploit traces",
+      "residual-risk report"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1658,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "prompt-only defenses",
+    "trusting model refusal",
+    "testing against production accounts"
+  ],
+  "optionalConsumes": [],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when testing agent tool abuse is required during security work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

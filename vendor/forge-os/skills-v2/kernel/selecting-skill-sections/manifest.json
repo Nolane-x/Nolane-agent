@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 2,
+  "id": "selecting-skill-sections",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Selecting Skill Sections",
+    "description": "Use when a technique package contains overview, procedure, decisions, verification, failure modes, examples, or references and only a subset is needed for the current operation.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "kernel"
+    ],
+    "keywords": [
+      "selecting-skill-sections",
+      "a",
+      "technique",
+      "package",
+      "contains",
+      "overview",
+      "procedure",
+      "decisions",
+      "verification"
+    ],
+    "antiTriggers": [
+      "the complete skill is shorter than the section-selection overhead",
+      "the requested section digest is stale"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "project-state",
+        "schema": "artifact://forgeos/project-state/v2"
+      }
+    ],
+    "produces": [
+      {
+        "type": "section-selection",
+        "schema": "artifact://forgeos/section-selection/v1"
+      }
+    ],
+    "invariants": [
+      "No executable script is materialized as instruction text.",
+      "Selected section hashes match the provider manifest.",
+      "Median selected section count remains bounded."
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "confirmed intent and current semantic revision exist"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Classify the operation as planning, execution, verification, recovery, or unfamiliar transfer.",
+        "evidence": "No executable script is materialized as instruction text."
+      },
+      {
+        "id": "step-2",
+        "action": "Select mandatory overview and the minimum operation-specific sections.",
+        "evidence": "Selected section hashes match the provider manifest."
+      },
+      {
+        "id": "step-3",
+        "action": "Add examples or references only when uncertainty justifies their cost.",
+        "evidence": "Median selected section count remains bounded."
+      },
+      {
+        "id": "step-4",
+        "action": "Bind section IDs, digests, token counts, and omitted sections into the route.",
+        "evidence": "Median selected section count remains bounded."
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "section-selection is produced with current evidence or a blocker is recorded"
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "No executable script is materialized as instruction text.",
+      "Selected section hashes match the provider manifest.",
+      "Median selected section count remains bounded."
+    ],
+    "reviewerRole": "kernel-skill-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "behavioral-eval-receipt",
+      "context-receipt"
+    ],
+    "evaluatorIds": [
+      "selecting-skill-sections-evaluator-v2"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 5,
+    "maxReferenceDepth": 2,
+    "targetTokens": 543,
+    "hardTokens": 935,
+    "outputReserveTokens": 256
+  },
+  "quality": {
+    "benchmarkIds": [
+      "selecting-skill-sections-public-v1"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L0",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "coverage-ledger",
+      "typed-preconditions",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionability-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.optimize-cost",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:l0:selecting-skill-sections",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.selecting-skill-sections",
+      "fitScore": 100,
+      "mappingEvidence": "reviewed:l0:selecting-skill-sections",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "dc5b25c6bae2bbeb354266d1eec0ac91e367f76427dd41f715deb83c4165523a",
+        "bytes": 925,
+        "tokens": {
+          "gpt-5.6": 249,
+          "claude-opus-4.2": 261,
+          "gemini-3.0-pro": 238,
+          "qwen3.5-32b": 277
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "44698527f78e17849e23b5fb1601dbcb8701fc16c191665f4c00cec3ae94308d",
+        "bytes": 590,
+        "tokens": {
+          "gpt-5.6": 159,
+          "claude-opus-4.2": 167,
+          "gemini-3.0-pro": 152,
+          "qwen3.5-32b": 177
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "ce6b780e7111bd23302b7787a5ac03cd99f1711936b70d624202d73da690a469",
+        "bytes": 391,
+        "tokens": {
+          "gpt-5.6": 106,
+          "claude-opus-4.2": 111,
+          "gemini-3.0-pro": 101,
+          "qwen3.5-32b": 117
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "aad774d12af4f44a5dd55c5f18f94cdb168250bf657bb3aa5c7d462e72ece83b",
+        "bytes": 261,
+        "tokens": {
+          "gpt-5.6": 71,
+          "claude-opus-4.2": 74,
+          "gemini-3.0-pro": 67,
+          "qwen3.5-32b": 78
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "f3d31f4c8ce8dbce9cd6fa1e0cb107e7a3723f8dd7ce4c23ad3079b25ea679d6",
+        "bytes": 227,
+        "tokens": {
+          "gpt-5.6": 62,
+          "claude-opus-4.2": 64,
+          "gemini-3.0-pro": 59,
+          "qwen3.5-32b": 68
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "33026da7fb58ed8b9ab8cabfc0a31b4a2c3d2d0b3622bc81e773d391dc2e75bc",
+        "bytes": 354,
+        "tokens": {
+          "gpt-5.6": 96,
+          "claude-opus-4.2": 100,
+          "gemini-3.0-pro": 91,
+          "qwen3.5-32b": 106
+        }
+      }
+    ],
+    "indexSha256": "67546dcf70aa7669df7c39c76ad876813e06be62deaa557a35ab84d6a658ef0f"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "09ae7fb42ed3b56a26d357eee782def8b9cc3af7a3d75e6a1850175274f32a96"
+}

@@ -1,0 +1,16 @@
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
+import { assertPrincipal, principalRecord } from '../core/principals.mjs';
+const digest=(value)=>createHash('sha256').update(String(value)).digest('hex');
+const transitions={discovered:['quarantined'],quarantined:['candidate'],candidate:['stable','quarantined'],stable:['quarantined','revoked','expired'],revoked:[],expired:['quarantined']};
+export function issueFederationApproval(provider,targetStatus,principal,{ttlMs=300000}={}){
+  assertPrincipal(principal,{type:'human',role:'federation-admin',scope:'approve'});if(!transitions[provider.status]?.includes(targetStatus))throw new Error(`Invalid federation transition ${provider.status} -> ${targetStatus}`);
+  const token=randomBytes(32).toString('base64url');const record={id:`fedapproval_${randomUUID().replaceAll('-','')}`,providerId:provider.providerId,providerDigest:provider.providerDigest,fromStatus:provider.status,targetStatus,principal:principalRecord(principal),tokenSha256:digest(token),issuedAt:new Date().toISOString(),expiresAt:new Date(Date.now()+ttlMs).toISOString(),used:false};return{record,token};
+}
+function verifyApproval(provider,targetStatus,{approval,token,principal}){assertPrincipal(principal,{type:'human',role:'federation-admin',scope:'approve'});if(!approval||approval.used||Date.parse(approval.expiresAt)<=Date.now())throw new Error('Federation approval is invalid or expired');if(approval.providerId!==provider.providerId||approval.providerDigest!==provider.providerDigest||approval.fromStatus!==provider.status||approval.targetStatus!==targetStatus)throw new Error('Federation approval is bound to another payload');if(approval.principal.id!==principal.id||approval.tokenSha256!==digest(token))throw new Error('Federation approval principal or token mismatch');return{...approval,used:true,usedAt:new Date().toISOString()};}
+export function promoteProvider(provider,input={}){
+  const targetStatus=input.targetStatus;if(!transitions[provider.status]?.includes(targetStatus)||!['candidate','stable'].includes(targetStatus))throw new Error(`Invalid federation transition ${provider.status} -> ${targetStatus}`);
+  if(provider.trust?.blockers?.length)throw new Error('Provider has blocking trust findings');if(provider.trust?.score<60)throw new Error('Provider trust score is below promotion threshold');
+  for(const [name,receipt] of [['scanReceipt',input.scanReceipt],['evaluationReceipt',input.evaluationReceipt]])if(receipt?.status!=='pass'||receipt.providerDigest!==provider.providerDigest)throw new Error(`${name} is missing, failed, or stale`);
+  const consumed=verifyApproval(provider,targetStatus,input);const at=new Date().toISOString();return{...provider,status:targetStatus,statusHistory:[...(provider.statusHistory??[]),{from:provider.status,to:targetStatus,at,approvalId:consumed.id}],promotion:{scanReceipt:input.scanReceipt,evaluationReceipt:input.evaluationReceipt,approval:consumed}};
+}
+export function quarantineProvider(provider,finding){const at=new Date().toISOString();return{...provider,status:'quarantined',trust:{...(provider.trust??{}),blockers:[...new Set([...(provider.trust?.blockers??[]),finding.code])]},statusHistory:[...(provider.statusHistory??[]),{from:provider.status,to:'quarantined',at,finding}]};}

@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.0.0",
+  "asOf": "2026-08-03",
+  "policy": {
+    "officialProviderDocs": "highest-authority for model IDs, lifecycle, limits, pricing, and supported API features",
+    "officialModelCards": "highest-authority for architecture, parameter count, license, modalities, and self-hosting details",
+    "liveProviderDiscovery": "highest-authority for account-visible availability and provider model IDs",
+    "aggregatorCatalogs": "operational evidence for a provider deployment; never silently overwrites canonical base-model identity",
+    "familyInference": "low-confidence fallback only; unknown facts remain null"
+  },
+  "sources": [
+    {
+      "id": "openai-models-api",
+      "kind": "official-provider-api",
+      "title": "OpenAI Models API",
+      "url": "https://platform.openai.com/docs/api-reference/models/object",
+      "facts": ["GET /v1/models lists account-visible model IDs", "model list alone does not expose full capability metadata"]
+    },
+    {
+      "id": "anthropic-models-api",
+      "kind": "official-provider-api",
+      "title": "Anthropic Models API",
+      "url": "https://docs.anthropic.com/en/api/models-list",
+      "facts": ["paginated model listing", "availability must be observed per account"]
+    },
+    {
+      "id": "gemini-models-guide",
+      "kind": "official-provider-docs",
+      "title": "Gemini API Models",
+      "url": "https://ai.google.dev/gemini-api/docs/models",
+      "facts": ["Gemini 3.6 Flash, 3.5 Flash, 3.5 Flash-Lite and 3.1 lines", "stable/preview/latest/experimental naming", "published deprecation schedules"]
+    },
+    {
+      "id": "gemini-models-list-api",
+      "kind": "official-provider-api",
+      "title": "Gemini models.list",
+      "url": "https://ai.google.dev/api/models",
+      "facts": ["pagination", "input/output token limits", "supported generation actions"]
+    },
+    {
+      "id": "deepseek-v4-pricing",
+      "kind": "official-provider-docs",
+      "title": "DeepSeek V4 Models and Pricing",
+      "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "facts": ["deepseek-v4-flash and deepseek-v4-pro", "1M context", "384K maximum output", "tool calls and JSON output", "thinking and non-thinking modes", "pricing and concurrency"]
+    },
+    {
+      "id": "deepseek-v4-release",
+      "kind": "official-model-card",
+      "title": "DeepSeek V4 Preview Release",
+      "url": "https://api-docs.deepseek.com/news/news260424/",
+      "facts": ["V4 Pro 1.6T total / 49B active", "V4 Flash 284B total / 13B active", "legacy deepseek-chat and deepseek-reasoner retirement"]
+    },
+    {
+      "id": "kimi-k3-model-card",
+      "kind": "official-model-card",
+      "title": "MoonshotAI Kimi K3",
+      "url": "https://github.com/MoonshotAI/Kimi-K3",
+      "facts": ["2.8T total / 104B active", "MoE", "1,048,576 context", "native multimodal agentic coding", "MXFP4 weights"]
+    },
+    {
+      "id": "qwen3-coder-model-cards",
+      "kind": "official-model-card",
+      "title": "Qwen3-Coder Collection",
+      "url": "https://huggingface.co/collections/Qwen/qwen3-coder",
+      "facts": ["30B-A3B and 480B-A35B variants", "agentic coding", "256K native context with runtime-dependent extension"]
+    },
+    {
+      "id": "nemotron-3-nano-model-card",
+      "kind": "official-model-card",
+      "title": "NVIDIA Nemotron 3 Nano 30B-A3B",
+      "url": "https://docs.api.nvidia.com/nim/re/reference/nvidia-nemotron-3-nano-30b-a3b",
+      "facts": ["30B total / approximately 3.5B active", "reasoning switch", "tool parser support", "up to 1M context with lower runtime defaults"]
+    },
+    {
+      "id": "models-dev",
+      "kind": "aggregator-catalog",
+      "title": "models.dev",
+      "url": "https://models.dev",
+      "facts": ["provider-agnostic base model metadata", "provider deployment records", "limits, costs, modalities, status and reasoning options"]
+    },
+    {
+      "id": "openrouter-models-api",
+      "kind": "provider-catalog-api",
+      "title": "OpenRouter Models API",
+      "url": "https://openrouter.ai/api/v1/models",
+      "facts": ["live OpenRouter availability", "context, pricing, modalities and supported request parameters"]
+    },
+    {
+      "id": "litellm-model-map",
+      "kind": "aggregator-catalog",
+      "title": "LiteLLM model cost and context map",
+      "url": "https://github.com/BerriAI/litellm",
+      "facts": ["cross-provider model metadata and capability flags", "pricing and context metadata"]
+    },
+    {
+      "id": "portkey-models",
+      "kind": "aggregator-catalog",
+      "title": "Portkey AI Models Catalog",
+      "url": "https://github.com/Portkey-AI/models",
+      "facts": ["large cross-provider model inventory", "provider deployment and pricing metadata"]
+    }
+  ]
+}

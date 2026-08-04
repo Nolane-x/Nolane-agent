@@ -1,0 +1,38 @@
+[
+  {
+    "id": "defining-service-objectives-application",
+    "kind": "application",
+    "input": "Task directly requiring defining service objectives within operations lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "defining-service-objectives-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require defining service objectives within operations lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "defining-service-objectives-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "defining-service-objectives-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "defining-service-objectives-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "defining-service-objectives-transfer",
+    "kind": "transfer",
+    "input": "Apply the defining-service-objectives mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

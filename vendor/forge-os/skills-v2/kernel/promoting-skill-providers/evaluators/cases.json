@@ -1,0 +1,20 @@
+[
+  {
+    "id": "promoting-skill-providers-positive",
+    "kind": "application",
+    "input": "A task requiring Promoting Skill Providers",
+    "expectedEvidence": [
+      "Promotion uses stored receipts, not caller-provided scores.",
+      "Critical blockers always win.",
+      "Tenant admin cannot mutate global built-ins."
+    ],
+    "baselineFailure": "Using stars as trust proof."
+  },
+  {
+    "id": "promoting-skill-providers-anti-trigger",
+    "kind": "counter-example",
+    "input": "provider content or source revision changed after evaluation",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

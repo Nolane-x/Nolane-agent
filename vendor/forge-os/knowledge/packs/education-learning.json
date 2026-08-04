@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.education-learning",
+  "domain": "education-learning",
+  "title": "Education and Learning Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "learning objectives",
+    "curriculum",
+    "assessment",
+    "feedback",
+    "accessibility",
+    "motivation",
+    "practice",
+    "analytics"
+  ],
+  "capabilities": [
+    "education-learning.map-landscape",
+    "education-learning.frame-problem",
+    "education-learning.research-users",
+    "education-learning.define-requirements",
+    "education-learning.model-domain",
+    "education-learning.compare-alternatives",
+    "education-learning.design-concept",
+    "education-learning.prototype-critical-flow",
+    "education-learning.validate-prototype",
+    "education-learning.design-architecture",
+    "education-learning.model-data",
+    "education-learning.model-threats",
+    "education-learning.plan-delivery",
+    "education-learning.implement-core",
+    "education-learning.integrate-dependencies",
+    "education-learning.verify-contracts",
+    "education-learning.test-boundaries",
+    "education-learning.test-resilience",
+    "education-learning.test-performance",
+    "education-learning.test-security",
+    "education-learning.audit-accessibility",
+    "education-learning.optimize-quality",
+    "education-learning.optimize-cost",
+    "education-learning.document-system",
+    "education-learning.prepare-migration",
+    "education-learning.plan-rollout",
+    "education-learning.instrument-observability",
+    "education-learning.operate-lifecycle",
+    "education-learning.respond-incidents",
+    "education-learning.govern-evolution",
+    "education-learning.measure-outcomes",
+    "education-learning.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "anthropic-skills",
+      "title": "Anthropic Agent Skills",
+      "url": "https://github.com/anthropics/skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "Mixed",
+        "mode": "link-only"
+      }
+    },
+    {
+      "id": "w3c-wcag",
+      "title": "W3C WCAG",
+      "url": "https://www.w3.org/WAI/standards-guidelines/wcag/",
+      "authority": "standards-body",
+      "trust": "verified",
+      "revision": "web:2026-07-25",
+      "license": {
+        "spdx": "W3C-Document",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

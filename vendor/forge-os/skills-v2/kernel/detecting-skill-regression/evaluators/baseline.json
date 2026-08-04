@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "status": "red-baseline-recorded",
+  "scenarios": [
+    {
+      "caseId": "detecting-skill-regression-positive",
+      "observedFailure": "Testing only the model used by the author."
+    },
+    {
+      "caseId": "detecting-skill-regression-anti-trigger",
+      "observedFailure": "superficial keyword activation"
+    }
+  ],
+  "note": "Candidate status only. Independent multi-model holdout is required before stable promotion."
+}

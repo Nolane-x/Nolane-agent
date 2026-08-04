@@ -1,0 +1,20 @@
+[
+  {
+    "id": "writing-agent-skills-with-tdd-positive",
+    "kind": "application",
+    "input": "A task requiring Writing Agent Skills with TDD",
+    "expectedEvidence": [
+      "A failing baseline exists.",
+      "Candidate improvement is measured on the same cases and seeds.",
+      "No critical regression is hidden by aggregate score."
+    ],
+    "baselineFailure": "Writing a complete skill before observing failure."
+  },
+  {
+    "id": "writing-agent-skills-with-tdd-anti-trigger",
+    "kind": "counter-example",
+    "input": "project-specific instructions that are not reusable",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

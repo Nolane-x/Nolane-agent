@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 2,
+  "id": "consolidating-project-memory",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Consolidating Project Memory",
+    "description": "Use when decisions, blockers, conventions, and stable summaries must survive across tasks without treating conversation transcript as the project source of truth.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "kernel"
+    ],
+    "keywords": [
+      "consolidating-project-memory",
+      "decisions",
+      "blockers",
+      "conventions",
+      "and",
+      "stable",
+      "summaries",
+      "must",
+      "survive"
+    ],
+    "antiTriggers": [
+      "ephemeral reasoning has no future decision value",
+      "the source artifacts are currently invalidated"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "project-state",
+        "schema": "artifact://forgeos/project-state/v2"
+      }
+    ],
+    "produces": [
+      {
+        "type": "memory-checkpoint",
+        "schema": "artifact://forgeos/memory-checkpoint/v1"
+      }
+    ],
+    "invariants": [
+      "Every summary has traceable sources.",
+      "Stale memory is excluded automatically.",
+      "Archive transcripts are never treated as authoritative state."
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "confirmed intent and current semantic revision exist"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Classify information into active, task, project, or archive tiers.",
+        "evidence": "Every summary has traceable sources."
+      },
+      {
+        "id": "step-2",
+        "action": "Summarize only stable decisions with source IDs and hashes.",
+        "evidence": "Stale memory is excluded automatically."
+      },
+      {
+        "id": "step-3",
+        "action": "Expire or invalidate summaries when any source hash changes.",
+        "evidence": "Archive transcripts are never treated as authoritative state."
+      },
+      {
+        "id": "step-4",
+        "action": "Select fresh memory by tier priority and request budget.",
+        "evidence": "Archive transcripts are never treated as authoritative state."
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "memory-checkpoint is produced with current evidence or a blocker is recorded"
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Every summary has traceable sources.",
+      "Stale memory is excluded automatically.",
+      "Archive transcripts are never treated as authoritative state."
+    ],
+    "reviewerRole": "kernel-skill-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "behavioral-eval-receipt",
+      "context-receipt"
+    ],
+    "evaluatorIds": [
+      "consolidating-project-memory-evaluator-v2"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 5,
+    "maxReferenceDepth": 2,
+    "targetTokens": 502,
+    "hardTokens": 889,
+    "outputReserveTokens": 256
+  },
+  "quality": {
+    "benchmarkIds": [
+      "consolidating-project-memory-public-v1"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L0",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "coverage-ledger",
+      "typed-preconditions",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionability-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.model-data",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:l0:consolidating-project-memory",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.consolidating-project-memory",
+      "fitScore": 100,
+      "mappingEvidence": "reviewed:l0:consolidating-project-memory",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "701ef93f80e3e231db75eff3e537a2193c9d002bacb0fbaf4159850eb411c77e",
+        "bytes": 861,
+        "tokens": {
+          "gpt-5.6": 232,
+          "claude-opus-4.2": 243,
+          "gemini-3.0-pro": 221,
+          "qwen3.5-32b": 258
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "386f3f4c76b93588c38d1f6a35c9499fa2099480ef54bcf04c078aa5f0d8dd21",
+        "bytes": 520,
+        "tokens": {
+          "gpt-5.6": 140,
+          "claude-opus-4.2": 147,
+          "gemini-3.0-pro": 134,
+          "qwen3.5-32b": 156
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "ce6b780e7111bd23302b7787a5ac03cd99f1711936b70d624202d73da690a469",
+        "bytes": 391,
+        "tokens": {
+          "gpt-5.6": 106,
+          "claude-opus-4.2": 111,
+          "gemini-3.0-pro": 101,
+          "qwen3.5-32b": 117
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "14be53ffd5fd4b24b9bfc9beea55c165c07877729b19900fb9ed37e6d48a129e",
+        "bytes": 242,
+        "tokens": {
+          "gpt-5.6": 66,
+          "claude-opus-4.2": 69,
+          "gemini-3.0-pro": 63,
+          "qwen3.5-32b": 73
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "4ab609576d4a7106d82e201c3438771a3cb000280806c1d74368320dba95476d",
+        "bytes": 211,
+        "tokens": {
+          "gpt-5.6": 57,
+          "claude-opus-4.2": 60,
+          "gemini-3.0-pro": 55,
+          "qwen3.5-32b": 63
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "6fe3a4df6dd36611ee7154751babbf01db1dded3679ded2e4c71be8a4814c03b",
+        "bytes": 354,
+        "tokens": {
+          "gpt-5.6": 96,
+          "claude-opus-4.2": 100,
+          "gemini-3.0-pro": 91,
+          "qwen3.5-32b": 106
+        }
+      }
+    ],
+    "indexSha256": "b1d80ee84b7faf9c3e534d582ae123bf64ed175bb15cb4118ce24c6194bc2fcb"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "d40b54f12514f90ad186a4c3f5eb4e96bb31c56a3713eea4eb5d25200ed9eb95"
+}

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.machine-learning",
+  "domain": "machine-learning",
+  "title": "Machine Learning Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "training",
+    "evaluation",
+    "features",
+    "drift",
+    "fairness",
+    "serving",
+    "optimization",
+    "reproducibility"
+  ],
+  "capabilities": [
+    "machine-learning.map-landscape",
+    "machine-learning.frame-problem",
+    "machine-learning.research-users",
+    "machine-learning.define-requirements",
+    "machine-learning.model-domain",
+    "machine-learning.compare-alternatives",
+    "machine-learning.design-concept",
+    "machine-learning.prototype-critical-flow",
+    "machine-learning.validate-prototype",
+    "machine-learning.design-architecture",
+    "machine-learning.model-data",
+    "machine-learning.model-threats",
+    "machine-learning.plan-delivery",
+    "machine-learning.implement-core",
+    "machine-learning.integrate-dependencies",
+    "machine-learning.verify-contracts",
+    "machine-learning.test-boundaries",
+    "machine-learning.test-resilience",
+    "machine-learning.test-performance",
+    "machine-learning.test-security",
+    "machine-learning.audit-accessibility",
+    "machine-learning.optimize-quality",
+    "machine-learning.optimize-cost",
+    "machine-learning.document-system",
+    "machine-learning.prepare-migration",
+    "machine-learning.plan-rollout",
+    "machine-learning.instrument-observability",
+    "machine-learning.operate-lifecycle",
+    "machine-learning.respond-incidents",
+    "machine-learning.govern-evolution",
+    "machine-learning.measure-outcomes",
+    "machine-learning.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "nvidia-skills",
+      "title": "NVIDIA Agent Skills",
+      "url": "https://github.com/NVIDIA/skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "Mixed",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

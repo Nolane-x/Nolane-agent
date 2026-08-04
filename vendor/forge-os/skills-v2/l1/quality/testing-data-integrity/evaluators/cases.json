@@ -1,0 +1,38 @@
+[
+  {
+    "id": "testing-data-integrity-application",
+    "kind": "application",
+    "input": "Task directly requiring testing data integrity within quality lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "testing-data-integrity-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require testing data integrity within quality lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "testing-data-integrity-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "testing-data-integrity-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "testing-data-integrity-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "testing-data-integrity-transfer",
+    "kind": "transfer",
+    "input": "Apply the testing-data-integrity mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

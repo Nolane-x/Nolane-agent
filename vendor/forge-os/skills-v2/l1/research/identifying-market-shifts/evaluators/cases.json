@@ -1,0 +1,38 @@
+[
+  {
+    "id": "identifying-market-shifts-application",
+    "kind": "application",
+    "input": "Task directly requiring identifying market shifts within research lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "identifying-market-shifts-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require identifying market shifts within research lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "identifying-market-shifts-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "identifying-market-shifts-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "identifying-market-shifts-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "identifying-market-shifts-transfer",
+    "kind": "transfer",
+    "input": "Apply the identifying-market-shifts mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

@@ -1,0 +1,146 @@
+{
+  "name": "writing-minimal-sufficient-code",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "implementation",
+  "domain": null,
+  "status": "stable",
+  "stages": [
+    "implementation"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "execution-plan",
+    "acceptance-contracts"
+  ],
+  "produces": [
+    "implemented-increment"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:implemented-increment"
+  ],
+  "tools": [
+    "filesystem",
+    "shell"
+  ],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/implementation.md",
+  "method": {
+    "focus": "minimize code, dependencies, layers, and state while fully satisfying contracts, risks, and operability",
+    "steps": [
+      "List required behaviors, quality attributes, and extension points that have current consumers.",
+      "Choose the fewest concepts that make invalid states hard to represent.",
+      "Delete duplicate paths, speculative flags, pass-through layers, and narration-shaped abstractions.",
+      "Measure complexity through public surface, branches, state transitions, dependencies, and change amplification—not line count alone.",
+      "Verify behavior and readability after simplification."
+    ],
+    "verification": [
+      "Does every public abstraction have at least one real consumer?",
+      "Can a layer be removed without losing a contract or boundary?",
+      "Is configuration replacing a missing product decision?",
+      "Did simplification preserve tests, observability, and security?"
+    ],
+    "evidence": [
+      "complexity budget",
+      "deleted-code diff",
+      "behavior regression report"
+    ],
+    "traps": [
+      "code golf",
+      "premature frameworks",
+      "one interface per class without substitution"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Load one task, its direct contracts, and its failing test.",
+    "Verify the test fails for the intended missing behavior.",
+    "List required behaviors, quality attributes, and extension points that have current consumers.",
+    "Choose the fewest concepts that make invalid states hard to represent.",
+    "Delete duplicate paths, speculative flags, pass-through layers, and narration-shaped abstractions.",
+    "Measure complexity through public surface, branches, state transitions, dependencies, and change amplification—not line count alone.",
+    "Verify behavior and readability after simplification.",
+    "Implement the minimum sufficient change.",
+    "Run focused tests, then relevant regression tests.",
+    "Review the diff for complexity, security, and contract drift.",
+    "Commit evidence and hand off to independent review."
+  ],
+  "gate": {
+    "reviewerRole": "independent-reviewer",
+    "rules": [
+      "The output directly and completely performs writing minimal sufficient code within its declared boundary.",
+      "Does every public abstraction have at least one real consumer?",
+      "Can a layer be removed without losing a contract or boundary?",
+      "Is configuration replacing a missing product decision?",
+      "Did simplification preserve tests, observability, and security?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "implemented-increment"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "complexity budget",
+      "deleted-code diff",
+      "behavior regression report"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1643,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "code golf",
+    "premature frameworks",
+    "one interface per class without substitution"
+  ],
+  "optionalConsumes": [],
+  "requiredTools": [
+    "filesystem",
+    "shell"
+  ],
+  "optionalTools": [],
+  "description": "Use when writing minimal sufficient code is required during implementation work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

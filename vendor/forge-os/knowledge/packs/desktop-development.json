@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.desktop-development",
+  "domain": "desktop-development",
+  "title": "Desktop Development Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "windowing",
+    "native integration",
+    "packaging",
+    "updates",
+    "filesystem",
+    "accessibility",
+    "cross-platform",
+    "performance"
+  ],
+  "capabilities": [
+    "desktop-development.map-landscape",
+    "desktop-development.frame-problem",
+    "desktop-development.research-users",
+    "desktop-development.define-requirements",
+    "desktop-development.model-domain",
+    "desktop-development.compare-alternatives",
+    "desktop-development.design-concept",
+    "desktop-development.prototype-critical-flow",
+    "desktop-development.validate-prototype",
+    "desktop-development.design-architecture",
+    "desktop-development.model-data",
+    "desktop-development.model-threats",
+    "desktop-development.plan-delivery",
+    "desktop-development.implement-core",
+    "desktop-development.integrate-dependencies",
+    "desktop-development.verify-contracts",
+    "desktop-development.test-boundaries",
+    "desktop-development.test-resilience",
+    "desktop-development.test-performance",
+    "desktop-development.test-security",
+    "desktop-development.audit-accessibility",
+    "desktop-development.optimize-quality",
+    "desktop-development.optimize-cost",
+    "desktop-development.document-system",
+    "desktop-development.prepare-migration",
+    "desktop-development.plan-rollout",
+    "desktop-development.instrument-observability",
+    "desktop-development.operate-lifecycle",
+    "desktop-development.respond-incidents",
+    "desktop-development.govern-evolution",
+    "desktop-development.measure-outcomes",
+    "desktop-development.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "qt-agent-skills",
+      "title": "Qt AI Engineering Skills",
+      "url": "https://github.com/TheQtCompanyRnD/agent-skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "Mixed",
+        "mode": "link-only"
+      }
+    },
+    {
+      "id": "apple-hig",
+      "title": "Apple Human Interface Guidelines",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/",
+      "authority": "vendor",
+      "trust": "verified",
+      "revision": "web:2026-07-25",
+      "license": {
+        "spdx": "Reference",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

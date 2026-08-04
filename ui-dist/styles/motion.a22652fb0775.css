@@ -1,0 +1,21 @@
+:root {
+  --motion-fast: 120ms;
+  --motion-normal: 160ms;
+  --motion-panel: 220ms;
+  --motion-ease: cubic-bezier(.2,.7,.2,1);
+}
+.motion-safe {
+  transition-property: transform, opacity;
+  transition-duration: var(--motion-normal);
+  transition-timing-function: var(--motion-ease);
+}
+.motion-enter { opacity: 0; transform: translateY(4px); }
+.motion-enter[data-active="true"] { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}

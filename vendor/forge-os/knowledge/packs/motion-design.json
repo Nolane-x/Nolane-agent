@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.motion-design",
+  "domain": "motion-design",
+  "title": "Motion Design Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "timing",
+    "easing",
+    "storyboards",
+    "transitions",
+    "kinetic type",
+    "camera",
+    "rendering",
+    "accessibility"
+  ],
+  "capabilities": [
+    "motion-design.map-landscape",
+    "motion-design.frame-problem",
+    "motion-design.research-users",
+    "motion-design.define-requirements",
+    "motion-design.model-domain",
+    "motion-design.compare-alternatives",
+    "motion-design.design-concept",
+    "motion-design.prototype-critical-flow",
+    "motion-design.validate-prototype",
+    "motion-design.design-architecture",
+    "motion-design.model-data",
+    "motion-design.model-threats",
+    "motion-design.plan-delivery",
+    "motion-design.implement-core",
+    "motion-design.integrate-dependencies",
+    "motion-design.verify-contracts",
+    "motion-design.test-boundaries",
+    "motion-design.test-resilience",
+    "motion-design.test-performance",
+    "motion-design.test-security",
+    "motion-design.audit-accessibility",
+    "motion-design.optimize-quality",
+    "motion-design.optimize-cost",
+    "motion-design.document-system",
+    "motion-design.prepare-migration",
+    "motion-design.plan-rollout",
+    "motion-design.instrument-observability",
+    "motion-design.operate-lifecycle",
+    "motion-design.respond-incidents",
+    "motion-design.govern-evolution",
+    "motion-design.measure-outcomes",
+    "motion-design.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "anthropic-skills",
+      "title": "Anthropic Agent Skills",
+      "url": "https://github.com/anthropics/skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "Mixed",
+        "mode": "link-only"
+      }
+    },
+    {
+      "id": "material-design",
+      "title": "Material Design",
+      "url": "https://m3.material.io/",
+      "authority": "vendor",
+      "trust": "verified",
+      "revision": "web:2026-07-25",
+      "license": {
+        "spdx": "Reference",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

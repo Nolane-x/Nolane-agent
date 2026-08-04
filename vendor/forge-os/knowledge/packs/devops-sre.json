@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.devops-sre",
+  "domain": "devops-sre",
+  "title": "DevOps and SRE Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "deployment",
+    "SLO",
+    "error budgets",
+    "incident response",
+    "capacity",
+    "observability",
+    "rollback",
+    "runbooks"
+  ],
+  "capabilities": [
+    "devops-sre.map-landscape",
+    "devops-sre.frame-problem",
+    "devops-sre.research-users",
+    "devops-sre.define-requirements",
+    "devops-sre.model-domain",
+    "devops-sre.compare-alternatives",
+    "devops-sre.design-concept",
+    "devops-sre.prototype-critical-flow",
+    "devops-sre.validate-prototype",
+    "devops-sre.design-architecture",
+    "devops-sre.model-data",
+    "devops-sre.model-threats",
+    "devops-sre.plan-delivery",
+    "devops-sre.implement-core",
+    "devops-sre.integrate-dependencies",
+    "devops-sre.verify-contracts",
+    "devops-sre.test-boundaries",
+    "devops-sre.test-resilience",
+    "devops-sre.test-performance",
+    "devops-sre.test-security",
+    "devops-sre.audit-accessibility",
+    "devops-sre.optimize-quality",
+    "devops-sre.optimize-cost",
+    "devops-sre.document-system",
+    "devops-sre.prepare-migration",
+    "devops-sre.plan-rollout",
+    "devops-sre.instrument-observability",
+    "devops-sre.operate-lifecycle",
+    "devops-sre.respond-incidents",
+    "devops-sre.govern-evolution",
+    "devops-sre.measure-outcomes",
+    "devops-sre.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "superpowers",
+      "title": "Superpowers",
+      "url": "https://github.com/obra/superpowers",
+      "authority": "community",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "openssf-scorecard",
+      "title": "OpenSSF Scorecard",
+      "url": "https://github.com/ossf/scorecard",
+      "authority": "standards-body",
+      "trust": "verified",
+      "revision": "release:current-2026-07-25",
+      "license": {
+        "spdx": "Apache-2.0",
+        "mode": "vendor-allowed"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

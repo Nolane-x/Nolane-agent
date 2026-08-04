@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.database-engineering",
+  "domain": "database-engineering",
+  "title": "Database Engineering Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "schema design",
+    "transactions",
+    "indexes",
+    "replication",
+    "migration",
+    "backup",
+    "security",
+    "performance"
+  ],
+  "capabilities": [
+    "database-engineering.map-landscape",
+    "database-engineering.frame-problem",
+    "database-engineering.research-users",
+    "database-engineering.define-requirements",
+    "database-engineering.model-domain",
+    "database-engineering.compare-alternatives",
+    "database-engineering.design-concept",
+    "database-engineering.prototype-critical-flow",
+    "database-engineering.validate-prototype",
+    "database-engineering.design-architecture",
+    "database-engineering.model-data",
+    "database-engineering.model-threats",
+    "database-engineering.plan-delivery",
+    "database-engineering.implement-core",
+    "database-engineering.integrate-dependencies",
+    "database-engineering.verify-contracts",
+    "database-engineering.test-boundaries",
+    "database-engineering.test-resilience",
+    "database-engineering.test-performance",
+    "database-engineering.test-security",
+    "database-engineering.audit-accessibility",
+    "database-engineering.optimize-quality",
+    "database-engineering.optimize-cost",
+    "database-engineering.document-system",
+    "database-engineering.prepare-migration",
+    "database-engineering.plan-rollout",
+    "database-engineering.instrument-observability",
+    "database-engineering.operate-lifecycle",
+    "database-engineering.respond-incidents",
+    "database-engineering.govern-evolution",
+    "database-engineering.measure-outcomes",
+    "database-engineering.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "mblode-agent-skills",
+      "title": "Software shipping skills",
+      "url": "https://github.com/mblode/agent-skills",
+      "authority": "community",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

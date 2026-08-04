@@ -1,0 +1,101 @@
+{
+  "schema": "forge.frontier-private-benchmark-envelope.v1",
+  "cipher": "aes-256-gcm",
+  "id": "forge-local-frontier-private",
+  "version": 1,
+  "tasks": [
+    {
+      "id": "bug-1",
+      "category": "bug",
+      "frontierCategory": "long-horizon",
+      "repository": {
+        "sourceId": "repo-bug-1",
+        "commit": "7b29938c96871199eb4586bdb57685ed4e436f22c34c9bf30569505a2a198e37",
+        "contentFingerprint": "2b1eb92d07284d7ebe8519a44fc090ace68e5a774007da3ed25b615dd77c9397",
+        "neverSeenBefore": true
+      },
+      "objective": "bug objective",
+      "input": {
+        "issue": "bug issue"
+      }
+    },
+    {
+      "id": "feature-1",
+      "category": "feature",
+      "frontierCategory": "browser-ui",
+      "repository": {
+        "sourceId": "repo-feature-1",
+        "commit": "f4caab342ff47e004ac495387a5a093f68d73a5948e6c056629eeec16b5d8123",
+        "contentFingerprint": "7e831f945555d522c9df5014d1e6cea7085efcd4bf76b94bf2041ad94f7e00e6",
+        "neverSeenBefore": true
+      },
+      "objective": "feature objective",
+      "input": {
+        "issue": "feature issue"
+      }
+    },
+    {
+      "id": "migration-1",
+      "category": "migration",
+      "frontierCategory": "security",
+      "repository": {
+        "sourceId": "repo-migration-1",
+        "commit": "f330950a9e5ead7e20a79139b1a72736455c0adc5b2b6c4c642e1ebe7292d322",
+        "contentFingerprint": "c734a550271cd35966d1dbd5ecba90e994e042fe7448ca7bbd2e70bdf4eb7a33",
+        "neverSeenBefore": true
+      },
+      "objective": "migration objective",
+      "input": {
+        "issue": "migration issue"
+      }
+    },
+    {
+      "id": "refactor-1",
+      "category": "refactor",
+      "frontierCategory": "multi-agent",
+      "repository": {
+        "sourceId": "repo-refactor-1",
+        "commit": "0410b5eb68205e66bf183f3d1f2c29748baae3eed16d32d44e8969d08e633105",
+        "contentFingerprint": "99338873eb3c4962069c3e114c4f5611cfe781df500b9e4765351397911a39e2",
+        "neverSeenBefore": true
+      },
+      "objective": "refactor objective",
+      "input": {
+        "issue": "refactor issue"
+      }
+    },
+    {
+      "id": "review-1",
+      "category": "review",
+      "frontierCategory": "security",
+      "repository": {
+        "sourceId": "repo-review-1",
+        "commit": "059323de53702bcd36fe2ba97f9a17f6fe31f292763d56c12c47c18a795024cc",
+        "contentFingerprint": "9514ce4a201886c3ebb20a778e1fd40901a4ed72ab5f07727f860072d3b71107",
+        "neverSeenBefore": true
+      },
+      "objective": "review objective",
+      "input": {
+        "issue": "review issue"
+      }
+    }
+  ],
+  "categories": [
+    "bug",
+    "feature",
+    "migration",
+    "refactor",
+    "review"
+  ],
+  "frontierCategories": [
+    "browser-ui",
+    "long-horizon",
+    "multi-agent",
+    "security"
+  ],
+  "iv": "AwMDAwMDAwMDAwMD",
+  "authTag": "sipsMVLj9NPR3O80s650Eg==",
+  "ciphertext": "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",
+  "plaintextSha256": "ce0dc521af9ff8da7e8c2a85bef19fdd6c2a0bddb21586e8b1c34f032309cac3",
+  "receiptSha256": "ff46c1a0a582b5b7b46f74704b555358f2dd8835b0c3b439562c3b66fb1cd774"
+}

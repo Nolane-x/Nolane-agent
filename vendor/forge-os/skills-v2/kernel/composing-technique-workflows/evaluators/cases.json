@@ -1,0 +1,20 @@
+[
+  {
+    "id": "composing-technique-workflows-positive",
+    "kind": "application",
+    "input": "A task requiring Composing Technique Workflows",
+    "expectedEvidence": [
+      "The DAG is acyclic unless an explicit recovery loop is typed.",
+      "Every join names required upstream receipts.",
+      "Removing any selected node would leave a documented gap."
+    ],
+    "baselineFailure": "Turning every dependency into a sequential step."
+  },
+  {
+    "id": "composing-technique-workflows-anti-trigger",
+    "kind": "counter-example",
+    "input": "one technique produces the complete verified outcome",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

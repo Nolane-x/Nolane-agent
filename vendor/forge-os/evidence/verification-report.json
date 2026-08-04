@@ -1,0 +1,991 @@
+{
+  "schemaVersion": 3,
+  "project": "ForgeOS",
+  "version": "0.6.1",
+  "status": "pass",
+  "startedAt": "2026-07-25T18:29:43.215Z",
+  "finishedAt": "2026-07-25T18:30:27.719Z",
+  "source": {
+    "mode": "git",
+    "commit": "42c3b4a0fbdc7a4d5fc6f5e64a9d8f39afaba749",
+    "tree": "a3b6af373faef2161948339a69d14e85ed3267c8",
+    "dirtyAtStart": false,
+    "manifestSha256": "1cc40a16713a56dc9e2284660b1e230c0004eaf4ac0177194627abfbe0f56042",
+    "manifestFiles": 2305,
+    "stableAfterVerification": true,
+    "finalManifestSha256": "1cc40a16713a56dc9e2284660b1e230c0004eaf4ac0177194627abfbe0f56042"
+  },
+  "environment": {
+    "node": "v22.16.0",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "summary": {
+    "tests": {
+      "total": 388,
+      "passed": 388,
+      "failed": 0
+    },
+    "coverage": {
+      "lines": 97.64,
+      "branches": 74.75,
+      "functions": 93.91
+    },
+    "skills": {
+      "total": 242,
+      "core": 146,
+      "domain": 96,
+      "stable": 33,
+      "candidate": 209,
+      "quarantined": 0,
+      "referencePlaybooks": 24
+    },
+    "adapters": {
+      "total": 15,
+      "executable": 9,
+      "documented": 6,
+      "capabilities": 10
+    },
+    "evalCases": {
+      "total": 24,
+      "domains": 12
+    },
+    "federation": {
+      "inventory": {
+        "capabilities": 1024,
+        "sources": 29,
+        "knowledgePacks": 32,
+        "providers": 1291,
+        "firstPartyProcedural": 267,
+        "stableFirstPartyProcedural": 33,
+        "candidateFirstPartyProcedural": 234,
+        "knowledgeProviderMappings": 1024,
+        "builtInProviderMappings": 1291,
+        "externalProvidersImported": 0
+      },
+      "coverage": {
+        "missingAnyProvider": 0,
+        "missingKnowledge": 0,
+        "missingProcedural": 848,
+        "missingStableProcedural": 978,
+        "unresolvedKnowledgePack": 0
+      },
+      "adversarial": {
+        "corpusSha256": "60bf52e23f45f3785743891c140d151b34928a006dd320c0ad48b64ab1240748",
+        "total": 18,
+        "passed": 18,
+        "failed": 0,
+        "failures": []
+      },
+      "reportSha256": "ed5641c2c130d7d64cb3e7a41dffe5e844f6151e9ecbbe56f9a1ccce2ba791b1"
+    },
+    "federationAdversarial": {
+      "total": 18,
+      "passed": 18,
+      "failed": 0
+    },
+    "skillIntelligence": {
+      "graph": {
+        "outcomeScaffolds": 1024,
+        "deepOutcomes": 0,
+        "techniques": 128,
+        "l0Techniques": 32,
+        "l1Techniques": 96,
+        "kernelTechniques": 128,
+        "evaluators": 128,
+        "relations": 416,
+        "graphSha256": "475fd64e0345af4e91c0e7b988b162c9c53127d6b61854536ff2a1c88cc64c1c"
+      },
+      "skillsV2": {
+        "total": 128,
+        "stable": 33,
+        "candidate": 95,
+        "l0": 32,
+        "l1": 96,
+        "kernel": 128
+      },
+      "quality": {
+        "minimumDepthScore": 95,
+        "medianDepthScore": 95,
+        "invalidDepth": 0,
+        "invalidDepthSkills": [],
+        "maximumBoilerplateRatio": 0,
+        "boilerplateViolations": 0,
+        "boilerplateViolationSkills": []
+      },
+      "stableMaterialization": {
+        "total": 33,
+        "passed": 33,
+        "failed": 0,
+        "failures": []
+      },
+      "reportSha256": "0d0f8f2579664b11202a96082551e017f828223f44e837e88f0071076b61faf0"
+    },
+    "routerBenchmark": {
+      "cases": 16,
+      "metrics": {
+        "precisionAt1": 0.9375,
+        "precisionAt3": 1,
+        "recallAt6": 1,
+        "unsafeActivationRate": 0,
+        "determinism": 1
+      },
+      "reportSha256": "88671b48c1ccbaf86dacfc8882584bfe9ddc86ba47227f80a2fe1bd08e04dc18"
+    },
+    "contextBenchmark": {
+      "stableMaterialization": {
+        "total": 33,
+        "passed": 33,
+        "failed": 0,
+        "failures": []
+      },
+      "globalBudget": {
+        "overflowCount": 0,
+        "unmanifestedOmissions": 0,
+        "totalInputTokens": 1845,
+        "availableInput": 5600,
+        "omissionCount": 14,
+        "omissionManifestSha256": "1db92601a37869ab56468fbe2b610067ea1ae830ad6bc5eb05e46366a7858e68"
+      },
+      "toolDistillation": {
+        "rawTokens": 238699,
+        "distilledTokens": 177,
+        "reductionRatio": 0.9992584803455398,
+        "receiptSha256": "f05f32fdccaf8ed7b6c7fff5ce10bc548a4cb92194573dc2b0439c66f447422e"
+      },
+      "semanticAbi": {
+        "symbolCount": 40,
+        "rawCodeTokens": 26212,
+        "orientationTokens": 2504,
+        "orientationReductionRatio": 0.9044712345490615,
+        "abiSha256": "414a95f815237966ea06de7bafc298b00a1850632c107269dbbca9d95cea7aef"
+      },
+      "reportSha256": "5994536d2c1af9e636130875075f28c76feffeedbc7fe902bc2d2077a945376d"
+    },
+    "skillCertification": {
+      "inventory": {
+        "totalTechniques": 128,
+        "declaredCandidate": 95,
+        "declaredValidated": 0,
+        "declaredStable": 33,
+        "declaredCertified": 0
+      },
+      "packageEvidence": {
+        "withRedBaseline": 98,
+        "withEvaluatorBinding": 128,
+        "stableWithAtLeastTwentyPublicScenarios": 0,
+        "stableScenarioDeficits": [
+          {
+            "id": "benchmarking-skill-utility",
+            "observed": 2,
+            "required": 20
+          },
+          {
+            "id": "choosing-system-architecture",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "compiling-context-pack",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "constructing-idea-genomes",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "defining-minimum-viable-product",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "designing-api-contracts",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "designing-api-versioning",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "designing-idempotent-automations",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "designing-interaction-contracts",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "designing-model-routing",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "designing-saas-tenancy",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "detecting-fake-novelty",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "developing-features-with-tdd",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "fuzzing-untrusted-inputs",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "generating-divergent-concepts",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "managing-artifact-lineage",
+            "observed": 2,
+            "required": 20
+          },
+          {
+            "id": "measuring-mutation-resistance",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "modeling-security-threats",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "optimizing-context-budget",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "packaging-release-evidence",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "resolving-user-intent",
+            "observed": 2,
+            "required": 20
+          },
+          {
+            "id": "reviewing-critical-code-line-by-line",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "routing-skill-graph",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "running-security-release-gate",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "selecting-winning-concept",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "testing-agent-tool-abuse",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "testing-cost-abuse",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "testing-properties-and-invariants",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "testing-skill-behavior",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "using-forge-os",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "validating-source-credibility",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "writing-executable-plans",
+            "observed": 0,
+            "required": 20
+          },
+          {
+            "id": "writing-minimal-sufficient-code",
+            "observed": 0,
+            "required": 20
+          }
+        ],
+        "hiddenHoldoutRunReceipts": 0,
+        "multiModelPairedRunReceipts": 0,
+        "independentCertificationReceipts": 0,
+        "productionEvidenceReceipts": 0,
+        "pairedRunCountProven": 0
+      },
+      "evidenceQualified": {
+        "stable": 0,
+        "certified": 0
+      },
+      "kernel": {
+        "l0Total": 32,
+        "l0MeetingFiftyScenarioThreshold": 0,
+        "l0ScenarioDeficits": [
+          {
+            "id": "auditing-agent-actions",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "benchmarking-skill-utility",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "binding-approvals-to-actions",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "calibrating-token-estimates",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "certifying-release-evidence",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "compiling-global-context",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "composing-technique-workflows",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "consolidating-project-memory",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "decomposing-multi-domain-work",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "detecting-semantic-duplication",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "detecting-skill-regression",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "distilling-tool-output",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "enforcing-context-budgets",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "enforcing-review-separation",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "expiring-stale-skills",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "explaining-route-decisions",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "invalidating-dependent-proof",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "issuing-trusted-execution-receipts",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "learning-from-agent-failures",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "managing-artifact-lineage",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "planning-parallel-agent-work",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "projecting-artifact-deltas",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "promoting-skill-providers",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "recovering-interrupted-runs",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "resolving-skill-conflicts",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "resolving-user-intent",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "retrieving-semantic-code-symbols",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "routing-capability-graph",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "selecting-minimum-provider-set",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "selecting-skill-sections",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "validating-evidence-freshness",
+            "observed": 2,
+            "required": 50
+          },
+          {
+            "id": "writing-agent-skills-with-tdd",
+            "observed": 2,
+            "required": 50
+          }
+        ],
+        "allL0Certified": false
+      },
+      "claims": {
+        "allKernelStableOrCertified": false,
+        "allProceduralSkillsProductionGrade": false,
+        "oneThousandTwentyFourProceduralSkillsProductionGrade": false,
+        "tenThousandPairedRunsCompleted": false,
+        "runtimeHardeningCanBePublishedWithExplicitClaimsBoundary": true
+      },
+      "blockers": [
+        {
+          "code": "stable-public-scenarios-insufficient",
+          "count": 33,
+          "detail": "Stable requires at least 20 scenarios including holdout and transfer evidence."
+        },
+        {
+          "code": "l0-fifty-scenario-threshold-unmet",
+          "count": 32,
+          "detail": "Every L0 kernel technique requires at least 50 scenarios."
+        },
+        {
+          "code": "hidden-holdout-missing",
+          "count": 128,
+          "detail": "No package-bound hidden holdout run receipts were found."
+        },
+        {
+          "code": "multi-model-paired-runs-missing",
+          "count": 128,
+          "detail": "Declared model compatibility is not a paired multi-model evaluation receipt."
+        },
+        {
+          "code": "independent-certification-review-missing",
+          "count": 128,
+          "detail": "No independent maintainer/domain certification receipt is packaged."
+        },
+        {
+          "code": "production-evidence-and-expiry-missing",
+          "count": 128,
+          "detail": "No production evidence plus certification expiry policy receipt is packaged."
+        },
+        {
+          "code": "ten-thousand-paired-runs-missing",
+          "count": 1,
+          "detail": "The release does not contain evidence of the 10,000 paired runs required for a production-grade 1,024-skill claim."
+        }
+      ],
+      "reportSha256": "68af8504f70a7ff824468c098b3a9554271c55d7a10df20d234531ed2e6ff989"
+    },
+    "criticalMutation": {
+      "total": 7,
+      "killed": 7,
+      "survived": [],
+      "schemaVersion": 1
+    },
+    "protocols": {
+      "mcp": "2025-11-25",
+      "a2a": "1.0",
+      "jsonSchema": "2020-12"
+    },
+    "adapterTck": {
+      "total": 15,
+      "executed": 9,
+      "documented": 6,
+      "passed": 9,
+      "failed": 0
+    }
+  },
+  "dashboardEvidence": {
+    "path": "../release-final-source/verify_2026-07-25T18-29-43-215Z_1cc40a16713a/dashboard.svg",
+    "mediaType": "image/svg+xml",
+    "bytes": 19891,
+    "sha256": "66611047417e990c31bb67718a3dc3c5c1a4d5b8bc1add940a73f1922c068ab4",
+    "renderer": "forgeos-svg"
+  },
+  "commands": [
+    {
+      "command": "npm run generate:capabilities",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 133,
+      "outputSha256": "76682fb0e37c5faec1ae2d145cbd8827a99fa0fe025d075eadcdb50c00563cec",
+      "outputBytes": 127,
+      "outputTail": [
+        "> forge-os@0.6.1 generate:capabilities",
+        "> node scripts/generate-capability-catalog.mjs",
+        "",
+        "Generated 1024 federated capabilities."
+      ]
+    },
+    {
+      "command": "npm run generate:knowledge",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 131,
+      "outputSha256": "e734bf66564ddd948fa4557969e575da1706274862801df585acd83a0e0dc9b4",
+      "outputBytes": 112,
+      "outputTail": [
+        "> forge-os@0.6.1 generate:knowledge",
+        "> node scripts/generate-knowledge-packs.mjs",
+        "",
+        "Generated 32 knowledge packs."
+      ]
+    },
+    {
+      "command": "npm run generate:v06",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 2186,
+      "outputSha256": "5d382ef96d75feb57e3d015c0d5c6e7ddfd15c415e042c1d8efcb93650ef856b",
+      "outputBytes": 604,
+      "outputTail": [
+        "> forge-os@0.6.1 generate:v06",
+        "> node scripts/migrate-stable-skills-v2.mjs && node scripts/generate-l0-kernel-skills.mjs && node scripts/generate-l1-kernel-skills.mjs && node scripts/generate-local-providers.mjs && node scripts/compile-capability-graph-v2.mjs && node scripts/generate-schemas.mjs",
+        "",
+        "Migrated 33 stable skills to Skill Contract v2.",
+        "Generated 32 curated L0 kernel skill packages.",
+        "Generated 66 candidate L1 packages; indexed 96 L1 techniques.",
+        "Generated 1291 built-in provider mappings.",
+        "Compiled Capability Graph v2: 1024 outcomes, 128 techniques, 416 relations.",
+        "Generated 29 runtime schemas."
+      ]
+    },
+    {
+      "command": "npm run v06:audit",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 308,
+      "outputSha256": "d5230b7642596d12a401a5afa6553fe6c40a238576bd1a1b0953f8665d3ec552",
+      "outputBytes": 213,
+      "outputTail": [
+        "> forge-os@0.6.1 v06:audit",
+        "> node scripts/audit-v06.mjs",
+        "",
+        "ForgeOS v0.6 audit: 128 kernel techniques, 12 review cases, 20/20 security cases",
+        "/mnt/data/forgeos-final-audit/forge-os-v0.6.0/dist/v06-release-audit.json"
+      ]
+    },
+    {
+      "command": "npm run skills:v2:audit",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 280,
+      "outputSha256": "62a68400e57f95bc386d4346d1c4cb27ee3641d5688f1e0c57783aac5eddc591",
+      "outputBytes": 283,
+      "outputTail": [
+        "> forge-os@0.6.1 skills:v2:audit",
+        "> node scripts/audit-skill-intelligence.mjs",
+        "",
+        "Skill Intelligence: 128 techniques, 32 L0, depth min 95, boilerplate max 0.0%",
+        "/mnt/data/forgeos-final-audit/release-final-source/verify_2026-07-25T18-29-43-215Z_1cc40a16713a/skill-intelligence-audit.json"
+      ]
+    },
+    {
+      "command": "npm run skills:certification-audit",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 204,
+      "outputSha256": "c853dbc403b8417b50ee6236f66be4f59979cfc28fed923f20817c027441869e",
+      "outputBytes": 284,
+      "outputTail": [
+        "> forge-os@0.6.1 skills:certification-audit",
+        "> node scripts/audit-skill-certification.mjs",
+        "",
+        "Skill certification: 0/128 evidence-qualified stable, 0 certified",
+        "/mnt/data/forgeos-final-audit/release-final-source/verify_2026-07-25T18-29-43-215Z_1cc40a16713a/skill-certification-audit.json"
+      ]
+    },
+    {
+      "command": "npm run test:mutation-critical",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 5107,
+      "outputSha256": "f3a68d93e8ba2e6507f9d5146300715a5429a155489ce4b8f2d7a855da4541be",
+      "outputBytes": 248,
+      "outputTail": [
+        "> forge-os@0.6.1 test:mutation-critical",
+        "> node scripts/critical-mutation-check.mjs",
+        "",
+        "Critical mutation matrix: 7/7 killed",
+        "/mnt/data/forgeos-final-audit/release-final-source/verify_2026-07-25T18-29-43-215Z_1cc40a16713a/critical-mutation-report.json"
+      ]
+    },
+    {
+      "command": "npm run router:benchmark",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 611,
+      "outputSha256": "614f22d8e467b395f300252dd4ffe0f5a2b568ea9c571ea1525bed8aa3e6435c",
+      "outputBytes": 237,
+      "outputTail": [
+        "> forge-os@0.6.1 router:benchmark",
+        "> node scripts/benchmark-router-v2.mjs",
+        "",
+        "Router benchmark: P@1=0.9375 P@3=1 R@6=1",
+        "/mnt/data/forgeos-final-audit/release-final-source/verify_2026-07-25T18-29-43-215Z_1cc40a16713a/router-benchmark-v2.json"
+      ]
+    },
+    {
+      "command": "npm run context:benchmark",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 221,
+      "outputSha256": "1339fa01b740b731e8ed26e7d29949369b8e1aa7795428a3f628e297880b5531",
+      "outputBytes": 272,
+      "outputTail": [
+        "> forge-os@0.6.1 context:benchmark",
+        "> node scripts/benchmark-context-v2.mjs",
+        "",
+        "Context benchmark: stable=33/33 toolReduction=0.9993 abiReduction=0.9045",
+        "/mnt/data/forgeos-final-audit/release-final-source/verify_2026-07-25T18-29-43-215Z_1cc40a16713a/context-benchmark-v2.json"
+      ]
+    },
+    {
+      "command": "npm run federation:eval",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 161,
+      "outputSha256": "54ab9a5cc23ad752ebae1aa2526f7ee6dde8a35327de0f7cd051a4a540bafd7d",
+      "outputBytes": 192,
+      "outputTail": [
+        "> forge-os@0.6.1 federation:eval",
+        "> node scripts/validate-federation-evals.mjs",
+        "",
+        "Federation adversarial corpus: 18/18 passed (60bf52e23f45f3785743891c140d151b34928a006dd320c0ad48b64ab1240748)."
+      ]
+    },
+    {
+      "command": "npm run federation:audit",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 299,
+      "outputSha256": "4e804aef13f2dbfb1ddce90e885208ae44c07565e14ea0ccef368dcff93a489e",
+      "outputBytes": 563,
+      "outputTail": [
+        "> forge-os@0.6.1 federation:audit",
+        "> node scripts/audit-federation.mjs",
+        "",
+        "{\"capabilities\":1024,\"sources\":29,\"knowledgePacks\":32,\"providers\":1291,\"firstPartyProcedural\":267,\"stableFirstPartyProcedural\":33,\"candidateFirstPartyProcedural\":234,\"knowledgeProviderMappings\":1024,\"builtInProviderMappings\":1291,\"externalProvidersImported\":0,\"missingAnyProvider\":0,\"missingKnowledge\":0,\"missingProcedural\":848,\"missingStableProcedural\":978,\"unresolvedKnowledgePack\":0,\"adversarial\":\"18/18\",\"reportSha256\":\"ed5641c2c130d7d64cb3e7a41dffe5e844f6151e9ecbbe56f9a1ccce2ba791b1\"}"
+      ]
+    },
+    {
+      "command": "npm test",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 13993,
+      "outputSha256": "ba85560cd4ffab93eacefad4b959397c03c0864f18d26200c3311c55c1ea894a",
+      "outputBytes": 39651,
+      "outputTail": [
+        "✔ trusted command provider reaps descendant processes after a successful recipe (554.195616ms)",
+        "✔ unified router retrieves the correct API technique and explains exclusions (85.665017ms)",
+        "✔ anti-triggers prevent superficially similar routing (77.372667ms)",
+        "✔ required tools are hard blockers and unsafe providers never activate (47.353575ms)",
+        "✔ segmented measured utility affects provider and technique selection without overriding hard policy (0.639231ms)",
+        "✔ same semantic input produces a deterministic RoutePlan and multi-outcome request composes a DAG (67.902308ms)",
+        "✔ query-only retrieval can select a precise L0 technique without an explicit legacy outcome target (63.864016ms)",
+        "✔ every current stable procedural provider has a standard bundle that materializes within one shared budget (177.14766ms)",
+        "✔ released stable skill mappings are explicit many-to-many mappings rather than greedy unused-slot assignments (17.527565ms)",
+        "✔ an unresolved execution bundle cannot be materialized (15.575771ms)",
+        "✔ capability required tools and preferred sources are enforced during provider resolution (0.929442ms)",
+        "✔ CI runs v0.6 generation, audit, benchmarks, adversarial suites, protocol smoke, TCK, coverage, and clean-tree check (12.684159ms)",
+        "✔ current technical documents describe v0.6 and the 128-technique kernel without stale v0.5 inventory (7.191708ms)",
+        "✔ changelog records the v0.6 trust, execution, learning, harness, security, context, and documentation surfaces (2.812975ms)",
+        "✔ checked-in v0.6 graph provider digests match the provider catalog (15.622015ms)",
+        "✔ v0.6 release generation orders providers before graph compilation and skips legacy generation (6.536534ms)",
+        "✔ v0.6 runtime status reports deterministic fabric and 128 kernel techniques (18.948709ms)",
+        "✔ v0.6 public tools are strict and dispatch through the shared service (17.260612ms)",
+        "✔ v0.6 context compiler isolates work units and records omissions (1.21024ms)",
+        "✔ v0.6 tools execute through full MCP lifecycle (22.270936ms)",
+        "✔ v0.6 release audit reports deterministic fabric without overstating maturity (272.202781ms)",
+        "✔ schema generator publishes all strict v0.6 public contracts (10.566729ms)",
+        "ℹ tests 388",
+        "ℹ suites 0",
+        "ℹ pass 388",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 13878.990752"
+      ]
+    },
+    {
+      "command": "npm run lint:syntax",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 3283,
+      "outputSha256": "18787d4d5540af058543960aee995c760d945fdb758169ef980366c995a1e41c",
+      "outputBytes": 94,
+      "outputTail": [
+        "> forge-os@0.6.1 lint:syntax",
+        "> node scripts/validate-syntax.mjs",
+        "",
+        "Syntax checked 189 modules."
+      ]
+    },
+    {
+      "command": "npm run lint:json",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 287,
+      "outputSha256": "63e5f25303cc7fe2cbdac4134af09d6cff7b7f217051b52d190b32ff512d84b7",
+      "outputBytes": 85,
+      "outputTail": [
+        "> forge-os@0.6.1 lint:json",
+        "> node scripts/validate-json.mjs",
+        "",
+        "Parsed 821 JSON files."
+      ]
+    },
+    {
+      "command": "npm run lint:docs",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 304,
+      "outputSha256": "bc26963affe197b14b680c9a6b23b6499d2b56dcf1b5149033133870b4db9adf",
+      "outputBytes": 113,
+      "outputTail": [
+        "> forge-os@0.6.1 lint:docs",
+        "> node scripts/validate-doc-links.mjs",
+        "",
+        "Validated local links in 1155 Markdown files."
+      ]
+    },
+    {
+      "command": "npm run lint:skills",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 148,
+      "outputSha256": "a1a408d56f994f5ee5bda915a1ce30e539bcbe1b22c6d8b943fc825399c4098b",
+      "outputBytes": 118,
+      "outputTail": [
+        "> forge-os@0.6.1 lint:skills",
+        "> node scripts/validate-skills.mjs",
+        "",
+        "Validated 242 ForgeOS skills (146 core, 96 domain)."
+      ]
+    },
+    {
+      "command": "npm run lint:adapters",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 103,
+      "outputSha256": "65fd1317d4839b93ed29a8ac06a5fc6c955384d525c19d4ef25d95d8f39c025a",
+      "outputBytes": 113,
+      "outputTail": [
+        "> forge-os@0.6.1 lint:adapters",
+        "> node scripts/validate-adapters.mjs",
+        "",
+        "Validated 15 adapters and 10 capabilities."
+      ]
+    },
+    {
+      "command": "npm run smoke",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 502,
+      "outputSha256": "51dea2f8730227393cc26b8fc25416e735dd3dce9bc0d0f2c6a81b17c954e90f",
+      "outputBytes": 597,
+      "outputTail": [
+        "> forge-os@0.6.1 smoke",
+        "> node scripts/smoke.mjs",
+        "",
+        "{",
+        "  \"status\": \"pass\",",
+        "  \"version\": \"0.6.1\",",
+        "  \"health\": \"ok\",",
+        "  \"mcp\": {",
+        "    \"protocol\": \"2025-11-25\",",
+        "    \"sessionLifecycle\": true,",
+        "    \"toolCount\": 50",
+        "  },",
+        "  \"projectId\": \"forge_ac67434b4eab4b9c8dc9\",",
+        "  \"a2a\": {",
+        "    \"protocol\": \"1.0\",",
+        "    \"taskId\": \"task_f42f4ecade45452ca57c1067498f0fa5\",",
+        "    \"state\": \"TASK_STATE_COMPLETED\",",
+        "    \"persisted\": true",
+        "  },",
+        "  \"dashboard\": true",
+        "}",
+        "(node:11726) ExperimentalWarning: SQLite is an experimental feature and might change at any time",
+        "(Use `node --trace-warnings ...` to show where the warning was created)"
+      ]
+    },
+    {
+      "command": "npm run adapter:tck",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 679,
+      "outputSha256": "faaca43bb76b70947668c9d9193aa9c0c7b2a6a58564b600c0eaa1732d123015",
+      "outputBytes": 125,
+      "outputTail": [
+        "> forge-os@0.6.1 adapter:tck",
+        "> node scripts/run-adapter-tck.mjs",
+        "",
+        "Adapter TCK: 9/9 executable adapters passed; 6 documented."
+      ]
+    },
+    {
+      "command": "npm run test:coverage",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 13861,
+      "outputSha256": "f9161df341f4ae194b13e3c13e20792a1550f9897597f1198b6cfe017dd68e66",
+      "outputBytes": 118544,
+      "outputTail": [
+        "#  skill-intelligence-benchmarks.test.mjs       | 100.00 |   100.00 |  100.00 | ",
+        "#  skill-intelligence-cli.test.mjs              | 100.00 |   100.00 |   86.67 | ",
+        "#  skill-intelligence-mcp.test.mjs              | 100.00 |   100.00 |  100.00 | ",
+        "#  skill-run-invariants.test.mjs                | 100.00 |   100.00 |  100.00 | ",
+        "#  skill-run-trust-v3.test.mjs                  | 100.00 |   100.00 |  100.00 | ",
+        "#  skill-section-materialization-v2.test.mjs    | 100.00 |   100.00 |  100.00 | ",
+        "#  skills.test.mjs                              | 100.00 |   100.00 |  100.00 | ",
+        "#  sqlite-a2a-task-store.test.mjs               | 100.00 |   100.00 |   80.00 | ",
+        "#  sqlite-federation-eval-store.test.mjs        | 100.00 |   100.00 |  100.00 | ",
+        "#  sqlite-federation-store.test.mjs             | 100.00 |   100.00 |  100.00 | ",
+        "#  sqlite-project-store.test.mjs                | 100.00 |   100.00 |   83.33 | ",
+        "#  stages.test.mjs                              | 100.00 |   100.00 |  100.00 | ",
+        "#  studio-standalone-v3.test.mjs                | 100.00 |   100.00 |  100.00 | ",
+        "#  studio-v2.test.mjs                           | 100.00 |   100.00 |  100.00 | ",
+        "#  supply-chain-v3.test.mjs                     | 100.00 |   100.00 |  100.00 | ",
+        "#  token-accounting-v2.test.mjs                 | 100.00 |   100.00 |  100.00 | ",
+        "#  trusted-eval-platform-v3.test.mjs            | 100.00 |   100.00 |  100.00 | ",
+        "#  trusted-evidence.test.mjs                    |  99.03 |    95.24 |  100.00 | 79",
+        "#  unified-skill-intelligence-router.test.mjs   | 100.00 |    95.45 |  100.00 | ",
+        "#  v05-baseline-regressions.test.mjs            | 100.00 |    84.62 |  100.00 | ",
+        "#  v06-ci-contract.test.mjs                     | 100.00 |   100.00 |  100.00 | ",
+        "#  v06-current-docs.test.mjs                    | 100.00 |   100.00 |  100.00 | ",
+        "#  v06-generator-consistency.test.mjs           |  83.78 |    85.71 |  100.00 | 20-25",
+        "#  v06-public-surface.test.mjs                  | 100.00 |   100.00 |  100.00 | ",
+        "#  v06-release-audit.test.mjs                   | 100.00 |   100.00 |  100.00 | ",
+        "#  v06-schema-generation.test.mjs               | 100.00 |   100.00 |  100.00 | ",
+        "# --------------------------------------------------------------------------------------------------------------------------------------------------------------------",
+        "# all files                                     |  97.64 |    74.75 |   93.91 | ",
+        "# --------------------------------------------------------------------------------------------------------------------------------------------------------------------",
+        "# end of coverage report"
+      ]
+    },
+    {
+      "command": "node scripts/capture-dashboard.mjs",
+      "exitCode": 0,
+      "signal": null,
+      "durationMs": 787,
+      "outputSha256": "7eb6443209d878d7d7a53b4107f3c3423e267cecd9f82755b33cdac9b7a3ad27",
+      "outputBytes": 136,
+      "outputTail": [
+        "Captured /mnt/data/forgeos-final-audit/release-final-source/verify_2026-07-25T18-29-43-215Z_1cc40a16713a/dashboard.svg with forgeos-svg"
+      ]
+    }
+  ],
+  "residualRisks": [
+    {
+      "severity": "high",
+      "area": "distributed-storage",
+      "description": "The file backend uses fenced leases and audit hashes but is not a consensus database; production multi-node deployments require a transactional database backend."
+    },
+    {
+      "severity": "high",
+      "area": "untrusted-execution",
+      "description": "Third-party executors require an external sandbox and capability policy."
+    },
+    {
+      "severity": "medium",
+      "area": "transport",
+      "description": "Internet deployment requires trusted TLS termination and identity integration."
+    },
+    {
+      "severity": "medium",
+      "area": "platforms",
+      "description": "Adapter TCK proves the declared protocol configuration, not vendor certification."
+    }
+  ],
+  "claimsBoundary": "This report proves only the source-manifest digest and commands recorded in this run. It does not prove defect-free software, external vendor certification, or environments outside the tested matrix."
+}

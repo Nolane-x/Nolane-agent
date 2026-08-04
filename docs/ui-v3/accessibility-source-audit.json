@@ -1,0 +1,52 @@
+{
+  "schema": "nolane.ui.accessibility-source-audit.v1",
+  "sourceLocalPass": false,
+  "missing": [
+    "focus-target"
+  ],
+  "checks": [
+    {
+      "id": "document-language",
+      "path": "ui-v3/index.html",
+      "pass": true
+    },
+    {
+      "id": "viewport",
+      "path": "ui-v3/index.html",
+      "pass": true
+    },
+    {
+      "id": "workspace-landmark",
+      "path": "ui-v3/shell/app-shell.mjs",
+      "pass": true
+    },
+    {
+      "id": "route-live-region",
+      "path": "ui-v3/shell/app-shell.mjs",
+      "pass": true
+    },
+    {
+      "id": "artifact-tab-semantics",
+      "path": "ui-v3/views/mission/artifact-dock.mjs",
+      "pass": true
+    },
+    {
+      "id": "review-navigation-label",
+      "path": "ui-v3/views/review/review-view.mjs",
+      "pass": true
+    },
+    {
+      "id": "reduced-motion",
+      "path": "ui-v3/styles/motion.css",
+      "pass": true
+    },
+    {
+      "id": "focus-target",
+      "path": "ui-v3/app.mjs",
+      "pass": false
+    }
+  ],
+  "screenReaderCertified": false,
+  "windowsHighContrastCertified": false,
+  "nonClaim": "Source semantics do not replace NVDA, Narrator, Windows High Contrast, zoom, or keyboard journey certification on a real machine."
+}

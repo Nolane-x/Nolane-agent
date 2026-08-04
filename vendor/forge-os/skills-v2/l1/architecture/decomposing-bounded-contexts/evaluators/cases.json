@@ -1,0 +1,38 @@
+[
+  {
+    "id": "decomposing-bounded-contexts-application",
+    "kind": "application",
+    "input": "Task directly requiring decomposing bounded contexts within architecture lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "decomposing-bounded-contexts-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require decomposing bounded contexts within architecture lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "decomposing-bounded-contexts-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "decomposing-bounded-contexts-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "decomposing-bounded-contexts-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "decomposing-bounded-contexts-transfer",
+    "kind": "transfer",
+    "input": "Apply the decomposing-bounded-contexts mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

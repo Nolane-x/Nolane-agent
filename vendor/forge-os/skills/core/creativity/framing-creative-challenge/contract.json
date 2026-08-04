@@ -1,0 +1,139 @@
+{
+  "name": "framing-creative-challenge",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "creativity",
+  "domain": null,
+  "status": "candidate",
+  "stages": [
+    "divergence"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "research-synthesis"
+  ],
+  "produces": [
+    "creative-brief"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:creative-brief"
+  ],
+  "tools": [],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/creativity.md",
+  "method": {
+    "focus": "framing creative challenge within creativity lifecycle boundaries",
+    "source": "generated-specific",
+    "steps": [
+      "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by framing creative challenge.",
+      "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to framing creative challenge.",
+      "Apply framing creative challenge only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+      "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+      "Create reproducible checks that would fail if framing creative challenge were incomplete or implemented incorrectly."
+    ],
+    "verification": [
+      "Does the artifact make the owned decision for framing creative challenge explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "evidence": [
+      "framing-creative-challenge-decision-table",
+      "framing-creative-challenge-verification-report",
+      "framing-creative-challenge-handoff-envelope"
+    ],
+    "traps": [
+      "treating framing creative challenge as a naming exercise",
+      "covering only the happy path",
+      "creating extension points without a current contract or consumer"
+    ]
+  },
+  "procedure": [
+    "Freeze the challenge, constraints, forbidden defaults, and evaluation frame.",
+    "Generate independent mechanism-level candidates before cross-contamination.",
+    "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by framing creative challenge.",
+    "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to framing creative challenge.",
+    "Apply framing creative challenge only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+    "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+    "Create reproducible checks that would fail if framing creative challenge were incomplete or implemented incorrectly.",
+    "Apply the named divergence or mutation operation.",
+    "Represent candidates as structured idea genomes.",
+    "Remove semantic duplicates and fake novelty.",
+    "Hand off distinct candidates without selecting a winner prematurely."
+  ],
+  "gate": {
+    "reviewerRole": "independent-reviewer",
+    "rules": [
+      "The output directly and completely performs framing creative challenge within its declared boundary.",
+      "Does the artifact make the owned decision for framing creative challenge explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "creative-brief"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "framing-creative-challenge-decision-table",
+      "framing-creative-challenge-verification-report",
+      "framing-creative-challenge-handoff-envelope"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1882,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "treating framing creative challenge as a naming exercise",
+    "covering only the happy path",
+    "creating extension points without a current contract or consumer"
+  ],
+  "optionalConsumes": [],
+  "requiredTools": [],
+  "optionalTools": [],
+  "description": "Use when framing creative challenge is required during creativity work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

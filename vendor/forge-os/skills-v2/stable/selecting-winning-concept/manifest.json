@@ -1,0 +1,285 @@
+{
+  "schemaVersion": 2,
+  "id": "selecting-winning-concept",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "stable",
+  "identity": {
+    "title": "Selecting Winning Concept",
+    "description": "Use when select a product direction through evidence, pairwise trade-offs, and explicit human ownership, especially when can the winner explain why it beats the runner-up?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "product"
+    ],
+    "keywords": [
+      "selecting-winning-concept",
+      "select",
+      "a",
+      "product",
+      "direction",
+      "through",
+      "evidence",
+      "pairwise",
+      "trade"
+    ],
+    "antiTriggers": [
+      "unscored brainstorming output",
+      "implementation choice already constrained by regulation"
+    ]
+  },
+  "relations": {
+    "requires": [
+      "scored-ideas"
+    ],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "scored-ideas",
+        "schema": "artifact://forgeos/scored-ideas/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "selected-concept",
+        "schema": "artifact://forgeos/selected-concept/v1"
+      }
+    ],
+    "invariants": [
+      "Output remains within the selecting-winning-concept responsibility boundary",
+      "Every pass claim is backed by current trusted evidence"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Reject candidates that fail non-negotiable constraints before scoring.",
+        "evidence": "pairwise matrix"
+      },
+      {
+        "id": "step-2",
+        "action": "Compare pairs separately on novelty, usefulness, feasibility, leverage, defensibility, testability, clarity, and evidence.",
+        "evidence": "sensitivity report"
+      },
+      {
+        "id": "step-3",
+        "action": "Run assumption sensitivity to identify candidates whose rank collapses under plausible changes.",
+        "evidence": "selection decision"
+      },
+      {
+        "id": "step-4",
+        "action": "Present practical, bold-plausible, and weirdly-useful finalists rather than one blended list.",
+        "evidence": "rejected-alternative record"
+      },
+      {
+        "id": "step-5",
+        "action": "Record the human selection, rationale, rejected alternatives, and invalidated downstream work.",
+        "evidence": "rejected-alternative record"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required tool, input, or approval is unavailable",
+        "action": "stop and record a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Can the winner explain why it beats the runner-up?",
+      "Is a high novelty score hiding poor usefulness?",
+      "Has the human—not the worker—owned the final product direction?",
+      "Is the cheapest falsification experiment defined?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "pairwise matrix",
+      "sensitivity report",
+      "selection decision",
+      "rejected-alternative record"
+    ],
+    "evaluatorIds": [
+      "selecting-winning-concept-evaluator"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 641,
+    "hardTokens": 1060,
+    "outputReserveTokens": 265
+  },
+  "quality": {
+    "benchmarkIds": [
+      "v04-selecting-winning-concept-behavior"
+    ],
+    "minimumSkillDepthScore": 82,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2"
+  ],
+  "capabilityMappings": [
+    {
+      "capabilityId": "product-management.compare-alternatives",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:selecting-winning-concept",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "product-management.validate-prototype",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:selecting-winning-concept",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.selecting-winning-concept",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:selecting-winning-concept",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "cc5cae3b5317a43ee9aa8984c091b39b57271f3906c0e5db23a60d6080a8f967",
+        "bytes": 824,
+        "tokens": {
+          "gpt-5.6": 222,
+          "claude-opus-4.2": 233,
+          "gemini-3.0-pro": 212,
+          "qwen3.5-32b": 246
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "2b1af47f2bd93a2549cd2936fba2bfb756f289255dfe99a5c1014e6f9bb19d0e",
+        "bytes": 846,
+        "tokens": {
+          "gpt-5.6": 228,
+          "claude-opus-4.2": 239,
+          "gemini-3.0-pro": 217,
+          "qwen3.5-32b": 253
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "f9bfe6ef36de59d9db6341e6221b617221c90ebbc72b538c413f967f5f21581a",
+        "bytes": 346,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 98,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 104
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "2bbe70612dd8b3dfeb670cded550fbc7352d464c227d6e68e6c9d0c31cd41156",
+        "bytes": 351,
+        "tokens": {
+          "gpt-5.6": 95,
+          "claude-opus-4.2": 99,
+          "gemini-3.0-pro": 90,
+          "qwen3.5-32b": 105
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "c9e3f7a6656809c14c9bd698b1a3b97672cf6b36fcd94893d39854ffef7e79cd",
+        "bytes": 278,
+        "tokens": {
+          "gpt-5.6": 75,
+          "claude-opus-4.2": 79,
+          "gemini-3.0-pro": 72,
+          "qwen3.5-32b": 83
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "32e38ade91c2698e07bac0b5fe668f886e2a4ed075cae692c293a3775ff1ba8c",
+        "bytes": 333,
+        "tokens": {
+          "gpt-5.6": 90,
+          "claude-opus-4.2": 94,
+          "gemini-3.0-pro": 86,
+          "qwen3.5-32b": 100
+        }
+      }
+    ],
+    "indexSha256": "cb21b72998666a1b33fd6eb8e6e3b810c607c08ddb464b3e33f9e551f95ec51a"
+  },
+  "manifestSha256": "2d08b0038ab60cc41991bebf9aae0efb6fac34623eeff2337723bd65069520ee",
+  "kernelLevel": "L1"
+}

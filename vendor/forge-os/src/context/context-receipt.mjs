@@ -1,0 +1,2 @@
+import { canonicalSha256 } from '../core/canonical-json.mjs';
+export function createContextReceipt(value){const subject={schemaVersion:1,model:value.model,budget:value.budget,accounting:value.accounting,included:Object.fromEntries(Object.entries(value.context).map(([category,items])=>[category,items.map((item)=>({id:item.id,tokens:item.tokens,sha256:item.sha256??null}))])),omissionManifestSha256:value.omissionManifest.sha256};return Object.freeze({...subject,sha256:canonicalSha256(subject),createdAt:new Date().toISOString()});}

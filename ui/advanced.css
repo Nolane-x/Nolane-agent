@@ -1,0 +1,43 @@
+.drawer-backdrop { position: fixed; z-index: 39; inset: 0; background: rgba(0,0,0,.48); backdrop-filter: blur(2px); }
+.advanced-drawer { position: fixed; z-index: 40; inset: 0 0 0 max(72px,12vw); display: grid; grid-template-rows: auto minmax(0,1fr); background: #181818; border-left: 1px solid var(--background-modifier-border-hover); box-shadow: -20px 0 70px rgba(0,0,0,.4); }
+.advanced-header { min-height: 66px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 12px 17px; border-bottom: 1px solid var(--background-modifier-border); }
+.advanced-header h2 { margin: 1px 0 0; font-size: 15px; }
+.advanced-header p { margin: 2px 0 0; color: var(--text-faint); font-size: 9.5px; }
+.advanced-content { min-height: 0; overflow: auto; padding: 12px; }
+.advanced-runtime { min-height: 38px; display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; color: var(--text-faint); font-size: 9.5px; }
+.advanced-runtime button { margin-left: auto; }
+.workroom-grid { min-height: 540px; display: grid; grid-template-columns: 210px minmax(360px,1fr) minmax(300px,.8fr); overflow: hidden; border: 1px solid var(--background-modifier-border); border-radius: 11px; background: #151515; }
+.file-pane, .editor-pane, .terminal-pane { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.file-pane, .editor-pane { border-right: 1px solid var(--background-modifier-border); }
+.pane-toolbar { min-height: 38px; display: flex; align-items: center; justify-content: space-between; gap: 7px; padding: 5px 8px; border-bottom: 1px solid var(--background-modifier-border); background: rgba(255,255,255,.015); }
+.pane-toolbar strong { font-size: 10px; }
+.pane-toolbar button, .pane-toolbar select { width: auto; min-height: 26px; height: 26px; }
+.button-row { display: flex; align-items: center; gap: 5px; }
+#file-tree-path, #terminal-status { padding: 5px 8px; color: var(--text-faint); font-size: 9px; }
+.file-tree { min-height: 0; flex: 1; overflow: auto; padding: 4px; }
+.tree-item { width: 100%; display: block; border: 0; border-radius: 5px; padding: 5px 7px; background: transparent; color: var(--text-muted); text-align: left; cursor: pointer; font-size: 10px; }
+.tree-item:hover { background: var(--background-modifier-hover); color: var(--text-normal); }
+.editor-tabs, .terminal-tabs { min-width: 0; display: flex; align-items: center; gap: 2px; overflow-x: auto; }
+.editor-tab, .terminal-tab { min-width: 0; max-width: 130px; border: 0; border-radius: 5px; padding: 5px 7px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: transparent; color: var(--text-faint); cursor: pointer; font-size: 9px; }
+.editor-tab.active, .terminal-tab.active { color: var(--text-normal); background: var(--background-modifier-hover); }
+.active-file { padding: 4px 9px; color: var(--text-faint); border-bottom: 1px solid rgba(255,255,255,.04); font-size: 9px; }
+.editor-host, .editor-fallback { flex: 1; min-height: 430px; width: 100%; border: 0; outline: none; resize: none; background: #121212; color: var(--text-normal); }
+.editor-fallback { padding: 12px; font: 11px/1.5 "Cascadia Mono", Consolas, monospace; }
+.terminal-host { flex: 1; min-height: 430px; padding: 5px; background: #101010; }
+.terminal-instance { width: 100%; height: 100%; }
+.diff-pane { position: absolute; inset: 38px 0 0; z-index: 4; display: grid; grid-template-rows: auto 1fr; background: #151515; }
+.editor-pane { position: relative; }
+#diff-host, #diff-output { min-height: 0; margin: 0; overflow: auto; }
+.advanced-tools { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; margin-top: 10px; }
+.advanced-tools section { min-width: 0; padding: 11px; border: 1px solid var(--background-modifier-border); border-radius: 10px; background: rgba(255,255,255,.018); }
+.advanced-tools h3 { margin: 0 0 8px; font-size: 10.5px; }
+.advanced-tools small { color: var(--text-faint); font-size: 9px; }
+.inline-form { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 7px; }
+.inline-form input { height: 31px; font-size: 9.5px; }
+.inline-form input[type="password"] { grid-column: 1 / -1; }
+.inline-form button { grid-column: 1 / -1; }
+.credential-row { display: flex; justify-content: space-between; align-items: center; gap: 7px; margin-top: 6px; font-size: 9px; }
+.advanced-tools pre { max-height: 170px; overflow: auto; white-space: pre-wrap; word-break: break-word; color: var(--text-faint); font: 9px/1.45 "Cascadia Mono", Consolas, monospace; }
+
+@media (max-width:860px){.advanced-drawer{left:var(--rail-width)}.workroom-grid{grid-template-columns:190px minmax(360px,1fr)}.terminal-pane{grid-column:1/-1;min-height:360px;border-top:1px solid var(--background-modifier-border)}.advanced-tools{grid-template-columns:1fr}}
+@media (max-width:620px){.advanced-drawer{inset-left:var(--rail-width)}.workroom-grid{display:flex;flex-direction:column}.file-pane,.editor-pane{min-height:380px;border-right:0;border-bottom:1px solid var(--background-modifier-border)}}

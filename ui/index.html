@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1e1e1e">
+<title>Nolane Agent</title>
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/runtime-performance.css">
+<link rel="stylesheet" href="/evidence-runtime-center.css">
+<link rel="stylesheet" href="/mission-resource-fabric.css">
+<link rel="stylesheet" href="/collaboration-experience-center.css">
+</head>
+<body>
+<svg class="icon-sprite" aria-hidden="true">
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 2 1.7 5.2L19 9l-5.3 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2Z"/><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-8 8H6l-4 2 1.4-4.2A9 9 0 1 1 21 12Z"/></symbol>
+<symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6.5h6l2 2h10v10H3z"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19 13.5v-3l-2-.7-.6-1.4.9-2-2.1-2.1-2 .9-1.4-.6L11 2H8l-.7 2.6-1.4.6-2-.9-2.1 2.1.9 2-.6 1.4-2 .7v3l2 .7.6 1.4-.9 2 2.1 2.1 2-.9 1.4.6L8 22h3l.7-2.6 1.4-.6 2 .9 2.1-2.1-.9-2 .6-1.4 2.1-.7Z"/></symbol>
+<symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 9h6v6H9zM9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 20 6v6c0 5-3.4 8.2-8 9-4.6-.8-8-4-8-9V6l8-3Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></symbol>
+<symbol id="i-command" viewBox="0 0 24 24"><path d="M9 6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6Z"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="m3 11 18-8-8 18-2-8-8-2Z"/><path d="m11 13 5-5"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"/></symbol>
+<symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+<symbol id="i-retry" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></symbol>
+<symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+<symbol id="i-code" viewBox="0 0 24 24"><path d="m8 9-3 3 3 3M16 9l3 3-3 3M14 5l-4 14"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+</svg>
+<div id="update-banner" class="update-banner" role="status" aria-live="polite" hidden>
+  <div><strong id="update-banner-title">Bản cập nhật Nolane Agent</strong><span id="update-banner-message">Một phiên bản mới đã sẵn sàng.</span></div>
+  <div class="button-row"><button id="update-banner-action" type="button" class="primary-button">Tải bản cập nhật</button><button id="update-banner-dismiss" type="button" class="secondary-button">Để sau</button></div>
+</div>
+<div class="app-shell">
+<nav class="icon-rail" aria-label="Điều hướng chính">
+<button class="brand-button" id="brand-home" aria-label="Trang chủ Nolane Agent"><img src="/nolane-mark.svg" alt=""></button>
+<button class="rail-button primary-shell-button active" id="new-task-button" data-shell="mission" aria-label="Mission" title="Mission"><svg><use href="#i-spark"/></svg></button>
+<button class="rail-button primary-shell-button" id="recent-button" data-shell="work" aria-label="Work" title="Work"><svg><use href="#i-code"/></svg></button>
+<button class="rail-button primary-shell-button" id="evidence-shell-button" data-shell="evidence" aria-label="Evidence" title="Evidence"><svg><use href="#i-eye"/></svg></button>
+<div class="advanced-center-launchers" hidden>
+<button class="rail-button" id="runtime-center-button" aria-label="Trung tâm runtime" title="Runtime Control Center"><svg><use href="#i-cpu"/></svg></button>
+<button class="rail-button" id="integrated-browser-button" aria-label="Trình duyệt tích hợp" title="Integrated Browser"><svg><use href="#i-eye"/></svg></button>
+<button class="rail-button" id="secrets-manager-button" aria-label="Quản lý secrets" title="Secrets Manager"><svg><use href="#i-shield"/></svg></button>
+<button class="rail-button" id="sandbox-manager-button" aria-label="Quản lý sandbox" title="Local Resource Sandbox"><svg><use href="#i-shield"/></svg></button>
+<button class="rail-button" id="workspace-trust-button" aria-label="Quản trị độ tin cậy workspace" title="Workspace Trust Center"><svg><use href="#i-shield"/></svg></button>
+<button class="rail-button" id="agent-operations-button" aria-label="Operations"><svg><use href="#i-code"/></svg></button>
+<button class="rail-button" id="context-memory-button" aria-label="Context và memory" title="Context & Memory Center"><svg><use href="#i-chat"/></svg></button>
+<button class="rail-button" id="trace-evidence-button" aria-label="Trace và evidence" title="Trace & Evidence Center"><svg><use href="#i-eye"/></svg></button>
+<button class="rail-button" id="repository-intelligence-button" aria-label="Repository intelligence" title="Repository Intelligence Center"><svg><use href="#i-search"/></svg></button>
+<button class="rail-button" id="codebase-knowledge-button" aria-label="Codebase knowledge" title="Codebase Knowledge Graph"><svg><use href="#i-code"/></svg></button>
+<button class="rail-button" id="local-operations-button" aria-label="Local operations" title="Local Operations & Human Control"><svg><use href="#i-eye"/></svg></button>
+<button class="rail-button" id="evidence-runtime-button" aria-label="Evidence context runtime" title="Evidence Context Runtime"><svg><use href="#i-search"/></svg></button>
+<button class="rail-button" id="git-governance-button" aria-label="Git governance" title="Git Governance Center"><svg><use href="#i-check"/></svg></button>
+<button class="rail-button" id="instruction-governance-button" aria-label="Instruction governance" title="Instruction Governance Center"><svg><use href="#i-shield"/></svg></button>
+<button class="rail-button" id="agent-modes-button" aria-label="Agent modes" title="Agent Modes & Autonomy"><svg><use href="#i-command"/></svg></button>
+<button class="rail-button" id="collaboration-experience-button" aria-label="Collaboration experience" title="Collaboration & Experience"><svg><use href="#i-code"/></svg></button>
+<button class="rail-button" id="mission-state-button" aria-label="Mission state" title="Mission State & Progress"><svg><use href="#i-clock"/></svg></button>
+</div>
+<div class="rail-spacer"></div>
+<button class="rail-button" id="command-button" aria-label="Mở bảng lệnh" title="Bảng lệnh Ctrl+K"><svg><use href="#i-command"/></svg></button>
+<button class="rail-button" id="settings-button" aria-label="Cài đặt" title="Cài đặt"><svg><use href="#i-settings"/></svg></button>
+<span id="connection" class="connection-dot" title="Đang kết nối"></span>
+</nav>
+<aside id="mission-resource-hud" class="mission-resource-hud" aria-label="Mission resource status" aria-live="polite">
+<button id="mission-resource-hud-toggle" class="mission-resource-hud-summary" type="button" aria-expanded="false">
+<span class="resource-pulse" aria-hidden="true"></span><span><strong>Resource Fabric</strong><small id="mission-resource-hud-state">Đang đồng bộ</small></span><span id="mission-resource-hud-rss">—</span>
+</button>
+<div id="mission-resource-hud-details" class="mission-resource-hud-details" hidden></div>
+</aside>
+<aside class="history-sidebar" id="history-sidebar">
+<header class="sidebar-header">
+<div class="wordmark"><span class="wordmark-mark"><svg><use href="#i-spark"/></svg></span><div><strong>Nolane Agent</strong><small>Autonomous coding agent</small></div></div>
+<button class="icon-button" id="collapse-sidebar" aria-label="Thu gọn lịch sử"><svg><use href="#i-chevron"/></svg></button>
+</header>
+<button class="new-task-wide" id="new-task-wide"><svg><use href="#i-plus"/></svg><span>Nhiệm vụ mới</span><kbd>Ctrl N</kbd></button>
+<div class="project-switcher-wrap">
+<button class="project-switcher" id="project-switcher" aria-haspopup="listbox"><span class="project-icon"><svg><use href="#i-folder"/></svg></span><span><small>Dự án</small><strong id="current-project-name">Chưa chọn dự án</strong></span><svg class="project-chevron"><use href="#i-chevron"/></svg></button>
+<div id="project-menu" class="project-menu" role="listbox" hidden></div>
+</div>
+<div class="history-heading"><span>Gần đây</span><button id="refresh-runs" class="text-button">Làm mới</button></div>
+<div id="recent-runs" class="recent-runs" aria-live="polite"></div>
+<footer class="sidebar-footer">
+<button id="provider-summary" class="provider-summary" type="button"><span id="provider-summary-dot" class="provider-summary-dot"></span><span><strong>AI provider</strong><small id="provider-summary-label">Đang kiểm tra kết nối</small></span><svg><use href="#i-chevron"/></svg></button>
+<button id="autopilot-summary" class="autopilot-summary"><span class="autopilot-orb"></span><span><strong>Autopilot</strong><small>Tự động trong workspace</small></span><svg><use href="#i-chevron"/></svg></button>
+</footer>
+</aside>
+<main class="main-stage">
+<section id="home-view" class="home-view view">
+<div class="home-ambient"></div>
+<div class="home-content">
+<div class="home-emblem"><svg><use href="#i-spark"/></svg></div>
+<h1>Bạn muốn Nolane Agent xây gì?</h1>
+<p>Giao mục tiêu. Nolane Agent tự tìm hiểu dự án, lập kế hoạch, viết code, chạy kiểm thử và báo cáo kết quả.</p>
+<form id="agent-composer" class="hero-composer" aria-label="Gửi nhiệm vụ cho Nolane Agent">
+<textarea class="composer-input" id="objective-input" rows="4" required placeholder="Ví dụ: Xây trang đăng nhập đẹp, hỗ trợ Google OAuth, giữ nguyên đăng nhập mật khẩu và kiểm tra toàn bộ luồng..."></textarea>
+<div class="composer-footer">
+<div class="composer-tools">
+<button type="button" class="composer-chip" id="attach-button" title="Đính kèm ngữ cảnh"><svg><use href="#i-plus"/></svg><span>Đính kèm</span></button>
+<button type="button" class="composer-chip provider-chip" id="composer-provider"><span id="composer-provider-dot" class="provider-mini-dot"></span><span id="composer-provider-label">Kết nối AI</span></button>
+<button type="button" class="composer-chip autopilot-chip" id="composer-autopilot"><span class="autopilot-orb"></span><span>Tự động</span><svg><use href="#i-chevron"/></svg></button>
+</div>
+<div class="composer-submit-wrap"><span class="composer-hint">Ctrl Enter</span><button class="send-button" id="start-run-button" type="submit" aria-label="Bắt đầu nhiệm vụ"><svg><use href="#i-send"/></svg></button></div>
+</div>
+</form>
+<div class="suggestions" aria-label="Gợi ý nhiệm vụ">
+<button class="suggestion" data-prompt="Phân tích toàn bộ dự án, tìm lỗi quan trọng nhất và tự sửa kèm kiểm thử."><svg><use href="#i-check"/></svg><span>Tìm và sửa lỗi quan trọng</span></button>
+<button class="suggestion" data-prompt="Tối ưu hiệu năng ứng dụng, đo trước và sau, không thay đổi hành vi người dùng."><svg><use href="#i-clock"/></svg><span>Tối ưu hiệu năng</span></button>
+<button class="suggestion" data-prompt="Nâng cấp giao diện hiện tại trở nên hiện đại, nhất quán và responsive."><svg><use href="#i-eye"/></svg><span>Nâng cấp giao diện</span></button>
+</div>
+</div>
+</section>
+
+<section id="integrated-browser-center" class="view" hidden></section>
+<section id="secrets-manager" class="view" hidden></section>
+<section id="sandbox-manager" class="view" hidden></section>
+<section id="codebase-knowledge-center" class="view" hidden></section>
+<section id="local-operations-center" class="view" hidden></section>
+<section id="evidence-runtime-center" class="view" hidden></section>
+<section id="collaboration-experience-center" class="view" hidden></section>
+<section id="git-governance-center" class="view" hidden></section>
+<section id="agent-modes-center" class="view" hidden></section>
+<section id="mission-state-center" class="view" hidden></section>
+<section id="task-view" class="task-view view" hidden>
+<header class="task-topbar">
+<div class="task-title-group"><button class="icon-button mobile-history-button" id="mobile-history-button" aria-label="Mở lịch sử"><svg><use href="#i-chat"/></svg></button><div><span id="task-kicker">Nhiệm vụ</span><h1 id="task-title">Đang tải</h1></div></div>
+<div class="task-actions">
+<span id="run-status-pill" class="status-pill"><span></span><strong>Đang chạy</strong></span>
+<button id="pause-run" class="action-button" type="button"><svg><use href="#i-pause"/></svg><span>Tạm dừng</span></button>
+<button id="resume-run" class="action-button" type="button" hidden><svg><use href="#i-play"/></svg><span>Tiếp tục</span></button>
+<button id="retry-run" class="action-button" type="button" hidden><svg><use href="#i-retry"/></svg><span>Thử lại</span></button>
+<button id="stop-run" class="icon-button danger-ghost" type="button" aria-label="Dừng nhiệm vụ" title="Dừng nhiệm vụ"><svg><use href="#i-stop"/></svg></button>
+</div>
+</header>
+<div class="task-layout">
+<section class="conversation-pane">
+<div id="conversation-scroll" class="conversation-scroll">
+<div id="message-list" class="message-list"></div>
+<section id="failure-card" class="failure-card" hidden aria-live="assertive">
+<div class="failure-icon">!</div>
+<div class="failure-content"><div class="failure-kicker" id="failure-stage">Bước thực hiện bị lỗi</div><strong id="failure-reason">Nolane Agent chưa thể tiếp tục.</strong><p id="failure-help">Gửi thêm hướng dẫn hoặc nhấn Thử lại. Nolane Agent sẽ tự tiếp tục từ checkpoint gần nhất, không làm lại từ đầu.</p></div>
+</section>
+<section class="work-status-card" id="work-status-card">
+<div class="work-status-head"><span id="phase-icon" class="phase-icon"><svg><use href="#i-spark"/></svg></span><div><strong id="active-title">Nolane Agent đang bắt đầu</strong><p id="active-explanation">Đang chuẩn bị môi trường làm việc.</p></div><span class="live-indicator"><i></i> trực tiếp</span></div>
+<div class="live-operation-grid"><div><span>Model</span><strong id="live-provider">Đang chọn</strong></div><div><span>Đang tác động</span><strong id="live-target">Chưa có tệp hoặc dịch vụ</strong></div><div><span>Hoạt động</span><strong id="live-action">Đang chuẩn bị</strong></div><div><span>Tiến triển cuối</span><strong id="live-progress-time">Vừa xong</strong></div></div>
+<div class="progress-track"><span id="progress-bar"></span></div>
+<div class="run-metrics"><span id="task-progress">0 / 0 bước</span><span id="elapsed-time">0 giây</span><span id="token-usage">0 token</span><span id="heartbeat-status">Đang kết nối</span></div>
+</section>
+<div class="activity-section">
+<button id="activity-toggle" class="section-toggle" aria-expanded="true"><span>Nolane Agent đang làm gì</span><span id="activity-count">0 hoạt động</span><svg><use href="#i-chevron"/></svg></button>
+<div id="activity-stream" class="activity-timeline" aria-live="polite"></div>
+</div>
+</div>
+<form id="follow-up-composer" class="follow-up-composer" aria-label="Gửi hướng dẫn bổ sung">
+<textarea class="composer-input" id="follow-up-input" rows="1" required placeholder="Nhắn thêm hoặc đổi hướng trong lúc Nolane Agent đang làm..."></textarea>
+<button type="submit" class="send-button compact" aria-label="Gửi hướng dẫn"><svg><use href="#i-send"/></svg></button>
+</form>
+</section>
+<aside id="inspector-panel" class="inspector-panel">
+<nav class="inspector-tabs" aria-label="Kết quả nhiệm vụ">
+<button class="inspector-tab active" data-inspector="preview">Xem trước</button>
+<button class="inspector-tab" data-inspector="goal">Goal OS</button>
+<button class="inspector-tab" data-inspector="plan">Kế hoạch</button>
+<button class="inspector-tab" data-inspector="changes">Thay đổi</button>
+<button class="inspector-tab" data-inspector="tests">Kiểm thử</button>
+</nav>
+<div class="inspector-body">
+<section class="inspector-view active" data-inspector-view="preview">
+<div class="preview-empty" id="preview-empty"><span class="preview-icon"><svg><use href="#i-eye"/></svg></span><h2>Bản xem trước sẽ xuất hiện ở đây</h2><p>Khi Nolane Agent chạy ứng dụng hoặc tạo giao diện, bạn có thể xem và phản hồi trực tiếp tại đây.</p></div>
+<iframe id="live-preview" title="Bản xem trước ứng dụng" hidden></iframe>
+</section>
+<section class="inspector-view goal-os-view" data-inspector-view="goal">
+<div id="goal-summary" class="goal-summary-card">
+<div class="goal-summary-head"><div><span class="eyebrow">Durable goal</span><h2 id="goal-objective">Nhiệm vụ này chưa gắn với Goal OS</h2></div><span id="goal-revision" class="goal-revision">rev —</span></div>
+<div class="goal-metrics"><div><span>Trạng thái</span><strong id="goal-status">—</strong></div><div><span>Token</span><strong id="goal-token-budget">Không giới hạn</strong></div><div><span>Kế hoạch</span><strong id="goal-plan-count">0 lần cập nhật</strong></div></div>
+</div>
+<section class="goal-section"><header><strong>Phát hiện mới</strong><small>Nolane Agent ghi lại thông tin có nguồn và tự cân nhắc đổi kế hoạch.</small></header><div id="goal-discoveries" class="goal-feed"><div class="summary-empty">Chưa có phát hiện mới.</div></div></section>
+<section class="goal-section"><header><strong>Kế hoạch đã thay đổi</strong><small>Lịch sử cũ luôn được giữ lại.</small></header><div id="goal-plan-changes" class="goal-feed"><div class="summary-empty">Kế hoạch chưa cần thay đổi.</div></div></section>
+<section class="goal-section"><header><strong>Mission graph</strong><small>Agent, task và nhánh đang hoạt động.</small></header><div id="mission-graph-list" class="mission-graph-list"><div class="summary-empty">Chưa có mission graph.</div></div></section>
+</section>
+<section class="inspector-view" data-inspector-view="plan"><div id="plan-list" class="plan-list"></div></section>
+<section class="inspector-view" data-inspector-view="changes"><div id="diff-review-center" class="diff-review-center"><div class="diff-review-empty">Đang chờ diff từ worktree.</div></div><div id="changes-summary" class="summary-list"><div class="summary-empty">Nolane Agent sẽ tóm tắt file đã thay đổi sau mỗi checkpoint.</div></div></section>
+<section class="inspector-view" data-inspector-view="tests"><div id="tests-summary" class="summary-list"><div class="summary-empty">Kết quả kiểm thử sẽ được cập nhật tự động.</div></div></section>
+</div>
+<footer class="inspector-footer"><button id="rollback-run" class="rollback-button" type="button" hidden><svg><use href="#i-retry"/></svg><span>Hoàn tác thay đổi</span></button><button id="open-advanced" class="technical-button"><svg><use href="#i-code"/></svg><span>Chi tiết kỹ thuật</span><kbd>Ctrl `</kbd></button></footer>
+</aside>
+</div>
+</section>
+</main>
+</div>
+<dialog id="project-dialog" class="modal-dialog">
+<form id="project-form" method="dialog" class="modal-card">
+<header><div><span class="eyebrow">Workspace</span><h2>Mở dự án với Nolane Agent</h2><p>Nolane Agent chỉ làm việc bên trong thư mục bạn chọn.</p></div><button type="button" class="icon-button" data-close-dialog="project-dialog" aria-label="Đóng"><svg><use href="#i-x"/></svg></button></header>
+<label>Tên dự án<input id="project-name" required value="Dự án của tôi" autocomplete="off"></label>
+<label>Đường dẫn thư mục<span class="workspace-path-row"><input id="workspace-root" required placeholder="C:\Projects\my-app" autocomplete="off"><button id="browse-workspace" type="button" class="secondary-button">Chọn thư mục</button></span></label>
+<footer><button type="button" class="secondary-button" data-close-dialog="project-dialog">Hủy</button><button type="submit" class="primary-button">Mở dự án</button></footer>
+</form>
+</dialog>
+<dialog id="provider-dialog" class="modal-dialog provider-dialog" aria-labelledby="provider-dialog-title">
+<div class="modal-card provider-modal-card">
+<header><div><span class="eyebrow">AI connections</span><h2 id="provider-dialog-title">Kết nối AI cho Nolane Agent</h2><p>Đăng nhập gói Codex/Claude chính thức hoặc dùng API key. Nolane Agent không đọc token đăng nhập của ứng dụng khác.</p></div><button type="button" class="icon-button" data-close-dialog="provider-dialog" aria-label="Đóng"><svg><use href="#i-x"/></svg></button></header>
+<div id="provider-connection-message" class="provider-connection-message" aria-live="polite">Nolane Agent đang kiểm tra các kết nối có sẵn.</div>
+<div class="provider-grid">
+<section class="provider-card" data-provider-card="codex-app-server">
+<div class="provider-card-head"><span class="provider-logo codex-logo"><svg><use href="#i-spark"/></svg></span><div><strong>OpenAI Codex</strong><small>Dùng tài khoản ChatGPT hoặc Codex API key qua ứng dụng chính thức.</small></div><span id="codex-provider-status" class="provider-status checking">Đang kiểm tra</span></div>
+<div class="provider-actions"><button type="button" class="primary-button compact-button" data-provider-login="codex-app-server" data-login-type="chatgpt">Đăng nhập ChatGPT</button><button type="button" class="secondary-button compact-button" data-provider-login="codex-app-server" data-login-type="chatgptDeviceCode">Dùng mã thiết bị</button><button type="button" class="text-button provider-logout" data-provider-logout="codex-app-server" hidden>Đăng xuất</button></div>
+</section>
+<section class="provider-card" data-provider-card="claude">
+<div class="provider-card-head"><span class="provider-logo claude-logo">C</span><div><strong>Claude Code</strong><small>Đăng nhập Claude Pro/Max hoặc Anthropic Console bằng CLI chính thức.</small></div><span id="claude-provider-status" class="provider-status checking">Đang kiểm tra</span></div>
+<div class="provider-actions"><button type="button" class="primary-button compact-button" data-provider-login="claude" data-login-type="claudeai">Đăng nhập Claude Pro/Max</button><button type="button" class="secondary-button compact-button" data-provider-login="claude" data-login-type="console">Anthropic Console</button><button type="button" class="text-button provider-logout" data-provider-logout="claude" hidden>Đăng xuất</button></div>
+</section>
+</div>
+<section class="api-connection-section">
+<div class="api-section-heading"><div><strong>Kết nối bằng API key</strong><p>Key được lưu trong Windows Credential Manager và không quay lại trình duyệt.</p></div><button id="refresh-providers" type="button" class="secondary-button compact-button">Kiểm tra lại</button></div>
+<form id="api-provider-form" class="api-provider-form">
+<label for="provider-kind">Nền tảng<select id="provider-kind"><option value="openai-responses">OpenAI API</option><option value="anthropic-messages">Anthropic API</option><option value="gemini-generate-content">Google Gemini API</option><option value="openai-compatible">OpenAI-compatible / local</option></select></label>
+<label for="provider-model">Model<input id="provider-model" required autocomplete="off" placeholder="Tên model bạn có quyền sử dụng"></label>
+<label for="provider-api-key">API key<input id="provider-api-key" type="password" autocomplete="off" placeholder="Dán API key"></label>
+<label for="provider-base-url" id="provider-base-url-label" hidden>Endpoint<input id="provider-base-url" autocomplete="off" placeholder="https://.../v1 hoặc http://127.0.0.1:.../v1"></label>
+<button type="submit" class="primary-button provider-connect-button">Lưu và kiểm tra kết nối</button>
+</form>
+<div id="configured-api-providers" class="configured-provider-list"></div>
+</section>
+<footer><span class="provider-security-note">🔒 OAuth thuộc CLI chính thức · API key thuộc OS Vault</span><button type="button" class="primary-button" data-close-dialog="provider-dialog">Xong</button></footer>
+</div>
+</dialog>
+<dialog id="settings-dialog" class="modal-dialog wide-dialog">
+<form method="dialog" class="modal-card settings-card">
+<header><div><span class="eyebrow">Nolane Agent</span><h2>Cài đặt</h2><p>Những lựa chọn này áp dụng cho dự án hiện tại.</p></div><button type="button" class="icon-button" data-close-dialog="settings-dialog" aria-label="Đóng"><svg><use href="#i-x"/></svg></button></header>
+<section class="setting-section"><div><strong>Mức tự động</strong><p>Cho phép Nolane Agent tự hoàn thành công việc mà không hỏi ở mỗi bước.</p></div><select id="autonomy-select" aria-label="Mức tự động của Nolane Agent"><option value="workspace-autopilot">Tự động trong workspace</option><option value="guided">Hỏi trước khi thay đổi</option><option value="sandbox-autopilot">Tự động trong sandbox</option></select></section>
+<section class="setting-section"><div><strong>Hành động luôn cần xác nhận</strong><p>Deploy production, gửi tin nhắn, mua hàng, xuất credential và xóa dữ liệu bên ngoài workspace.</p></div><span class="safe-lock">Luôn khóa</span></section>
+<footer><button type="button" class="secondary-button" id="manage-projects">Thêm dự án</button><button type="button" class="primary-button" id="save-settings">Lưu cài đặt</button></footer>
+</form>
+</dialog>
+<dialog id="command-dialog" class="command-dialog">
+<div class="command-card"><div class="command-search"><svg><use href="#i-command"/></svg><input id="command-input" placeholder="Nhập lệnh hoặc tìm nhiệm vụ..." autocomplete="off"><kbd>Esc</kbd></div><div id="command-results" class="command-results"></div></div>
+</dialog>
+
+<dialog id="plugin-review-dialog" class="modal-dialog wide-dialog"><div class="modal-card settings-card"><header><div><span class="eyebrow">Plugin capability review</span><h2 id="plugin-review-title">Kiểm tra plugin</h2><p>Chỉ các MCP/LSP server được chọn mới được phép chạy trong dự án.</p></div><button type="button" class="icon-button" data-close-dialog="plugin-review-dialog" aria-label="Đóng"><svg><use href="#i-x"/></svg></button></header><section id="plugin-review-list" class="plugin-review-list"></section><footer><button type="button" class="secondary-button" data-close-dialog="plugin-review-dialog">Hủy</button><button type="button" class="primary-button" id="plugin-review-activate">Kích hoạt quyền đã chọn</button></footer></div></dialog>
+<aside id="advanced-drawer" class="advanced-drawer" hidden aria-label="Chi tiết kỹ thuật">
+<header class="advanced-header"><div><span class="eyebrow">Advanced</span><h2>Chi tiết kỹ thuật</h2><p>Editor, terminal, credential và hệ thống phát hành.</p></div><button id="close-advanced" class="icon-button" aria-label="Đóng chi tiết kỹ thuật"><svg><use href="#i-x"/></svg></button></header>
+<div class="advanced-content">
+<div class="advanced-runtime"><span id="runtime-status">Đang đọc runtime</span><span id="asset-status">Đang kiểm tra Monaco/xterm</span><button id="install-ui-assets" type="button" class="secondary-button">Cài tài nguyên editor</button></div>
+<div class="workroom-grid">
+<aside class="file-pane"><div class="pane-toolbar"><strong>Files</strong><button id="refresh-tree" type="button">↻</button></div><small id="file-tree-path">.</small><div id="file-tree" class="file-tree"></div></aside>
+<section class="editor-pane"><div class="pane-toolbar"><div id="editor-tabs" class="editor-tabs"></div><div class="button-row"><button id="save-file" type="button">Lưu</button><button id="diff-file" type="button">Diff</button></div></div><div id="active-file" class="active-file">Chưa mở file</div><div id="editor-host" class="editor-host" hidden></div><textarea id="editor-fallback" class="editor-fallback" spellcheck="false" placeholder="Editor dự phòng"></textarea><section id="diff-pane" class="diff-pane" hidden><div class="pane-toolbar"><strong>Disk ↔ Editor</strong><button id="close-diff" type="button">Đóng</button></div><div id="diff-host"></div><pre id="diff-output"></pre></section></section>
+<section class="terminal-pane"><div class="pane-toolbar"><div id="terminal-tabs" class="terminal-tabs"></div><div class="button-row"><select id="terminal-shell" aria-label="Shell"></select><button id="new-terminal" type="button">+ Terminal</button><button id="close-terminal" type="button">Đóng</button></div></div><small id="terminal-status">disconnected</small><div id="terminal-host" class="terminal-host"></div></section>
+</div>
+<div class="advanced-tools">
+<section><h3>Credential Vault</h3><small id="vault-backend"></small><form id="credential-form" class="inline-form"><input id="credential-service" value="nolane.provider.openai" required aria-label="Dịch vụ"><input id="credential-account" value="default" required aria-label="Tài khoản"><input id="credential-secret" type="password" autocomplete="off" placeholder="API key" required aria-label="Secret"><button type="submit">Lưu</button></form><div id="credential-list"></div></section>
+<section><h3>Signed update</h3><small id="update-status"></small><div class="button-row"><button id="check-update" type="button">Kiểm tra</button><button id="stage-update" type="button" hidden>Tải bản cập nhật</button><button id="install-update" type="button" hidden>Cài đặt và khởi động lại</button></div><pre id="update-output"></pre></section>
+<section><h3>Project rules</h3><button id="load-instructions" type="button">Nạp lại</button><pre id="instruction-output"></pre></section>
+
+<section class="goal-advanced-panel"><h3>Browser Agent</h3><small>Mở trình duyệt Playwright có cửa sổ và session riêng cho dự án.</small><div class="advanced-inline-row"><span id="browser-runtime-status">Đang kiểm tra Playwright</span><button id="install-browser-runtime" type="button">Cài browser runtime</button></div><div class="advanced-inline-row"><input id="browser-url" type="url" placeholder="https://www.youtube.com" aria-label="Địa chỉ trang web"><button id="browser-open" type="button">Mở trang</button><button id="browser-snapshot" type="button">Snapshot</button><button id="browser-close" type="button">Đóng</button></div><fieldset class="browser-permission-box"><legend>Cho phép thao tác ghi cho Goal hiện tại</legend><label><input id="browser-permission-click" type="checkbox" value="click"> Nhấp</label><label><input id="browser-permission-fill" type="checkbox" value="fill"> Điền form</label><label><input id="browser-permission-type" type="checkbox" value="type"> Gõ văn bản</label><label><input id="browser-permission-press" type="checkbox" value="press"> Nhấn phím</label><button id="save-browser-permissions" type="button">Lưu quyền browser</button></fieldset><pre id="browser-output">Browser chưa hoạt động.</pre></section>
+<section class="goal-advanced-panel"><h3>Plugin Center</h3><small>Tương thích marketplace Claude; hook luôn bị quarantine khi cài.</small><div class="advanced-inline-row"><input id="plugin-marketplace-source" placeholder="GitHub URL hoặc đường dẫn marketplace" aria-label="Nguồn marketplace"><button id="plugin-marketplace-add" type="button">Thêm marketplace</button></div><div class="advanced-inline-row"><input id="plugin-marketplace-id" placeholder="Marketplace ID" aria-label="Marketplace ID"><input id="plugin-name" placeholder="Tên plugin" aria-label="Tên plugin"><button id="plugin-install" type="button">Cài plugin</button></div><div id="plugin-list" class="plugin-list"><div class="summary-empty">Chưa cài plugin.</div></div></section>
+</div>
+</div>
+</aside>
+<div id="drawer-backdrop" class="drawer-backdrop" hidden></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script type="module" src="/app.js"></script>
+</body>
+</html>

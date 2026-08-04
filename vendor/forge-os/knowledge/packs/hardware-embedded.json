@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.hardware-embedded",
+  "domain": "hardware-embedded",
+  "title": "Hardware and Embedded Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "interfaces",
+    "timing",
+    "power",
+    "firmware",
+    "sensors",
+    "real-time",
+    "testing",
+    "manufacturing"
+  ],
+  "capabilities": [
+    "hardware-embedded.map-landscape",
+    "hardware-embedded.frame-problem",
+    "hardware-embedded.research-users",
+    "hardware-embedded.define-requirements",
+    "hardware-embedded.model-domain",
+    "hardware-embedded.compare-alternatives",
+    "hardware-embedded.design-concept",
+    "hardware-embedded.prototype-critical-flow",
+    "hardware-embedded.validate-prototype",
+    "hardware-embedded.design-architecture",
+    "hardware-embedded.model-data",
+    "hardware-embedded.model-threats",
+    "hardware-embedded.plan-delivery",
+    "hardware-embedded.implement-core",
+    "hardware-embedded.integrate-dependencies",
+    "hardware-embedded.verify-contracts",
+    "hardware-embedded.test-boundaries",
+    "hardware-embedded.test-resilience",
+    "hardware-embedded.test-performance",
+    "hardware-embedded.test-security",
+    "hardware-embedded.audit-accessibility",
+    "hardware-embedded.optimize-quality",
+    "hardware-embedded.optimize-cost",
+    "hardware-embedded.document-system",
+    "hardware-embedded.prepare-migration",
+    "hardware-embedded.plan-rollout",
+    "hardware-embedded.instrument-observability",
+    "hardware-embedded.operate-lifecycle",
+    "hardware-embedded.respond-incidents",
+    "hardware-embedded.govern-evolution",
+    "hardware-embedded.measure-outcomes",
+    "hardware-embedded.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "qt-agent-skills",
+      "title": "Qt AI Engineering Skills",
+      "url": "https://github.com/TheQtCompanyRnD/agent-skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "Mixed",
+        "mode": "link-only"
+      }
+    },
+    {
+      "id": "nvidia-skills",
+      "title": "NVIDIA Agent Skills",
+      "url": "https://github.com/NVIDIA/skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "Mixed",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

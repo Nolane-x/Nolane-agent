@@ -1,0 +1,38 @@
+[
+  {
+    "id": "protecting-secrets-application",
+    "kind": "application",
+    "input": "Task directly requiring protecting secrets within security lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "protecting-secrets-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require protecting secrets within security lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "protecting-secrets-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "protecting-secrets-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "protecting-secrets-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "protecting-secrets-transfer",
+    "kind": "transfer",
+    "input": "Apply the protecting-secrets mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

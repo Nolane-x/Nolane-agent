@@ -1,0 +1,71 @@
+{
+  "schema": "forge.studio.memory-skill-resource-os-measurement.v1",
+  "version": "2.26.0",
+  "memory": {
+    "operations": [
+      "abstract",
+      "archive",
+      "delete",
+      "deprioritize",
+      "invalidate",
+      "suppress"
+    ],
+    "versionHistory": true,
+    "exceptionPrecedence": true,
+    "privacyDeletionContentRetained": false,
+    "snapshotReceiptSha256": "f58a3a710580f95bbb0d0a8b825d8ecbc96a2b23ceb314834a9dda894c05807a"
+  },
+  "policy": {
+    "selfReportRejected": true,
+    "verifiedConsolidationAllowed": true,
+    "shadowOnly": true
+  },
+  "replay": {
+    "modelTimeIgnoresRawSteps": true,
+    "modelTimeAdvancedOnChange": true,
+    "revertedEpisodePrioritized": true,
+    "modelInvoked": false
+  },
+  "skills": {
+    "typedOperator": true,
+    "transferRequired": true,
+    "regressionBlocked": true,
+    "automaticPromotionExecuted": false
+  },
+  "resources": {
+    "lowValueBrowserDenied": true,
+    "targetedTestAdmitted": true,
+    "rssMbSecondsMeasured": true,
+    "predictedEviction": true,
+    "pidMismatchProtected": true,
+    "activeLeaseCount": 3
+  },
+  "artifacts": {
+    "deduplicated": true,
+    "rawBytesInSnapshot": false,
+    "boundedPreviewBytes": 8
+  },
+  "lazy": {
+    "fastPathUnloaded": true,
+    "loadedOnDemand": true
+  },
+  "privacy": {
+    "hiddenReasoningStored": false,
+    "rawPromptsStored": false,
+    "rawArtifactsStoredInSnapshot": false
+  },
+  "composition": {
+    "appStaticImports": 154,
+    "appConstructors": 172
+  },
+  "boundaries": {
+    "productionMemoryPolicyChanged": false,
+    "automaticSkillPromotionExecuted": false,
+    "directOsBudgetEnforcementCertified": false,
+    "longTermSkillSurvivalCertified": false,
+    "productionNeuralEmbeddingUnloadCertified": false,
+    "crossRepositorySkillGeneralizationCertified": false,
+    "comparativeSuperiorityClaimed": false
+  },
+  "receiptSha256": "8e104affd20490bb0fb63988fe11006de90c38cf993572dc26622e9ae0243608"
+}

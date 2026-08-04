@@ -1,0 +1,96 @@
+{
+  "schema": "nolane.small-model.constraint-proof-verification.v1",
+  "kind": "bounded-datalog",
+  "status": "pass",
+  "skillId": "bounded-test-impact",
+  "skillReceiptSha256": "18ccc455ceea93c7d4969fb0c4497988d8b6ef073ebf3b521006eed42ae0c9f5",
+  "datalog": {
+    "schema": "nolane.small-model.datalog-proof.v1",
+    "facts": [
+      {
+        "predicate": "allowed",
+        "args": [
+          "unit"
+        ]
+      },
+      {
+        "predicate": "blocked",
+        "args": [
+          "full"
+        ]
+      },
+      {
+        "predicate": "candidate",
+        "args": [
+          "full"
+        ]
+      },
+      {
+        "predicate": "candidate",
+        "args": [
+          "unit"
+        ]
+      },
+      {
+        "predicate": "depends",
+        "args": [
+          "integration",
+          "unit"
+        ]
+      },
+      {
+        "predicate": "depends",
+        "args": [
+          "unit",
+          "source"
+        ]
+      },
+      {
+        "predicate": "impacted",
+        "args": [
+          "integration",
+          "source"
+        ]
+      },
+      {
+        "predicate": "impacted",
+        "args": [
+          "integration",
+          "unit"
+        ]
+      },
+      {
+        "predicate": "impacted",
+        "args": [
+          "unit",
+          "source"
+        ]
+      }
+    ],
+    "answers": [
+      {
+        "?test": "unit"
+      }
+    ],
+    "iterations": 5,
+    "converged": true,
+    "strata": {
+      "allowed": 1,
+      "blocked": 0,
+      "candidate": 0,
+      "depends": 0,
+      "impacted": 0
+    },
+    "completeWithinBudgets": true,
+    "receiptSha256": "43ce2f902ccdbebd263e63e7178578795ec59bb99490fd6935b72ef8b4186c42"
+  },
+  "completeWithinBudgets": true,
+  "unsafeProbeRejected": true,
+  "hiddenChainOfThoughtStored": false,
+  "claims": {
+    "boundedConstraintProof": true,
+    "generalCodingIntelligence": false,
+    "competitorSuperiority": false
+  },
+  "receiptSha256": "fd82ae6c43add62fac7dc6a868d45444f7f41bd06b065a23fb5fa2c83b4e4478"
+}

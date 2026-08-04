@@ -1,0 +1,8 @@
+.local-frontier-work-surface { display: grid; min-width: 0; contain: layout paint; }
+.local-frontier-work-surface [data-state="missing"] { opacity: 1; filter: none; }
+.local-frontier-work-surface__virtual-list { content-visibility: auto; contain-intrinsic-size: 1px 480px; }
+@media (prefers-reduced-motion: reduce) {
+  .local-frontier-work-surface, .local-frontier-work-surface * { animation: none !important; transition-duration: 0ms !important; scroll-behavior: auto !important; }
+}
+[data-resource-pressure="high"] .local-frontier-work-surface,
+[data-resource-pressure="critical"] .local-frontier-work-surface { filter: none; backdrop-filter: none; }

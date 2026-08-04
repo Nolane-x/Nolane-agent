@@ -1,0 +1,38 @@
+[
+  {
+    "id": "sandboxing-untrusted-execution-application",
+    "kind": "application",
+    "input": "Task directly requiring sandboxing untrusted execution within security lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "sandboxing-untrusted-execution-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require sandboxing untrusted execution within security lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "sandboxing-untrusted-execution-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "sandboxing-untrusted-execution-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "sandboxing-untrusted-execution-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "sandboxing-untrusted-execution-transfer",
+    "kind": "transfer",
+    "input": "Apply the sandboxing-untrusted-execution mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

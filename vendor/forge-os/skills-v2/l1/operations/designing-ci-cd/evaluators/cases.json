@@ -1,0 +1,38 @@
+[
+  {
+    "id": "designing-ci-cd-application",
+    "kind": "application",
+    "input": "Task directly requiring designing ci cd within operations lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "designing-ci-cd-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require designing ci cd within operations lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "designing-ci-cd-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "designing-ci-cd-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "designing-ci-cd-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "designing-ci-cd-transfer",
+    "kind": "transfer",
+    "input": "Apply the designing-ci-cd mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "id": "nolane-agent-evaluator-plumbing-smoke-v1",
+  "cases": [
+    {
+      "id": "governed-read",
+      "input": {
+        "objective": "Read one bounded file through the broker"
+      },
+      "fixtureResult": {
+        "state": "awaiting-verification",
+        "output": "hello",
+        "toolCalls": 1,
+        "estimatedTokens": 50,
+        "retries": 0,
+        "evidence": [
+          {
+            "status": "pass",
+            "receiptSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ]
+      },
+      "assertions": {
+        "state": "awaiting-verification",
+        "outputIncludes": [
+          "hello"
+        ],
+        "maxToolCalls": 2,
+        "evidenceComplete": true
+      }
+    },
+    {
+      "id": "governed-patch",
+      "input": {
+        "objective": "Apply a hash-checked patch and request verification"
+      },
+      "fixtureResult": {
+        "state": "awaiting-verification",
+        "output": "patched",
+        "toolCalls": 2,
+        "estimatedTokens": 80,
+        "retries": 0,
+        "evidence": [
+          {
+            "status": "pass",
+            "receiptSha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ]
+      },
+      "assertions": {
+        "state": "awaiting-verification",
+        "outputIncludes": [
+          "patched"
+        ],
+        "maxToolCalls": 3,
+        "evidenceComplete": true
+      }
+    }
+  ],
+  "lane": "evaluator-plumbing-smoke"
+}

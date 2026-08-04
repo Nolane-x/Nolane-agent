@@ -1,0 +1,20 @@
+{
+  "name": "forgeos",
+  "version": "0.3.0",
+  "description": "Evidence-gated product engineering for Claude Code and compatible hosts.",
+  "author": {
+    "name": "ForgeOS Contributors"
+  },
+  "license": "MIT",
+  "commands": [
+    "./commands/forge.md"
+  ],
+  "agents": [
+    "./agents/forge-gatekeeper.md"
+  ],
+  "skills": [
+    "./skills/core",
+    "./skills/domains"
+  ],
+  "mcpServers": "./.mcp.json"
+}

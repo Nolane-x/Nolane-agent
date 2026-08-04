@@ -1,0 +1,2205 @@
+{
+  "schema": "nolane.forensics.assertion-evidence-binding-baseline.v1",
+  "requirementsScope": [
+    "NOL-UI-*",
+    "NOL-AUDIT-*"
+  ],
+  "bindings": [
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-AUDIT-001",
+      "productionEntrypoints": [
+        "scripts/generate-nolane-program.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "d21e8e379ed87ceefcdb6be1c377dd02c4cfe77fad644a7aba509f86980a1188"
+      ],
+      "testFile": "tests/nolane-program-registry.test.mjs",
+      "testFileSha256": "d4bb8d4558469d82971fa29f80f5d606b8bc8f73dfc5116f8d5a4b3bc2b984ef",
+      "namedTests": [
+        "program generator creates a real requirement registry and a Nolane runtime purity receipt and immutable historical transformation evidence",
+        "program generation is byte-stable when source evidence is unchanged"
+      ],
+      "positiveAssertions": [
+        "assert.equal(result.product, 'Nolane Agent')",
+        "assert.equal(result.requirements.total, 198)",
+        "assert.equal(result.requirements.notImplemented, 0)",
+        "assert.ok(result.retirement.historicalLedgerEntries >= 7000)",
+        "assert.equal(result.retirement.replacementCoverage.accepted, result.retirement.replacementCoverage.replaced)",
+        "assert.equal(registry.statusCounts.verified_source_test, 193)",
+        "assert.equal(registry.statusCounts.external_gate, 5)",
+        "assert.equal(registry.statusCounts.not_implemented ?? 0, 0)",
+        "assert.equal(registry.version, '5.0.0-beta.6')",
+        "assert.equal(registry.productVersion, '5.0.0-beta.6')",
+        "assert.equal(cleanRoom.status, 'verified_source_test')",
+        "assert.equal(cleanRoom.acceptance.entrypoint, 'scripts/certify-published-source.mjs')",
+        "assert.equal(cleanRoom.acceptance.exactTest, 'tests/clean-room-certification.test.mjs')",
+        "assert.equal(registry.statusCounts.implemented_not_wired ?? 0, 0)",
+        "assert.ok(registry.requirements.every((item) => typeof item.acceptance.observableBehavior === 'string' && item.acceptance.observableBehavior.length > 0))",
+        "assert.equal(registry.requirements.find((item) => item.id === id)?.status, 'verified_source_test')",
+        "assert.equal(registry.requirements.find((item) => item.id === 'NOL-NOLANE_NATIVE-040')?.status, 'verified_source_test')",
+        "assert.equal(item?.status, 'external_gate')",
+        "assert.ok(item?.acceptance?.entrypoint)",
+        "assert.ok(item?.acceptance?.exactTest)",
+        "assert.match(item?.acceptance?.replayReceiptSha256 ?? '', /^[a-f0-9]{64}$/)",
+        "assert.match(item.acceptance.evidence.entrypointSha256, /^[a-f0-9]{64}$/)",
+        "assert.match(item.acceptance.evidence.exactTestSha256, /^[a-f0-9]{64}$/)",
+        "assert.match(item.acceptance.replayReceiptSha256, /^[a-f0-9]{64}$/)",
+        "assert.equal(lines.length, result.retirement.historicalLedgerEntries)",
+        "assert.match(sample.action, /^(reimplement|rewrite-test|rewrite-doc|respecify-config|replace-asset|retain-license|exclude-with-reason)$/)",
+        "assert.match(sample.sourceArchiveEntrySha256, /^[a-f0-9]{64}$/)",
+        "assert.deepEqual(second, first)",
+        "named-test-pass:program generator creates a real requirement registry and a Nolane runtime purity receipt and immutable historical transformation evidence",
+        "named-test-pass:program generation is byte-stable when source evidence is unchanged"
+      ],
+      "negativeAssertions": [
+        "assert.equal(result.retirement.nolane_nativeBundled, false)",
+        "assert.equal(registry.requirements.some((item) => /requirement \\d+$/.test(item.title)), false)",
+        "assert.ok(registry.requirements.every((item) => item.acceptance.sourceCountIsProof === false))"
+      ],
+      "receiptSha256": "7f43fc6e9858ebbb93606aa5177b8694a973b24d96d28bbd1ee3e89455317e3c",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-AUDIT-002",
+      "productionEntrypoints": [
+        "src/security/content-ingress-pipeline.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "91325b38f2aba9bca0c1ccf026144b9396939a966a003ab8119423c9cc954693"
+      ],
+      "testFile": "tests/content-ingress-agent-loop.test.mjs",
+      "testFileSha256": "8f6062b52a5475b738cdacdba5fde7ad84af272c7c4c1a095394685ea63e5839",
+      "namedTests": [
+        "AgentLoop quarantines malicious instructions and tool output before final provider messages",
+        "ContentIngressPipeline preserves benign text with provenance",
+        "ContentIngressPipeline rejects malicious instructions instead of forwarding raw attack text"
+      ],
+      "positiveAssertions": [
+        "assert.doesNotMatch(serialized, /Ignore all previous instructions/i)",
+        "assert.doesNotMatch(serialized, /Reveal the system prompt/i)",
+        "assert.match(serialized, /quarantined-content/)",
+        "assert.match(serialized, /contentSha256/)",
+        "assert.equal(result.state, 'awaiting-verification')",
+        "assert.ok(events.length >= 2)",
+        "assert.ok(events.every((event) => event.payload.status === 'quarantine'))",
+        "assert.equal(result.status, 'pass')",
+        "assert.equal(result.safeText, 'Run focused tests first.')",
+        "assert.equal(result.contentIncluded, true)",
+        "assert.match(result.receiptSha256, /^[a-f0-9]{64}$/)",
+        "assert.equal(result.status, 'quarantine')",
+        "assert.doesNotMatch(result.safeText, /Ignore all previous instructions/i)",
+        "assert.doesNotMatch(result.safeText, /reveal the system prompt/i)",
+        "assert.match(result.safeText, /quarantined-content/i)",
+        "named-test-pass:AgentLoop quarantines malicious instructions and tool output before final provider messages",
+        "named-test-pass:ContentIngressPipeline preserves benign text with provenance"
+      ],
+      "negativeAssertions": [
+        "assert.equal(result.contentIncluded, false)",
+        "named-test-negative:ContentIngressPipeline rejects malicious instructions instead of forwarding raw attack text"
+      ],
+      "receiptSha256": "cd57c503a4b53345de779eae3b02ccac2b55bd623333b647236ae84029524482",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-AUDIT-003",
+      "productionEntrypoints": [
+        "scripts/certify-published-source.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "dae32727cbfb9b149a1bffa6e68fd465cb2d985066c076f339ed0d7df3c65b97"
+      ],
+      "testFile": "tests/clean-room-certification.test.mjs",
+      "testFileSha256": "476c294f0ee0402a8752b3032486d0c7bd4d38b3c6190e47830461260a2385e1",
+      "namedTests": [
+        "clean-room certification verifies a NolaneNative-free source archive and its manifest",
+        "clean-room certification rejects any bundled NolaneNative runtime path",
+        "clean-room certification resumes an interrupted exact-archive node-test cache"
+      ],
+      "positiveAssertions": [
+        "assert.equal(report.status,'pass')",
+        "assert.match(report.receiptSha256,/^[a-f0-9]{64}$/)",
+        "assert.equal(resumed,true)",
+        "named-test-pass:clean-room certification verifies a NolaneNative-free source archive and its manifest",
+        "named-test-pass:clean-room certification resumes an interrupted exact-archive node-test cache"
+      ],
+      "negativeAssertions": [
+        "assert.equal(report.thirdPartyRuntime.nolane_nativeBundled,false)",
+        "assert.rejects(()=>certifyPublishedSourceArchive({ archivePath:f.archive, expectedVersion:f.version, probes:[] }),/NolaneNative.*forbidden|forbidden.*NolaneNative/i)",
+        "assert.rejects(()=>certifyPublishedSourceArchive({",
+        "named-test-negative:clean-room certification rejects any bundled NolaneNative runtime path"
+      ],
+      "receiptSha256": "d7388d30a0f828379e7798004f610d19309d0c24b7585ca47ac5e44f13bb57ce",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-AUDIT-004",
+      "productionEntrypoints": [
+        "src/eval/eval-lane-policy.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "3240c4c7de60462f75bbf88d78e653bcf1b9e39f387f63ac80627eb75ba6a89d"
+      ],
+      "testFile": "tests/eval-lane-policy.test.mjs",
+      "testFileSha256": "155efdfbd590de140f8431a4308b0efae8bda396712063fff35406c9b47580f0",
+      "namedTests": [
+        "plumbing smoke may use fixtures but can never authorize capability or comparative claims",
+        "coding benchmark rejects fixture/mock execution, exposed hidden tests, and trivial verifiers",
+        "coding and competitor lanes grant only their bounded claim scopes after hidden and independent gates"
+      ],
+      "positiveAssertions": [
+        "assert.equal(report.lane, 'evaluator-plumbing-smoke')",
+        "assert.equal(report.claimScope, 'none')",
+        "assert.ok(report.nonClaimReasons.includes('fixture-or-smoke-only'))",
+        "assert.equal(coding.claimAllowed, true)",
+        "assert.equal(coding.claimScope, 'coding-capability')",
+        "assert.equal(allowed.claimAllowed, true)",
+        "assert.equal(allowed.claimScope, 'comparative')",
+        "named-test-pass:plumbing smoke may use fixtures but can never authorize capability or comparative claims",
+        "named-test-pass:coding and competitor lanes grant only their bounded claim scopes after hidden and independent gates"
+      ],
+      "negativeAssertions": [
+        "assert.equal(report.claimAllowed, false)",
+        "assert.equal(evaluateEvalLanePolicy({ ...base, cases: [{ ...base.cases[0], fixtureResult: {} }] }, { executionMode: 'module' }).status, 'fail')",
+        "assert.equal(evaluateEvalLanePolicy({ ...base, hiddenVerifier: { ...base.hiddenVerifier, visibleToExecutor: true } }, { executionMode: 'module' }).status, 'fail')",
+        "assert.equal(evaluateEvalLanePolicy({ ...base, hiddenVerifier: { command: 'node -e \"process.exit(0)\"', id: 'bad', sha256: H('b'), opaque: true, visibleToExecutor: false, compositional: true } }, { executionMode: 'module' }).status, 'fail')",
+        "assert.equal(evaluateEvalLanePolicy(base, { executionMode: 'fixture' }).status, 'fail')",
+        "assert.equal(denied.claimAllowed, false)",
+        "assert.ok(denied.nonClaimReasons.includes('independent-attestation-missing'))",
+        "named-test-negative:coding benchmark rejects fixture/mock execution, exposed hidden tests, and trivial verifiers"
+      ],
+      "receiptSha256": "734b8f155328d1c2129539a5277bf649d6f476aa33c3bcbdb7c424f96e062d07",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-AUDIT-005",
+      "productionEntrypoints": [
+        "src/repository/repository-file-enumerator.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "bb41b64d4c9348d09c85c8aabe781d13feb5898a2dedce09f4bcd9f4100f3d6e"
+      ],
+      "testFile": "tests/repository-gitless-discovery.test.mjs",
+      "testFileSha256": "aa337b34de2bfc28207dc31ff08ad39a0d470c7686c2c84a68ca2d2ab13332e7",
+      "namedTests": [
+        "Gitless repository enumeration is bounded, explicit, and never follows symlinks"
+      ],
+      "positiveAssertions": [
+        "assert.equal(enumeration.mode, 'filesystem-fallback')",
+        "assert.deepEqual(enumeration.files, ['.env', 'README.md', 'src/index.js'])",
+        "assert.match(enumeration.receiptSha256, /^[a-f0-9]{64}$/)",
+        "assert.equal(indexed.discoveryMode, 'filesystem-fallback')",
+        "assert.equal(indexed.warnings.includes('filesystem-fallback'), true)",
+        "assert.ok(indexed.scanned >= 2)",
+        "assert.equal(new RepositoryIndex({ store }).search(project.id, 'escaped').length, 0)",
+        "assert.equal(new RepositoryIndex({ store }).search(project.id, 'start')[0]?.path, 'src/index.js')",
+        "assert.equal(discovery.summary.discoveryMode, 'filesystem-fallback')",
+        "assert.equal(discovery.summary.warnings.includes('filesystem-fallback'), true)",
+        "assert.ok(discovery.summary.filesObserved >= 2)",
+        "named-test-pass:Gitless repository enumeration is bounded, explicit, and never follows symlinks"
+      ],
+      "negativeAssertions": [
+        "assert.equal(enumeration.claims.symlinksFollowed, false)"
+      ],
+      "receiptSha256": "06b684bc636fe6b9597cb86118a49453dfb781d69599bd5548d839516d121c0a",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-AUDIT-006",
+      "productionEntrypoints": [
+        "src/server/http-server.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "ca0ae6730cbdf0bf1271cb4e0fc0b7cba18aade6e77c4e0c7882df7c4ad966c7"
+      ],
+      "testFile": "tests/http-boundary-errors.test.mjs",
+      "testFileSha256": "f907a028b35a2a8fa661ff268aadf805d964bf7a17ef093124fd308ec42f6861",
+      "namedTests": [
+        "HTTP error classification maps invalid input and workspace boundaries without leaking internal details",
+        "workroom API returns 403 for path escape and sanitized 500 for unexpected failures"
+      ],
+      "positiveAssertions": [
+        "assert.equal(outside.status, 403)",
+        "assert.deepEqual(outside.body, { error: 'forbidden', code: 'PATH_SYMLINK_ESCAPE' })",
+        "assert.equal(internal.status, 500)",
+        "assert.deepEqual(internal.body, { error: 'internal-error' })",
+        "assert.doesNotMatch(JSON.stringify(internal), /super-secret|password|detail|stack/i)",
+        "assert.equal(forbidden.status, 403)",
+        "assert.deepEqual(forbidden.body, { error: 'forbidden', code: 'PATH_SYMLINK_ESCAPE' })",
+        "assert.doesNotMatch(JSON.stringify(forbidden.body), /private|target|detail/i)",
+        "assert.doesNotMatch(JSON.stringify(internal.body), /super-secret|password|detail|stack/i)",
+        "named-test-pass:workroom API returns 403 for path escape and sanitized 500 for unexpected failures"
+      ],
+      "negativeAssertions": [
+        "assert.equal(missing.status, 400)",
+        "assert.deepEqual(missing.body, { error: 'bad-request', code: 'INVALID_INPUT' })",
+        "named-test-negative:HTTP error classification maps invalid input and workspace boundaries without leaking internal details"
+      ],
+      "receiptSha256": "206639e590bc7c9823eb2325637a177f5783d266c44fd3b0f789b0ad191cd8d1",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-AUDIT-007",
+      "productionEntrypoints": [
+        "scripts/verify-nolane-evidence-freshness.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "29a156c9fcccfb77b6e9c5359573902cc4ccf034077271a5f7b407c1b6b34d18"
+      ],
+      "testFile": "tests/nolane-evidence-freshness.test.mjs",
+      "testFileSha256": "5e6a8153ae329c4a3a0a5b36dee9495147d1b653b669a4868b74d2c040ad2814",
+      "namedTests": [
+        "evidence freshness verifier accepts current registry and detects stale source or tests"
+      ],
+      "positiveAssertions": [
+        "assert.equal(current.status, 'pass')",
+        "assert.equal(current.failures.length, 0)",
+        "assert.ok(current.checked >= 60)",
+        "assert.match(current.receiptSha256, /^[a-f0-9]{64}$/)",
+        "assert.equal((await verifyNolaneEvidenceFreshness({ projectRoot: root })).status, 'pass')"
+      ],
+      "negativeAssertions": [
+        "assert.equal(stale.status, 'fail')",
+        "assert.equal(stale.failures.some((item) => item.code === 'ENTRYPOINT_SHA_MISMATCH'), true)",
+        "named-test-negative:evidence freshness verifier accepts current registry and detects stale source or tests"
+      ],
+      "receiptSha256": "5672f15e497397278e10b01846df7f81dfd948ed397c0e6ffdd73858fa94ef5d",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-AUDIT-008",
+      "productionEntrypoints": [
+        "src/security/route-security-telemetry.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "8951929ff62e7e5e07a403ed544e2302df2d66fab02c8c4a0288fc049e5d8c0c"
+      ],
+      "testFile": "tests/route-security-telemetry.test.mjs",
+      "testFileSha256": "9a9b2be00a8cb5bf7a182512b18ee4e951ae4b6101420ec6f6fad5e24e30be59",
+      "namedTests": [
+        "route security telemetry records auth, authorization, and handler stages without request secrets",
+        "application wires route security telemetry into the production HTTP server"
+      ],
+      "positiveAssertions": [
+        "assert.equal(denied.status, 401)",
+        "assert.equal(allowed.status, 200)",
+        "assert.deepEqual(deniedEvents.map((event) => event.stage), ['authentication'])",
+        "assert.ok(allowedRequestId)",
+        "assert.deepEqual(events.filter((event) => event.requestId === allowedRequestId).map((event) => `${event.stage}:${event.outcome}`), [",
+        "assert.doesNotMatch(serialized, /right-token|wrong-secret|query-secret|body-secret|bearer|x-private-note/i)",
+        "assert.ok(events.every((event) => /^[a-f0-9]{64}$/.test(event.receiptSha256)))",
+        "assert.match(source, /new RouteSecurityTelemetry\\(/)",
+        "assert.match(source, /createHttpServer\\(\\{[\\s\\S]*routeSecurityTelemetry/)",
+        "named-test-pass:application wires route security telemetry into the production HTTP server"
+      ],
+      "negativeAssertions": [
+        "named-test-negative:route security telemetry records auth, authorization, and handler stages without request secrets"
+      ],
+      "receiptSha256": "19ea3c8534a59bf5dfe627adb6f35bf177b53213eec9242d8b4256f4fbd0e505",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-AUDIT-009",
+      "productionEntrypoints": [
+        "scripts/generate-nolane-program.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "d21e8e379ed87ceefcdb6be1c377dd02c4cfe77fad644a7aba509f86980a1188"
+      ],
+      "testFile": "tests/nolane-program-registry.test.mjs",
+      "testFileSha256": "d4bb8d4558469d82971fa29f80f5d606b8bc8f73dfc5116f8d5a4b3bc2b984ef",
+      "namedTests": [
+        "program generator creates a real requirement registry and a Nolane runtime purity receipt and immutable historical transformation evidence",
+        "program generation is byte-stable when source evidence is unchanged"
+      ],
+      "positiveAssertions": [
+        "assert.equal(result.product, 'Nolane Agent')",
+        "assert.equal(result.requirements.total, 198)",
+        "assert.equal(result.requirements.notImplemented, 0)",
+        "assert.ok(result.retirement.historicalLedgerEntries >= 7000)",
+        "assert.equal(result.retirement.replacementCoverage.accepted, result.retirement.replacementCoverage.replaced)",
+        "assert.equal(registry.statusCounts.verified_source_test, 193)",
+        "assert.equal(registry.statusCounts.external_gate, 5)",
+        "assert.equal(registry.statusCounts.not_implemented ?? 0, 0)",
+        "assert.equal(registry.version, '5.0.0-beta.6')",
+        "assert.equal(registry.productVersion, '5.0.0-beta.6')",
+        "assert.equal(cleanRoom.status, 'verified_source_test')",
+        "assert.equal(cleanRoom.acceptance.entrypoint, 'scripts/certify-published-source.mjs')",
+        "assert.equal(cleanRoom.acceptance.exactTest, 'tests/clean-room-certification.test.mjs')",
+        "assert.equal(registry.statusCounts.implemented_not_wired ?? 0, 0)",
+        "assert.ok(registry.requirements.every((item) => typeof item.acceptance.observableBehavior === 'string' && item.acceptance.observableBehavior.length > 0))",
+        "assert.equal(registry.requirements.find((item) => item.id === id)?.status, 'verified_source_test')",
+        "assert.equal(registry.requirements.find((item) => item.id === 'NOL-NOLANE_NATIVE-040')?.status, 'verified_source_test')",
+        "assert.equal(item?.status, 'external_gate')",
+        "assert.ok(item?.acceptance?.entrypoint)",
+        "assert.ok(item?.acceptance?.exactTest)",
+        "assert.match(item?.acceptance?.replayReceiptSha256 ?? '', /^[a-f0-9]{64}$/)",
+        "assert.match(item.acceptance.evidence.entrypointSha256, /^[a-f0-9]{64}$/)",
+        "assert.match(item.acceptance.evidence.exactTestSha256, /^[a-f0-9]{64}$/)",
+        "assert.match(item.acceptance.replayReceiptSha256, /^[a-f0-9]{64}$/)",
+        "assert.equal(lines.length, result.retirement.historicalLedgerEntries)",
+        "assert.match(sample.action, /^(reimplement|rewrite-test|rewrite-doc|respecify-config|replace-asset|retain-license|exclude-with-reason)$/)",
+        "assert.match(sample.sourceArchiveEntrySha256, /^[a-f0-9]{64}$/)",
+        "assert.deepEqual(second, first)",
+        "named-test-pass:program generator creates a real requirement registry and a Nolane runtime purity receipt and immutable historical transformation evidence",
+        "named-test-pass:program generation is byte-stable when source evidence is unchanged"
+      ],
+      "negativeAssertions": [
+        "assert.equal(result.retirement.nolane_nativeBundled, false)",
+        "assert.equal(registry.requirements.some((item) => /requirement \\d+$/.test(item.title)), false)",
+        "assert.ok(registry.requirements.every((item) => item.acceptance.sourceCountIsProof === false))"
+      ],
+      "receiptSha256": "82fb2ad642291564049694a9c28cfaa1cd12bbed6c847c609f10aa009adef744",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-AUDIT-010",
+      "productionEntrypoints": [
+        "src/eval/eval-runner.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "aef4f3443c73ff6d2d547ec5dbcef81b7150cc27672433643804b93686a10253"
+      ],
+      "testFile": "tests/eval-lane-policy.test.mjs",
+      "testFileSha256": "155efdfbd590de140f8431a4308b0efae8bda396712063fff35406c9b47580f0",
+      "namedTests": [
+        "plumbing smoke may use fixtures but can never authorize capability or comparative claims",
+        "coding benchmark rejects fixture/mock execution, exposed hidden tests, and trivial verifiers",
+        "coding and competitor lanes grant only their bounded claim scopes after hidden and independent gates"
+      ],
+      "positiveAssertions": [
+        "assert.equal(report.lane, 'evaluator-plumbing-smoke')",
+        "assert.equal(report.claimScope, 'none')",
+        "assert.ok(report.nonClaimReasons.includes('fixture-or-smoke-only'))",
+        "assert.equal(coding.claimAllowed, true)",
+        "assert.equal(coding.claimScope, 'coding-capability')",
+        "assert.equal(allowed.claimAllowed, true)",
+        "assert.equal(allowed.claimScope, 'comparative')",
+        "named-test-pass:plumbing smoke may use fixtures but can never authorize capability or comparative claims",
+        "named-test-pass:coding and competitor lanes grant only their bounded claim scopes after hidden and independent gates"
+      ],
+      "negativeAssertions": [
+        "assert.equal(report.claimAllowed, false)",
+        "assert.equal(evaluateEvalLanePolicy({ ...base, cases: [{ ...base.cases[0], fixtureResult: {} }] }, { executionMode: 'module' }).status, 'fail')",
+        "assert.equal(evaluateEvalLanePolicy({ ...base, hiddenVerifier: { ...base.hiddenVerifier, visibleToExecutor: true } }, { executionMode: 'module' }).status, 'fail')",
+        "assert.equal(evaluateEvalLanePolicy({ ...base, hiddenVerifier: { command: 'node -e \"process.exit(0)\"', id: 'bad', sha256: H('b'), opaque: true, visibleToExecutor: false, compositional: true } }, { executionMode: 'module' }).status, 'fail')",
+        "assert.equal(evaluateEvalLanePolicy(base, { executionMode: 'fixture' }).status, 'fail')",
+        "assert.equal(denied.claimAllowed, false)",
+        "assert.ok(denied.nonClaimReasons.includes('independent-attestation-missing'))",
+        "named-test-negative:coding benchmark rejects fixture/mock execution, exposed hidden tests, and trivial verifiers"
+      ],
+      "receiptSha256": "28dc50664ec0b9685b7eab8bb0dcea2722c2ad1c436c41b91ed1e2759aa99a17",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-AUDIT-011",
+      "productionEntrypoints": [
+        "src/eval/eval-lane-policy.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "3240c4c7de60462f75bbf88d78e653bcf1b9e39f387f63ac80627eb75ba6a89d"
+      ],
+      "testFile": "tests/eval-lane-policy.test.mjs",
+      "testFileSha256": "155efdfbd590de140f8431a4308b0efae8bda396712063fff35406c9b47580f0",
+      "namedTests": [
+        "plumbing smoke may use fixtures but can never authorize capability or comparative claims",
+        "coding benchmark rejects fixture/mock execution, exposed hidden tests, and trivial verifiers",
+        "coding and competitor lanes grant only their bounded claim scopes after hidden and independent gates"
+      ],
+      "positiveAssertions": [
+        "assert.equal(report.lane, 'evaluator-plumbing-smoke')",
+        "assert.equal(report.claimScope, 'none')",
+        "assert.ok(report.nonClaimReasons.includes('fixture-or-smoke-only'))",
+        "assert.equal(coding.claimAllowed, true)",
+        "assert.equal(coding.claimScope, 'coding-capability')",
+        "assert.equal(allowed.claimAllowed, true)",
+        "assert.equal(allowed.claimScope, 'comparative')",
+        "named-test-pass:plumbing smoke may use fixtures but can never authorize capability or comparative claims",
+        "named-test-pass:coding and competitor lanes grant only their bounded claim scopes after hidden and independent gates"
+      ],
+      "negativeAssertions": [
+        "assert.equal(report.claimAllowed, false)",
+        "assert.equal(evaluateEvalLanePolicy({ ...base, cases: [{ ...base.cases[0], fixtureResult: {} }] }, { executionMode: 'module' }).status, 'fail')",
+        "assert.equal(evaluateEvalLanePolicy({ ...base, hiddenVerifier: { ...base.hiddenVerifier, visibleToExecutor: true } }, { executionMode: 'module' }).status, 'fail')",
+        "assert.equal(evaluateEvalLanePolicy({ ...base, hiddenVerifier: { command: 'node -e \"process.exit(0)\"', id: 'bad', sha256: H('b'), opaque: true, visibleToExecutor: false, compositional: true } }, { executionMode: 'module' }).status, 'fail')",
+        "assert.equal(evaluateEvalLanePolicy(base, { executionMode: 'fixture' }).status, 'fail')",
+        "assert.equal(denied.claimAllowed, false)",
+        "assert.ok(denied.nonClaimReasons.includes('independent-attestation-missing'))",
+        "named-test-negative:coding benchmark rejects fixture/mock execution, exposed hidden tests, and trivial verifiers"
+      ],
+      "receiptSha256": "8dab5f397a646889335c8d11c86f04952ffa4566c2c502b82e67f7ab99edc623",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-AUDIT-012",
+      "productionEntrypoints": [
+        "src/superiority/deep/provider-dogfood-replay-lab.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "0085060a62dffb76edd9f95842b0439be5402cf6157823521c43dfce6a6b1e98"
+      ],
+      "testFile": "tests/deep-superiority-ui-dogfood.test.mjs",
+      "testFileSha256": "72f3fbb86fe0094ed9dc2446edbb4685cf3dcb3fa5a6e94c0a0c62ae8c244b7a",
+      "namedTests": [
+        "local UI certification verifies accessibility, responsiveness and budgets but retains Windows external gates",
+        "dogfood replay lab rejects mocks and validates signed provider-real Windows protocol receipts"
+      ],
+      "positiveAssertions": [
+        "assert.equal(result.localAccessibilityImplemented, true)",
+        "assert.equal(result.localResponsiveImplemented, true)",
+        "assert.equal(result.localPerformanceBudgetsPassed, true)",
+        "assert.equal(result.windowsCertificationRequired, true)",
+        "assert.equal(result.assistiveTechnologyCertificationRequired, true)",
+        "assert.equal(suite.requiredScenarios.length, 10)",
+        "assert.equal(suite.requiredAdversarialProbes.length, 12)",
+        "assert.equal(verified.protocolValid, true)",
+        "assert.equal(verified.externalCertificationAccepted, true)",
+        "assert.equal(lab.evaluate('dogfood-1').providerRealDogfoodCertified, true)",
+        "named-test-pass:local UI certification verifies accessibility, responsiveness and budgets but retains Windows external gates"
+      ],
+      "negativeAssertions": [
+        "assert.throws(() => lab.certify({ sourceHash: H('f'), breakpoints: [640], semantics: {}, budgets: {}, metrics: {}, visualHashes: [] }), /breakpoints|semantics|budget/i)",
+        "assert.throws(() => lab.verifyReceipt('dogfood-1', { mock: true }), /mock/i)",
+        "named-test-negative:dogfood replay lab rejects mocks and validates signed provider-real Windows protocol receipts"
+      ],
+      "receiptSha256": "7c634dd81ce014fc33e4a5aada6c1e0c0f5163bfb819c53e3cf597efaa613b4b",
+      "environment": "node>=22.12",
+      "external": true
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-AUDIT-013",
+      "productionEntrypoints": [
+        "src/release/dependency-preflight-service.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "09018c3dc00794279ca35935b2087d9ccef201329506cf600c7fa802ca2c36a9"
+      ],
+      "testFile": "tests/nolane-native-operational-boundaries.test.mjs",
+      "testFileSha256": "fb041e7b8fb11e64ad65b56df9ce7e25d202c7516d4a571729b3603c769fe7ed",
+      "namedTests": [
+        "NolaneOperationalBoundaryService publishes canonical configuration and migration rules",
+        "NolaneOperationalBoundaryService stores credential references without secret values",
+        "NolaneOperationalBoundaryService resolves paths inside the workspace and rejects traversal and symlink escape",
+        "NolaneOperationalBoundaryService requires approval for irreversible actions",
+        "DependencyPreflightService reports missing dependencies with deterministic remediation and locks",
+        "Nolane operational boundary source does not import NolaneNative runtime code",
+        "application wires Nolane operational and dependency preflight services"
+      ],
+      "positiveAssertions": [
+        "assert.equal(contract.canonicalEnvironmentPrefix, 'NOLANE_AGENT_')",
+        "assert.equal(contract.legacyEnvironmentPrefix, 'FORGE_STUDIO_')",
+        "assert.equal(contract.defaults.runtime, 'nolane-native')",
+        "assert.equal(contract.migration.dataDirectory, '.forge-studio -> .nolane-agent')",
+        "assert.equal(record.provider, 'openai')",
+        "assert.equal(await service.resolveWorkspacePath({ workspaceRoot: root, relativePath: 'src/a.txt' }), path.join(root, 'src', 'a.txt'))",
+        "assert.equal(service.authorizeAction({ kind: 'read', reversible: true }).allowed, true)",
+        "assert.equal(approved.allowed, true)",
+        "assert.equal(approved.approvalRequired, true)",
+        "assert.equal(report.ready, true)",
+        "assert.equal(report.degraded, true)",
+        "assert.deepEqual(report.missingOptional, ['docker'])",
+        "assert.equal(report.checks.find((x) => x.id === 'docker').remediation, 'Install Docker only for container tests')",
+        "assert.match(report.receiptSha256, /^[a-f0-9]{64}$/)",
+        "assert.doesNotMatch(source, /from ['\"].*nolane_native|nolane_native-runtime-service|nolane_native-vendor-service/i)",
+        "assert.match(source, /new NolaneOperationalBoundaryService\\(/)",
+        "assert.match(source, /new DependencyPreflightService\\(/)",
+        "assert.match(source, /operationalBoundary, dependencyPreflight/)",
+        "named-test-pass:NolaneOperationalBoundaryService publishes canonical configuration and migration rules",
+        "named-test-pass:NolaneOperationalBoundaryService requires approval for irreversible actions",
+        "named-test-pass:application wires Nolane operational and dependency preflight services"
+      ],
+      "negativeAssertions": [
+        "assert.equal(contract.defaults.legacySidecarExecutionEnabled, false)",
+        "assert.equal(JSON.stringify(contract).toLowerCase().includes('nolane_native'), false)",
+        "assert.throws(() => service.registerCredential({ provider: 'openai', account: 'main', secretRef: { env: 'OPENAI_API_KEY' }, value: 'sk-secret' }), /secret values/i)",
+        "assert.equal(JSON.stringify(service.snapshot()).includes('sk-secret'), false)",
+        "assert.equal(JSON.stringify(record).includes('value'), false)",
+        "assert.rejects(() => service.resolveWorkspacePath({ workspaceRoot: root, relativePath: '../outside' }), /outside workspace/i)",
+        "assert.rejects(() => service.resolveWorkspacePath({ workspaceRoot: root, relativePath: 'escape/secret.txt' }), /outside workspace/i)",
+        "assert.throws(() => service.authorizeAction({ kind: 'delete', reversible: false }), /approval/i)",
+        "named-test-negative:NolaneOperationalBoundaryService stores credential references without secret values",
+        "named-test-negative:NolaneOperationalBoundaryService resolves paths inside the workspace and rejects traversal and symlink escape",
+        "named-test-negative:DependencyPreflightService reports missing dependencies with deterministic remediation and locks",
+        "named-test-negative:Nolane operational boundary source does not import NolaneNative runtime code"
+      ],
+      "receiptSha256": "5e39aec1bb045a77f140d9d8941b0fae90e17bfb06de9032b264455fe44e4e71",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-AUDIT-014",
+      "productionEntrypoints": [
+        "scripts/verify-nolane-evidence-quality.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "165105bf30d13218b2375c0b308e7b9106dace1b9997c294d3f18f5792ff63ff"
+      ],
+      "testFile": "tests/nolane-evidence-quality.test.mjs",
+      "testFileSha256": "cc66dcb7215e522a15390e7d3c0d507251de8f7dd54bfda075111858431b0d7e",
+      "namedTests": [
+        "evidence quality passes current registry and rejects over-concentrated proof paths"
+      ],
+      "positiveAssertions": [
+        "assert.equal(current.status, 'pass')",
+        "assert.equal(current.missingPaths.length, 0)",
+        "assert.equal(current.overConcentrated.length, 0)",
+        "assert.match(current.receiptSha256, /^[a-f0-9]{64}$/)",
+        "assert.equal(report.overConcentrated.some((item) => item.path === 'src/shared.mjs'), true)",
+        "assert.equal(report.overConcentrated.some((item) => item.path === 'tests/shared.test.mjs'), true)"
+      ],
+      "negativeAssertions": [
+        "assert.equal(report.status, 'fail')",
+        "named-test-negative:evidence quality passes current registry and rejects over-concentrated proof paths"
+      ],
+      "receiptSha256": "de165d5d27ab282193a77c5873b3df7a209115a6786c34dd43e5cbdee1ed7db4",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-AUDIT-015",
+      "productionEntrypoints": [
+        "src/audit/capability-status-policy.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "4107b3d95eeacacdf9dbcf5bc9200ac041dddb4bf6a3d39fe5c7e743f4e4d785"
+      ],
+      "testFile": "tests/capability-status-policy.test.mjs",
+      "testFileSha256": "006f2a0fed85e67c5cf1ff334a3aad9a7282f3ce272695abf9dbe100bf8e34e6",
+      "namedTests": [
+        "capability status policy keeps implemented-not-wired separate from verified production behavior"
+      ],
+      "positiveAssertions": [
+        "assert.equal(promoted.allowed, true)",
+        "named-test-pass:capability status policy keeps implemented-not-wired separate from verified production behavior"
+      ],
+      "negativeAssertions": [
+        "assert.equal(pending.countsAsVerified, false)",
+        "assert.throws(() => validateCapabilityTransition({ from: 'implemented_not_wired', to: 'verified_source_test', productionWired: false, replayReceiptSha256: 'a'.repeat(64) }), /production wiring/i)",
+        "assert.throws(() => validateCapabilityStatusRecord({ id: 'Y', status: 'implemented_not_wired', acceptance: {} }), /entrypoint|exact test/i)"
+      ],
+      "receiptSha256": "7677d5e83ada02e08581d8c247e5a195cf2c9dd950f57f27d937505f79ed88a5",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-AUDIT-016",
+      "productionEntrypoints": [
+        "src/release/non-claim-manifest.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "475015a29fcb46abc2528ba8221ddad2a4f29f1cef1a3c920e8b4ff1a2fdcbdd"
+      ],
+      "testFile": "tests/release-non-claim-manifest.test.mjs",
+      "testFileSha256": "e515bb933ee82d98ba65db3a57980fdf852aa4eee70dfabfa2d7165681352433",
+      "namedTests": [
+        "release non-claim manifest publishes protected false claims, external gates and failure evidence",
+        "release non-claim manifest rejects unlocked protected claims and missing failure evidence"
+      ],
+      "positiveAssertions": [
+        "assert.equal(value.externalGates.length, 2)",
+        "assert.equal(value.failures.length, 1)",
+        "assert.match(value.receiptSha256, /^[a-f0-9]{64}$/)"
+      ],
+      "negativeAssertions": [
+        "assert.equal(value.claims.completeParityClaimAllowed, false)",
+        "assert.throws(() => buildReleaseNonClaimManifest({",
+        "named-test-negative:release non-claim manifest publishes protected false claims, external gates and failure evidence",
+        "named-test-negative:release non-claim manifest rejects unlocked protected claims and missing failure evidence"
+      ],
+      "receiptSha256": "fe0ba53625d529191b6333fb7f79507bd1c1ae5fa547483274ccb11ff1363094",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-001",
+      "productionEntrypoints": [
+        "src/ui/capability-registry.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "5dd1e76ff1b1145d68fe68f3fe67447620917d7fb5d74910d9bea13588142c32"
+      ],
+      "testFile": "tests/ui-capability-registry.test.mjs",
+      "testFileSha256": "d1190c09e884826cd82f53a097a5475bcc08650b72ec5715d843f372c55af073",
+      "namedTests": [
+        "UI capability contracts require route, exposure, APIs, permissions and complete states",
+        "capability inventory accounts for all 17 legacy centers and required level-one surfaces",
+        "capability and token audits are exposed as release commands"
+      ],
+      "positiveAssertions": [
+        "assert.equal(value.id, 'runtime')",
+        "assert.equal(report.total, 22)",
+        "assert.deepEqual(report.missingLegacyCenters, [])",
+        "assert.deepEqual(report.missingRequiredSurfaces, [])",
+        "assert.equal(report.duplicateIds.length, 0)",
+        "assert.equal(report.duplicateRoutes.length, 0)",
+        "assert.equal(pkg.scripts['audit:ui-capabilities'], 'node scripts/audit-ui-capabilities.mjs')",
+        "assert.equal(pkg.scripts['validate:ui-tokens'], 'node scripts/validate-ui-tokens.mjs')",
+        "named-test-pass:UI capability contracts require route, exposure, APIs, permissions and complete states",
+        "named-test-pass:capability inventory accounts for all 17 legacy centers and required level-one surfaces",
+        "named-test-pass:capability and token audits are exposed as release commands"
+      ],
+      "negativeAssertions": [
+        "assert.throws(() => validateUiCapability({ id: 'runtime' }), /domain/i)",
+        "assert.throws(() => validateUiCapability({ ...value, states: ['ready'] }), /states/i)"
+      ],
+      "receiptSha256": "b6dafa804378397d2e324038163ae019d7ce4f53b8b37369adf653ff7ad889ff",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-002",
+      "productionEntrypoints": [
+        "src/superiority/deep/local-ui-certification-lab.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "f157bf8c2c408f059380746f4161803eb708de21929cd52bbb6f11a130c03f96"
+      ],
+      "testFile": "tests/deep-superiority-ui-dogfood.test.mjs",
+      "testFileSha256": "72f3fbb86fe0094ed9dc2446edbb4685cf3dcb3fa5a6e94c0a0c62ae8c244b7a",
+      "namedTests": [
+        "local UI certification verifies accessibility, responsiveness and budgets but retains Windows external gates",
+        "dogfood replay lab rejects mocks and validates signed provider-real Windows protocol receipts"
+      ],
+      "positiveAssertions": [
+        "assert.equal(result.localAccessibilityImplemented, true)",
+        "assert.equal(result.localResponsiveImplemented, true)",
+        "assert.equal(result.localPerformanceBudgetsPassed, true)",
+        "assert.equal(result.windowsCertificationRequired, true)",
+        "assert.equal(result.assistiveTechnologyCertificationRequired, true)",
+        "assert.equal(suite.requiredScenarios.length, 10)",
+        "assert.equal(suite.requiredAdversarialProbes.length, 12)",
+        "assert.equal(verified.protocolValid, true)",
+        "assert.equal(verified.externalCertificationAccepted, true)",
+        "assert.equal(lab.evaluate('dogfood-1').providerRealDogfoodCertified, true)",
+        "named-test-pass:local UI certification verifies accessibility, responsiveness and budgets but retains Windows external gates"
+      ],
+      "negativeAssertions": [
+        "assert.throws(() => lab.certify({ sourceHash: H('f'), breakpoints: [640], semantics: {}, budgets: {}, metrics: {}, visualHashes: [] }), /breakpoints|semantics|budget/i)",
+        "assert.throws(() => lab.verifyReceipt('dogfood-1', { mock: true }), /mock/i)",
+        "named-test-negative:dogfood replay lab rejects mocks and validates signed provider-real Windows protocol receipts"
+      ],
+      "receiptSha256": "63dd12c4aadf10e70333b0768d8a6fc0efa2f2bf3ff87379308081504b029592",
+      "environment": "node>=22.12",
+      "external": true
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-003",
+      "productionEntrypoints": [
+        "scripts/build-ui-v3.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "b684f0f23ae954bf7cd8d40b731595d25346b872a556f95655e70a3938d4c3dd"
+      ],
+      "testFile": "tests/ui-v3-module-build.test.mjs",
+      "testFileSha256": "be28c3fcbd70b96625136abd9bfe56734c3c91aa12fb5300cf72fb3b7af2250d",
+      "namedTests": [
+        "UI v3 build emits deterministic hashed local assets and a verified module map"
+      ],
+      "positiveAssertions": [
+        "assert.equal(firstManifest.product, 'Nolane Agent')",
+        "assert.equal(firstManifest.uiVersion, 3)",
+        "assert.match(firstManifest.entry.html, /index\\.[a-f0-9]{12}\\.html$/)",
+        "assert.match(firstManifest.entry.module, /app\\.[a-f0-9]{12}\\.mjs$/)",
+        "assert.ok(Object.keys(firstManifest.modules).length >= 6)",
+        "assert.match(item.sha256, /^[a-f0-9]{64}$/)",
+        "assert.equal(first.receiptSha256, second.receiptSha256)",
+        "named-test-pass:UI v3 build emits deterministic hashed local assets and a verified module map"
+      ],
+      "negativeAssertions": [
+        "assert.equal(/^https?:\\/\\//.test(item.path), false)",
+        "assert.equal(outputs.some((name) => /\\.map$/.test(name)), false)"
+      ],
+      "receiptSha256": "3753183e84320dbecbe0b370527fc93ea942d241a2536a4503ecec8b45317a81",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-004",
+      "productionEntrypoints": [
+        "scripts/validate-ui-tokens.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "e0531ead59cce1227251de29a3ec60bb2c810d3ec17491ff284e720cba222108"
+      ],
+      "testFile": "tests/ui-v3-tokens.test.mjs",
+      "testFileSha256": "61505ac824f01855fe5cd556cfebcf48947702fc1c909bf89326f05c64cd138c",
+      "namedTests": [
+        "Quiet Authority token graph has no undefined variables, cycles or raw colors outside primitives",
+        "primary text, secondary text and focus fixtures meet WCAG AA contrast"
+      ],
+      "positiveAssertions": [
+        "assert.deepEqual(report.undefinedVariables, [])",
+        "assert.deepEqual(report.cycles, [])",
+        "assert.deepEqual(report.rawColorsOutsidePrimitives, [])",
+        "assert.equal(report.layers.primitive > 0, true)",
+        "assert.equal(report.layers.semantic > 0, true)",
+        "assert.equal(report.layers.component > 0, true)",
+        "assert.ok(contrastRatio('#eef1f5', '#0d0f12') >= 4.5)",
+        "assert.ok(contrastRatio('#a7afbb', '#0d0f12') >= 4.5)",
+        "assert.ok(contrastRatio('#a79cff', '#0d0f12') >= 4.5)",
+        "named-test-pass:primary text, secondary text and focus fixtures meet WCAG AA contrast"
+      ],
+      "negativeAssertions": [
+        "named-test-negative:Quiet Authority token graph has no undefined variables, cycles or raw colors outside primitives"
+      ],
+      "receiptSha256": "8a0c27cbc037b7ceb51de3f00ba1eac9a3f146c55e2f529ffb8471e57429bb94",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-005",
+      "productionEntrypoints": [
+        "ui-v3/shell/app-shell.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "b138049b448a8465797116e64f2e0bab12909c82fe7789a8002080c0625f0375"
+      ],
+      "testFile": "tests/ui-v3-router.test.mjs",
+      "testFileSha256": "3308ffcec802f88ca38617bcc66a3edcda7dc7a17746baa1c0f1ae5bd49d5a9c",
+      "namedTests": [
+        "router lazy-loads each route once and supports history navigation",
+        "router uses an explicit not-found route without executing unknown loaders",
+        "router can opt into path-scoped view caching for dynamic surfaces"
+      ],
+      "positiveAssertions": [
+        "assert.equal((await router.navigate('/')).route.id, 'home')",
+        "assert.equal((await router.navigate('/missions')).route.id, 'missions')",
+        "assert.deepEqual(loaded, ['home', 'missions'])",
+        "assert.equal((await router.back()).route.id, 'home')",
+        "assert.equal(state.route.id, 'not-found')",
+        "assert.equal((await router.navigate('/control/overview')).view.path, '/control/overview')",
+        "assert.equal((await router.navigate('/control/runtime')).view.path, '/control/runtime')",
+        "assert.deepEqual(loaded, ['/control/overview', '/control/runtime'])",
+        "named-test-pass:router lazy-loads each route once and supports history navigation",
+        "named-test-pass:router can opt into path-scoped view caching for dynamic surfaces"
+      ],
+      "negativeAssertions": [
+        "assert.equal(state.path, '/missing')",
+        "named-test-negative:router uses an explicit not-found route without executing unknown loaders"
+      ],
+      "receiptSha256": "00a7dc150d22597f060c220e5f47bef5b289f4850e1c237cf40db87736ab5771",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-006",
+      "productionEntrypoints": [
+        "ui-v3/shell/session-sidebar.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "d9ca6a7f19cc038a7e477c5bce241a1cbf8303580d3f5d08b41d24c5d5a4fefb"
+      ],
+      "testFile": "tests/ui-v3-session-sidebar.test.mjs",
+      "testFileSha256": "deb4ae34497fb9e10657c7af0173b74d9a2bf618a753ad3223446fc039da9542",
+      "namedTests": [
+        "session groups prioritize Needs You, Running, Ready to Review, then Recent",
+        "sidebar patches keyed rows and virtualizes recent sessions after 100 items",
+        "session sidebar excludes archived missions and rejects patching unknown rows"
+      ],
+      "positiveAssertions": [
+        "assert.deepEqual(groups.needsYou.map((item) => item.id), ['approval', 'input'])",
+        "assert.deepEqual(groups.running.map((item) => item.id), ['run'])",
+        "assert.deepEqual(groups.review.map((item) => item.id), ['review'])",
+        "assert.deepEqual(groups.recent.map((item) => item.id), ['done'])",
+        "assert.equal(first.groups.recent.length, 20)",
+        "assert.equal(first.totalRecent, 150)",
+        "assert.equal(next.rowKeys.get('m-149'), rowIdentity)",
+        "assert.equal(next.groups.recent[0].title, 'Updated mission')",
+        "named-test-pass:session groups prioritize Needs You, Running, Ready to Review, then Recent",
+        "named-test-pass:sidebar patches keyed rows and virtualizes recent sessions after 100 items"
+      ],
+      "negativeAssertions": [
+        "assert.equal(Object.values(snapshot.groups).flat().some((item) => item.id === 'archived'), false)",
+        "assert.equal(model.patch('missing', { title: 'Nope' }), false)",
+        "named-test-negative:session sidebar excludes archived missions and rejects patching unknown rows"
+      ],
+      "receiptSha256": "dbe6125cb82a01a4437632404cc66965230cc1de0d459800fe63e1aa83dc7fc0",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-007",
+      "productionEntrypoints": [
+        "ui-v3/views/home/home-view.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "8a4331eed63b39f65f121d73b326c9ce9f81ad50b99f9e0d678c7023f07a7742"
+      ],
+      "testFile": "tests/ui-v3-home.test.mjs",
+      "testFileSha256": "2f7003c890eb5f8cdd8480efcd6d0c3fceb7cabe5b596b975b05940b1939cd74",
+      "namedTests": [
+        "four intent presets map to enforceable backend boundaries",
+        "mission request validates objective, project and provider availability",
+        "repository suggestions render only when backed by evidence"
+      ],
+      "positiveAssertions": [
+        "assert.deepEqual(Object.keys(INTENT_PRESETS), ['ask', 'plan', 'build', 'verify'])",
+        "assert.equal(INTENT_PRESETS.build.writeFiles, true)",
+        "assert.equal(request.product, 'Nolane Agent')",
+        "assert.equal(request.intent, 'build')",
+        "assert.equal(request.boundaries.writeFiles, true)",
+        "assert.deepEqual(hidden.suggestions, [])",
+        "assert.deepEqual(visible.suggestions.map((item) => item.title), ['Fix 3 tests'])",
+        "named-test-pass:four intent presets map to enforceable backend boundaries",
+        "named-test-pass:mission request validates objective, project and provider availability",
+        "named-test-pass:repository suggestions render only when backed by evidence"
+      ],
+      "negativeAssertions": [
+        "assert.equal(INTENT_PRESETS.ask.writeFiles, false)",
+        "assert.equal(INTENT_PRESETS.plan.executeChanges, false)",
+        "assert.equal(INTENT_PRESETS.verify.expandScope, false)",
+        "assert.throws(() => createMissionRequest({ objective: '', projectId: 'p1' }), /objective/i)",
+        "assert.throws(() => createMissionRequest({ objective: 'Fix tests', projectId: '' }), /project/i)",
+        "assert.throws(() => createMissionRequest({ objective: 'Fix tests', projectId: 'p1', providerState: 'unavailable' }), /provider/i)"
+      ],
+      "receiptSha256": "ac9ddda4760f0ebf7c21e29e64e0bdb86598f2d8fd115a25f6ed81ad3d6637e7",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-008",
+      "productionEntrypoints": [
+        "ui-v3/views/mission/mission-view.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "f30ac98037e6883e8e0031f814257a7233f22150d26e03bc9848f73b7e083ba7"
+      ],
+      "testFile": "tests/ui-v3-mission-incremental.test.mjs",
+      "testFileSha256": "b4455512a5eb3159803cad4db7487ccea1de2dc08ca9f758617886b711abeeab",
+      "namedTests": [
+        "heartbeat and header patches do not replace keyed message or activity identities",
+        "activity upserts, grouping and manual follow mode preserve scroll intent",
+        "5,000 activities are windowed without dropping total count",
+        "progress uses counts only when total work is measurable and otherwise reports a phase"
+      ],
+      "positiveAssertions": [
+        "assert.equal(second.messageKeys.get('msg-1'), messageKey)",
+        "assert.equal(second.activityKeys.get('a1'), activityKey)",
+        "assert.equal(second.header.heartbeatAt, 10)",
+        "assert.equal(snapshot.followMode, 'manual')",
+        "assert.equal(snapshot.activities.length, 2)",
+        "assert.equal(snapshot.activities[0].summary, 'Read file ✓')",
+        "assert.equal(snapshot.activityGroups.get('g1').length, 2)",
+        "assert.equal(snapshot.totalActivities, 5000)",
+        "assert.equal(snapshot.activities.length, 20)",
+        "assert.equal(snapshot.activities[0].id, 'a-4980')",
+        "assert.deepEqual(buildMissionProgress({ completed: 5, total: 8, phase: 'building' }), { kind: 'measured', completed: 5, total: 8, ratio: 0.625 })",
+        "assert.deepEqual(buildMissionProgress({ phase: 'verifying' }), { kind: 'phase', phase: 'verifying' })",
+        "named-test-pass:activity upserts, grouping and manual follow mode preserve scroll intent",
+        "named-test-pass:progress uses counts only when total work is measurable and otherwise reports a phase"
+      ],
+      "negativeAssertions": [
+        "named-test-negative:heartbeat and header patches do not replace keyed message or activity identities",
+        "named-test-negative:5,000 activities are windowed without dropping total count"
+      ],
+      "receiptSha256": "39729d1ae74329ab9b65cf475c20282113a644a85e7fd1ec649eca359ab8ef16",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-009",
+      "productionEntrypoints": [
+        "ui-v3/views/mission/attention-card.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "35f2e3aa922e7955b85446005fab06dc4a65011e72520b02bbe5c103b9e374cb"
+      ],
+      "testFile": "tests/ui-v3-attention-cards.test.mjs",
+      "testFileSha256": "e74ed54dea4452a9f15228e7a5747bf0f3eeb4ec1c8400e634ee4eddd59ce2d8",
+      "namedTests": [
+        "permission card exposes action, reason, impact, scope and reversibility without raw backend jargon",
+        "irreversible actions cannot omit impact or a safe denial option"
+      ],
+      "positiveAssertions": [
+        "assert.equal(card.kind, 'permission')",
+        "assert.equal(card.requiresAction, true)",
+        "assert.equal(card.reversibility, 'reversible')",
+        "assert.doesNotMatch(card.summary, /lease|runtime fabric|receipt/i)"
+      ],
+      "negativeAssertions": [
+        "assert.deepEqual(card.options.map((item) => item.id), ['allow-once', 'allow-project', 'deny'])",
+        "assert.equal(card.technicalDetails.expanded, false)",
+        "assert.throws(() => createAttentionCard({ kind: 'approval', action: 'Force push', why: 'Publish', impact: '', scope: ['origin/main'], reversible: false, options: ['approve'] }), /impact/i)",
+        "assert.throws(() => createAttentionCard({ kind: 'approval', action: 'Force push', why: 'Publish', impact: 'Rewrites remote history', scope: ['origin/main'], reversible: false, options: ['approve'] }), /deny|cancel/i)",
+        "named-test-negative:permission card exposes action, reason, impact, scope and reversibility without raw backend jargon",
+        "named-test-negative:irreversible actions cannot omit impact or a safe denial option"
+      ],
+      "receiptSha256": "9d4806d5628b2b8918070aebc44a4b62233d4c4e2c4cab1fc9f226e0c795578a",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-010",
+      "productionEntrypoints": [
+        "ui-v3/views/mission/artifact-dock.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "c13d70b73fcf0320e1d7f43c9c14a3f5f34cf4420141f41dc032559daa02d7f8"
+      ],
+      "testFile": "tests/ui-v3-artifact-dock.test.mjs",
+      "testFileSha256": "baf597a61c764a7c0be33311d8099730e88d54a83a5882c567219099cc588fc6",
+      "namedTests": [
+        "Artifact Dock exposes only context-backed tabs in product priority order",
+        "Artifact Dock preserves keyed artifacts and clamps user width",
+        "preview artifact records bounded before-after snapshots and annotations"
+      ],
+      "positiveAssertions": [
+        "assert.deepEqual(tabs.map((item) => item.id), ['preview', 'changes', 'tests'])",
+        "assert.equal(second.width, 720)",
+        "assert.equal(second.activeTab, 'plan')",
+        "assert.equal(second.pinned, true)",
+        "assert.equal(second.artifactKeys.get('p1'), identity)",
+        "assert.equal(value.status, 'ready')",
+        "assert.equal(value.snapshots.length, 2)",
+        "assert.equal(value.annotations[0].selector, '#save')",
+        "named-test-pass:Artifact Dock exposes only context-backed tabs in product priority order",
+        "named-test-pass:Artifact Dock preserves keyed artifacts and clamps user width",
+        "named-test-pass:preview artifact records bounded before-after snapshots and annotations"
+      ],
+      "negativeAssertions": [
+        "assert.throws(() => preview.recordSnapshot({ phase: 'after', sha256: 'bad' }), /sha256/i)"
+      ],
+      "receiptSha256": "e28aba8260ae25fe83944c7dc5b55975eb3eae840cbd898b817138a7112e06d2",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-011",
+      "productionEntrypoints": [
+        "ui-v3/views/review/review-view.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "aa72e8bff5dd197d135a6aa399379494160a23b4742e66ffc026fb53fddd4b18"
+      ],
+      "testFile": "tests/ui-v3-review.test.mjs",
+      "testFileSha256": "e624fd32feec28e5ebfc590d92300d2e0e6905393c3dddd4d4626d0bd9307c8e",
+      "namedTests": [
+        "review model virtualizes large hunk sets and preserves hunk decisions",
+        "review summary reports verification gaps and out-of-scope risk",
+        "ship action and rollback are fail-closed"
+      ],
+      "positiveAssertions": [
+        "assert.equal(snapshot.totalHunks, 10000)",
+        "assert.equal(snapshot.hunks.length, 20)",
+        "assert.equal(snapshot.hunks.at(-1).decision, 'accepted')",
+        "assert.equal(snapshot.hunks.at(-1).comments.length, 1)",
+        "assert.equal(summary.outOfScopeFiles, 1)",
+        "assert.equal(summary.risk, 'high')",
+        "assert.equal(selectShipAction({ projectState: 'local-dirty', canCommit: true }), 'commit')",
+        "assert.equal(selectShipAction({ projectState: 'clean', canPush: true }), 'push')",
+        "assert.equal(plan.preserveConversation, true)",
+        "assert.equal(plan.preserveTerminalHistory, true)",
+        "named-test-pass:review model virtualizes large hunk sets and preserves hunk decisions",
+        "named-test-pass:review summary reports verification gaps and out-of-scope risk"
+      ],
+      "negativeAssertions": [
+        "assert.equal(summary.testsComplete, false)",
+        "assert.equal(summary.readyToShip, false)",
+        "assert.equal(selectShipAction({ projectState: 'unknown' }), 'export-patch')",
+        "assert.throws(() => createRollbackPlan({ checkpointId: 'cp1', files: [] }), /checkpointSha256/i)",
+        "named-test-negative:ship action and rollback are fail-closed"
+      ],
+      "receiptSha256": "0a9947c3a88176e8428460172ed94813d6d77aa38c0895060ce57d21d3ce4516",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-012",
+      "productionEntrypoints": [
+        "ui-v3/views/review/review-view.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "aa72e8bff5dd197d135a6aa399379494160a23b4742e66ffc026fb53fddd4b18"
+      ],
+      "testFile": "tests/ui-v3-review.test.mjs",
+      "testFileSha256": "e624fd32feec28e5ebfc590d92300d2e0e6905393c3dddd4d4626d0bd9307c8e",
+      "namedTests": [
+        "review model virtualizes large hunk sets and preserves hunk decisions",
+        "review summary reports verification gaps and out-of-scope risk",
+        "ship action and rollback are fail-closed"
+      ],
+      "positiveAssertions": [
+        "assert.equal(snapshot.totalHunks, 10000)",
+        "assert.equal(snapshot.hunks.length, 20)",
+        "assert.equal(snapshot.hunks.at(-1).decision, 'accepted')",
+        "assert.equal(snapshot.hunks.at(-1).comments.length, 1)",
+        "assert.equal(summary.outOfScopeFiles, 1)",
+        "assert.equal(summary.risk, 'high')",
+        "assert.equal(selectShipAction({ projectState: 'local-dirty', canCommit: true }), 'commit')",
+        "assert.equal(selectShipAction({ projectState: 'clean', canPush: true }), 'push')",
+        "assert.equal(plan.preserveConversation, true)",
+        "assert.equal(plan.preserveTerminalHistory, true)",
+        "named-test-pass:review model virtualizes large hunk sets and preserves hunk decisions",
+        "named-test-pass:review summary reports verification gaps and out-of-scope risk"
+      ],
+      "negativeAssertions": [
+        "assert.equal(summary.testsComplete, false)",
+        "assert.equal(summary.readyToShip, false)",
+        "assert.equal(selectShipAction({ projectState: 'unknown' }), 'export-patch')",
+        "assert.throws(() => createRollbackPlan({ checkpointId: 'cp1', files: [] }), /checkpointSha256/i)",
+        "named-test-negative:ship action and rollback are fail-closed"
+      ],
+      "receiptSha256": "7a48650a23a74a68411ea25a9b06ee6ddf262b69f1d4ef145150876102e589cc",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-013",
+      "productionEntrypoints": [
+        "ui-v3/views/review/ship-actions.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "bbb8ee85d4b2a0604d8f1875e3f425ad098ae92b0184bc2361cbfe0f6ebdd32c"
+      ],
+      "testFile": "tests/ui-v3-review.test.mjs",
+      "testFileSha256": "e624fd32feec28e5ebfc590d92300d2e0e6905393c3dddd4d4626d0bd9307c8e",
+      "namedTests": [
+        "review model virtualizes large hunk sets and preserves hunk decisions",
+        "review summary reports verification gaps and out-of-scope risk",
+        "ship action and rollback are fail-closed"
+      ],
+      "positiveAssertions": [
+        "assert.equal(snapshot.totalHunks, 10000)",
+        "assert.equal(snapshot.hunks.length, 20)",
+        "assert.equal(snapshot.hunks.at(-1).decision, 'accepted')",
+        "assert.equal(snapshot.hunks.at(-1).comments.length, 1)",
+        "assert.equal(summary.outOfScopeFiles, 1)",
+        "assert.equal(summary.risk, 'high')",
+        "assert.equal(selectShipAction({ projectState: 'local-dirty', canCommit: true }), 'commit')",
+        "assert.equal(selectShipAction({ projectState: 'clean', canPush: true }), 'push')",
+        "assert.equal(plan.preserveConversation, true)",
+        "assert.equal(plan.preserveTerminalHistory, true)",
+        "named-test-pass:review model virtualizes large hunk sets and preserves hunk decisions",
+        "named-test-pass:review summary reports verification gaps and out-of-scope risk"
+      ],
+      "negativeAssertions": [
+        "assert.equal(summary.testsComplete, false)",
+        "assert.equal(summary.readyToShip, false)",
+        "assert.equal(selectShipAction({ projectState: 'unknown' }), 'export-patch')",
+        "assert.throws(() => createRollbackPlan({ checkpointId: 'cp1', files: [] }), /checkpointSha256/i)",
+        "named-test-negative:ship action and rollback are fail-closed"
+      ],
+      "receiptSha256": "cf446da5fd8a49c0b229c745025972f308c66f10ff7b339065dc1fbe47cd59c7",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-014",
+      "productionEntrypoints": [
+        "ui-v3/views/workroom/workroom-view.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "420ae61615c2db22dbff1efe04389400b88c03272212e914f62d3f78415d3a06"
+      ],
+      "testFile": "tests/ui-v3-workroom.test.mjs",
+      "testFileSha256": "7d86c67da4f4497d22e6ae3508512058ee63dab5433f8a6521105540d8710b2f",
+      "namedTests": [
+        "Workroom preserves mission route continuity and panel state",
+        "file tree windows large repositories and preserves keyed nodes",
+        "editor and terminal hosts load lazily and enforce local resource bounds"
+      ],
+      "positiveAssertions": [
+        "assert.equal(value.returnPath, '/missions/m1')",
+        "assert.equal(value.panels.agent.size, 420)",
+        "assert.equal(value.activeFile, 'src/a.mjs')",
+        "assert.equal(second.total, 5000)",
+        "assert.equal(second.nodes.length, 10)",
+        "assert.equal(second.nodeKeys.get('n4999'), key)",
+        "assert.equal(editorLoads, 1)",
+        "assert.equal(editor.snapshot().models.length, 2)",
+        "assert.deepEqual(snapshot.visible, ['t2', 't3'])",
+        "assert.equal(snapshot.sessions.find((item) => item.id === 't1').suspended, true)",
+        "named-test-pass:Workroom preserves mission route continuity and panel state",
+        "named-test-pass:file tree windows large repositories and preserves keyed nodes",
+        "named-test-pass:editor and terminal hosts load lazily and enforce local resource bounds"
+      ],
+      "negativeAssertions": [
+        "assert.equal(value.panels.files.open, false)"
+      ],
+      "receiptSha256": "9ddc883f61b2b8adfc0e43992bb2c9b54bb49b5102b0a02014694fda4ef2910e",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-015",
+      "productionEntrypoints": [
+        "ui-v3/views/workroom/editor-host.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "f348350e9a44e811c2750a1c72b75a6ff57109f322c21fc56b1340d28f596c80"
+      ],
+      "testFile": "tests/ui-v3-workroom.test.mjs",
+      "testFileSha256": "7d86c67da4f4497d22e6ae3508512058ee63dab5433f8a6521105540d8710b2f",
+      "namedTests": [
+        "Workroom preserves mission route continuity and panel state",
+        "file tree windows large repositories and preserves keyed nodes",
+        "editor and terminal hosts load lazily and enforce local resource bounds"
+      ],
+      "positiveAssertions": [
+        "assert.equal(value.returnPath, '/missions/m1')",
+        "assert.equal(value.panels.agent.size, 420)",
+        "assert.equal(value.activeFile, 'src/a.mjs')",
+        "assert.equal(second.total, 5000)",
+        "assert.equal(second.nodes.length, 10)",
+        "assert.equal(second.nodeKeys.get('n4999'), key)",
+        "assert.equal(editorLoads, 1)",
+        "assert.equal(editor.snapshot().models.length, 2)",
+        "assert.deepEqual(snapshot.visible, ['t2', 't3'])",
+        "assert.equal(snapshot.sessions.find((item) => item.id === 't1').suspended, true)",
+        "named-test-pass:Workroom preserves mission route continuity and panel state",
+        "named-test-pass:file tree windows large repositories and preserves keyed nodes",
+        "named-test-pass:editor and terminal hosts load lazily and enforce local resource bounds"
+      ],
+      "negativeAssertions": [
+        "assert.equal(value.panels.files.open, false)"
+      ],
+      "receiptSha256": "f23e592b9f41c8640c53bd627bc6e2326de9b5c1e090b5bee82b80fea598ce7c",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-016",
+      "productionEntrypoints": [
+        "ui-v3/views/workroom/terminal-host.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "0ac0faa96f6daca13547e9738710a7674bcc6650292a27ebffb4fbc163c98988"
+      ],
+      "testFile": "tests/ui-v3-workroom.test.mjs",
+      "testFileSha256": "7d86c67da4f4497d22e6ae3508512058ee63dab5433f8a6521105540d8710b2f",
+      "namedTests": [
+        "Workroom preserves mission route continuity and panel state",
+        "file tree windows large repositories and preserves keyed nodes",
+        "editor and terminal hosts load lazily and enforce local resource bounds"
+      ],
+      "positiveAssertions": [
+        "assert.equal(value.returnPath, '/missions/m1')",
+        "assert.equal(value.panels.agent.size, 420)",
+        "assert.equal(value.activeFile, 'src/a.mjs')",
+        "assert.equal(second.total, 5000)",
+        "assert.equal(second.nodes.length, 10)",
+        "assert.equal(second.nodeKeys.get('n4999'), key)",
+        "assert.equal(editorLoads, 1)",
+        "assert.equal(editor.snapshot().models.length, 2)",
+        "assert.deepEqual(snapshot.visible, ['t2', 't3'])",
+        "assert.equal(snapshot.sessions.find((item) => item.id === 't1').suspended, true)",
+        "named-test-pass:Workroom preserves mission route continuity and panel state",
+        "named-test-pass:file tree windows large repositories and preserves keyed nodes",
+        "named-test-pass:editor and terminal hosts load lazily and enforce local resource bounds"
+      ],
+      "negativeAssertions": [
+        "assert.equal(value.panels.files.open, false)"
+      ],
+      "receiptSha256": "c39b670b91990132cee7be45284065695d2bceb14eba2c9fcb10ca201f816e9d",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-017",
+      "productionEntrypoints": [
+        "ui-v3/views/mission/artifact-dock.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "c13d70b73fcf0320e1d7f43c9c14a3f5f34cf4420141f41dc032559daa02d7f8"
+      ],
+      "testFile": "tests/ui-v3-artifact-dock.test.mjs",
+      "testFileSha256": "baf597a61c764a7c0be33311d8099730e88d54a83a5882c567219099cc588fc6",
+      "namedTests": [
+        "Artifact Dock exposes only context-backed tabs in product priority order",
+        "Artifact Dock preserves keyed artifacts and clamps user width",
+        "preview artifact records bounded before-after snapshots and annotations"
+      ],
+      "positiveAssertions": [
+        "assert.deepEqual(tabs.map((item) => item.id), ['preview', 'changes', 'tests'])",
+        "assert.equal(second.width, 720)",
+        "assert.equal(second.activeTab, 'plan')",
+        "assert.equal(second.pinned, true)",
+        "assert.equal(second.artifactKeys.get('p1'), identity)",
+        "assert.equal(value.status, 'ready')",
+        "assert.equal(value.snapshots.length, 2)",
+        "assert.equal(value.annotations[0].selector, '#save')",
+        "named-test-pass:Artifact Dock exposes only context-backed tabs in product priority order",
+        "named-test-pass:Artifact Dock preserves keyed artifacts and clamps user width",
+        "named-test-pass:preview artifact records bounded before-after snapshots and annotations"
+      ],
+      "negativeAssertions": [
+        "assert.throws(() => preview.recordSnapshot({ phase: 'after', sha256: 'bad' }), /sha256/i)"
+      ],
+      "receiptSha256": "2ea5bf34d27965b31664de1f7b3c9f05f753a3a0fed14c8f9b82c1b7cf0e7734",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-018",
+      "productionEntrypoints": [
+        "ui-v3/views/review-queue/review-queue.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "94bde49a7174eab638db42df3f30b594981e93da04ccdf4eabc3299623b3b2d4"
+      ],
+      "testFile": "tests/ui-v3-secondary-views.test.mjs",
+      "testFileSha256": "1068f7b52fa14efa57a0dab86e72db3ec24fb9e6b86b22a83123440a034646d6",
+      "namedTests": [
+        "Review Queue is an action inbox ordered by urgency and wait time",
+        "Projects view exposes trust and mission summaries without loading intelligence graph",
+        "Settings validates basic performance profiles and keeps advanced routing out of level one"
+      ],
+      "positiveAssertions": [
+        "assert.deepEqual(queue.map((item) => item.id), ['permission', 'failed', 'ready'])",
+        "assert.ok(queue.every((item) => item.primaryAction))",
+        "assert.equal(value.activeMissions, 1)",
+        "assert.equal(value.completedMissions, 1)",
+        "assert.equal(value.openIntelligenceRoute, '/control-plane/intelligence/repository?project=p1')",
+        "assert.equal(model.snapshot().performanceProfile, 'lite')",
+        "named-test-pass:Review Queue is an action inbox ordered by urgency and wait time",
+        "named-test-pass:Settings validates basic performance profiles and keeps advanced routing out of level one"
+      ],
+      "negativeAssertions": [
+        "assert.equal('graph' in value, false)",
+        "assert.throws(() => model.update({ performanceProfile: 'extreme' }), /profile/i)",
+        "assert.equal('providerFallbackChain' in model.snapshot(), false)",
+        "named-test-negative:Projects view exposes trust and mission summaries without loading intelligence graph"
+      ],
+      "receiptSha256": "c3543548136b720928758e2023d0c39db8f2edd2bdfcd102626a0c58fb57a1e2",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-019",
+      "productionEntrypoints": [
+        "ui-v3/views/projects/project-view.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "8b11c0bd70a845d12efef9b73ceb556242a1d5322cba8433f5e07d8cc7a9b406"
+      ],
+      "testFile": "tests/ui-v3-secondary-views.test.mjs",
+      "testFileSha256": "1068f7b52fa14efa57a0dab86e72db3ec24fb9e6b86b22a83123440a034646d6",
+      "namedTests": [
+        "Review Queue is an action inbox ordered by urgency and wait time",
+        "Projects view exposes trust and mission summaries without loading intelligence graph",
+        "Settings validates basic performance profiles and keeps advanced routing out of level one"
+      ],
+      "positiveAssertions": [
+        "assert.deepEqual(queue.map((item) => item.id), ['permission', 'failed', 'ready'])",
+        "assert.ok(queue.every((item) => item.primaryAction))",
+        "assert.equal(value.activeMissions, 1)",
+        "assert.equal(value.completedMissions, 1)",
+        "assert.equal(value.openIntelligenceRoute, '/control-plane/intelligence/repository?project=p1')",
+        "assert.equal(model.snapshot().performanceProfile, 'lite')",
+        "named-test-pass:Review Queue is an action inbox ordered by urgency and wait time",
+        "named-test-pass:Settings validates basic performance profiles and keeps advanced routing out of level one"
+      ],
+      "negativeAssertions": [
+        "assert.equal('graph' in value, false)",
+        "assert.throws(() => model.update({ performanceProfile: 'extreme' }), /profile/i)",
+        "assert.equal('providerFallbackChain' in model.snapshot(), false)",
+        "named-test-negative:Projects view exposes trust and mission summaries without loading intelligence graph"
+      ],
+      "receiptSha256": "8dee0f32ef4d7756e093ba54e1b7b32985161312a5154f1d46c1b7e777e88f30",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-020",
+      "productionEntrypoints": [
+        "ui-v3/views/settings/settings-view.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "1394fdcd1316d9e0eab9434f630db916429655f965c9f320dec18957c0cb5183"
+      ],
+      "testFile": "tests/ui-v3-secondary-views.test.mjs",
+      "testFileSha256": "1068f7b52fa14efa57a0dab86e72db3ec24fb9e6b86b22a83123440a034646d6",
+      "namedTests": [
+        "Review Queue is an action inbox ordered by urgency and wait time",
+        "Projects view exposes trust and mission summaries without loading intelligence graph",
+        "Settings validates basic performance profiles and keeps advanced routing out of level one"
+      ],
+      "positiveAssertions": [
+        "assert.deepEqual(queue.map((item) => item.id), ['permission', 'failed', 'ready'])",
+        "assert.ok(queue.every((item) => item.primaryAction))",
+        "assert.equal(value.activeMissions, 1)",
+        "assert.equal(value.completedMissions, 1)",
+        "assert.equal(value.openIntelligenceRoute, '/control-plane/intelligence/repository?project=p1')",
+        "assert.equal(model.snapshot().performanceProfile, 'lite')",
+        "named-test-pass:Review Queue is an action inbox ordered by urgency and wait time",
+        "named-test-pass:Settings validates basic performance profiles and keeps advanced routing out of level one"
+      ],
+      "negativeAssertions": [
+        "assert.equal('graph' in value, false)",
+        "assert.throws(() => model.update({ performanceProfile: 'extreme' }), /profile/i)",
+        "assert.equal('providerFallbackChain' in model.snapshot(), false)",
+        "named-test-negative:Projects view exposes trust and mission summaries without loading intelligence graph"
+      ],
+      "receiptSha256": "8812d03b7e8fe515ec67a9e9662e86908e2db4d93dd963958ea372a064df5ab0",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-021",
+      "productionEntrypoints": [
+        "ui-v3/control-plane/control-plane-shell.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "deb2fedd5fabccbd3911686fd3186c9ddaea1bd69a23ecbef0914a8cbeb92934"
+      ],
+      "testFile": "tests/ui-v3-control-plane.test.mjs",
+      "testFileSha256": "b03c728c65146842f8d8af1343be9f403945113f39db1f659435920f9ed96e32",
+      "namedTests": [
+        "Control Plane uses textual domain navigation and preserves mission deep-link context",
+        "Control Plane rejects unknown domains instead of silently loading a drawer"
+      ],
+      "positiveAssertions": [
+        "assert.equal(loads.get('runtime'), 1)",
+        "assert.equal(loads.get('evidence'), 1)",
+        "assert.ok(suspends.includes('runtime'))",
+        "assert.equal(value.missionContext.returnPath, '/missions/m1')",
+        "assert.equal(CONTROL_PLANE_DOMAINS.length >= 10, true)",
+        "assert.match(html, /Back to Mission/)",
+        "assert.doesNotMatch(html, /aria-label=\"icon-only\"/)",
+        "named-test-pass:Control Plane uses textual domain navigation and preserves mission deep-link context"
+      ],
+      "negativeAssertions": [
+        "assert.rejects(() => model.navigate('/control-plane/not-real'), /unknown control plane domain/i)",
+        "named-test-negative:Control Plane rejects unknown domains instead of silently loading a drawer"
+      ],
+      "receiptSha256": "cc746484a82d58d5d84a136d33f6efa05e20527d7bc71b769ee3fdd5445fc7d5",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-022",
+      "productionEntrypoints": [
+        "ui-v3/control-plane/domains/operations.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "650e1f10987b8198b9017606d7a3a1fbc9600ad0f785ba17399687e339501365"
+      ],
+      "testFile": "tests/ui-v3-control-plane-domains.test.mjs",
+      "testFileSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f",
+      "namedTests": [
+        "Control Plane route registry lazy-loads every approved domain once",
+        "Operations exposes mission, agent, queue and recovery summaries with safe actions",
+        "Runtime suspends polling and heavy resources when route is hidden",
+        "Context and Memory preserve provenance while redacting sensitive content",
+        "Evidence defaults to hierarchical timeline and defers raw JSON expansion",
+        "Intelligence exposes typed repository facts without background graph animation",
+        "Trust and Security never expose secret values and keep human and capability labels",
+        "Governance resolves precedence without treating valid overrides as conflicts",
+        "Platform routes separate operational configuration, experiments and release promotion",
+        "application Control Plane route uses the real lazy domain registry",
+        "Platform Labs exposes alpha.5 verified subsystem counts and explicit non-claims"
+      ],
+      "positiveAssertions": [
+        "assert.deepEqual(Object.keys(CONTROL_PLANE_ROUTES), ['overview','agent-kernel','operations','runtime','context-memory','evidence','intelligence','trust-security','governance','extensions','autonomy','labs','release'])",
+        "assert.equal(first, second)",
+        "assert.equal(value.missions.length, 1)",
+        "assert.equal(value.agents[0].actions.includes('stop'), true)",
+        "assert.equal(value.queues[0].pending, 2)",
+        "assert.equal(value.recoveries[0].actions.includes('restore'), true)",
+        "assert.equal(polls, 2)",
+        "assert.equal(value.browserSessions.every((item) => item.suspended), true)",
+        "assert.equal(value.context[0].content, '[redacted]')",
+        "assert.equal(value.context[0].provenance, 'AGENTS.md')",
+        "assert.equal(value.memories[0].actions.includes('delete'), true)",
+        "assert.equal(value.defaultView, 'timeline')",
+        "assert.equal(value.filters.includes('receipt'), true)",
+        "assert.equal(value.symbolCount, 1)",
+        "assert.equal(value.routeCount, 1)",
+        "assert.equal(value.graph.animation, 'interaction-only')",
+        "assert.equal(value.permissions[0].capabilityId, 'project:write')",
+        "assert.equal(value.secrets[0].value, undefined)",
+        "assert.equal(value.secrets[0].configured, true)",
+        "assert.deepEqual(value.instructions.map((item) => item.scope), ['organization','project','mission'])",
+        "assert.equal(value.conflicts[0].severity, 'info')",
+        "assert.equal(value.extensions.providers.length, 1)",
+        "assert.equal(value.labs.experiments.length, 1)",
+        "assert.equal(value.autonomy.presets.length, 4)",
+        "assert.match(source, /import\\('\\.\\/control-plane\\/route-registry\\.mjs'\\)/)",
+        "assert.match(source, /loadControlPlaneDomain/)",
+        "assert.doesNotMatch(source, /loader:\\s*async\\s*\\(domain\\)\\s*=>\\s*\\(\\{ domain, suspend/)",
+        "assert.deepEqual(value.labs.foundation.subsystems, { distillationSteps: 4, recursiveRuns: 3, symbolicSolvers: 2, memories: 5, curriculumTasks: 7, verifierProbes: 4, scientificBenchmarks: 0, astCodemods: 0, smtProofs: 0, datalogEvaluations: 0, distilledPolicies: 0, adaptationContexts: 0, latentExperts: 0 })",
+        "assert.deepEqual(value.labs.foundation.nonClaims, ['autonomous-self-improvement', 'competitor-superiority', 'frontier-parity', 'trained-model'])",
+        "assert.match(html, /4 distillation steps/)",
+        "assert.match(html, /Non-claims: autonomous-self-improvement, competitor-superiority, frontier-parity, trained-model/)",
+        "named-test-pass:Control Plane route registry lazy-loads every approved domain once",
+        "named-test-pass:Operations exposes mission, agent, queue and recovery summaries with safe actions",
+        "named-test-pass:Runtime suspends polling and heavy resources when route is hidden",
+        "named-test-pass:Context and Memory preserve provenance while redacting sensitive content",
+        "named-test-pass:Evidence defaults to hierarchical timeline and defers raw JSON expansion",
+        "named-test-pass:Trust and Security never expose secret values and keep human and capability labels",
+        "named-test-pass:Platform routes separate operational configuration, experiments and release promotion",
+        "named-test-pass:application Control Plane route uses the real lazy domain registry",
+        "named-test-pass:Platform Labs exposes alpha.5 verified subsystem counts and explicit non-claims"
+      ],
+      "negativeAssertions": [
+        "assert.rejects(() => loadControlPlaneDomain('unknown'), /unknown control plane domain/i)",
+        "assert.equal(value.active, false)",
+        "assert.equal(value.events[0].rawLoaded, false)",
+        "assert.equal('raw' in value.events[0], false)",
+        "assert.equal(value.graph.backgroundAnimation, false)",
+        "assert.equal(value.release.canPromote, false)",
+        "assert.equal(value.labs.foundation.label, 'Foundation ready · No trained model')",
+        "assert.match(html, /No trained model/)",
+        "named-test-negative:Intelligence exposes typed repository facts without background graph animation",
+        "named-test-negative:Governance resolves precedence without treating valid overrides as conflicts"
+      ],
+      "receiptSha256": "c6ec3422871f0565323360d837e1379c290d29d2cef3f39033e4f826cb624590",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-023",
+      "productionEntrypoints": [
+        "ui-v3/control-plane/domains/runtime.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "724c347ebd0272844fc54e08cfa4fc210ed1f6ff9d0a31afd127c3b4d1e4cc86"
+      ],
+      "testFile": "tests/ui-v3-control-plane-domains.test.mjs",
+      "testFileSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f",
+      "namedTests": [
+        "Control Plane route registry lazy-loads every approved domain once",
+        "Operations exposes mission, agent, queue and recovery summaries with safe actions",
+        "Runtime suspends polling and heavy resources when route is hidden",
+        "Context and Memory preserve provenance while redacting sensitive content",
+        "Evidence defaults to hierarchical timeline and defers raw JSON expansion",
+        "Intelligence exposes typed repository facts without background graph animation",
+        "Trust and Security never expose secret values and keep human and capability labels",
+        "Governance resolves precedence without treating valid overrides as conflicts",
+        "Platform routes separate operational configuration, experiments and release promotion",
+        "application Control Plane route uses the real lazy domain registry",
+        "Platform Labs exposes alpha.5 verified subsystem counts and explicit non-claims"
+      ],
+      "positiveAssertions": [
+        "assert.deepEqual(Object.keys(CONTROL_PLANE_ROUTES), ['overview','agent-kernel','operations','runtime','context-memory','evidence','intelligence','trust-security','governance','extensions','autonomy','labs','release'])",
+        "assert.equal(first, second)",
+        "assert.equal(value.missions.length, 1)",
+        "assert.equal(value.agents[0].actions.includes('stop'), true)",
+        "assert.equal(value.queues[0].pending, 2)",
+        "assert.equal(value.recoveries[0].actions.includes('restore'), true)",
+        "assert.equal(polls, 2)",
+        "assert.equal(value.browserSessions.every((item) => item.suspended), true)",
+        "assert.equal(value.context[0].content, '[redacted]')",
+        "assert.equal(value.context[0].provenance, 'AGENTS.md')",
+        "assert.equal(value.memories[0].actions.includes('delete'), true)",
+        "assert.equal(value.defaultView, 'timeline')",
+        "assert.equal(value.filters.includes('receipt'), true)",
+        "assert.equal(value.symbolCount, 1)",
+        "assert.equal(value.routeCount, 1)",
+        "assert.equal(value.graph.animation, 'interaction-only')",
+        "assert.equal(value.permissions[0].capabilityId, 'project:write')",
+        "assert.equal(value.secrets[0].value, undefined)",
+        "assert.equal(value.secrets[0].configured, true)",
+        "assert.deepEqual(value.instructions.map((item) => item.scope), ['organization','project','mission'])",
+        "assert.equal(value.conflicts[0].severity, 'info')",
+        "assert.equal(value.extensions.providers.length, 1)",
+        "assert.equal(value.labs.experiments.length, 1)",
+        "assert.equal(value.autonomy.presets.length, 4)",
+        "assert.match(source, /import\\('\\.\\/control-plane\\/route-registry\\.mjs'\\)/)",
+        "assert.match(source, /loadControlPlaneDomain/)",
+        "assert.doesNotMatch(source, /loader:\\s*async\\s*\\(domain\\)\\s*=>\\s*\\(\\{ domain, suspend/)",
+        "assert.deepEqual(value.labs.foundation.subsystems, { distillationSteps: 4, recursiveRuns: 3, symbolicSolvers: 2, memories: 5, curriculumTasks: 7, verifierProbes: 4, scientificBenchmarks: 0, astCodemods: 0, smtProofs: 0, datalogEvaluations: 0, distilledPolicies: 0, adaptationContexts: 0, latentExperts: 0 })",
+        "assert.deepEqual(value.labs.foundation.nonClaims, ['autonomous-self-improvement', 'competitor-superiority', 'frontier-parity', 'trained-model'])",
+        "assert.match(html, /4 distillation steps/)",
+        "assert.match(html, /Non-claims: autonomous-self-improvement, competitor-superiority, frontier-parity, trained-model/)",
+        "named-test-pass:Control Plane route registry lazy-loads every approved domain once",
+        "named-test-pass:Operations exposes mission, agent, queue and recovery summaries with safe actions",
+        "named-test-pass:Runtime suspends polling and heavy resources when route is hidden",
+        "named-test-pass:Context and Memory preserve provenance while redacting sensitive content",
+        "named-test-pass:Evidence defaults to hierarchical timeline and defers raw JSON expansion",
+        "named-test-pass:Trust and Security never expose secret values and keep human and capability labels",
+        "named-test-pass:Platform routes separate operational configuration, experiments and release promotion",
+        "named-test-pass:application Control Plane route uses the real lazy domain registry",
+        "named-test-pass:Platform Labs exposes alpha.5 verified subsystem counts and explicit non-claims"
+      ],
+      "negativeAssertions": [
+        "assert.rejects(() => loadControlPlaneDomain('unknown'), /unknown control plane domain/i)",
+        "assert.equal(value.active, false)",
+        "assert.equal(value.events[0].rawLoaded, false)",
+        "assert.equal('raw' in value.events[0], false)",
+        "assert.equal(value.graph.backgroundAnimation, false)",
+        "assert.equal(value.release.canPromote, false)",
+        "assert.equal(value.labs.foundation.label, 'Foundation ready · No trained model')",
+        "assert.match(html, /No trained model/)",
+        "named-test-negative:Intelligence exposes typed repository facts without background graph animation",
+        "named-test-negative:Governance resolves precedence without treating valid overrides as conflicts"
+      ],
+      "receiptSha256": "111f2a8403633750a03273cb2c246a71ed61a620ca50a5c6da00370033ff7498",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-024",
+      "productionEntrypoints": [
+        "ui-v3/control-plane/domains/context-memory.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "fa097a73a42cef149875960a45bfbb7943cddc8e35749b128ab02e82d06e9c6b"
+      ],
+      "testFile": "tests/ui-v3-control-plane-domains.test.mjs",
+      "testFileSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f",
+      "namedTests": [
+        "Control Plane route registry lazy-loads every approved domain once",
+        "Operations exposes mission, agent, queue and recovery summaries with safe actions",
+        "Runtime suspends polling and heavy resources when route is hidden",
+        "Context and Memory preserve provenance while redacting sensitive content",
+        "Evidence defaults to hierarchical timeline and defers raw JSON expansion",
+        "Intelligence exposes typed repository facts without background graph animation",
+        "Trust and Security never expose secret values and keep human and capability labels",
+        "Governance resolves precedence without treating valid overrides as conflicts",
+        "Platform routes separate operational configuration, experiments and release promotion",
+        "application Control Plane route uses the real lazy domain registry",
+        "Platform Labs exposes alpha.5 verified subsystem counts and explicit non-claims"
+      ],
+      "positiveAssertions": [
+        "assert.deepEqual(Object.keys(CONTROL_PLANE_ROUTES), ['overview','agent-kernel','operations','runtime','context-memory','evidence','intelligence','trust-security','governance','extensions','autonomy','labs','release'])",
+        "assert.equal(first, second)",
+        "assert.equal(value.missions.length, 1)",
+        "assert.equal(value.agents[0].actions.includes('stop'), true)",
+        "assert.equal(value.queues[0].pending, 2)",
+        "assert.equal(value.recoveries[0].actions.includes('restore'), true)",
+        "assert.equal(polls, 2)",
+        "assert.equal(value.browserSessions.every((item) => item.suspended), true)",
+        "assert.equal(value.context[0].content, '[redacted]')",
+        "assert.equal(value.context[0].provenance, 'AGENTS.md')",
+        "assert.equal(value.memories[0].actions.includes('delete'), true)",
+        "assert.equal(value.defaultView, 'timeline')",
+        "assert.equal(value.filters.includes('receipt'), true)",
+        "assert.equal(value.symbolCount, 1)",
+        "assert.equal(value.routeCount, 1)",
+        "assert.equal(value.graph.animation, 'interaction-only')",
+        "assert.equal(value.permissions[0].capabilityId, 'project:write')",
+        "assert.equal(value.secrets[0].value, undefined)",
+        "assert.equal(value.secrets[0].configured, true)",
+        "assert.deepEqual(value.instructions.map((item) => item.scope), ['organization','project','mission'])",
+        "assert.equal(value.conflicts[0].severity, 'info')",
+        "assert.equal(value.extensions.providers.length, 1)",
+        "assert.equal(value.labs.experiments.length, 1)",
+        "assert.equal(value.autonomy.presets.length, 4)",
+        "assert.match(source, /import\\('\\.\\/control-plane\\/route-registry\\.mjs'\\)/)",
+        "assert.match(source, /loadControlPlaneDomain/)",
+        "assert.doesNotMatch(source, /loader:\\s*async\\s*\\(domain\\)\\s*=>\\s*\\(\\{ domain, suspend/)",
+        "assert.deepEqual(value.labs.foundation.subsystems, { distillationSteps: 4, recursiveRuns: 3, symbolicSolvers: 2, memories: 5, curriculumTasks: 7, verifierProbes: 4, scientificBenchmarks: 0, astCodemods: 0, smtProofs: 0, datalogEvaluations: 0, distilledPolicies: 0, adaptationContexts: 0, latentExperts: 0 })",
+        "assert.deepEqual(value.labs.foundation.nonClaims, ['autonomous-self-improvement', 'competitor-superiority', 'frontier-parity', 'trained-model'])",
+        "assert.match(html, /4 distillation steps/)",
+        "assert.match(html, /Non-claims: autonomous-self-improvement, competitor-superiority, frontier-parity, trained-model/)",
+        "named-test-pass:Control Plane route registry lazy-loads every approved domain once",
+        "named-test-pass:Operations exposes mission, agent, queue and recovery summaries with safe actions",
+        "named-test-pass:Runtime suspends polling and heavy resources when route is hidden",
+        "named-test-pass:Context and Memory preserve provenance while redacting sensitive content",
+        "named-test-pass:Evidence defaults to hierarchical timeline and defers raw JSON expansion",
+        "named-test-pass:Trust and Security never expose secret values and keep human and capability labels",
+        "named-test-pass:Platform routes separate operational configuration, experiments and release promotion",
+        "named-test-pass:application Control Plane route uses the real lazy domain registry",
+        "named-test-pass:Platform Labs exposes alpha.5 verified subsystem counts and explicit non-claims"
+      ],
+      "negativeAssertions": [
+        "assert.rejects(() => loadControlPlaneDomain('unknown'), /unknown control plane domain/i)",
+        "assert.equal(value.active, false)",
+        "assert.equal(value.events[0].rawLoaded, false)",
+        "assert.equal('raw' in value.events[0], false)",
+        "assert.equal(value.graph.backgroundAnimation, false)",
+        "assert.equal(value.release.canPromote, false)",
+        "assert.equal(value.labs.foundation.label, 'Foundation ready · No trained model')",
+        "assert.match(html, /No trained model/)",
+        "named-test-negative:Intelligence exposes typed repository facts without background graph animation",
+        "named-test-negative:Governance resolves precedence without treating valid overrides as conflicts"
+      ],
+      "receiptSha256": "eb8bcea03a6e1d142be50a16f57889eafb9fa56236e6b5846db3544770065c64",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-025",
+      "productionEntrypoints": [
+        "ui-v3/control-plane/domains/evidence.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "a0c1122e3f500a808fa34d27d3b3e98e6bbffd08a41011fbe5166729adde6882"
+      ],
+      "testFile": "tests/ui-v3-control-plane-domains.test.mjs",
+      "testFileSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f",
+      "namedTests": [
+        "Control Plane route registry lazy-loads every approved domain once",
+        "Operations exposes mission, agent, queue and recovery summaries with safe actions",
+        "Runtime suspends polling and heavy resources when route is hidden",
+        "Context and Memory preserve provenance while redacting sensitive content",
+        "Evidence defaults to hierarchical timeline and defers raw JSON expansion",
+        "Intelligence exposes typed repository facts without background graph animation",
+        "Trust and Security never expose secret values and keep human and capability labels",
+        "Governance resolves precedence without treating valid overrides as conflicts",
+        "Platform routes separate operational configuration, experiments and release promotion",
+        "application Control Plane route uses the real lazy domain registry",
+        "Platform Labs exposes alpha.5 verified subsystem counts and explicit non-claims"
+      ],
+      "positiveAssertions": [
+        "assert.deepEqual(Object.keys(CONTROL_PLANE_ROUTES), ['overview','agent-kernel','operations','runtime','context-memory','evidence','intelligence','trust-security','governance','extensions','autonomy','labs','release'])",
+        "assert.equal(first, second)",
+        "assert.equal(value.missions.length, 1)",
+        "assert.equal(value.agents[0].actions.includes('stop'), true)",
+        "assert.equal(value.queues[0].pending, 2)",
+        "assert.equal(value.recoveries[0].actions.includes('restore'), true)",
+        "assert.equal(polls, 2)",
+        "assert.equal(value.browserSessions.every((item) => item.suspended), true)",
+        "assert.equal(value.context[0].content, '[redacted]')",
+        "assert.equal(value.context[0].provenance, 'AGENTS.md')",
+        "assert.equal(value.memories[0].actions.includes('delete'), true)",
+        "assert.equal(value.defaultView, 'timeline')",
+        "assert.equal(value.filters.includes('receipt'), true)",
+        "assert.equal(value.symbolCount, 1)",
+        "assert.equal(value.routeCount, 1)",
+        "assert.equal(value.graph.animation, 'interaction-only')",
+        "assert.equal(value.permissions[0].capabilityId, 'project:write')",
+        "assert.equal(value.secrets[0].value, undefined)",
+        "assert.equal(value.secrets[0].configured, true)",
+        "assert.deepEqual(value.instructions.map((item) => item.scope), ['organization','project','mission'])",
+        "assert.equal(value.conflicts[0].severity, 'info')",
+        "assert.equal(value.extensions.providers.length, 1)",
+        "assert.equal(value.labs.experiments.length, 1)",
+        "assert.equal(value.autonomy.presets.length, 4)",
+        "assert.match(source, /import\\('\\.\\/control-plane\\/route-registry\\.mjs'\\)/)",
+        "assert.match(source, /loadControlPlaneDomain/)",
+        "assert.doesNotMatch(source, /loader:\\s*async\\s*\\(domain\\)\\s*=>\\s*\\(\\{ domain, suspend/)",
+        "assert.deepEqual(value.labs.foundation.subsystems, { distillationSteps: 4, recursiveRuns: 3, symbolicSolvers: 2, memories: 5, curriculumTasks: 7, verifierProbes: 4, scientificBenchmarks: 0, astCodemods: 0, smtProofs: 0, datalogEvaluations: 0, distilledPolicies: 0, adaptationContexts: 0, latentExperts: 0 })",
+        "assert.deepEqual(value.labs.foundation.nonClaims, ['autonomous-self-improvement', 'competitor-superiority', 'frontier-parity', 'trained-model'])",
+        "assert.match(html, /4 distillation steps/)",
+        "assert.match(html, /Non-claims: autonomous-self-improvement, competitor-superiority, frontier-parity, trained-model/)",
+        "named-test-pass:Control Plane route registry lazy-loads every approved domain once",
+        "named-test-pass:Operations exposes mission, agent, queue and recovery summaries with safe actions",
+        "named-test-pass:Runtime suspends polling and heavy resources when route is hidden",
+        "named-test-pass:Context and Memory preserve provenance while redacting sensitive content",
+        "named-test-pass:Evidence defaults to hierarchical timeline and defers raw JSON expansion",
+        "named-test-pass:Trust and Security never expose secret values and keep human and capability labels",
+        "named-test-pass:Platform routes separate operational configuration, experiments and release promotion",
+        "named-test-pass:application Control Plane route uses the real lazy domain registry",
+        "named-test-pass:Platform Labs exposes alpha.5 verified subsystem counts and explicit non-claims"
+      ],
+      "negativeAssertions": [
+        "assert.rejects(() => loadControlPlaneDomain('unknown'), /unknown control plane domain/i)",
+        "assert.equal(value.active, false)",
+        "assert.equal(value.events[0].rawLoaded, false)",
+        "assert.equal('raw' in value.events[0], false)",
+        "assert.equal(value.graph.backgroundAnimation, false)",
+        "assert.equal(value.release.canPromote, false)",
+        "assert.equal(value.labs.foundation.label, 'Foundation ready · No trained model')",
+        "assert.match(html, /No trained model/)",
+        "named-test-negative:Intelligence exposes typed repository facts without background graph animation",
+        "named-test-negative:Governance resolves precedence without treating valid overrides as conflicts"
+      ],
+      "receiptSha256": "f3309b2b13db9ccf43bad35502308031c17b6ee388a32046064d76b0d7ce01cb",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-026",
+      "productionEntrypoints": [
+        "ui-v3/control-plane/domains/intelligence.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "182d97537ce635cca1c38eb0f3eadaed9e38420c9ceab2e7970f2b68f79bd12f"
+      ],
+      "testFile": "tests/ui-v3-control-plane-domains.test.mjs",
+      "testFileSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f",
+      "namedTests": [
+        "Control Plane route registry lazy-loads every approved domain once",
+        "Operations exposes mission, agent, queue and recovery summaries with safe actions",
+        "Runtime suspends polling and heavy resources when route is hidden",
+        "Context and Memory preserve provenance while redacting sensitive content",
+        "Evidence defaults to hierarchical timeline and defers raw JSON expansion",
+        "Intelligence exposes typed repository facts without background graph animation",
+        "Trust and Security never expose secret values and keep human and capability labels",
+        "Governance resolves precedence without treating valid overrides as conflicts",
+        "Platform routes separate operational configuration, experiments and release promotion",
+        "application Control Plane route uses the real lazy domain registry",
+        "Platform Labs exposes alpha.5 verified subsystem counts and explicit non-claims"
+      ],
+      "positiveAssertions": [
+        "assert.deepEqual(Object.keys(CONTROL_PLANE_ROUTES), ['overview','agent-kernel','operations','runtime','context-memory','evidence','intelligence','trust-security','governance','extensions','autonomy','labs','release'])",
+        "assert.equal(first, second)",
+        "assert.equal(value.missions.length, 1)",
+        "assert.equal(value.agents[0].actions.includes('stop'), true)",
+        "assert.equal(value.queues[0].pending, 2)",
+        "assert.equal(value.recoveries[0].actions.includes('restore'), true)",
+        "assert.equal(polls, 2)",
+        "assert.equal(value.browserSessions.every((item) => item.suspended), true)",
+        "assert.equal(value.context[0].content, '[redacted]')",
+        "assert.equal(value.context[0].provenance, 'AGENTS.md')",
+        "assert.equal(value.memories[0].actions.includes('delete'), true)",
+        "assert.equal(value.defaultView, 'timeline')",
+        "assert.equal(value.filters.includes('receipt'), true)",
+        "assert.equal(value.symbolCount, 1)",
+        "assert.equal(value.routeCount, 1)",
+        "assert.equal(value.graph.animation, 'interaction-only')",
+        "assert.equal(value.permissions[0].capabilityId, 'project:write')",
+        "assert.equal(value.secrets[0].value, undefined)",
+        "assert.equal(value.secrets[0].configured, true)",
+        "assert.deepEqual(value.instructions.map((item) => item.scope), ['organization','project','mission'])",
+        "assert.equal(value.conflicts[0].severity, 'info')",
+        "assert.equal(value.extensions.providers.length, 1)",
+        "assert.equal(value.labs.experiments.length, 1)",
+        "assert.equal(value.autonomy.presets.length, 4)",
+        "assert.match(source, /import\\('\\.\\/control-plane\\/route-registry\\.mjs'\\)/)",
+        "assert.match(source, /loadControlPlaneDomain/)",
+        "assert.doesNotMatch(source, /loader:\\s*async\\s*\\(domain\\)\\s*=>\\s*\\(\\{ domain, suspend/)",
+        "assert.deepEqual(value.labs.foundation.subsystems, { distillationSteps: 4, recursiveRuns: 3, symbolicSolvers: 2, memories: 5, curriculumTasks: 7, verifierProbes: 4, scientificBenchmarks: 0, astCodemods: 0, smtProofs: 0, datalogEvaluations: 0, distilledPolicies: 0, adaptationContexts: 0, latentExperts: 0 })",
+        "assert.deepEqual(value.labs.foundation.nonClaims, ['autonomous-self-improvement', 'competitor-superiority', 'frontier-parity', 'trained-model'])",
+        "assert.match(html, /4 distillation steps/)",
+        "assert.match(html, /Non-claims: autonomous-self-improvement, competitor-superiority, frontier-parity, trained-model/)",
+        "named-test-pass:Control Plane route registry lazy-loads every approved domain once",
+        "named-test-pass:Operations exposes mission, agent, queue and recovery summaries with safe actions",
+        "named-test-pass:Runtime suspends polling and heavy resources when route is hidden",
+        "named-test-pass:Context and Memory preserve provenance while redacting sensitive content",
+        "named-test-pass:Evidence defaults to hierarchical timeline and defers raw JSON expansion",
+        "named-test-pass:Trust and Security never expose secret values and keep human and capability labels",
+        "named-test-pass:Platform routes separate operational configuration, experiments and release promotion",
+        "named-test-pass:application Control Plane route uses the real lazy domain registry",
+        "named-test-pass:Platform Labs exposes alpha.5 verified subsystem counts and explicit non-claims"
+      ],
+      "negativeAssertions": [
+        "assert.rejects(() => loadControlPlaneDomain('unknown'), /unknown control plane domain/i)",
+        "assert.equal(value.active, false)",
+        "assert.equal(value.events[0].rawLoaded, false)",
+        "assert.equal('raw' in value.events[0], false)",
+        "assert.equal(value.graph.backgroundAnimation, false)",
+        "assert.equal(value.release.canPromote, false)",
+        "assert.equal(value.labs.foundation.label, 'Foundation ready · No trained model')",
+        "assert.match(html, /No trained model/)",
+        "named-test-negative:Intelligence exposes typed repository facts without background graph animation",
+        "named-test-negative:Governance resolves precedence without treating valid overrides as conflicts"
+      ],
+      "receiptSha256": "5d1de6da8f3cce74ff881c7f4c8fe45d70dd3e4864b042278785df5855a17893",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-027",
+      "productionEntrypoints": [
+        "ui-v3/control-plane/domains/trust-security.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "7181c27a0c874f986943da3c90fcae796cbfdaf5c8b2969321a50901158eb123"
+      ],
+      "testFile": "tests/ui-v3-control-plane-domains.test.mjs",
+      "testFileSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f",
+      "namedTests": [
+        "Control Plane route registry lazy-loads every approved domain once",
+        "Operations exposes mission, agent, queue and recovery summaries with safe actions",
+        "Runtime suspends polling and heavy resources when route is hidden",
+        "Context and Memory preserve provenance while redacting sensitive content",
+        "Evidence defaults to hierarchical timeline and defers raw JSON expansion",
+        "Intelligence exposes typed repository facts without background graph animation",
+        "Trust and Security never expose secret values and keep human and capability labels",
+        "Governance resolves precedence without treating valid overrides as conflicts",
+        "Platform routes separate operational configuration, experiments and release promotion",
+        "application Control Plane route uses the real lazy domain registry",
+        "Platform Labs exposes alpha.5 verified subsystem counts and explicit non-claims"
+      ],
+      "positiveAssertions": [
+        "assert.deepEqual(Object.keys(CONTROL_PLANE_ROUTES), ['overview','agent-kernel','operations','runtime','context-memory','evidence','intelligence','trust-security','governance','extensions','autonomy','labs','release'])",
+        "assert.equal(first, second)",
+        "assert.equal(value.missions.length, 1)",
+        "assert.equal(value.agents[0].actions.includes('stop'), true)",
+        "assert.equal(value.queues[0].pending, 2)",
+        "assert.equal(value.recoveries[0].actions.includes('restore'), true)",
+        "assert.equal(polls, 2)",
+        "assert.equal(value.browserSessions.every((item) => item.suspended), true)",
+        "assert.equal(value.context[0].content, '[redacted]')",
+        "assert.equal(value.context[0].provenance, 'AGENTS.md')",
+        "assert.equal(value.memories[0].actions.includes('delete'), true)",
+        "assert.equal(value.defaultView, 'timeline')",
+        "assert.equal(value.filters.includes('receipt'), true)",
+        "assert.equal(value.symbolCount, 1)",
+        "assert.equal(value.routeCount, 1)",
+        "assert.equal(value.graph.animation, 'interaction-only')",
+        "assert.equal(value.permissions[0].capabilityId, 'project:write')",
+        "assert.equal(value.secrets[0].value, undefined)",
+        "assert.equal(value.secrets[0].configured, true)",
+        "assert.deepEqual(value.instructions.map((item) => item.scope), ['organization','project','mission'])",
+        "assert.equal(value.conflicts[0].severity, 'info')",
+        "assert.equal(value.extensions.providers.length, 1)",
+        "assert.equal(value.labs.experiments.length, 1)",
+        "assert.equal(value.autonomy.presets.length, 4)",
+        "assert.match(source, /import\\('\\.\\/control-plane\\/route-registry\\.mjs'\\)/)",
+        "assert.match(source, /loadControlPlaneDomain/)",
+        "assert.doesNotMatch(source, /loader:\\s*async\\s*\\(domain\\)\\s*=>\\s*\\(\\{ domain, suspend/)",
+        "assert.deepEqual(value.labs.foundation.subsystems, { distillationSteps: 4, recursiveRuns: 3, symbolicSolvers: 2, memories: 5, curriculumTasks: 7, verifierProbes: 4, scientificBenchmarks: 0, astCodemods: 0, smtProofs: 0, datalogEvaluations: 0, distilledPolicies: 0, adaptationContexts: 0, latentExperts: 0 })",
+        "assert.deepEqual(value.labs.foundation.nonClaims, ['autonomous-self-improvement', 'competitor-superiority', 'frontier-parity', 'trained-model'])",
+        "assert.match(html, /4 distillation steps/)",
+        "assert.match(html, /Non-claims: autonomous-self-improvement, competitor-superiority, frontier-parity, trained-model/)",
+        "named-test-pass:Control Plane route registry lazy-loads every approved domain once",
+        "named-test-pass:Operations exposes mission, agent, queue and recovery summaries with safe actions",
+        "named-test-pass:Runtime suspends polling and heavy resources when route is hidden",
+        "named-test-pass:Context and Memory preserve provenance while redacting sensitive content",
+        "named-test-pass:Evidence defaults to hierarchical timeline and defers raw JSON expansion",
+        "named-test-pass:Trust and Security never expose secret values and keep human and capability labels",
+        "named-test-pass:Platform routes separate operational configuration, experiments and release promotion",
+        "named-test-pass:application Control Plane route uses the real lazy domain registry",
+        "named-test-pass:Platform Labs exposes alpha.5 verified subsystem counts and explicit non-claims"
+      ],
+      "negativeAssertions": [
+        "assert.rejects(() => loadControlPlaneDomain('unknown'), /unknown control plane domain/i)",
+        "assert.equal(value.active, false)",
+        "assert.equal(value.events[0].rawLoaded, false)",
+        "assert.equal('raw' in value.events[0], false)",
+        "assert.equal(value.graph.backgroundAnimation, false)",
+        "assert.equal(value.release.canPromote, false)",
+        "assert.equal(value.labs.foundation.label, 'Foundation ready · No trained model')",
+        "assert.match(html, /No trained model/)",
+        "named-test-negative:Intelligence exposes typed repository facts without background graph animation",
+        "named-test-negative:Governance resolves precedence without treating valid overrides as conflicts"
+      ],
+      "receiptSha256": "bb61ebfa22c1ee64d12f6816ea7fe48441025f6438669af1b7402e5bd342f24e",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-028",
+      "productionEntrypoints": [
+        "ui-v3/control-plane/domains/governance.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "e4e3a96627c69c4b17a86527b341ebb9f1f2e45989b562b2de1531c076069684"
+      ],
+      "testFile": "tests/ui-v3-control-plane-domains.test.mjs",
+      "testFileSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f",
+      "namedTests": [
+        "Control Plane route registry lazy-loads every approved domain once",
+        "Operations exposes mission, agent, queue and recovery summaries with safe actions",
+        "Runtime suspends polling and heavy resources when route is hidden",
+        "Context and Memory preserve provenance while redacting sensitive content",
+        "Evidence defaults to hierarchical timeline and defers raw JSON expansion",
+        "Intelligence exposes typed repository facts without background graph animation",
+        "Trust and Security never expose secret values and keep human and capability labels",
+        "Governance resolves precedence without treating valid overrides as conflicts",
+        "Platform routes separate operational configuration, experiments and release promotion",
+        "application Control Plane route uses the real lazy domain registry",
+        "Platform Labs exposes alpha.5 verified subsystem counts and explicit non-claims"
+      ],
+      "positiveAssertions": [
+        "assert.deepEqual(Object.keys(CONTROL_PLANE_ROUTES), ['overview','agent-kernel','operations','runtime','context-memory','evidence','intelligence','trust-security','governance','extensions','autonomy','labs','release'])",
+        "assert.equal(first, second)",
+        "assert.equal(value.missions.length, 1)",
+        "assert.equal(value.agents[0].actions.includes('stop'), true)",
+        "assert.equal(value.queues[0].pending, 2)",
+        "assert.equal(value.recoveries[0].actions.includes('restore'), true)",
+        "assert.equal(polls, 2)",
+        "assert.equal(value.browserSessions.every((item) => item.suspended), true)",
+        "assert.equal(value.context[0].content, '[redacted]')",
+        "assert.equal(value.context[0].provenance, 'AGENTS.md')",
+        "assert.equal(value.memories[0].actions.includes('delete'), true)",
+        "assert.equal(value.defaultView, 'timeline')",
+        "assert.equal(value.filters.includes('receipt'), true)",
+        "assert.equal(value.symbolCount, 1)",
+        "assert.equal(value.routeCount, 1)",
+        "assert.equal(value.graph.animation, 'interaction-only')",
+        "assert.equal(value.permissions[0].capabilityId, 'project:write')",
+        "assert.equal(value.secrets[0].value, undefined)",
+        "assert.equal(value.secrets[0].configured, true)",
+        "assert.deepEqual(value.instructions.map((item) => item.scope), ['organization','project','mission'])",
+        "assert.equal(value.conflicts[0].severity, 'info')",
+        "assert.equal(value.extensions.providers.length, 1)",
+        "assert.equal(value.labs.experiments.length, 1)",
+        "assert.equal(value.autonomy.presets.length, 4)",
+        "assert.match(source, /import\\('\\.\\/control-plane\\/route-registry\\.mjs'\\)/)",
+        "assert.match(source, /loadControlPlaneDomain/)",
+        "assert.doesNotMatch(source, /loader:\\s*async\\s*\\(domain\\)\\s*=>\\s*\\(\\{ domain, suspend/)",
+        "assert.deepEqual(value.labs.foundation.subsystems, { distillationSteps: 4, recursiveRuns: 3, symbolicSolvers: 2, memories: 5, curriculumTasks: 7, verifierProbes: 4, scientificBenchmarks: 0, astCodemods: 0, smtProofs: 0, datalogEvaluations: 0, distilledPolicies: 0, adaptationContexts: 0, latentExperts: 0 })",
+        "assert.deepEqual(value.labs.foundation.nonClaims, ['autonomous-self-improvement', 'competitor-superiority', 'frontier-parity', 'trained-model'])",
+        "assert.match(html, /4 distillation steps/)",
+        "assert.match(html, /Non-claims: autonomous-self-improvement, competitor-superiority, frontier-parity, trained-model/)",
+        "named-test-pass:Control Plane route registry lazy-loads every approved domain once",
+        "named-test-pass:Operations exposes mission, agent, queue and recovery summaries with safe actions",
+        "named-test-pass:Runtime suspends polling and heavy resources when route is hidden",
+        "named-test-pass:Context and Memory preserve provenance while redacting sensitive content",
+        "named-test-pass:Evidence defaults to hierarchical timeline and defers raw JSON expansion",
+        "named-test-pass:Trust and Security never expose secret values and keep human and capability labels",
+        "named-test-pass:Platform routes separate operational configuration, experiments and release promotion",
+        "named-test-pass:application Control Plane route uses the real lazy domain registry",
+        "named-test-pass:Platform Labs exposes alpha.5 verified subsystem counts and explicit non-claims"
+      ],
+      "negativeAssertions": [
+        "assert.rejects(() => loadControlPlaneDomain('unknown'), /unknown control plane domain/i)",
+        "assert.equal(value.active, false)",
+        "assert.equal(value.events[0].rawLoaded, false)",
+        "assert.equal('raw' in value.events[0], false)",
+        "assert.equal(value.graph.backgroundAnimation, false)",
+        "assert.equal(value.release.canPromote, false)",
+        "assert.equal(value.labs.foundation.label, 'Foundation ready · No trained model')",
+        "assert.match(html, /No trained model/)",
+        "named-test-negative:Intelligence exposes typed repository facts without background graph animation",
+        "named-test-negative:Governance resolves precedence without treating valid overrides as conflicts"
+      ],
+      "receiptSha256": "7ef963c55bd03f489ff083b0ee75abe9b81477746d519106ee5255628d5651d8",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-029",
+      "productionEntrypoints": [
+        "ui-v3/control-plane/domains/platform.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "7a30129d4354e9b5451ab74cf1ceebcc75bb99790283c3a03beeccb9a1b9bfa3"
+      ],
+      "testFile": "tests/ui-v3-control-plane-domains.test.mjs",
+      "testFileSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f",
+      "namedTests": [
+        "Control Plane route registry lazy-loads every approved domain once",
+        "Operations exposes mission, agent, queue and recovery summaries with safe actions",
+        "Runtime suspends polling and heavy resources when route is hidden",
+        "Context and Memory preserve provenance while redacting sensitive content",
+        "Evidence defaults to hierarchical timeline and defers raw JSON expansion",
+        "Intelligence exposes typed repository facts without background graph animation",
+        "Trust and Security never expose secret values and keep human and capability labels",
+        "Governance resolves precedence without treating valid overrides as conflicts",
+        "Platform routes separate operational configuration, experiments and release promotion",
+        "application Control Plane route uses the real lazy domain registry",
+        "Platform Labs exposes alpha.5 verified subsystem counts and explicit non-claims"
+      ],
+      "positiveAssertions": [
+        "assert.deepEqual(Object.keys(CONTROL_PLANE_ROUTES), ['overview','agent-kernel','operations','runtime','context-memory','evidence','intelligence','trust-security','governance','extensions','autonomy','labs','release'])",
+        "assert.equal(first, second)",
+        "assert.equal(value.missions.length, 1)",
+        "assert.equal(value.agents[0].actions.includes('stop'), true)",
+        "assert.equal(value.queues[0].pending, 2)",
+        "assert.equal(value.recoveries[0].actions.includes('restore'), true)",
+        "assert.equal(polls, 2)",
+        "assert.equal(value.browserSessions.every((item) => item.suspended), true)",
+        "assert.equal(value.context[0].content, '[redacted]')",
+        "assert.equal(value.context[0].provenance, 'AGENTS.md')",
+        "assert.equal(value.memories[0].actions.includes('delete'), true)",
+        "assert.equal(value.defaultView, 'timeline')",
+        "assert.equal(value.filters.includes('receipt'), true)",
+        "assert.equal(value.symbolCount, 1)",
+        "assert.equal(value.routeCount, 1)",
+        "assert.equal(value.graph.animation, 'interaction-only')",
+        "assert.equal(value.permissions[0].capabilityId, 'project:write')",
+        "assert.equal(value.secrets[0].value, undefined)",
+        "assert.equal(value.secrets[0].configured, true)",
+        "assert.deepEqual(value.instructions.map((item) => item.scope), ['organization','project','mission'])",
+        "assert.equal(value.conflicts[0].severity, 'info')",
+        "assert.equal(value.extensions.providers.length, 1)",
+        "assert.equal(value.labs.experiments.length, 1)",
+        "assert.equal(value.autonomy.presets.length, 4)",
+        "assert.match(source, /import\\('\\.\\/control-plane\\/route-registry\\.mjs'\\)/)",
+        "assert.match(source, /loadControlPlaneDomain/)",
+        "assert.doesNotMatch(source, /loader:\\s*async\\s*\\(domain\\)\\s*=>\\s*\\(\\{ domain, suspend/)",
+        "assert.deepEqual(value.labs.foundation.subsystems, { distillationSteps: 4, recursiveRuns: 3, symbolicSolvers: 2, memories: 5, curriculumTasks: 7, verifierProbes: 4, scientificBenchmarks: 0, astCodemods: 0, smtProofs: 0, datalogEvaluations: 0, distilledPolicies: 0, adaptationContexts: 0, latentExperts: 0 })",
+        "assert.deepEqual(value.labs.foundation.nonClaims, ['autonomous-self-improvement', 'competitor-superiority', 'frontier-parity', 'trained-model'])",
+        "assert.match(html, /4 distillation steps/)",
+        "assert.match(html, /Non-claims: autonomous-self-improvement, competitor-superiority, frontier-parity, trained-model/)",
+        "named-test-pass:Control Plane route registry lazy-loads every approved domain once",
+        "named-test-pass:Operations exposes mission, agent, queue and recovery summaries with safe actions",
+        "named-test-pass:Runtime suspends polling and heavy resources when route is hidden",
+        "named-test-pass:Context and Memory preserve provenance while redacting sensitive content",
+        "named-test-pass:Evidence defaults to hierarchical timeline and defers raw JSON expansion",
+        "named-test-pass:Trust and Security never expose secret values and keep human and capability labels",
+        "named-test-pass:Platform routes separate operational configuration, experiments and release promotion",
+        "named-test-pass:application Control Plane route uses the real lazy domain registry",
+        "named-test-pass:Platform Labs exposes alpha.5 verified subsystem counts and explicit non-claims"
+      ],
+      "negativeAssertions": [
+        "assert.rejects(() => loadControlPlaneDomain('unknown'), /unknown control plane domain/i)",
+        "assert.equal(value.active, false)",
+        "assert.equal(value.events[0].rawLoaded, false)",
+        "assert.equal('raw' in value.events[0], false)",
+        "assert.equal(value.graph.backgroundAnimation, false)",
+        "assert.equal(value.release.canPromote, false)",
+        "assert.equal(value.labs.foundation.label, 'Foundation ready · No trained model')",
+        "assert.match(html, /No trained model/)",
+        "named-test-negative:Intelligence exposes typed repository facts without background graph animation",
+        "named-test-negative:Governance resolves precedence without treating valid overrides as conflicts"
+      ],
+      "receiptSha256": "94865d16e27ba59bfcdf5f50fae01487f6e5ad593e98f485885694b4c533e098",
+      "environment": "node>=22.12",
+      "external": false
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-030",
+      "productionEntrypoints": [
+        "src/superiority/deep/local-ui-certification-lab.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "f157bf8c2c408f059380746f4161803eb708de21929cd52bbb6f11a130c03f96"
+      ],
+      "testFile": "tests/deep-superiority-ui-dogfood.test.mjs",
+      "testFileSha256": "72f3fbb86fe0094ed9dc2446edbb4685cf3dcb3fa5a6e94c0a0c62ae8c244b7a",
+      "namedTests": [
+        "local UI certification verifies accessibility, responsiveness and budgets but retains Windows external gates",
+        "dogfood replay lab rejects mocks and validates signed provider-real Windows protocol receipts"
+      ],
+      "positiveAssertions": [
+        "assert.equal(result.localAccessibilityImplemented, true)",
+        "assert.equal(result.localResponsiveImplemented, true)",
+        "assert.equal(result.localPerformanceBudgetsPassed, true)",
+        "assert.equal(result.windowsCertificationRequired, true)",
+        "assert.equal(result.assistiveTechnologyCertificationRequired, true)",
+        "assert.equal(suite.requiredScenarios.length, 10)",
+        "assert.equal(suite.requiredAdversarialProbes.length, 12)",
+        "assert.equal(verified.protocolValid, true)",
+        "assert.equal(verified.externalCertificationAccepted, true)",
+        "assert.equal(lab.evaluate('dogfood-1').providerRealDogfoodCertified, true)",
+        "named-test-pass:local UI certification verifies accessibility, responsiveness and budgets but retains Windows external gates"
+      ],
+      "negativeAssertions": [
+        "assert.throws(() => lab.certify({ sourceHash: H('f'), breakpoints: [640], semantics: {}, budgets: {}, metrics: {}, visualHashes: [] }), /breakpoints|semantics|budget/i)",
+        "assert.throws(() => lab.verifyReceipt('dogfood-1', { mock: true }), /mock/i)",
+        "named-test-negative:dogfood replay lab rejects mocks and validates signed provider-real Windows protocol receipts"
+      ],
+      "receiptSha256": "e8f109b332606ab2ce37dd9eda0c3d38d9783234005995b940b1999e4a5007e4",
+      "environment": "node>=22.12",
+      "external": true
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-031",
+      "productionEntrypoints": [
+        "src/superiority/deep/local-ui-certification-lab.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "f157bf8c2c408f059380746f4161803eb708de21929cd52bbb6f11a130c03f96"
+      ],
+      "testFile": "tests/deep-superiority-ui-dogfood.test.mjs",
+      "testFileSha256": "72f3fbb86fe0094ed9dc2446edbb4685cf3dcb3fa5a6e94c0a0c62ae8c244b7a",
+      "namedTests": [
+        "local UI certification verifies accessibility, responsiveness and budgets but retains Windows external gates",
+        "dogfood replay lab rejects mocks and validates signed provider-real Windows protocol receipts"
+      ],
+      "positiveAssertions": [
+        "assert.equal(result.localAccessibilityImplemented, true)",
+        "assert.equal(result.localResponsiveImplemented, true)",
+        "assert.equal(result.localPerformanceBudgetsPassed, true)",
+        "assert.equal(result.windowsCertificationRequired, true)",
+        "assert.equal(result.assistiveTechnologyCertificationRequired, true)",
+        "assert.equal(suite.requiredScenarios.length, 10)",
+        "assert.equal(suite.requiredAdversarialProbes.length, 12)",
+        "assert.equal(verified.protocolValid, true)",
+        "assert.equal(verified.externalCertificationAccepted, true)",
+        "assert.equal(lab.evaluate('dogfood-1').providerRealDogfoodCertified, true)",
+        "named-test-pass:local UI certification verifies accessibility, responsiveness and budgets but retains Windows external gates"
+      ],
+      "negativeAssertions": [
+        "assert.throws(() => lab.certify({ sourceHash: H('f'), breakpoints: [640], semantics: {}, budgets: {}, metrics: {}, visualHashes: [] }), /breakpoints|semantics|budget/i)",
+        "assert.throws(() => lab.verifyReceipt('dogfood-1', { mock: true }), /mock/i)",
+        "named-test-negative:dogfood replay lab rejects mocks and validates signed provider-real Windows protocol receipts"
+      ],
+      "receiptSha256": "a93ce3134e74173378bc9cef6cf911a4108bfa3070287d1ea43b28b3edd2e199",
+      "environment": "node>=22.12",
+      "external": true
+    },
+    {
+      "schema": "nolane.forensics.assertion-evidence-binding.v1",
+      "requirementId": "NOL-UI-032",
+      "productionEntrypoints": [
+        "src/superiority/deep/local-ui-certification-lab.mjs"
+      ],
+      "productionEntrypointSha256": [
+        "f157bf8c2c408f059380746f4161803eb708de21929cd52bbb6f11a130c03f96"
+      ],
+      "testFile": "tests/deep-superiority-ui-dogfood.test.mjs",
+      "testFileSha256": "72f3fbb86fe0094ed9dc2446edbb4685cf3dcb3fa5a6e94c0a0c62ae8c244b7a",
+      "namedTests": [
+        "local UI certification verifies accessibility, responsiveness and budgets but retains Windows external gates",
+        "dogfood replay lab rejects mocks and validates signed provider-real Windows protocol receipts"
+      ],
+      "positiveAssertions": [
+        "assert.equal(result.localAccessibilityImplemented, true)",
+        "assert.equal(result.localResponsiveImplemented, true)",
+        "assert.equal(result.localPerformanceBudgetsPassed, true)",
+        "assert.equal(result.windowsCertificationRequired, true)",
+        "assert.equal(result.assistiveTechnologyCertificationRequired, true)",
+        "assert.equal(suite.requiredScenarios.length, 10)",
+        "assert.equal(suite.requiredAdversarialProbes.length, 12)",
+        "assert.equal(verified.protocolValid, true)",
+        "assert.equal(verified.externalCertificationAccepted, true)",
+        "assert.equal(lab.evaluate('dogfood-1').providerRealDogfoodCertified, true)",
+        "named-test-pass:local UI certification verifies accessibility, responsiveness and budgets but retains Windows external gates"
+      ],
+      "negativeAssertions": [
+        "assert.throws(() => lab.certify({ sourceHash: H('f'), breakpoints: [640], semantics: {}, budgets: {}, metrics: {}, visualHashes: [] }), /breakpoints|semantics|budget/i)",
+        "assert.throws(() => lab.verifyReceipt('dogfood-1', { mock: true }), /mock/i)",
+        "named-test-negative:dogfood replay lab rejects mocks and validates signed provider-real Windows protocol receipts"
+      ],
+      "receiptSha256": "cfe50310d5c41ab267cdc5e6b398453d1242f30937d0e8785954be21c473a2c0",
+      "environment": "node>=22.12",
+      "external": true
+    }
+  ],
+  "coverage": {
+    "schema": "nolane.forensics.assertion-evidence-coverage.v1",
+    "policy": {
+      "maxRequirementsPerTest": 25
+    },
+    "summary": {
+      "requirementsTotal": 48,
+      "requirementsBound": 48,
+      "requirementsUnbound": 0,
+      "bindingRecords": 48,
+      "requirementsPositiveBound": 48,
+      "requirementsNegativeBound": 48,
+      "overBroadTestFiles": 0,
+      "unknownBindingRequirements": 0
+    },
+    "unboundRequirementIds": [],
+    "unknownBindingRequirementIds": [],
+    "overBroadEvidence": [],
+    "certifiable": true
+  },
+  "receiptSha256": "63de32d310add1bf4bf9ccc528c31c67eaf1f26af36136104581a4f48a4734b9"
+}

@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 2,
+  "id": "enforcing-context-budgets",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Enforcing Context Budgets",
+    "description": "Use when planned context, tool schemas, model output reserve, or retrieved artifacts may exceed tenant, route, model, or skill-specific token limits.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "kernel"
+    ],
+    "keywords": [
+      "enforcing-context-budgets",
+      "planned",
+      "context",
+      "tool",
+      "schemas",
+      "model",
+      "output",
+      "reserve",
+      "or"
+    ],
+    "antiTriggers": [
+      "token measurement is unavailable and no conservative fallback exists",
+      "a storage-size limit unrelated to model context"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "project-state",
+        "schema": "artifact://forgeos/project-state/v2"
+      }
+    ],
+    "produces": [
+      {
+        "type": "budget-decision",
+        "schema": "artifact://forgeos/budget-decision/v1"
+      }
+    ],
+    "invariants": [
+      "Runtime cannot submit an over-budget request.",
+      "Output reserve is never consumed by input selection.",
+      "Estimator error is measured after provider usage is reported."
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "confirmed intent and current semantic revision exist"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Resolve the strictest applicable model, tenant, route, and section limits.",
+        "evidence": "Runtime cannot submit an over-budget request."
+      },
+      {
+        "id": "step-2",
+        "action": "Apply calibrated safety margins from observed tokenizer error.",
+        "evidence": "Output reserve is never consumed by input selection."
+      },
+      {
+        "id": "step-3",
+        "action": "Reject required content that cannot fit rather than silently clipping it.",
+        "evidence": "Estimator error is measured after provider usage is reported."
+      },
+      {
+        "id": "step-4",
+        "action": "Record category usage, remaining reserve, and overflow blockers.",
+        "evidence": "Estimator error is measured after provider usage is reported."
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "budget-decision is produced with current evidence or a blocker is recorded"
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Runtime cannot submit an over-budget request.",
+      "Output reserve is never consumed by input selection.",
+      "Estimator error is measured after provider usage is reported."
+    ],
+    "reviewerRole": "kernel-skill-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "behavioral-eval-receipt",
+      "context-receipt"
+    ],
+    "evaluatorIds": [
+      "enforcing-context-budgets-evaluator-v2"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 5,
+    "maxReferenceDepth": 2,
+    "targetTokens": 521,
+    "hardTokens": 908,
+    "outputReserveTokens": 256
+  },
+  "quality": {
+    "benchmarkIds": [
+      "enforcing-context-budgets-public-v1"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L0",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "coverage-ledger",
+      "typed-preconditions",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionability-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.optimize-cost",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:l0:enforcing-context-budgets",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.enforcing-context-budgets",
+      "fitScore": 100,
+      "mappingEvidence": "reviewed:l0:enforcing-context-budgets",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "9983041c47d84aee416c70e0e9d57ba4478c18e6e1d3bb11a2a2fc0711e061cb",
+        "bytes": 879,
+        "tokens": {
+          "gpt-5.6": 237,
+          "claude-opus-4.2": 248,
+          "gemini-3.0-pro": 226,
+          "qwen3.5-32b": 263
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "74acc93ee697b75130788b2179faf1963de4a939896f4c85b2ed0659407582c4",
+        "bytes": 552,
+        "tokens": {
+          "gpt-5.6": 149,
+          "claude-opus-4.2": 156,
+          "gemini-3.0-pro": 142,
+          "qwen3.5-32b": 165
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "ce6b780e7111bd23302b7787a5ac03cd99f1711936b70d624202d73da690a469",
+        "bytes": 391,
+        "tokens": {
+          "gpt-5.6": 106,
+          "claude-opus-4.2": 111,
+          "gemini-3.0-pro": 101,
+          "qwen3.5-32b": 117
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "acef5214471219c64cc9e23074499cf4fc2c896255c47b2bdc63e57d2ae406d1",
+        "bytes": 264,
+        "tokens": {
+          "gpt-5.6": 71,
+          "claude-opus-4.2": 75,
+          "gemini-3.0-pro": 68,
+          "qwen3.5-32b": 79
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "0d00ba2dad210bb7599dc1e7063d2669e0e0a4facc40dc15a2d95c127a68c82f",
+        "bytes": 213,
+        "tokens": {
+          "gpt-5.6": 58,
+          "claude-opus-4.2": 60,
+          "gemini-3.0-pro": 55,
+          "qwen3.5-32b": 64
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "8470838b08ef2b763d504c446505d588b42962395db756f672a786952f8b28e6",
+        "bytes": 352,
+        "tokens": {
+          "gpt-5.6": 95,
+          "claude-opus-4.2": 100,
+          "gemini-3.0-pro": 91,
+          "qwen3.5-32b": 106
+        }
+      }
+    ],
+    "indexSha256": "9c19fb511d93108908bfdc9f5ffd9a210ec1f43737ef8d9bf584dd4c55fa6284"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "f7da8db7be3f935cc635c559aae34cf019ab51cadd72daf2926f3d1d8b13772a"
+}

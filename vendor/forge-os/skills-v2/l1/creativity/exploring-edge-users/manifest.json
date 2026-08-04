@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 2,
+  "id": "exploring-edge-users",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Exploring Edge Users",
+    "description": "Use when exploring edge users within creativity lifecycle boundaries, especially when does the artifact make the owned decision for exploring edge users explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "creativity"
+    ],
+    "keywords": [
+      "exploring-edge-users",
+      "exploring",
+      "edge",
+      "users",
+      "within",
+      "creativity",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require exploring edge users within creativity lifecycle boundaries",
+      "the typed inputs for exploring-edge-users are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "creative-brief",
+        "schema": "artifact://forgeos/creative-brief/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "candidate-ideas",
+        "schema": "artifact://forgeos/candidate-ideas/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for exploring edge users explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by exploring edge users.",
+        "evidence": "exploring-edge-users-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to exploring edge users.",
+        "evidence": "exploring-edge-users-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply exploring edge users only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "exploring-edge-users-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "exploring-edge-users-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if exploring edge users were incomplete or implemented incorrectly.",
+        "evidence": "exploring-edge-users-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for exploring edge users explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "exploring-edge-users-decision-table",
+      "exploring-edge-users-verification-report",
+      "exploring-edge-users-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "exploring-edge-users-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 681,
+    "hardTokens": 1072,
+    "outputReserveTokens": 268
+  },
+  "quality": {
+    "benchmarkIds": [
+      "exploring-edge-users-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "graphic-design.design-concept",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:exploring-edge-users",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "faa89ee49ab29d2d79b9b34e196f89e9ab4ebe2ba9ab63482bc33b5639b90d7b",
+        "bytes": 901,
+        "tokens": {
+          "gpt-5.6": 243,
+          "claude-opus-4.2": 254,
+          "gemini-3.0-pro": 232,
+          "qwen3.5-32b": 269
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "a0f300effef5b247a362c3fde3ed116a9b1a6d8636563f6c2beb9f1ff0a297f6",
+        "bytes": 686,
+        "tokens": {
+          "gpt-5.6": 185,
+          "claude-opus-4.2": 194,
+          "gemini-3.0-pro": 176,
+          "qwen3.5-32b": 205
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "9349681a84fd8f74e10fa0f67d833a28183eba5d46a88b6f2c1f5bbaf48c17de",
+        "bytes": 296,
+        "tokens": {
+          "gpt-5.6": 80,
+          "claude-opus-4.2": 84,
+          "gemini-3.0-pro": 76,
+          "qwen3.5-32b": 89
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "53af5372420d09e0d204b51e1d15b94c73b2b77d9e6431310fbd166e00401cc0",
+        "bytes": 581,
+        "tokens": {
+          "gpt-5.6": 157,
+          "claude-opus-4.2": 164,
+          "gemini-3.0-pro": 149,
+          "qwen3.5-32b": 174
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "cf203d3c2f9fc3f74609af83729e9adcfc19d3728da83db4d482e4edfeb68986",
+        "bytes": 324,
+        "tokens": {
+          "gpt-5.6": 88,
+          "claude-opus-4.2": 92,
+          "gemini-3.0-pro": 84,
+          "qwen3.5-32b": 97
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "b1fc5577b658452e4bf171ce2a9640902534bec59c09089469db55a94d4c83a6",
+        "bytes": 234,
+        "tokens": {
+          "gpt-5.6": 63,
+          "claude-opus-4.2": 66,
+          "gemini-3.0-pro": 60,
+          "qwen3.5-32b": 70
+        }
+      }
+    ],
+    "indexSha256": "4a6ab8a8ba7b643b6e23fedfc35f3aa5aa70b2e4f0088dadfe446e80d5efdfdd"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "27c3148f7fb838f285d8611de680c76fae11394e57b11dc5652081b43a2873b5"
+}

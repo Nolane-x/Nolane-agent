@@ -1,0 +1,38 @@
+[
+  {
+    "id": "analyzing-competing-products-application",
+    "kind": "application",
+    "input": "Task directly requiring analyzing competing products within research lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "analyzing-competing-products-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require analyzing competing products within research lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "analyzing-competing-products-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "analyzing-competing-products-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "analyzing-competing-products-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "analyzing-competing-products-transfer",
+    "kind": "transfer",
+    "input": "Apply the analyzing-competing-products mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

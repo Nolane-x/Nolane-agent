@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.backend-engineering",
+  "domain": "backend-engineering",
+  "title": "Backend Engineering Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "services",
+    "concurrency",
+    "transactions",
+    "queues",
+    "caching",
+    "APIs",
+    "resilience",
+    "observability"
+  ],
+  "capabilities": [
+    "backend-engineering.map-landscape",
+    "backend-engineering.frame-problem",
+    "backend-engineering.research-users",
+    "backend-engineering.define-requirements",
+    "backend-engineering.model-domain",
+    "backend-engineering.compare-alternatives",
+    "backend-engineering.design-concept",
+    "backend-engineering.prototype-critical-flow",
+    "backend-engineering.validate-prototype",
+    "backend-engineering.design-architecture",
+    "backend-engineering.model-data",
+    "backend-engineering.model-threats",
+    "backend-engineering.plan-delivery",
+    "backend-engineering.implement-core",
+    "backend-engineering.integrate-dependencies",
+    "backend-engineering.verify-contracts",
+    "backend-engineering.test-boundaries",
+    "backend-engineering.test-resilience",
+    "backend-engineering.test-performance",
+    "backend-engineering.test-security",
+    "backend-engineering.audit-accessibility",
+    "backend-engineering.optimize-quality",
+    "backend-engineering.optimize-cost",
+    "backend-engineering.document-system",
+    "backend-engineering.prepare-migration",
+    "backend-engineering.plan-rollout",
+    "backend-engineering.instrument-observability",
+    "backend-engineering.operate-lifecycle",
+    "backend-engineering.respond-incidents",
+    "backend-engineering.govern-evolution",
+    "backend-engineering.measure-outcomes",
+    "backend-engineering.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "superpowers",
+      "title": "Superpowers",
+      "url": "https://github.com/obra/superpowers",
+      "authority": "community",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "mblode-agent-skills",
+      "title": "Software shipping skills",
+      "url": "https://github.com/mblode/agent-skills",
+      "authority": "community",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

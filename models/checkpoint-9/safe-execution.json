@@ -1,0 +1,61 @@
+{
+  "schema": "nolane.small-model.checkpoint-9-refactor-execution.v1",
+  "skillId": "rename-public-api",
+  "skillReceiptSha256": "3541da8659dbbf4bdd75738038e74d283305efef7b35850185530247a94f62d1",
+  "files": [
+    {
+      "path": "src/alias.mjs",
+      "inputSha256": "c03509fa791a06e3c1a87d3abe04b7f9da3b697cec37572598d5b6c79bb7068c",
+      "outputSha256": "0bec472ea2295fc8e2d2cd5f239f62ce787c3cfe7eb9709254459c4b789f1cff",
+      "changedTokens": 1,
+      "replacements": [
+        {
+          "start": 9,
+          "end": 19,
+          "value": "canonicalName"
+        }
+      ],
+      "output": "import { canonicalName as run } from './api.mjs';\nexport const value = run(2);\n"
+    },
+    {
+      "path": "src/api.mjs",
+      "inputSha256": "54a2d0253d46807ec35c248b6d0fc045a85fa4db8337c25d7f28d5fc5672beab",
+      "outputSha256": "576ef9e35fc47ccd0ace62525a45fa6fd49253424654fd06c69c0da0314d23ce",
+      "changedTokens": 1,
+      "replacements": [
+        {
+          "start": 16,
+          "end": 26,
+          "value": "canonicalName"
+        }
+      ],
+      "output": "export function canonicalName(value){ return value; }\n"
+    },
+    {
+      "path": "src/direct.mjs",
+      "inputSha256": "ead6cb89fc52054bde92f1f8c9eefabc937f1dbe07f032f797b3f06e26fa5271",
+      "outputSha256": "4271958606d311efcf0bd3faa0a7f2b1395a6be5f096e76ec2a59159f65e1b07",
+      "changedTokens": 2,
+      "replacements": [
+        {
+          "start": 9,
+          "end": 19,
+          "value": "canonicalName"
+        },
+        {
+          "start": 61,
+          "end": 71,
+          "value": "canonicalName"
+        }
+      ],
+      "output": "import { canonicalName } from './api.mjs';\nexport const value = canonicalName(1);\n"
+    }
+  ],
+  "changedFiles": 3,
+  "changedTokens": 4,
+  "planReceiptSha256": "0cdb5e2fa747539e7097ba37b6e162a69328639126de17ab6a354d8549ee1579",
+  "executedSource": false,
+  "shellUsed": false,
+  "hiddenChainOfThoughtStored": false,
+  "receiptSha256": "5cf97745ceed2f650b7e297ef8b68a405eaea7c2fa33b794f815f5306f8d7a16"
+}

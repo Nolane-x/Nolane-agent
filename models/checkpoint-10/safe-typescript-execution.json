@@ -1,0 +1,68 @@
+{
+  "schema": "nolane.small-model.checkpoint-10-typescript-execution.v1",
+  "skillId": "rename-typescript-public-api",
+  "skillReceiptSha256": "0b7523738cfc22d496b33731243739bed8b4bee6fcfa765a811bc10468c874ad",
+  "files": [
+    {
+      "path": "src/alias.ts",
+      "inputSha256": "f70e0f06de1d7ab44b82dbea7b5f8b38de7635dc85a1ba49178811465b2d28fb",
+      "outputSha256": "fa8f5cc6300bd7b99754ed18dfc68d17d50aeacda08e2872db858d5adab6c252",
+      "changedTokens": 1,
+      "output": "import type { PromotedPayload as Payload } from './index';\nexport const alias = (value: Payload): Payload => value;\n",
+      "rollbackSource": "import type { CanonicalPayload as Payload } from './index';\nexport const alias = (value: Payload): Payload => value;\n",
+      "rollbackSha256": "f70e0f06de1d7ab44b82dbea7b5f8b38de7635dc85a1ba49178811465b2d28fb"
+    },
+    {
+      "path": "src/barrel.ts",
+      "inputSha256": "17eff230217932b90801a2eaa07bcc4b0718a20b5d154fe4eb50317ea23e666f",
+      "outputSha256": "16120a3c54eb3caba669e7de5d454825b7f045ab8d4cd17aea9e1a09ad0dc504",
+      "changedTokens": 1,
+      "output": "export { PromotedPayload, echo } from './model';\n",
+      "rollbackSource": "export { CanonicalPayload, echo } from './model';\n",
+      "rollbackSha256": "17eff230217932b90801a2eaa07bcc4b0718a20b5d154fe4eb50317ea23e666f"
+    },
+    {
+      "path": "src/direct.ts",
+      "inputSha256": "07f4a92d4489e2f0f3a012352d840bb5e1e44864eb9e90b2b9d3846e8327b2c4",
+      "outputSha256": "e15e591c9c4dd42a4339b07c4f8695cd24430a934381402425654a25fd236ef7",
+      "changedTokens": 3,
+      "output": "import type { PromotedPayload } from './index';\nexport const direct = (value: PromotedPayload): PromotedPayload => value;\n",
+      "rollbackSource": "import type { CanonicalPayload } from './index';\nexport const direct = (value: CanonicalPayload): CanonicalPayload => value;\n",
+      "rollbackSha256": "07f4a92d4489e2f0f3a012352d840bb5e1e44864eb9e90b2b9d3846e8327b2c4"
+    },
+    {
+      "path": "src/index.ts",
+      "inputSha256": "e632a2424f8664c04ab944a393c00be0994718f124c61de2c4b7f9a54e331d3d",
+      "outputSha256": "e632a2424f8664c04ab944a393c00be0994718f124c61de2c4b7f9a54e331d3d",
+      "changedTokens": 0,
+      "output": "export * from './barrel';\n",
+      "rollbackSource": "export * from './barrel';\n",
+      "rollbackSha256": "e632a2424f8664c04ab944a393c00be0994718f124c61de2c4b7f9a54e331d3d"
+    },
+    {
+      "path": "src/model.ts",
+      "inputSha256": "aa2ef3b933c41843b4261e1ed1f8506d76e6c5440f40638ad5d8b5e1815fc762",
+      "outputSha256": "f09795942b0cddf1206e55d74152f95a2a130a13a70546cffdffd90300dfa2e4",
+      "changedTokens": 3,
+      "output": "// CanonicalPayload remains in comments for transfer-c\nexport const label = 'CanonicalPayload remains in strings';\nexport const metadata = { CanonicalPayload: 'property-key' };\nexport interface PromotedPayload { value: string; repository: 'transfer-c' }\nexport function echo(value: PromotedPayload): PromotedPayload { return value; }\n",
+      "rollbackSource": "// CanonicalPayload remains in comments for transfer-c\nexport const label = 'CanonicalPayload remains in strings';\nexport const metadata = { CanonicalPayload: 'property-key' };\nexport interface CanonicalPayload { value: string; repository: 'transfer-c' }\nexport function echo(value: CanonicalPayload): CanonicalPayload { return value; }\n",
+      "rollbackSha256": "aa2ef3b933c41843b4261e1ed1f8506d76e6c5440f40638ad5d8b5e1815fc762"
+    },
+    {
+      "path": "src/namespace.ts",
+      "inputSha256": "cf5c9a93f6881e52c517129b100c7816e7ad320c6d54ea22afb6d3ffa3f6331c",
+      "outputSha256": "821beb38ae556186ffa90523f35372df10c799778669b30a6d022a412be3982b",
+      "changedTokens": 1,
+      "output": "import * as api from './index';\nexport const value: api.PromotedPayload = { value: 'ok', repository: 'transfer-c' };\n",
+      "rollbackSource": "import * as api from './index';\nexport const value: api.CanonicalPayload = { value: 'ok', repository: 'transfer-c' };\n",
+      "rollbackSha256": "cf5c9a93f6881e52c517129b100c7816e7ad320c6d54ea22afb6d3ffa3f6331c"
+    }
+  ],
+  "changedFiles": 5,
+  "changedTokens": 9,
+  "planReceiptSha256": "5809869dfc9ced22e833b8d4354850c5dc5aa88e16f89f2c41d4bd2caab26e4f",
+  "executedSource": false,
+  "shellUsed": false,
+  "hiddenChainOfThoughtStored": false,
+  "receiptSha256": "0d3e0b0f531fb30e341f1b808468a6a7a7f8f38e8af41c5eebdd66a1af76bc2c"
+}

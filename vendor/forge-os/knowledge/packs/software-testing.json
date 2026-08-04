@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.software-testing",
+  "domain": "software-testing",
+  "title": "Software Testing Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "unit tests",
+    "integration tests",
+    "property tests",
+    "mutation tests",
+    "fuzzing",
+    "model-based tests",
+    "visual tests",
+    "reliability"
+  ],
+  "capabilities": [
+    "software-testing.map-landscape",
+    "software-testing.frame-problem",
+    "software-testing.research-users",
+    "software-testing.define-requirements",
+    "software-testing.model-domain",
+    "software-testing.compare-alternatives",
+    "software-testing.design-concept",
+    "software-testing.prototype-critical-flow",
+    "software-testing.validate-prototype",
+    "software-testing.design-architecture",
+    "software-testing.model-data",
+    "software-testing.model-threats",
+    "software-testing.plan-delivery",
+    "software-testing.implement-core",
+    "software-testing.integrate-dependencies",
+    "software-testing.verify-contracts",
+    "software-testing.test-boundaries",
+    "software-testing.test-resilience",
+    "software-testing.test-performance",
+    "software-testing.test-security",
+    "software-testing.audit-accessibility",
+    "software-testing.optimize-quality",
+    "software-testing.optimize-cost",
+    "software-testing.document-system",
+    "software-testing.prepare-migration",
+    "software-testing.plan-rollout",
+    "software-testing.instrument-observability",
+    "software-testing.operate-lifecycle",
+    "software-testing.respond-incidents",
+    "software-testing.govern-evolution",
+    "software-testing.measure-outcomes",
+    "software-testing.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "superpowers",
+      "title": "Superpowers",
+      "url": "https://github.com/obra/superpowers",
+      "authority": "community",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "owasp-asvs",
+      "title": "OWASP ASVS",
+      "url": "https://owasp.org/www-project-application-security-verification-standard/",
+      "authority": "standards-body",
+      "trust": "verified",
+      "revision": "web:2026-07-25",
+      "license": {
+        "spdx": "CC-BY-SA-4.0",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

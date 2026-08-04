@@ -1,0 +1,37 @@
+{
+  "schema": "forge.studio.adaptive-work-fabric-measurement.v1",
+  "version": "2.27.0",
+  "environment": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "v22.16.0",
+    "note": "Synthetic local scheduling measurement; no external provider, browser, cloud, or hosted worker was invoked."
+  },
+  "provider": {
+    "limit": 2,
+    "requests": 5,
+    "peakActive": 2,
+    "queuedEvents": 3,
+    "attributedAcquisitions": 5,
+    "maxQueueDelayMs": 41,
+    "finalActive": 0,
+    "finalQueued": 0
+  },
+  "repository": {
+    "runnerCalls": 1,
+    "duplicateRequests": 2,
+    "coalescedRequests": 1,
+    "staleCancelled": 1
+  },
+  "swarm": {
+    "completed": 3,
+    "stopped": 1,
+    "waves": 3,
+    "revisions": 3,
+    "added": 1,
+    "revised": 1,
+    "revoked": 1,
+    "mutationReceipts": 9
+  },
+  "receiptSha256": "c94d5517e4c91038c6aaa467036ebbf8d83dfd2e41eb56f0b3acba18803a3d2f"
+}

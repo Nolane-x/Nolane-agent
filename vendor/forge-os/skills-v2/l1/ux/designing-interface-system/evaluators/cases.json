@@ -1,0 +1,38 @@
+[
+  {
+    "id": "designing-interface-system-application",
+    "kind": "application",
+    "input": "Task directly requiring designing interface system within ux lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "designing-interface-system-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require designing interface system within ux lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "designing-interface-system-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "designing-interface-system-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "designing-interface-system-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "designing-interface-system-transfer",
+    "kind": "transfer",
+    "input": "Apply the designing-interface-system mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

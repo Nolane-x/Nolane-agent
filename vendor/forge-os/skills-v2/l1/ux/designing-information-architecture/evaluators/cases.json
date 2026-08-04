@@ -1,0 +1,38 @@
+[
+  {
+    "id": "designing-information-architecture-application",
+    "kind": "application",
+    "input": "Task directly requiring designing information architecture within ux lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "designing-information-architecture-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require designing information architecture within ux lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "designing-information-architecture-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "designing-information-architecture-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "designing-information-architecture-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "designing-information-architecture-transfer",
+    "kind": "transfer",
+    "input": "Apply the designing-information-architecture mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

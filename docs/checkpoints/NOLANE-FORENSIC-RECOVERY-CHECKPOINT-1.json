@@ -1,0 +1,1223 @@
+{
+  "schema": "nolane.forensics.recovery-checkpoint-1.v1",
+  "product": "Nolane Agent",
+  "productVersion": "5.0.0-beta.6",
+  "checkpoint": "forensic-recovery-checkpoint.1",
+  "gitHead": "bae6466f2fdb11bf0f40bde13830f15595ef8159",
+  "verification": {
+    "schema": "nolane.forensics.recovery-checkpoint-1-verification.v1",
+    "status": "pass",
+    "localRecoveryInfrastructureVerified": true,
+    "fullNolaneNativeParityVerified": false,
+    "comparativeSuperiorityVerified": false,
+    "uiV3Complete": false,
+    "canonicalNolaneNativeSourceAvailable": false,
+    "symbolInventory": {
+      "files": 899,
+      "symbols": 7027,
+      "surfaces": 1486,
+      "parseFailures": 0,
+      "inventorySha256": "3d67bae2b0d225d84ab433fb42d4a1b6b9f62ddc8749e6a75ac24739e990a264"
+    },
+    "nolane_nativeInventory": {
+      "provisionalPathRecords": 8548,
+      "functionInventoryRecords": 0,
+      "resolvedTruthRecords": 1353,
+      "unresolvedTruthRecords": 7195
+    },
+    "evidenceAudit": {
+      "certifiable": false,
+      "verifiedRequirements": 1372,
+      "violations": 4310,
+      "overBroadEvidence": 9
+    },
+    "uiAudit": {
+      "defaultUiVersion": "v3",
+      "complete": false,
+      "summary": {
+        "implemented": 18,
+        "partial": 0,
+        "missing": 0,
+        "externalCertification": 1,
+        "total": 19
+      }
+    },
+    "claims": {
+      "completeParityClaimAllowed": false,
+      "comparativeSuperiorityClaimAllowed": false,
+      "windowsUiCertified": false,
+      "providerRealCertified": false
+    },
+    "receiptSha256": "a8a4b43fea144f1cf536627b0728b3f7fb0f8f20dcd4780693ecef1339e8f8d0"
+  },
+  "custody": {
+    "records": [
+      {
+        "schema": "nolane.forensics.source-custody-record.v1",
+        "id": "nolane-native-canonical",
+        "kind": "upstream-source",
+        "path": "vendor/nolane_native-agent/nolane_native-agent-main.zip",
+        "expectedSha256": "1ac5fcb20630d6556f6169cb836dda73298b2371f7c0a6ed23bcc5d6eaf41cd9",
+        "expectedBytes": 67431284,
+        "origin": "historical-project-manifest",
+        "required": true,
+        "description": "Canonical NolaneNative Agent archive previously bundled by ForgeStudio/Nolane Agent.",
+        "status": "missing",
+        "actualSha256": null,
+        "actualBytes": null,
+        "blocker": "Canonical upstream source is unavailable for nolane-native-canonical"
+      },
+      {
+        "schema": "nolane.forensics.source-custody-record.v1",
+        "id": "nolane-package-anchor",
+        "kind": "product-source-anchor",
+        "path": "package.json",
+        "expectedSha256": null,
+        "expectedBytes": null,
+        "origin": "current-git-worktree",
+        "required": true,
+        "description": "Current Nolane Agent package identity anchor.",
+        "status": "verified",
+        "actualSha256": "87f386a49283e94820604aa7610fb2ea22e037e94c5c30c1f745522d415ab422",
+        "actualBytes": 6196,
+        "blocker": null
+      }
+    ],
+    "claims": {
+      "schema": "nolane.forensics.recovery-claim-policy.v1",
+      "completeParityClaimAllowed": false,
+      "comparativeSuperiorityClaimAllowed": false,
+      "windowsUiCertified": false,
+      "providerRealCertified": false,
+      "localArchitectureDepthVerified": false,
+      "allOriginalGoalsComplete": false,
+      "uiV3SourceLocalComplete": true,
+      "uiV3Complete": false,
+      "smallModelSuperintelligenceImplemented": false,
+      "blockers": [
+        "Canonical NolaneNative source bytes are not verified",
+        "7195 truth-ledger records remain unresolved",
+        "External UI certification is still pending",
+        "Real Windows UI certification receipt is missing",
+        "Provider-real certification receipt is missing",
+        "Independent same-budget comparative benchmark receipt is missing"
+      ]
+    }
+  },
+  "symbolInventory": {
+    "files": 899,
+    "parsedFiles": 899,
+    "parseFailures": 0,
+    "symbols": 7027,
+    "surfaces": 1486,
+    "kinds": {
+      "class": 564,
+      "configuration-key": 85,
+      "event": 187,
+      "function": 3145,
+      "method": 3318,
+      "schema": 1206,
+      "ui-action": 8
+    },
+    "inventorySha256": "3d67bae2b0d225d84ab433fb42d4a1b6b9f62ddc8749e6a75ac24739e990a264",
+    "inventoryPath": "requirements/nolane-symbol-surface-inventory.jsonl"
+  },
+  "provisionalNolaneNative": {
+    "records": 8548,
+    "excludedWithReason": 1353,
+    "upstreamSourceUnavailable": 7195,
+    "functionInventoryRecords": 0,
+    "canonicalSourceAvailable": false,
+    "inventorySha256": "86493f99546b34e73b5ed376753bf0a9d6b27813fd68c015a23c606cedfba28b",
+    "explicitNonClaim": "This is path metadata, not a function-level NolaneNative source inventory."
+  },
+  "truthLedger": {
+    "schema": "nolane.forensics.truth-ledger-summary.v1",
+    "total": 8548,
+    "resolved": 1353,
+    "unresolved": 7195,
+    "byStatus": {
+      "absent": 0,
+      "exact": 0,
+      "excluded-with-reason": 1353,
+      "external-unverified": 0,
+      "partial": 0,
+      "superset": 0,
+      "upstream-source-unavailable": 7195
+    },
+    "completeParityEligible": false,
+    "blockersTotal": 7195,
+    "blockerSample": [
+      {
+        "upstreamId": "nolane-native-source-154a9023c98fa211710402f9",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-173b9235d00f31fb89e13039",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-244c2cc85db4da718d1b2738",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-0bad2e62dcee6e38860c24ca",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-057f04b525ff281b56b0bf43",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-76749aca74dded3a06ffda09",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-dc827844239a13247830736e",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-b5d0355872f2d108e47ef38c",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-a6fe1599c39c06b8fdc12447",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-104444db77cd34472e4b7c9f",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-94c6f1009e699320e8a2baf7",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-06a0b0bfe415d734d2b21b81",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-4a8edc0e968c15bba6a909e0",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-72746727ca4cd03003decb19",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-d9466e7d02408cb56181b6f8",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-178e83b00347b7b1a10d46c7",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-8e1d04c74f6a6822a3a67d88",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-f6f29588c8a844326aef1b6d",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-630e3bcdd3e969e357bea567",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-256b26e8dc498866aafc59d3",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-d85ee6ae58840a1e62f2e6de",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-a1467fc4b86511e234f049a9",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-637d6a1d097a0fee06b43ba1",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-13cae5aaf1cf5085ca21731b",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-1bd42b4dfa905edd3396a904",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-63a3cb3c28ba922906aa9951",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-7d3ec8b5bbbb3cbde3806fd6",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-38f4baaaa09e03aed5534e41",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-3dd26527d715d0af27287e80",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-6150e021b7a05858a3e23ac0",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-dee6fe1cd94441d9db3cdb0a",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-00ee388816a0d9aa1bcfb95a",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-001de2a29bb563b4948c81b9",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-86fe5b511dd5fed1e46d1ba4",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-1923f4f86cd8eee5898c9dae",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-817e01770752d6f395dcfdc8",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-21bacd8d2e3a269d957866ab",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-4b8e72bba6b3de46dd3681b5",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-adf36cd8d10ad0de8078cd00",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-f13d7969f985774468e3f3b3",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-a4c1436828936c8f1302aa79",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-2f5fc23a7db780c1b8293249",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-262caa5eeedc272b5c4e1d01",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-7d486b2ee4df6cb4115431d3",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-09485796544122e28f1b410b",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-12b451ce71aaaecc122636b5",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-fa91bc82dc718c42ade81ae6",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-2b9976d0c639c5f9f51ff3d7",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-e62192ff781cb59a8acdbe2a",
+        "status": "upstream-source-unavailable"
+      },
+      {
+        "upstreamId": "nolane-native-source-74ddd78c50b18d350b8ee59d",
+        "status": "upstream-source-unavailable"
+      }
+    ],
+    "ledgerSha256": "0eb3b2616db4693a14a0856edfcc560248d9140002f71245f6e562dc1a3c2d53",
+    "explicitNonClaim": "Path-level historical entries remain unresolved until canonical NolaneNative symbols and behavioral evidence are available."
+  },
+  "evidenceAudit": {
+    "certifiable": false,
+    "verifiedRequirements": 1372,
+    "summary": {
+      "documentationProductionEntrypoints": 294,
+      "missingPositiveTests": 0,
+      "missingPositiveAssertions": 1372,
+      "missingNegativeTests": 1272,
+      "missingNegativeAssertions": 1372,
+      "overBroadTestFiles": 9
+    },
+    "overBroadEvidence": [
+      {
+        "path": "tests/execution-command-governance-contracts.test.mjs",
+        "requirements": 88,
+        "requirementIds": [
+          "MASTER-007CB2026D4893D3",
+          "MASTER-02FC6963A0B14A19",
+          "MASTER-07776917ABE40218",
+          "MASTER-07BEFCE736C768BF",
+          "MASTER-08C596EEEF4A414B",
+          "MASTER-0C2ED2B9B0137789",
+          "MASTER-0DB85240C8618D12",
+          "MASTER-1247F0746DC7418A",
+          "MASTER-125BD1E719BAED6A",
+          "MASTER-163A739167821A35",
+          "MASTER-19BFF0DF92355A22",
+          "MASTER-1F0667A8259466E4",
+          "MASTER-2292B80747A0398A",
+          "MASTER-28D6AD3B37F4DF8F",
+          "MASTER-32CCA21C568C8B1E",
+          "MASTER-34B5EFE951CF135D",
+          "MASTER-34E6619CFAAD0FDD",
+          "MASTER-3C65415734A6E592",
+          "MASTER-3DE5618FED27E2E2",
+          "MASTER-3ECD6C02B3C8C653",
+          "MASTER-4038B6C9C71DBAB9",
+          "MASTER-44C776E5044C536C",
+          "MASTER-4B40301C9DE85613",
+          "MASTER-4FEFBA6FE09A5F02",
+          "MASTER-5317B33AA6E4DA37",
+          "MASTER-54EBA55A9FFECA66",
+          "MASTER-5650D00AFF7F6052",
+          "MASTER-59AEF883AEB1A96B",
+          "MASTER-59D10F7EA1A62C52",
+          "MASTER-59F5BB52FE5E6DDE",
+          "MASTER-5DE8541DA9F84DF1",
+          "MASTER-60DE583E37D12C65",
+          "MASTER-611ACD51BD33A8B6",
+          "MASTER-6785AA557A88D620",
+          "MASTER-67FCD714DDC71048",
+          "MASTER-6B9A76C2F9C67FC2",
+          "MASTER-748F73CE18E89D37",
+          "MASTER-75DAC13ADC8E6FEE",
+          "MASTER-7686E99343E78C70",
+          "MASTER-773BDF092CB3A19D",
+          "MASTER-789F66D7E5937EE9",
+          "MASTER-79A6DA9C5D8E6567",
+          "MASTER-7B6D4BD1FB41F09D",
+          "MASTER-7C39D1D1EFC47844",
+          "MASTER-8C48BC63A488236C",
+          "MASTER-8D91FF1A3A56E071",
+          "MASTER-8ECEA87AFFD6BE71",
+          "MASTER-910E98BFC96E55FC",
+          "MASTER-9620A02CFE03D6B1",
+          "MASTER-96419024431D6575",
+          "MASTER-98FF3E36CD614493",
+          "MASTER-992815FFD092EB00",
+          "MASTER-9BF1EC86E087E1FD",
+          "MASTER-9DE95BE6C91C54A2",
+          "MASTER-A1CD7CE660A43495",
+          "MASTER-AA20FC084D2A8A80",
+          "MASTER-AB6256CAD4CB4A48",
+          "MASTER-AD68F207CA9B194C",
+          "MASTER-AD6AF35400C73E6E",
+          "MASTER-ADDFA97E5543248E",
+          "MASTER-AF57226C2C9AC930",
+          "MASTER-B00C5AC4477A7A00",
+          "MASTER-B2A9681BCED9CCCA",
+          "MASTER-B2AD66FB49127C6A",
+          "MASTER-B3357FCC5E095502",
+          "MASTER-B46E33F7F874961B",
+          "MASTER-B49884250A99B7B0",
+          "MASTER-BCCEE3B8E2458318",
+          "MASTER-C702482DC9AF0A05",
+          "MASTER-C919397753F31F1D",
+          "MASTER-CAA979B8CA56B7DB",
+          "MASTER-CDFDA641A93C13FC",
+          "MASTER-D17DE15DB7284C69",
+          "MASTER-D33070F6A493BB58",
+          "MASTER-D5DC27D27F55AC15",
+          "MASTER-D6017B63E5CDAC86",
+          "MASTER-DA6075C95A1DD3DD",
+          "MASTER-DAB62AA98A2C933D",
+          "MASTER-DE3381D7A876C37C",
+          "MASTER-E41A1334020851D1",
+          "MASTER-E597744C3EB4EC41",
+          "MASTER-EDF22959ED6689B2",
+          "MASTER-EDF79CB4B8842685",
+          "MASTER-F16F01846EE20F0E",
+          "MASTER-F89D41C8CB99ED88",
+          "MASTER-FC412A72C75CC24F",
+          "MASTER-FD3783B49FDE4C9E",
+          "MASTER-FDFFCAAD8638DD8E"
+        ],
+        "limit": 25
+      },
+      {
+        "path": "tests/local-frontier-completion-contracts.test.mjs",
+        "requirements": 53,
+        "requirementIds": [
+          "MASTER-018238725C644B59",
+          "MASTER-05F37FEE974B434A",
+          "MASTER-076CD9888D5A30A9",
+          "MASTER-082A3928E34813E0",
+          "MASTER-08BFC2C644FB5FF6",
+          "MASTER-0F2462D7C2DCEA55",
+          "MASTER-1974F8E6A22A5A50",
+          "MASTER-23422572E39D1ECD",
+          "MASTER-23C53C62659212BB",
+          "MASTER-26E625838C4B556F",
+          "MASTER-298CCF6B86A505C1",
+          "MASTER-2C710877492105F5",
+          "MASTER-2D1A4786BBE80548",
+          "MASTER-2DB617894D24418A",
+          "MASTER-2FD17AF83FD6A410",
+          "MASTER-30723479922E94D3",
+          "MASTER-34EF64A342626859",
+          "MASTER-35CF5484ABA1BA32",
+          "MASTER-3A51910636D04E5F",
+          "MASTER-3EE17FB5480EB0CB",
+          "MASTER-430C5D5DDBF0EAD0",
+          "MASTER-519DB4188FC55CB5",
+          "MASTER-541D61A478C39DA3",
+          "MASTER-62994E0F2DB681F6",
+          "MASTER-6752CCDB58E51D33",
+          "MASTER-6D8948345A6511B7",
+          "MASTER-7127A77720C9C95C",
+          "MASTER-724D9CC84A246781",
+          "MASTER-735CF227448762DD",
+          "MASTER-745A1FB638ADFC52",
+          "MASTER-7B4A1A26BBB537B1",
+          "MASTER-81E98021B96D3604",
+          "MASTER-848B684C6B85DC91",
+          "MASTER-85C749C6A5119096",
+          "MASTER-8815D4A998AE797F",
+          "MASTER-88A1598862EDFFD3",
+          "MASTER-88A8C0FADBBF7339",
+          "MASTER-9726F618088BC22B",
+          "MASTER-98C76482698BB09A",
+          "MASTER-9D27E0E956383217",
+          "MASTER-9DE9205A153F04C6",
+          "MASTER-AC4DAED285CC1BED",
+          "MASTER-C30AEF415148162C",
+          "MASTER-C355342212277B3B",
+          "MASTER-C9C2FBD04DEA4501",
+          "MASTER-D3E8A9A1645A1457",
+          "MASTER-D81632831EEC3A9C",
+          "MASTER-DD70FD9A1F4D3370",
+          "MASTER-DE5D67EF2413CC36",
+          "MASTER-DF63F5265A23F2D2",
+          "MASTER-E92316FBA2DE6A06",
+          "MASTER-F1D31DBFF55A349E",
+          "MASTER-FD9234D97AF2F8C1"
+        ],
+        "limit": 25
+      },
+      {
+        "path": "tests/capability-governance-contracts.test.mjs",
+        "requirements": 52,
+        "requirementIds": [
+          "MASTER-0FC3FE32EF97456A",
+          "MASTER-17C5EA89211D3E0F",
+          "MASTER-207E942FE1B6EFF6",
+          "MASTER-20B0C369122A83F6",
+          "MASTER-27D42F3BBFF8DE18",
+          "MASTER-31EDD87D2345D2D6",
+          "MASTER-325580F548EACA16",
+          "MASTER-3EBDCF5F4E6C8270",
+          "MASTER-40339510624EF09D",
+          "MASTER-40508C0216BE090D",
+          "MASTER-4118DA4AF79E4AA3",
+          "MASTER-424DC07F2A4AD8CC",
+          "MASTER-42E1A28C66DAE89E",
+          "MASTER-44776482F84292F6",
+          "MASTER-46382ADBC80209BB",
+          "MASTER-4AE18994B7BCBA1B",
+          "MASTER-571B510F9C2A940C",
+          "MASTER-5AB022963ADBEEDD",
+          "MASTER-5CABA26DAC52EB46",
+          "MASTER-5D7157DBD2170D55",
+          "MASTER-5F0F7A62147DAAC4",
+          "MASTER-619C2F8ACE8980E0",
+          "MASTER-6F56FF2C06874153",
+          "MASTER-72D170AB54BCAD35",
+          "MASTER-76A0D377E65DA016",
+          "MASTER-76DEDA9E194411B9",
+          "MASTER-78CE66E4574A1851",
+          "MASTER-7CFD7D323E90C965",
+          "MASTER-7E77D523C5DE1C65",
+          "MASTER-85D2294017B707E3",
+          "MASTER-89FC891452C0E7B5",
+          "MASTER-8C7D532A654F6A8F",
+          "MASTER-8D7D5C30DCE0F844",
+          "MASTER-8F61DE787563945E",
+          "MASTER-8FACB6536A07967E",
+          "MASTER-9514409ABB719AFB",
+          "MASTER-9905CE2F47C4BA98",
+          "MASTER-A212B8DC7BAEDD13",
+          "MASTER-AC32EE14C6DA2C93",
+          "MASTER-B0AEC22F26F3768D",
+          "MASTER-B4FF7F90C5C5A6AC",
+          "MASTER-B97AE8ED3841BF46",
+          "MASTER-BF9607296A21E068",
+          "MASTER-C5E92BBFEDB33ACA",
+          "MASTER-C7A2EEE13BDEF514",
+          "MASTER-CD5C97F58360C4B3",
+          "MASTER-D10C17D0EA8F4BE7",
+          "MASTER-D1DBF2F9DCA49685",
+          "MASTER-D44D3389EA078A56",
+          "MASTER-E989A6785B18A8D2",
+          "MASTER-E9B22F54EC5373F3",
+          "MASTER-FF054A3CFB166BED"
+        ],
+        "limit": 25
+      },
+      {
+        "path": "tests/mission-runtime-state-verification-contracts.test.mjs",
+        "requirements": 49,
+        "requirementIds": [
+          "MASTER-00AD4E9E51FFC963",
+          "MASTER-0362299F44EC5011",
+          "MASTER-08A25405712C0634",
+          "MASTER-0EFF7F47B0B370D1",
+          "MASTER-0F155F4D0594D813",
+          "MASTER-17A18CC85A010EBF",
+          "MASTER-1956E86B428971D8",
+          "MASTER-1F9C852868D3F41A",
+          "MASTER-2281DF8BC6C26853",
+          "MASTER-22E991D9C04B020F",
+          "MASTER-234EB02E56C220A1",
+          "MASTER-26D4017EEAA68CB7",
+          "MASTER-2B8D4C337CDAC545",
+          "MASTER-2E0125EEB76409BA",
+          "MASTER-30699B2C11EF36E2",
+          "MASTER-310F3B885EAFC37A",
+          "MASTER-331021A4E94B7F3C",
+          "MASTER-3CDC7ED5511C0BF1",
+          "MASTER-3EECE3E77ABD7684",
+          "MASTER-437DFF01ABE2D2CD",
+          "MASTER-5449688A4A8C3CD4",
+          "MASTER-60AC4A9C2D1B5E1D",
+          "MASTER-6DBAFFDF94022459",
+          "MASTER-824528DB711B26FE",
+          "MASTER-877A50EDCF82D685",
+          "MASTER-8CA1A32F42E031E5",
+          "MASTER-8D236297DD82953C",
+          "MASTER-8EF0C0C8A4AF2C38",
+          "MASTER-92B8A6CD8C98FE79",
+          "MASTER-9B537ABF8DB66B67",
+          "MASTER-A2B66CB631C12A72",
+          "MASTER-A4AD8099B0BD144D",
+          "MASTER-A845264D8FE66B2A",
+          "MASTER-AD4B8C895A445C8A",
+          "MASTER-ADE443056708D511",
+          "MASTER-ADF164D11F33A8E1",
+          "MASTER-B64F9D1325881A0C",
+          "MASTER-B9AD98F1DAE5E6F8",
+          "MASTER-BE1099FD37D114FA",
+          "MASTER-C1E6EF2B213464F9",
+          "MASTER-C9BBCEB05D85E6C8",
+          "MASTER-CACBCF7F1A84F2E4",
+          "MASTER-D4BBBE6C8FDCBFB1",
+          "MASTER-D5AAEB744A723F81",
+          "MASTER-E6938BAB38E967AF",
+          "MASTER-EEC7E29DCB6D84B4",
+          "MASTER-F139FBC3A5B1741F",
+          "MASTER-F2124C02F982C82C",
+          "MASTER-F654D62FB0A4F9C5"
+        ],
+        "limit": 25
+      },
+      {
+        "path": "tests/cloud-recovery-contracts.test.mjs",
+        "requirements": 35,
+        "requirementIds": [
+          "MASTER-10D38CD764624354",
+          "MASTER-15E0F3F9828F138F",
+          "MASTER-26BA0D2FA47297BB",
+          "MASTER-29DA9B8A4C8C18B5",
+          "MASTER-2A408DD28A4BE7C8",
+          "MASTER-2B1CDE2D373A2FC2",
+          "MASTER-2B44EEEF2BAF2BF7",
+          "MASTER-31FFA704DF98115F",
+          "MASTER-3BE5C49BEB1501E3",
+          "MASTER-3EF851A653B20912",
+          "MASTER-45393F9656D1E47F",
+          "MASTER-46C17BB90EAC44E5",
+          "MASTER-61EFBB137ECA2EC9",
+          "MASTER-655E13002D0354EC",
+          "MASTER-6EDD234EA400E75D",
+          "MASTER-785511416D2B5ECF",
+          "MASTER-807A52848D294A42",
+          "MASTER-8A162C2D850ED65D",
+          "MASTER-8C4CF1414FDB3213",
+          "MASTER-8FAA1E03E59C1F78",
+          "MASTER-9030D6D93D823C02",
+          "MASTER-94DFB6AAF3750D2B",
+          "MASTER-A59AD43C850B4B8B",
+          "MASTER-A888C0ACBE783A83",
+          "MASTER-A95D7F71E6CDAC61",
+          "MASTER-B51AAABE237A0F51",
+          "MASTER-C41C220CC79F3275",
+          "MASTER-C71AB9824561140F",
+          "MASTER-DAC6B8EB65690C45",
+          "MASTER-DEAA6B243A6B5966",
+          "MASTER-DF573D9A92B44C54",
+          "MASTER-F10698600BBDB2AB",
+          "MASTER-F40176B57EEFF308",
+          "MASTER-F9D7781739B7CAC8",
+          "MASTER-FF2621D96435C42D"
+        ],
+        "limit": 25
+      },
+      {
+        "path": "tests/context-repository-intelligence-contracts.test.mjs",
+        "requirements": 35,
+        "requirementIds": [
+          "MASTER-08B5B2075BAFE43E",
+          "MASTER-08E2FC180FA92675",
+          "MASTER-10D037FD4AAF79A2",
+          "MASTER-177896AAC816A5EC",
+          "MASTER-273CED10729DBFBC",
+          "MASTER-2B15975CE4836B54",
+          "MASTER-2EF49F948613CEC4",
+          "MASTER-2FA74E3965E0C395",
+          "MASTER-34602B7C9F13CF4C",
+          "MASTER-44BB0DFE40D15C68",
+          "MASTER-639013DFFEB408D9",
+          "MASTER-63EB0978A28FB9C2",
+          "MASTER-787A08E1D6392090",
+          "MASTER-7F7ECCA568D1BD79",
+          "MASTER-8039CB4828B6AC1B",
+          "MASTER-805AA246209ECDDD",
+          "MASTER-8406BB53365D7E6E",
+          "MASTER-8A2EA646B08B5B10",
+          "MASTER-90E19B4F3AF0F927",
+          "MASTER-94A718E13149F91E",
+          "MASTER-9F3654CE1A0F0ED7",
+          "MASTER-A32ED8468740AD92",
+          "MASTER-A7E2C2FF9990A9ED",
+          "MASTER-AF926D7B2BB6C110",
+          "MASTER-B026C1577D7BC7BE",
+          "MASTER-BE014879BF37B18F",
+          "MASTER-C03D86D937880AC1",
+          "MASTER-C04C3AF946EE5BFB",
+          "MASTER-C5281F9C1717E173",
+          "MASTER-C7C74275DB988369",
+          "MASTER-D603376AC4E17057",
+          "MASTER-D607327911598EEC",
+          "MASTER-D6B323F3A451E275",
+          "MASTER-D6DE904EEBF4BAFC",
+          "MASTER-EC04F8FF16E40D64"
+        ],
+        "limit": 25
+      },
+      {
+        "path": "tests/git-workspace-governance-contracts.test.mjs",
+        "requirements": 32,
+        "requirementIds": [
+          "MASTER-08791C8306FDDD15",
+          "MASTER-0EACA5C334FB16B2",
+          "MASTER-123411EE61FC7C9A",
+          "MASTER-1B0657D943B863EC",
+          "MASTER-20007A362677AEF7",
+          "MASTER-30ECA65AC73AE9C4",
+          "MASTER-34F3D7B81CC71654",
+          "MASTER-3BAF2C0924FB9022",
+          "MASTER-5194A562A507D55F",
+          "MASTER-567B46F98E861D69",
+          "MASTER-56EFAB1DA4675B9F",
+          "MASTER-58219B57944DD860",
+          "MASTER-5CFFAE782085B4CC",
+          "MASTER-5D932DB234DF4DD2",
+          "MASTER-606CA8D6E2CE8C67",
+          "MASTER-634DEE8668849658",
+          "MASTER-6CA7B67A27575956",
+          "MASTER-7FC3498028586BBA",
+          "MASTER-81F78AB8715C3114",
+          "MASTER-85377F662EE1C8CB",
+          "MASTER-8DB9E1061625831B",
+          "MASTER-8DFAF889DDF172FE",
+          "MASTER-9122A2146A9D2048",
+          "MASTER-9D8D20E1D80C4ADA",
+          "MASTER-9E9DC74A869C6910",
+          "MASTER-B59E7717DEB3D7C1",
+          "MASTER-C03E60D8A3BE3E7F",
+          "MASTER-DCBABBB03275D1BB",
+          "MASTER-DFEA043628ABE452",
+          "MASTER-E56AA37CEF95E48D",
+          "MASTER-F3C46F12BD0EB378",
+          "MASTER-FEDF069611041A64"
+        ],
+        "limit": 25
+      },
+      {
+        "path": "tests/repository-discovery-contracts.test.mjs",
+        "requirements": 30,
+        "requirementIds": [
+          "MASTER-0BC64CF16A475634",
+          "MASTER-0E3EDB9AFE7B8DB9",
+          "MASTER-13A29CD5D3A92454",
+          "MASTER-30208DB75EB2BF73",
+          "MASTER-37F28152A5EAB07F",
+          "MASTER-3A472D290C120A48",
+          "MASTER-4AC981C9ACF9A0F5",
+          "MASTER-4F879001F8EBF7AD",
+          "MASTER-5020B651BDD9C3E5",
+          "MASTER-51FE13D261594B19",
+          "MASTER-5A722D756117FF91",
+          "MASTER-6004D7DC9F036ED9",
+          "MASTER-6842AB2DDC15D5A4",
+          "MASTER-79A047B1E577F1C3",
+          "MASTER-8092EB3B980DD5A3",
+          "MASTER-883ED2EF2A6E74D2",
+          "MASTER-8B1A423519348350",
+          "MASTER-97A1E789B3B942FF",
+          "MASTER-9B492AABDECF21E6",
+          "MASTER-9BC9F4D22FE63854",
+          "MASTER-A66BBAB8F75C4609",
+          "MASTER-AED95145FA0C5336",
+          "MASTER-BBBEE43ED35770CA",
+          "MASTER-BF5D0A2BA49CA152",
+          "MASTER-C52BD209135BE001",
+          "MASTER-D39B614E72B3C35C",
+          "MASTER-D518D9F81AABA2DA",
+          "MASTER-F0319135BE734D93",
+          "MASTER-F5620F435B420301",
+          "MASTER-F7592655BD2CEAF2"
+        ],
+        "limit": 25
+      },
+      {
+        "path": "tests/world-development-plane.test.mjs",
+        "requirements": 29,
+        "requirementIds": [
+          "MASTER-0049642D041130B1",
+          "MASTER-19CE23CF3A360792",
+          "MASTER-1F844926FBC8D6BB",
+          "MASTER-2253740F2E5DA6BD",
+          "MASTER-2A4E80C4A5BC71B8",
+          "MASTER-2F1A83E09D6DAE0E",
+          "MASTER-318CBAFEEBA0C2CA",
+          "MASTER-33C018BFDB9C7DFC",
+          "MASTER-5C2D79BE050BB55B",
+          "MASTER-60430941D36C1ED4",
+          "MASTER-645D9F56688B9EC8",
+          "MASTER-6E6B9925E04582F0",
+          "MASTER-74E0961DBB2EB015",
+          "MASTER-8A5DC3E4AB308BDF",
+          "MASTER-A52881A13DB427B7",
+          "MASTER-AAC44233FA4EF06E",
+          "MASTER-AE672FC2D6BF3C06",
+          "MASTER-AE7DFE4B99425F45",
+          "MASTER-B13463AEB34E0038",
+          "MASTER-B3876277EADE9D3C",
+          "MASTER-B8A9D0AE6FE64356",
+          "MASTER-C03AFAEC27834780",
+          "MASTER-CAC520F65060AC61",
+          "MASTER-D1834E2B52805FCC",
+          "MASTER-D6F473BEBFEE14FB",
+          "MASTER-DE4CDE8C4F5CB139",
+          "MASTER-E1B513F47D69F2B2",
+          "MASTER-E69940AEA56133E5",
+          "MASTER-FA052E51A39EF7AF"
+        ],
+        "limit": 25
+      }
+    ]
+  },
+  "uiAudit": {
+    "schema": "nolane.forensics.ui-v3-master-plan-gap-audit.v1",
+    "defaultUiVersion": "v3",
+    "sourceLocalComplete": true,
+    "complete": false,
+    "summary": {
+      "implemented": 18,
+      "partial": 0,
+      "missing": 0,
+      "externalCertification": 1,
+      "total": 19
+    },
+    "blockers": [
+      "1 UI items require external certification"
+    ],
+    "items": [
+      {
+        "id": "task-01-capability-inventory",
+        "title": "Capability inventory and UI contract",
+        "paths": [
+          "src/ui/capability-registry.mjs",
+          "scripts/audit-ui-capabilities.mjs",
+          "tests/ui-capability-registry.test.mjs"
+        ],
+        "status": "implemented",
+        "presentPaths": [
+          "src/ui/capability-registry.mjs",
+          "scripts/audit-ui-capabilities.mjs",
+          "tests/ui-capability-registry.test.mjs"
+        ],
+        "missingPaths": []
+      },
+      {
+        "id": "task-02-performance-baseline",
+        "title": "Performance and visual baseline",
+        "paths": [
+          "scripts/capture-ui-performance-baseline.mjs",
+          "tests/ui-performance-budget.test.mjs",
+          "docs/ui-v3/performance-baseline.json"
+        ],
+        "status": "implemented",
+        "presentPaths": [
+          "scripts/capture-ui-performance-baseline.mjs",
+          "tests/ui-performance-budget.test.mjs",
+          "docs/ui-v3/performance-baseline.json"
+        ],
+        "missingPaths": []
+      },
+      {
+        "id": "task-03-isolated-ui-v3-build",
+        "title": "Isolated UI v3 build and fallback switch",
+        "paths": [
+          "ui-v3/index.html",
+          "ui-v3/app.mjs",
+          "scripts/build-ui-v3.mjs",
+          "tests/ui-v3-root-switch.test.mjs"
+        ],
+        "status": "implemented",
+        "presentPaths": [
+          "ui-v3/index.html",
+          "ui-v3/app.mjs",
+          "scripts/build-ui-v3.mjs",
+          "tests/ui-v3-root-switch.test.mjs"
+        ],
+        "missingPaths": []
+      },
+      {
+        "id": "task-04-design-tokens",
+        "title": "Three-layer design token system",
+        "paths": [
+          "ui-v3/styles/tokens/primitive.css",
+          "ui-v3/styles/tokens/semantic.css",
+          "ui-v3/styles/tokens/component.css",
+          "scripts/validate-ui-tokens.mjs",
+          "tests/ui-v3-tokens.test.mjs"
+        ],
+        "status": "implemented",
+        "presentPaths": [
+          "ui-v3/styles/tokens/primitive.css",
+          "ui-v3/styles/tokens/semantic.css",
+          "ui-v3/styles/tokens/component.css",
+          "scripts/validate-ui-tokens.mjs",
+          "tests/ui-v3-tokens.test.mjs"
+        ],
+        "missingPaths": []
+      },
+      {
+        "id": "task-05-shell-router",
+        "title": "Lightweight AppShell and router",
+        "paths": [
+          "ui-v3/core/router.mjs",
+          "ui-v3/core/ui-store.mjs",
+          "ui-v3/core/ui-bus.mjs",
+          "ui-v3/shell/app-shell.mjs",
+          "ui-v3/shell/global-rail.mjs",
+          "tests/ui-v3-router.test.mjs",
+          "tests/ui-v3-shell.test.mjs"
+        ],
+        "status": "implemented",
+        "presentPaths": [
+          "ui-v3/core/router.mjs",
+          "ui-v3/core/ui-store.mjs",
+          "ui-v3/core/ui-bus.mjs",
+          "ui-v3/shell/app-shell.mjs",
+          "ui-v3/shell/global-rail.mjs",
+          "tests/ui-v3-router.test.mjs",
+          "tests/ui-v3-shell.test.mjs"
+        ],
+        "missingPaths": []
+      },
+      {
+        "id": "task-06-session-sidebar",
+        "title": "Session Sidebar and project switcher",
+        "paths": [
+          "ui-v3/shell/session-sidebar.mjs",
+          "ui-v3/shell/project-switcher.mjs",
+          "ui-v3/core/session-view-model.mjs",
+          "tests/ui-v3-session-sidebar.test.mjs"
+        ],
+        "status": "implemented",
+        "presentPaths": [
+          "ui-v3/shell/session-sidebar.mjs",
+          "ui-v3/shell/project-switcher.mjs",
+          "ui-v3/core/session-view-model.mjs",
+          "tests/ui-v3-session-sidebar.test.mjs"
+        ],
+        "missingPaths": []
+      },
+      {
+        "id": "task-07-home-composer",
+        "title": "Home and Mission Composer",
+        "paths": [
+          "ui-v3/views/home/home-view.mjs",
+          "ui-v3/views/home/mission-composer.mjs",
+          "ui-v3/core/intent-presets.mjs",
+          "tests/ui-v3-home.test.mjs"
+        ],
+        "status": "implemented",
+        "presentPaths": [
+          "ui-v3/views/home/home-view.mjs",
+          "ui-v3/views/home/mission-composer.mjs",
+          "ui-v3/core/intent-presets.mjs",
+          "tests/ui-v3-home.test.mjs"
+        ],
+        "missingPaths": []
+      },
+      {
+        "id": "task-08-incremental-mission",
+        "title": "Incremental Mission Workspace",
+        "paths": [
+          "ui-v3/views/mission/mission-view.mjs",
+          "ui-v3/views/mission/mission-header.mjs",
+          "ui-v3/views/mission/status-strip.mjs",
+          "ui-v3/views/mission/activity-timeline.mjs",
+          "ui-v3/views/mission/activity-item.mjs",
+          "ui-v3/views/mission/mission-composer.mjs",
+          "tests/ui-v3-mission-incremental.test.mjs"
+        ],
+        "status": "implemented",
+        "presentPaths": [
+          "ui-v3/views/mission/mission-view.mjs",
+          "ui-v3/views/mission/mission-header.mjs",
+          "ui-v3/views/mission/status-strip.mjs",
+          "ui-v3/views/mission/activity-timeline.mjs",
+          "ui-v3/views/mission/activity-item.mjs",
+          "ui-v3/views/mission/mission-composer.mjs",
+          "tests/ui-v3-mission-incremental.test.mjs"
+        ],
+        "missingPaths": []
+      },
+      {
+        "id": "task-09-risk-cards",
+        "title": "Approval, permission, and recovery cards",
+        "paths": [
+          "ui-v3/views/mission/approval-card.mjs",
+          "ui-v3/views/mission/permission-card.mjs",
+          "ui-v3/views/mission/recovery-card.mjs",
+          "ui-v3/core/risk-copy.mjs",
+          "tests/ui-v3-approval-flow.test.mjs"
+        ],
+        "status": "implemented",
+        "presentPaths": [
+          "ui-v3/views/mission/approval-card.mjs",
+          "ui-v3/views/mission/permission-card.mjs",
+          "ui-v3/views/mission/recovery-card.mjs",
+          "ui-v3/core/risk-copy.mjs",
+          "tests/ui-v3-approval-flow.test.mjs"
+        ],
+        "missingPaths": []
+      },
+      {
+        "id": "task-10-artifact-dock",
+        "title": "Contextual Artifact Dock",
+        "paths": [
+          "ui-v3/views/mission/artifact-dock.mjs",
+          "ui-v3/views/mission/artifact-registry.mjs",
+          "ui-v3/views/mission/artifacts/plan-artifact.mjs",
+          "ui-v3/views/mission/artifacts/tests-artifact.mjs",
+          "ui-v3/views/mission/artifacts/preview-artifact.mjs",
+          "tests/ui-v3-artifact-dock.test.mjs"
+        ],
+        "status": "implemented",
+        "presentPaths": [
+          "ui-v3/views/mission/artifact-dock.mjs",
+          "ui-v3/views/mission/artifact-registry.mjs",
+          "ui-v3/views/mission/artifacts/plan-artifact.mjs",
+          "ui-v3/views/mission/artifacts/tests-artifact.mjs",
+          "ui-v3/views/mission/artifacts/preview-artifact.mjs",
+          "tests/ui-v3-artifact-dock.test.mjs"
+        ],
+        "missingPaths": []
+      },
+      {
+        "id": "task-11-review-ship",
+        "title": "Review and Ship workflow",
+        "paths": [
+          "ui-v3/views/review/review-view.mjs",
+          "ui-v3/views/review/change-navigator.mjs",
+          "ui-v3/views/review/diff-viewport.mjs",
+          "ui-v3/views/review/verification-summary.mjs",
+          "ui-v3/views/review/ship-actions.mjs",
+          "ui-v3/workers/diff-worker.mjs",
+          "tests/ui-v3-review-flow.test.mjs"
+        ],
+        "status": "implemented",
+        "presentPaths": [
+          "ui-v3/views/review/review-view.mjs",
+          "ui-v3/views/review/change-navigator.mjs",
+          "ui-v3/views/review/diff-viewport.mjs",
+          "ui-v3/views/review/verification-summary.mjs",
+          "ui-v3/views/review/ship-actions.mjs",
+          "ui-v3/workers/diff-worker.mjs",
+          "tests/ui-v3-review-flow.test.mjs"
+        ],
+        "missingPaths": []
+      },
+      {
+        "id": "task-12-workroom-split",
+        "title": "Workroom and administration split",
+        "paths": [
+          "ui-v3/views/workroom/workroom-view.mjs",
+          "ui-v3/views/workroom/file-tree.mjs",
+          "ui-v3/views/workroom/editor-host.mjs",
+          "ui-v3/views/workroom/terminal-host.mjs",
+          "tests/ui-v3-workroom-lazy.test.mjs",
+          "tests/ui-v3-advanced-migration.test.mjs"
+        ],
+        "status": "implemented",
+        "presentPaths": [
+          "ui-v3/views/workroom/workroom-view.mjs",
+          "ui-v3/views/workroom/file-tree.mjs",
+          "ui-v3/views/workroom/editor-host.mjs",
+          "ui-v3/views/workroom/terminal-host.mjs",
+          "tests/ui-v3-workroom-lazy.test.mjs",
+          "tests/ui-v3-advanced-migration.test.mjs"
+        ],
+        "missingPaths": []
+      },
+      {
+        "id": "task-13-control-plane-shell",
+        "title": "Control Plane shell and route registry",
+        "paths": [
+          "ui-v3/control-plane/control-plane-shell.mjs",
+          "ui-v3/control-plane/route-registry.mjs",
+          "ui-v3/control-plane/overview/overview-view.mjs",
+          "tests/ui-v3-control-plane-shell.test.mjs"
+        ],
+        "status": "implemented",
+        "presentPaths": [
+          "ui-v3/control-plane/control-plane-shell.mjs",
+          "ui-v3/control-plane/route-registry.mjs",
+          "ui-v3/control-plane/overview/overview-view.mjs",
+          "tests/ui-v3-control-plane-shell.test.mjs"
+        ],
+        "missingPaths": []
+      },
+      {
+        "id": "task-14-runtime-operations-security",
+        "title": "Runtime, operations, and security domains",
+        "paths": [
+          "ui-v3/control-plane/domains/operations.mjs",
+          "ui-v3/control-plane/domains/runtime.mjs",
+          "ui-v3/control-plane/domains/trust-security.mjs"
+        ],
+        "status": "implemented",
+        "presentPaths": [
+          "ui-v3/control-plane/domains/operations.mjs",
+          "ui-v3/control-plane/domains/runtime.mjs",
+          "ui-v3/control-plane/domains/trust-security.mjs"
+        ],
+        "missingPaths": []
+      },
+      {
+        "id": "task-15-context-evidence-intelligence",
+        "title": "Context, evidence, and intelligence domains",
+        "paths": [
+          "ui-v3/control-plane/domains/context-memory.mjs",
+          "ui-v3/control-plane/domains/evidence.mjs",
+          "ui-v3/control-plane/domains/intelligence.mjs",
+          "ui-v3/workers/graph-worker.mjs",
+          "ui-v3/workers/search-worker.mjs"
+        ],
+        "status": "implemented",
+        "presentPaths": [
+          "ui-v3/control-plane/domains/context-memory.mjs",
+          "ui-v3/control-plane/domains/evidence.mjs",
+          "ui-v3/control-plane/domains/intelligence.mjs",
+          "ui-v3/workers/graph-worker.mjs",
+          "ui-v3/workers/search-worker.mjs"
+        ],
+        "missingPaths": []
+      },
+      {
+        "id": "task-16-governance-autonomy-extensions-release",
+        "title": "Governance, autonomy, extensions, and release domains",
+        "paths": [
+          "ui-v3/control-plane/domains/governance.mjs",
+          "ui-v3/control-plane/domains/autonomy.mjs",
+          "ui-v3/control-plane/domains/extensions.mjs",
+          "ui-v3/control-plane/domains/release.mjs"
+        ],
+        "status": "implemented",
+        "presentPaths": [
+          "ui-v3/control-plane/domains/governance.mjs",
+          "ui-v3/control-plane/domains/autonomy.mjs",
+          "ui-v3/control-plane/domains/extensions.mjs",
+          "ui-v3/control-plane/domains/release.mjs"
+        ],
+        "missingPaths": []
+      },
+      {
+        "id": "task-17-motion-performance-policy",
+        "title": "Motion, visibility, and performance policies",
+        "paths": [
+          "ui-v3/styles/motion.css",
+          "ui-v3/core/scheduler.mjs",
+          "ui-v3/core/visibility-policy.mjs",
+          "ui-v3/core/performance-observer.mjs",
+          "tests/ui-v3-motion-policy.test.mjs"
+        ],
+        "status": "implemented",
+        "presentPaths": [
+          "ui-v3/styles/motion.css",
+          "ui-v3/core/scheduler.mjs",
+          "ui-v3/core/visibility-policy.mjs",
+          "ui-v3/core/performance-observer.mjs",
+          "tests/ui-v3-motion-policy.test.mjs"
+        ],
+        "missingPaths": []
+      },
+      {
+        "id": "task-18-accessibility-release-gate",
+        "title": "Accessibility, visual regression, and release gate",
+        "paths": [
+          "scripts/audit-ui-v3-accessibility.mjs",
+          "scripts/capture-ui-v3-states.mjs",
+          "scripts/verify-ui-v3-release.mjs",
+          "tests/ui-v3-accessibility.test.mjs",
+          "tests/ui-v3-release-gate.test.mjs"
+        ],
+        "status": "implemented",
+        "presentPaths": [
+          "scripts/audit-ui-v3-accessibility.mjs",
+          "scripts/capture-ui-v3-states.mjs",
+          "scripts/verify-ui-v3-release.mjs",
+          "tests/ui-v3-accessibility.test.mjs",
+          "tests/ui-v3-release-gate.test.mjs"
+        ],
+        "missingPaths": []
+      },
+      {
+        "id": "external-windows-8gb-certification",
+        "title": "Real Windows 11 8 GB performance/accessibility certification",
+        "paths": [],
+        "external": true,
+        "status": "external-certification",
+        "presentPaths": [],
+        "missingPaths": []
+      }
+    ]
+  },
+  "nextCheckpointEntryCriteria": [
+    "Provide canonical NolaneNative archive bytes matching SHA-256 1ac5fcb20630d6556f6169cb836dda73298b2371f7c0a6ed23bcc5d6eaf41cd9.",
+    "Parse NolaneNative source symbols and operational surfaces from verified bytes.",
+    "Replace path-level provisional records with explicit symbol-level counterpart mappings.",
+    "Add assertion-level evidence bindings and downgrade over-broad verified requirements.",
+    "Implement missing UI v3 tasks before switching the default renderer."
+  ]
+}

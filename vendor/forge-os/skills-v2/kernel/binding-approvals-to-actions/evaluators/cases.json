@@ -1,0 +1,20 @@
+[
+  {
+    "id": "binding-approvals-to-actions-positive",
+    "kind": "application",
+    "input": "A task requiring Binding Approvals to Actions",
+    "expectedEvidence": [
+      "Changing any argument makes the approval invalid.",
+      "Agent principals cannot mint human approvals.",
+      "Consumed or revoked capabilities cannot be reused."
+    ],
+    "baselineFailure": "Using a guessable confirmation phrase."
+  },
+  {
+    "id": "binding-approvals-to-actions-anti-trigger",
+    "kind": "counter-example",
+    "input": "a read-only operation with no external effect",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

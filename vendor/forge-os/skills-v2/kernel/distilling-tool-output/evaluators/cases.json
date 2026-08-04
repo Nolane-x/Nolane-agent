@@ -1,0 +1,20 @@
+[
+  {
+    "id": "distilling-tool-output-positive",
+    "kind": "application",
+    "input": "A task requiring Distilling Tool Output",
+    "expectedEvidence": [
+      "Failure-causing ranges remain in the summary.",
+      "Raw output hash is verifiable.",
+      "Secrets are redacted before model delivery."
+    ],
+    "baselineFailure": "Keeping only the final line of a multi-cause failure."
+  },
+  {
+    "id": "distilling-tool-output-anti-trigger",
+    "kind": "counter-example",
+    "input": "the raw output is already concise",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

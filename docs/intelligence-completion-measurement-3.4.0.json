@@ -1,0 +1,108 @@
+{
+  "schema": "forge.studio.intelligence-completion-measurement.v1",
+  "version": "3.4.0",
+  "promotedRequirementIds": [
+    "30.13",
+    "30.14",
+    "30.15",
+    "31.12",
+    "32.5",
+    "32.8",
+    "32.13",
+    "32.16",
+    "33.6",
+    "33.7",
+    "36.12",
+    "36.13",
+    "36.17"
+  ],
+  "context": {
+    "expansionKinds": [
+      "counter-evidence",
+      "dependency",
+      "git",
+      "lexical",
+      "semantic",
+      "stack",
+      "symbol",
+      "test"
+    ],
+    "queryCount": 8,
+    "verifiedStackUtility": 1,
+    "unverifiedOutcomeChangedLearning": false,
+    "ablationClassifications": [
+      "required",
+      "unnecessary",
+      "inconclusive"
+    ],
+    "verificationContractChanged": false
+  },
+  "vectors": {
+    "pages": 3,
+    "dimensions": 4,
+    "pagesRead": 1,
+    "bytesRead": 138,
+    "peakLoadedBytes": 138,
+    "totalVectorBytes": 414,
+    "fullIndexLoadedIntoMemory": false,
+    "checksumsValid": true
+  },
+  "repository": {
+    "commitRelation": "commit-changed-architecture",
+    "issueRelation": "issue-referenced-code",
+    "causalityProven": false,
+    "issueProvesDefectLocation": false,
+    "moduleCount": 2,
+    "zoneTypes": [
+      "architecture-pattern",
+      "convention",
+      "legacy",
+      "security-critical"
+    ],
+    "riskPathCount": 2,
+    "hottestPath": "src/a.mjs"
+  },
+  "program": {
+    "controlFlowNodes": 7,
+    "controlFlowEdges": 7,
+    "unreachableNodes": 1,
+    "ambiguousCallEdges": 1,
+    "dataFlowEdges": 4,
+    "ambiguousFlows": 1,
+    "dynamicTargetsGuessed": false
+  },
+  "variables": {
+    "transitionCount": 7,
+    "currentSymbol": "displayName",
+    "currentPath": "src/profile.mjs",
+    "currentType": "DisplayName",
+    "currentNullable": true,
+    "identityInferredWithoutEvidence": false
+  },
+  "patchAblation": {
+    "classifications": [
+      "required",
+      "unnecessary"
+    ],
+    "isolatedCandidatesCreated": 3,
+    "disposedCandidates": 3,
+    "patchAppliedToOriginalWorkspace": false,
+    "mergeOrPublishAllowed": false
+  },
+  "integration": {
+    "runtimeLoads": 1,
+    "beforeCompletionServicesLoaded": 0,
+    "fastPathCompletionServicesLoaded": 0,
+    "servicesLoadedBySnapshot": false,
+    "applicationBootstrapModified": false
+  },
+  "boundaries": {
+    "externalGateCountChanged": false,
+    "autonomousMutationClaimed": false,
+    "autonomousMergeOrPublishClaimed": false,
+    "cloudSandboxClaimed": false,
+    "comparativeSuperiorityClaimed": false,
+    "productionBenchmarkClaimed": false
+  },
+  "receiptSha256": "14cf5075b2ae551a00ba0af4db365149e1c09fbdb81a5576fe3cb112602456a9"
+}

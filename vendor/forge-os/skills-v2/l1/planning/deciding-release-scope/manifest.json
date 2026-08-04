@@ -1,0 +1,309 @@
+{
+  "schemaVersion": 2,
+  "id": "deciding-release-scope",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Deciding Release Scope",
+    "description": "Use when deciding release scope within planning lifecycle boundaries, especially when does the artifact make the owned decision for deciding release scope explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "planning"
+    ],
+    "keywords": [
+      "deciding-release-scope",
+      "deciding",
+      "release",
+      "scope",
+      "within",
+      "planning",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require deciding release scope within planning lifecycle boundaries",
+      "the typed inputs for deciding-release-scope are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "architecture-decision",
+        "schema": "artifact://forgeos/architecture-decision/v1"
+      },
+      {
+        "type": "threat-model",
+        "schema": "artifact://forgeos/threat-model/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "execution-plan",
+        "schema": "artifact://forgeos/execution-plan/v1"
+      },
+      {
+        "type": "acceptance-contracts",
+        "schema": "artifact://forgeos/acceptance-contracts/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for deciding release scope explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by deciding release scope.",
+        "evidence": "deciding-release-scope-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to deciding release scope.",
+        "evidence": "deciding-release-scope-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply deciding release scope only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "deciding-release-scope-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "deciding-release-scope-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if deciding release scope were incomplete or implemented incorrectly.",
+        "evidence": "deciding-release-scope-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for deciding release scope explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "deciding-release-scope-decision-table",
+      "deciding-release-scope-verification-report",
+      "deciding-release-scope-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "deciding-release-scope-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 687,
+    "hardTokens": 1080,
+    "outputReserveTokens": 270
+  },
+  "quality": {
+    "benchmarkIds": [
+      "deciding-release-scope-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "product-management.plan-delivery",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:deciding-release-scope",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "f3d7ef2eeddbb14ad922b11eaee9673f46e6ba5784e845d4945a50d0445a13f8",
+        "bytes": 909,
+        "tokens": {
+          "gpt-5.6": 245,
+          "claude-opus-4.2": 257,
+          "gemini-3.0-pro": 234,
+          "qwen3.5-32b": 272
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "ac4a3a3ccd89ed359d74845a3139b8de62bf3261a24a12a395bb544fbba61f89",
+        "bytes": 694,
+        "tokens": {
+          "gpt-5.6": 187,
+          "claude-opus-4.2": 196,
+          "gemini-3.0-pro": 178,
+          "qwen3.5-32b": 208
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "0b75556c92f18c5a8061b8d02b49f495fd4d8cac583ea433b4046531acca8901",
+        "bytes": 298,
+        "tokens": {
+          "gpt-5.6": 81,
+          "claude-opus-4.2": 84,
+          "gemini-3.0-pro": 77,
+          "qwen3.5-32b": 89
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "c93deb746fbb5ad0d88dcc058f2c98fcfc1ab24fe6223771a72a3a29de06074f",
+        "bytes": 589,
+        "tokens": {
+          "gpt-5.6": 159,
+          "claude-opus-4.2": 166,
+          "gemini-3.0-pro": 152,
+          "qwen3.5-32b": 176
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "2f1d1f7c47202b8f4590bb531afe4c6925b63953879f61495c80a49eb86a8b3a",
+        "bytes": 326,
+        "tokens": {
+          "gpt-5.6": 88,
+          "claude-opus-4.2": 92,
+          "gemini-3.0-pro": 84,
+          "qwen3.5-32b": 98
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "0ecfe80f2d106eb072210e5cc5786937df29ee88cc3b51ecbc3b0d96c11cede9",
+        "bytes": 236,
+        "tokens": {
+          "gpt-5.6": 64,
+          "claude-opus-4.2": 67,
+          "gemini-3.0-pro": 61,
+          "qwen3.5-32b": 71
+        }
+      }
+    ],
+    "indexSha256": "27418f10671a000360cc4a9aed316cf2a8586400784294e40e17a79688fb0fe5"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "0fb43f3358373031f11371753452eb0599219c52835906b69256076db1c3b276"
+}

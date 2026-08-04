@@ -1,0 +1,11 @@
+import { createHash, randomBytes, scryptSync } from 'node:crypto';
+import { freeze, safeEqual, sha256 } from './native-runtime-utils.mjs';
+const digest = (password, salt) => scryptSync(password, salt, 32).toString('hex');
+export class DashboardAuthRuntime {
+  constructor({ secret, clock = () => Date.now() } = {}) { if (!secret) throw new TypeError('secret is required'); this.secretHash = sha256(secret); this.clock = clock; this.users = new Map(); this.sessions = new Map(); this.drain = false; }
+  registerUser({ id, password, roles = [] } = {}) { const key = String(id ?? '').trim(); if (!key || String(password ?? '').length < 12) throw new TypeError('user id and password of at least 12 characters are required'); const salt = randomBytes(16).toString('hex'); this.users.set(key, { id: key, salt, passwordHash: digest(String(password), salt), roles: [...new Set(roles.map(String))].sort() }); }
+  login({ userId, password, ttlMs = 60_000 } = {}) { if (this.drain) throw new Error('dashboard is in drain mode'); const user = this.users.get(String(userId)); if (!user || !safeEqual(user.passwordHash, digest(String(password ?? ''), user.salt))) throw new Error('invalid credentials'); const nonce = randomBytes(24).toString('hex'); const token = createHash('sha256').update(`${this.secretHash}:${user.id}:${nonce}:${this.clock()}`).digest('hex'); const session = { userId: user.id, roles: user.roles, expiresAtMs: this.clock() + Math.max(1, Number(ttlMs)), usedAtMs: null }; this.sessions.set(token, session); return freeze({ token, userId: user.id, expiresAtMs: session.expiresAtMs, roles: freeze([...user.roles]) }); }
+  authorize({ token, role } = {}) { const session = this.sessions.get(String(token)); if (!session || session.expiresAtMs <= this.clock()) throw new Error('invalid or expired session'); if (role && !session.roles.includes(String(role))) throw new Error('forbidden'); session.usedAtMs = this.clock(); return freeze({ authorized: true, userId: session.userId, roles: freeze([...session.roles]) }); }
+  setDrainMode(value) { this.drain = Boolean(value); return this.snapshot(); }
+  snapshot() { return freeze({ schema: 'nolane.dashboard-auth.snapshot.v1', users: this.users.size, sessions: [...this.sessions.values()].filter((s) => s.expiresAtMs > this.clock()).length, drainMode: this.drain }); }
+}

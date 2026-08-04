@@ -1,0 +1,38 @@
+[
+  {
+    "id": "eliciting-user-workflows-application",
+    "kind": "application",
+    "input": "Task directly requiring eliciting user workflows within ux lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "eliciting-user-workflows-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require eliciting user workflows within ux lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "eliciting-user-workflows-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "eliciting-user-workflows-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "eliciting-user-workflows-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "eliciting-user-workflows-transfer",
+    "kind": "transfer",
+    "input": "Apply the eliciting-user-workflows mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

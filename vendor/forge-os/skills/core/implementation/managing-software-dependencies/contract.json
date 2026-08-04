@@ -1,0 +1,146 @@
+{
+  "name": "managing-software-dependencies",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "implementation",
+  "domain": null,
+  "status": "candidate",
+  "stages": [
+    "implementation"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "execution-plan",
+    "acceptance-contracts"
+  ],
+  "produces": [
+    "implemented-increment"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:implemented-increment"
+  ],
+  "tools": [
+    "filesystem",
+    "shell"
+  ],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/implementation.md",
+  "method": {
+    "focus": "managing software dependencies within implementation lifecycle boundaries",
+    "source": "generated-specific",
+    "steps": [
+      "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by managing software dependencies.",
+      "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to managing software dependencies.",
+      "Apply managing software dependencies only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+      "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+      "Create reproducible checks that would fail if managing software dependencies were incomplete or implemented incorrectly."
+    ],
+    "verification": [
+      "Does the artifact make the owned decision for managing software dependencies explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "evidence": [
+      "managing-software-dependencies-decision-table",
+      "managing-software-dependencies-verification-report",
+      "managing-software-dependencies-handoff-envelope"
+    ],
+    "traps": [
+      "treating managing software dependencies as a naming exercise",
+      "covering only the happy path",
+      "creating extension points without a current contract or consumer"
+    ]
+  },
+  "procedure": [
+    "Load one task, its direct contracts, and its failing test.",
+    "Verify the test fails for the intended missing behavior.",
+    "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by managing software dependencies.",
+    "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to managing software dependencies.",
+    "Apply managing software dependencies only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+    "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+    "Create reproducible checks that would fail if managing software dependencies were incomplete or implemented incorrectly.",
+    "Implement the minimum sufficient change.",
+    "Run focused tests, then relevant regression tests.",
+    "Review the diff for complexity, security, and contract drift.",
+    "Commit evidence and hand off to independent review."
+  ],
+  "gate": {
+    "reviewerRole": "independent-reviewer",
+    "rules": [
+      "The output directly and completely performs managing software dependencies within its declared boundary.",
+      "Does the artifact make the owned decision for managing software dependencies explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "implemented-increment"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "managing-software-dependencies-decision-table",
+      "managing-software-dependencies-verification-report",
+      "managing-software-dependencies-handoff-envelope"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1910,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "treating managing software dependencies as a naming exercise",
+    "covering only the happy path",
+    "creating extension points without a current contract or consumer"
+  ],
+  "optionalConsumes": [],
+  "requiredTools": [
+    "filesystem",
+    "shell"
+  ],
+  "optionalTools": [],
+  "description": "Use when managing software dependencies is required during implementation work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

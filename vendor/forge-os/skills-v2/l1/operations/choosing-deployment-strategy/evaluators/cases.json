@@ -1,0 +1,38 @@
+[
+  {
+    "id": "choosing-deployment-strategy-application",
+    "kind": "application",
+    "input": "Task directly requiring choosing deployment strategy within operations lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "choosing-deployment-strategy-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require choosing deployment strategy within operations lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "choosing-deployment-strategy-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "choosing-deployment-strategy-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "choosing-deployment-strategy-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "choosing-deployment-strategy-transfer",
+    "kind": "transfer",
+    "input": "Apply the choosing-deployment-strategy mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

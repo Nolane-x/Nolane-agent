@@ -1,0 +1,38 @@
+[
+  {
+    "id": "monitoring-post-release-application",
+    "kind": "application",
+    "input": "Task directly requiring monitoring post release within operations lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "monitoring-post-release-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require monitoring post release within operations lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "monitoring-post-release-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "monitoring-post-release-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "monitoring-post-release-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "monitoring-post-release-transfer",
+    "kind": "transfer",
+    "input": "Apply the monitoring-post-release mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

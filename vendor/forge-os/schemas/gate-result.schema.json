@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forgeos.dev/schemas/gate-result.schema.json",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "id",
+    "stage",
+    "status",
+    "score",
+    "rules",
+    "checkedAt",
+    "evaluatedRevision",
+    "evaluatedSemanticRevision",
+    "inputSha256"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+    },
+    "stage": {
+      "enum": [
+        "intent",
+        "discovery",
+        "research",
+        "divergence",
+        "synthesis",
+        "selection",
+        "product-definition",
+        "ux-design",
+        "architecture",
+        "planning",
+        "implementation",
+        "verification",
+        "release-readiness",
+        "released"
+      ]
+    },
+    "status": {
+      "enum": [
+        "pass",
+        "fail",
+        "blocked",
+        "stale"
+      ]
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+      },
+      "uniqueItems": true
+    },
+    "checkedAt": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "evaluatedRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "evaluatedSemanticRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "inputSha256": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

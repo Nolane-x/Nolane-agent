@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.technical-writing",
+  "domain": "technical-writing",
+  "title": "Technical Writing Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "information architecture",
+    "tutorials",
+    "references",
+    "API docs",
+    "examples",
+    "localization",
+    "accuracy",
+    "maintenance"
+  ],
+  "capabilities": [
+    "technical-writing.map-landscape",
+    "technical-writing.frame-problem",
+    "technical-writing.research-users",
+    "technical-writing.define-requirements",
+    "technical-writing.model-domain",
+    "technical-writing.compare-alternatives",
+    "technical-writing.design-concept",
+    "technical-writing.prototype-critical-flow",
+    "technical-writing.validate-prototype",
+    "technical-writing.design-architecture",
+    "technical-writing.model-data",
+    "technical-writing.model-threats",
+    "technical-writing.plan-delivery",
+    "technical-writing.implement-core",
+    "technical-writing.integrate-dependencies",
+    "technical-writing.verify-contracts",
+    "technical-writing.test-boundaries",
+    "technical-writing.test-resilience",
+    "technical-writing.test-performance",
+    "technical-writing.test-security",
+    "technical-writing.audit-accessibility",
+    "technical-writing.optimize-quality",
+    "technical-writing.optimize-cost",
+    "technical-writing.document-system",
+    "technical-writing.prepare-migration",
+    "technical-writing.plan-rollout",
+    "technical-writing.instrument-observability",
+    "technical-writing.operate-lifecycle",
+    "technical-writing.respond-incidents",
+    "technical-writing.govern-evolution",
+    "technical-writing.measure-outcomes",
+    "technical-writing.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "anthropic-skills",
+      "title": "Anthropic Agent Skills",
+      "url": "https://github.com/anthropics/skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "Mixed",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

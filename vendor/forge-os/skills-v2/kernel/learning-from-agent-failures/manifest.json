@@ -1,0 +1,304 @@
+{
+  "schemaVersion": 2,
+  "id": "learning-from-agent-failures",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Learning from Agent Failures",
+    "description": "Use when repeated agent, route, tool, context, or verification failures reveal a reusable technique gap rather than a one-off project defect.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "kernel"
+    ],
+    "keywords": [
+      "learning-from-agent-failures",
+      "repeated",
+      "agent",
+      "route",
+      "tool",
+      "context",
+      "or",
+      "verification",
+      "failures"
+    ],
+    "antiTriggers": [
+      "the failure is caused by a known code bug",
+      "one isolated failure has no reproducible pattern"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "project-state",
+        "schema": "artifact://forgeos/project-state/v2"
+      }
+    ],
+    "produces": [
+      {
+        "type": "learning-candidate",
+        "schema": "artifact://forgeos/learning-candidate/v1"
+      }
+    ],
+    "invariants": [
+      "Learning artifacts cite raw failure receipts.",
+      "Project-specific details are removed safely.",
+      "No production rule changes without evaluation."
+    ],
+    "requiredTools": [
+      "model",
+      "test-runner"
+    ],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "confirmed intent and current semantic revision exist"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Cluster failures by invariant, rationalization, missing context, and tool boundary.",
+        "evidence": "Learning artifacts cite raw failure receipts."
+      },
+      {
+        "id": "step-2",
+        "action": "Trace each cluster to skill, router, policy, or runtime responsibility.",
+        "evidence": "Project-specific details are removed safely."
+      },
+      {
+        "id": "step-3",
+        "action": "Create a minimal RED scenario reproducing the reusable gap.",
+        "evidence": "No production rule changes without evaluation."
+      },
+      {
+        "id": "step-4",
+        "action": "Propose a skill or code change without auto-promoting it.",
+        "evidence": "No production rule changes without evaluation."
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "learning-candidate is produced with current evidence or a blocker is recorded"
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Learning artifacts cite raw failure receipts.",
+      "Project-specific details are removed safely.",
+      "No production rule changes without evaluation."
+    ],
+    "reviewerRole": "kernel-skill-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "behavioral-eval-receipt",
+      "context-receipt"
+    ],
+    "evaluatorIds": [
+      "learning-from-agent-failures-evaluator-v2"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 5,
+    "maxReferenceDepth": 2,
+    "targetTokens": 507,
+    "hardTokens": 896,
+    "outputReserveTokens": 256
+  },
+  "quality": {
+    "benchmarkIds": [
+      "learning-from-agent-failures-public-v1"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L0",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "coverage-ledger",
+      "typed-preconditions",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionability-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.measure-outcomes",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:l0:learning-from-agent-failures",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.learning-from-agent-failures",
+      "fitScore": 100,
+      "mappingEvidence": "reviewed:l0:learning-from-agent-failures",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "014eaaf5d19c210a85e0903c1e2053d7e559f59c2ad1360e23493c789fdbe8a1",
+        "bytes": 853,
+        "tokens": {
+          "gpt-5.6": 230,
+          "claude-opus-4.2": 241,
+          "gemini-3.0-pro": 219,
+          "qwen3.5-32b": 255
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "058d7d8a9867372443b6c8de0a7d8f0014114523726389888e70abfe658793bf",
+        "bytes": 549,
+        "tokens": {
+          "gpt-5.6": 148,
+          "claude-opus-4.2": 155,
+          "gemini-3.0-pro": 141,
+          "qwen3.5-32b": 164
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "ce6b780e7111bd23302b7787a5ac03cd99f1711936b70d624202d73da690a469",
+        "bytes": 391,
+        "tokens": {
+          "gpt-5.6": 106,
+          "claude-opus-4.2": 111,
+          "gemini-3.0-pro": 101,
+          "qwen3.5-32b": 117
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "d78840fa2b6f7ec95ffa5fb7d097437a7209a06e9a0ea034a21ffd445c36480c",
+        "bytes": 241,
+        "tokens": {
+          "gpt-5.6": 65,
+          "claude-opus-4.2": 68,
+          "gemini-3.0-pro": 62,
+          "qwen3.5-32b": 72
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "f65f984309f9902b8fd41d602d5cbe0fbb0f4c9f907366722f1cf7a09eae69b3",
+        "bytes": 218,
+        "tokens": {
+          "gpt-5.6": 59,
+          "claude-opus-4.2": 62,
+          "gemini-3.0-pro": 56,
+          "qwen3.5-32b": 66
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "76ab821fe75f7dcd9f69909b11613cdb1093c08492a96c0051a19c4d1f63d58d",
+        "bytes": 355,
+        "tokens": {
+          "gpt-5.6": 96,
+          "claude-opus-4.2": 100,
+          "gemini-3.0-pro": 92,
+          "qwen3.5-32b": 106
+        }
+      }
+    ],
+    "indexSha256": "6908cea3195d8826fcdc77c4e374f2751ec0fd88541cd2bb7dd1d768477e3c7b"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "b6229ae304efc970efb42f22e53e470963a89bc266fd8259356f6d1cbfe77c7a"
+}

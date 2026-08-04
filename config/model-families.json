@@ -1,0 +1,210 @@
+{
+  "schema": "nolane.model-families.v1",
+  "reviewedAt": "2026-08-03",
+  "families": [
+    {
+      "id": "openai-gpt",
+      "providerId": "openai-api",
+      "pattern": "^(gpt|o[0-9]|chatgpt)-",
+      "tokenizerId": "openai-auto",
+      "capabilities": {
+        "text": true,
+        "tools": "unknown",
+        "structuredOutput": "unknown",
+        "reasoning": "unknown"
+      },
+      "sourceUrl": "https://developers.openai.com/api/docs/models"
+    },
+    {
+      "id": "openai-codex",
+      "providerId": "codex",
+      "pattern": "codex|^o[0-9]|^gpt-",
+      "tokenizerId": "openai-auto",
+      "capabilities": {
+        "text": true,
+        "tools": true,
+        "reasoning": true
+      },
+      "sourceUrl": "https://developers.openai.com/codex/"
+    },
+    {
+      "id": "anthropic-claude",
+      "providerId": "anthropic-api",
+      "pattern": "claude",
+      "tokenizerId": "anthropic-auto",
+      "capabilities": {
+        "text": true,
+        "tools": "unknown",
+        "vision": "unknown",
+        "reasoning": "unknown"
+      },
+      "sourceUrl": "https://docs.anthropic.com/en/docs/about-claude/models"
+    },
+    {
+      "id": "anthropic-claude-code",
+      "providerId": "claude",
+      "pattern": ".*",
+      "tokenizerId": "anthropic-auto",
+      "capabilities": {
+        "text": true,
+        "tools": true,
+        "reasoning": true
+      },
+      "sourceUrl": "https://docs.anthropic.com/en/docs/claude-code/overview"
+    },
+    {
+      "id": "google-gemini",
+      "providerId": "gemini-api",
+      "pattern": "gemini",
+      "tokenizerId": "gemini-auto",
+      "capabilities": {
+        "text": true,
+        "tools": "unknown",
+        "vision": "unknown",
+        "audio": "unknown",
+        "video": "unknown",
+        "reasoning": "unknown"
+      },
+      "sourceUrl": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "id": "google-gemini-cli",
+      "providerId": "gemini",
+      "pattern": ".*",
+      "tokenizerId": "gemini-auto",
+      "capabilities": {
+        "text": true,
+        "tools": true,
+        "reasoning": "unknown"
+      },
+      "sourceUrl": "https://github.com/google-gemini/gemini-cli"
+    },
+    {
+      "id": "xai-grok",
+      "providerId": "xai",
+      "pattern": "grok",
+      "tokenizerId": "xai-auto",
+      "capabilities": {
+        "text": true,
+        "tools": "unknown",
+        "vision": "unknown",
+        "reasoning": "unknown"
+      },
+      "sourceUrl": "https://docs.x.ai/docs/models"
+    },
+    {
+      "id": "mistral",
+      "providerId": "mistral",
+      "pattern": "mistral|codestral|ministral|pixtral|magistral",
+      "tokenizerId": "mistral-auto",
+      "capabilities": {
+        "text": true,
+        "tools": "unknown",
+        "vision": "unknown",
+        "reasoning": "unknown"
+      },
+      "sourceUrl": "https://docs.mistral.ai/models"
+    },
+    {
+      "id": "deepseek",
+      "providerId": "deepseek",
+      "pattern": "deepseek",
+      "tokenizerId": "deepseek-auto",
+      "capabilities": {
+        "text": true,
+        "tools": "unknown",
+        "reasoning": "unknown"
+      },
+      "sourceUrl": "https://api-docs.deepseek.com/quick_start/pricing"
+    },
+    {
+      "id": "qwen",
+      "providerId": "qwen",
+      "pattern": "qwen|qwq",
+      "tokenizerId": "qwen-auto",
+      "capabilities": {
+        "text": true,
+        "tools": "unknown",
+        "vision": "unknown",
+        "reasoning": "unknown"
+      },
+      "sourceUrl": "https://help.aliyun.com/en/model-studio/models"
+    },
+    {
+      "id": "meta-llama",
+      "providerId": "meta",
+      "pattern": "llama",
+      "tokenizerId": "llama-auto",
+      "capabilities": {
+        "text": true,
+        "tools": "unknown",
+        "vision": "unknown"
+      },
+      "sourceUrl": "https://www.llama.com/models/"
+    },
+    {
+      "id": "cohere-command",
+      "providerId": "cohere",
+      "pattern": "command",
+      "tokenizerId": "cohere-auto",
+      "capabilities": {
+        "text": true,
+        "tools": "unknown",
+        "reasoning": "unknown"
+      },
+      "sourceUrl": "https://docs.cohere.com/docs/models"
+    },
+    {
+      "id": "amazon-nova",
+      "providerId": "aws-bedrock",
+      "pattern": "nova",
+      "tokenizerId": "bedrock-auto",
+      "capabilities": {
+        "text": true,
+        "tools": "unknown",
+        "vision": "unknown"
+      },
+      "sourceUrl": "https://docs.aws.amazon.com/nova/"
+    },
+    {
+      "id": "microsoft-phi",
+      "providerId": "azure",
+      "pattern": "phi",
+      "tokenizerId": "phi-auto",
+      "capabilities": {
+        "text": true,
+        "tools": "unknown",
+        "vision": "unknown"
+      },
+      "sourceUrl": "https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/models-sold-directly-by-azure"
+    },
+    {
+      "id": "ollama-local",
+      "providerId": "ollama",
+      "pattern": ".*",
+      "tokenizerId": "provider-reported",
+      "capabilities": {
+        "text": true,
+        "tools": "unknown",
+        "vision": "unknown"
+      },
+      "local": {
+        "runtime": "ollama"
+      },
+      "sourceUrl": "https://docs.ollama.com/api/tags"
+    },
+    {
+      "id": "openrouter-catalog",
+      "providerId": "openrouter",
+      "pattern": ".*",
+      "tokenizerId": "provider-reported",
+      "capabilities": {
+        "text": true,
+        "tools": "unknown",
+        "vision": "unknown",
+        "reasoning": "unknown"
+      },
+      "sourceUrl": "https://openrouter.ai/docs/api/api-reference/models/get-models"
+    }
+  ]
+}

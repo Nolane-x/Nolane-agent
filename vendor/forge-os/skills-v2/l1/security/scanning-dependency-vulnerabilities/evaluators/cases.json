@@ -1,0 +1,38 @@
+[
+  {
+    "id": "scanning-dependency-vulnerabilities-application",
+    "kind": "application",
+    "input": "Task directly requiring scanning dependency vulnerabilities within security lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "scanning-dependency-vulnerabilities-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require scanning dependency vulnerabilities within security lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "scanning-dependency-vulnerabilities-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "scanning-dependency-vulnerabilities-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "scanning-dependency-vulnerabilities-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "scanning-dependency-vulnerabilities-transfer",
+    "kind": "transfer",
+    "input": "Apply the scanning-dependency-vulnerabilities mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

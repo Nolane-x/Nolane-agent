@@ -1,0 +1,20 @@
+[
+  {
+    "id": "recovering-interrupted-runs-positive",
+    "kind": "application",
+    "input": "A task requiring Recovering Interrupted Runs",
+    "expectedEvidence": [
+      "Old workers cannot complete after reclamation.",
+      "Completed side effects are not repeated.",
+      "Recovery itself has an audit receipt."
+    ],
+    "baselineFailure": "Restarting the whole workflow blindly."
+  },
+  {
+    "id": "recovering-interrupted-runs-anti-trigger",
+    "kind": "counter-example",
+    "input": "the operation is atomic and has not started",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

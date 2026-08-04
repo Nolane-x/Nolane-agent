@@ -1,0 +1,20 @@
+[
+  {
+    "id": "decomposing-multi-domain-work-positive",
+    "kind": "application",
+    "input": "A task requiring Decomposing Multi-Domain Work",
+    "expectedEvidence": [
+      "Each subproject can be rejected independently.",
+      "Every cross-domain handoff has an owner and schema.",
+      "No circular ownership remains."
+    ],
+    "baselineFailure": "Splitting by arbitrary file count."
+  },
+  {
+    "id": "decomposing-multi-domain-work-anti-trigger",
+    "kind": "counter-example",
+    "input": "one bounded component with a single verification surface",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

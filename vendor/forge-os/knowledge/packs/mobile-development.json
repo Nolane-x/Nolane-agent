@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.mobile-development",
+  "domain": "mobile-development",
+  "title": "Mobile Development Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "offline-first",
+    "permissions",
+    "battery",
+    "navigation",
+    "app lifecycle",
+    "device compatibility",
+    "stores",
+    "telemetry"
+  ],
+  "capabilities": [
+    "mobile-development.map-landscape",
+    "mobile-development.frame-problem",
+    "mobile-development.research-users",
+    "mobile-development.define-requirements",
+    "mobile-development.model-domain",
+    "mobile-development.compare-alternatives",
+    "mobile-development.design-concept",
+    "mobile-development.prototype-critical-flow",
+    "mobile-development.validate-prototype",
+    "mobile-development.design-architecture",
+    "mobile-development.model-data",
+    "mobile-development.model-threats",
+    "mobile-development.plan-delivery",
+    "mobile-development.implement-core",
+    "mobile-development.integrate-dependencies",
+    "mobile-development.verify-contracts",
+    "mobile-development.test-boundaries",
+    "mobile-development.test-resilience",
+    "mobile-development.test-performance",
+    "mobile-development.test-security",
+    "mobile-development.audit-accessibility",
+    "mobile-development.optimize-quality",
+    "mobile-development.optimize-cost",
+    "mobile-development.document-system",
+    "mobile-development.prepare-migration",
+    "mobile-development.plan-rollout",
+    "mobile-development.instrument-observability",
+    "mobile-development.operate-lifecycle",
+    "mobile-development.respond-incidents",
+    "mobile-development.govern-evolution",
+    "mobile-development.measure-outcomes",
+    "mobile-development.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "apple-hig",
+      "title": "Apple Human Interface Guidelines",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/",
+      "authority": "vendor",
+      "trust": "verified",
+      "revision": "web:2026-07-25",
+      "license": {
+        "spdx": "Reference",
+        "mode": "link-only"
+      }
+    },
+    {
+      "id": "material-design",
+      "title": "Material Design",
+      "url": "https://m3.material.io/",
+      "authority": "vendor",
+      "trust": "verified",
+      "revision": "web:2026-07-25",
+      "license": {
+        "spdx": "Reference",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

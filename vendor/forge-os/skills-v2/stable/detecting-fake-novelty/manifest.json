@@ -1,0 +1,285 @@
+{
+  "schemaVersion": 2,
+  "id": "detecting-fake-novelty",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "stable",
+  "identity": {
+    "title": "Detecting Fake Novelty",
+    "description": "Use when distinguish new causal mechanisms from renamed, bundled, randomized, or AI-decorated existing patterns, especially when would the concept still be new without its name and branding?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "creativity"
+    ],
+    "keywords": [
+      "detecting-fake-novelty",
+      "distinguish",
+      "new",
+      "causal",
+      "mechanisms",
+      "from",
+      "renamed",
+      "bundled",
+      "randomized"
+    ],
+    "antiTriggers": [
+      "routine implementation selection",
+      "ideas that have not yet been normalized to mechanisms"
+    ]
+  },
+  "relations": {
+    "requires": [
+      "candidate-ideas"
+    ],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "candidate-ideas",
+        "schema": "artifact://forgeos/candidate-ideas/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "scored-ideas",
+        "schema": "artifact://forgeos/scored-ideas/v1"
+      }
+    ],
+    "invariants": [
+      "Output remains within the detecting-fake-novelty responsibility boundary",
+      "Every pass claim is backed by current trusted evidence"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Identify the closest existing product or system pattern.",
+        "evidence": "closest-pattern analysis"
+      },
+      {
+        "id": "step-2",
+        "action": "Reduce both candidate and comparator to target, mechanism, interface, incentive, distribution, and ownership.",
+        "evidence": "difference matrix"
+      },
+      {
+        "id": "step-3",
+        "action": "Count meaningful axis differences and identify dependencies on existing mechanisms.",
+        "evidence": "prior-art map"
+      },
+      {
+        "id": "step-4",
+        "action": "Search prior art only after the unconstrained generation pass to avoid premature anchoring.",
+        "evidence": "novelty classification"
+      },
+      {
+        "id": "step-5",
+        "action": "Classify novelty as surface, configuration, mechanism, system, or problem-reframing.",
+        "evidence": "novelty classification"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required tool, input, or approval is unavailable",
+        "action": "stop and record a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Would the concept still be new without its name and branding?",
+      "Is adding an LLM the only difference?",
+      "Are at least three material axes different?",
+      "Is the novelty claim bounded to the evidence searched?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "closest-pattern analysis",
+      "difference matrix",
+      "prior-art map",
+      "novelty classification"
+    ],
+    "evaluatorIds": [
+      "detecting-fake-novelty-evaluator"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 640,
+    "hardTokens": 1056,
+    "outputReserveTokens": 264
+  },
+  "quality": {
+    "benchmarkIds": [
+      "v04-detecting-fake-novelty-behavior"
+    ],
+    "minimumSkillDepthScore": 82,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2"
+  ],
+  "capabilityMappings": [
+    {
+      "capabilityId": "product-management.compare-alternatives",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:v0.5:detecting-fake-novelty",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "product-management.validate-prototype",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:v0.5:detecting-fake-novelty",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.detecting-fake-novelty",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:v0.5:detecting-fake-novelty",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "b17896f0721a3cbc5b5357a77f796fdca4e89dd71092a951a1eb07e1da250207",
+        "bytes": 846,
+        "tokens": {
+          "gpt-5.6": 228,
+          "claude-opus-4.2": 239,
+          "gemini-3.0-pro": 217,
+          "qwen3.5-32b": 253
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "e80fc30e7b65424faec14341163d13744b4dd6ad77bfeaf69bca230709ac908a",
+        "bytes": 842,
+        "tokens": {
+          "gpt-5.6": 227,
+          "claude-opus-4.2": 238,
+          "gemini-3.0-pro": 216,
+          "qwen3.5-32b": 252
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "f9bfe6ef36de59d9db6341e6221b617221c90ebbc72b538c413f967f5f21581a",
+        "bytes": 346,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 98,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 104
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "0d049622b1482a78333929ada657c8278a075739c0c91b221a2adf79c18a0233",
+        "bytes": 331,
+        "tokens": {
+          "gpt-5.6": 89,
+          "claude-opus-4.2": 94,
+          "gemini-3.0-pro": 85,
+          "qwen3.5-32b": 99
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "0575fdcc6dff3c0946591b9e993cb2aad878e1ee2fbe67119d67469ab0436b83",
+        "bytes": 274,
+        "tokens": {
+          "gpt-5.6": 74,
+          "claude-opus-4.2": 78,
+          "gemini-3.0-pro": 71,
+          "qwen3.5-32b": 82
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "421113ce1ae65b365a75e955374aa67635ef29f26fa712cb12beeb461a009203",
+        "bytes": 326,
+        "tokens": {
+          "gpt-5.6": 88,
+          "claude-opus-4.2": 92,
+          "gemini-3.0-pro": 84,
+          "qwen3.5-32b": 98
+        }
+      }
+    ],
+    "indexSha256": "306d08d3a4a24afbba748f7bab3d54124c79bc11585c61bc78d75d94d4ef175d"
+  },
+  "manifestSha256": "52e70f6c8aca7b0ba1acc5b7dfc2c0206ebde783eaa1aa10e7dee8896f06048d",
+  "kernelLevel": "L1"
+}

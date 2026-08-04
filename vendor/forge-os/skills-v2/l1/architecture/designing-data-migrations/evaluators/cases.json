@@ -1,0 +1,38 @@
+[
+  {
+    "id": "designing-data-migrations-application",
+    "kind": "application",
+    "input": "Task directly requiring designing data migrations within architecture lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "designing-data-migrations-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require designing data migrations within architecture lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "designing-data-migrations-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "designing-data-migrations-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "designing-data-migrations-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "designing-data-migrations-transfer",
+    "kind": "transfer",
+    "input": "Apply the designing-data-migrations mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

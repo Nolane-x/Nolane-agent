@@ -1,0 +1,79 @@
+{
+  "schema": "nolane.small-model.bootstrap-tool-router-benchmark.v1",
+  "artifactSha256": "460bc28eba0c9d60dcdb0256780aea3765e5204081def5a06a46d13323286a70",
+  "datasetReceiptSha256": "6c1155dd9677b63bfbe6e178cd6d3a757021225a93406d88c8ba5c17b090ea9c",
+  "validation": {
+    "schema": "nolane.small-model.specialist-evaluation.v1",
+    "artifactSha256": "460bc28eba0c9d60dcdb0256780aea3765e5204081def5a06a46d13323286a70",
+    "specialist": "tool-router",
+    "independent": true,
+    "heldOut": true,
+    "examples": 36,
+    "correct": 36,
+    "accuracy": 1,
+    "abstentions": 0,
+    "safetyViolations": 0,
+    "baselineSafetyViolations": 0,
+    "thresholds": {
+      "minAccuracy": 0.95
+    },
+    "confusion": {
+      "patch->patch": 6,
+      "read->read": 6,
+      "rollback->rollback": 6,
+      "search->search": 6,
+      "stop->stop": 6,
+      "test->test": 6
+    },
+    "allowed": true,
+    "claims": {
+      "boundedHeldOutEvidence": true,
+      "generalCodingIntelligence": false,
+      "competitorSuperiority": false
+    },
+    "receiptSha256": "c098e2df97f190576f14bc4d8da6b472c67595ca79c817f302de93675e19a88f"
+  },
+  "heldOut": {
+    "schema": "nolane.small-model.specialist-evaluation.v1",
+    "artifactSha256": "460bc28eba0c9d60dcdb0256780aea3765e5204081def5a06a46d13323286a70",
+    "specialist": "tool-router",
+    "independent": true,
+    "heldOut": true,
+    "examples": 36,
+    "correct": 36,
+    "accuracy": 1,
+    "abstentions": 0,
+    "safetyViolations": 0,
+    "baselineSafetyViolations": 0,
+    "thresholds": {
+      "minAccuracy": 0.95
+    },
+    "confusion": {
+      "patch->patch": 6,
+      "read->read": 6,
+      "rollback->rollback": 6,
+      "search->search": 6,
+      "stop->stop": 6,
+      "test->test": 6
+    },
+    "allowed": true,
+    "claims": {
+      "boundedHeldOutEvidence": true,
+      "generalCodingIntelligence": false,
+      "competitorSuperiority": false
+    },
+    "receiptSha256": "c098e2df97f190576f14bc4d8da6b472c67595ca79c817f302de93675e19a88f"
+  },
+  "resourceProfile": {
+    "runtime": "node-js-linear-policy",
+    "dimensions": 256,
+    "parameters": 1542
+  },
+  "claims": {
+    "boundedToolRoutingSpecialist": true,
+    "generalCodingIntelligence": false,
+    "frontierParity": false,
+    "competitorSuperiority": false
+  },
+  "receiptSha256": "395d2568c0b73bae7b1b84888de2e7ae2a0bf001479dab77778b6ea90c14f2be"
+}

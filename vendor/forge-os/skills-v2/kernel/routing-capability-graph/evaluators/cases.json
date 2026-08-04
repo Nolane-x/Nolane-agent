@@ -1,0 +1,20 @@
+[
+  {
+    "id": "routing-capability-graph-positive",
+    "kind": "application",
+    "input": "A task requiring Routing the Capability Graph",
+    "expectedEvidence": [
+      "Quarantined providers are never activated.",
+      "Same semantic input produces the same route hash.",
+      "Every selected step closes a typed gap."
+    ],
+    "baselineFailure": "Ranking providers before capability retrieval."
+  },
+  {
+    "id": "routing-capability-graph-anti-trigger",
+    "kind": "counter-example",
+    "input": "the exact technique and provider were explicitly selected",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

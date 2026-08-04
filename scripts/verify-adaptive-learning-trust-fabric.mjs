@@ -1,0 +1,10 @@
+import { mkdir, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { verifyAdaptiveLearningTrustFabric } from '../src/release/adaptive-learning-trust-fabric-verifier.mjs';
+const root = path.resolve(process.argv[2] ?? '.');
+const metadata = JSON.parse(await (await import('node:fs/promises')).readFile(path.join(root, 'package.json'), 'utf8'));
+const output = path.join(root, 'release', `adaptive-learning-trust-fabric-${metadata.version}.json`);
+await mkdir(path.dirname(output), { recursive: true });
+const report = await verifyAdaptiveLearningTrustFabric({ rootDirectory: root, version: metadata.version, outputFile: output });
+await writeFile(output, `${JSON.stringify(report, null, 2)}\n`);
+process.stdout.write(`${JSON.stringify({ status: report.status, version: report.version, receiptSha256: report.receiptSha256, output: path.relative(root, output).replaceAll('\\', '/') })}\n`);

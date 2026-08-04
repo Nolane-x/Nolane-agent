@@ -1,0 +1,38 @@
+[
+  {
+    "id": "designing-extension-points-application",
+    "kind": "application",
+    "input": "Task directly requiring designing extension points within architecture lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "designing-extension-points-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require designing extension points within architecture lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "designing-extension-points-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "designing-extension-points-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "designing-extension-points-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "designing-extension-points-transfer",
+    "kind": "transfer",
+    "input": "Apply the designing-extension-points mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

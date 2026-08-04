@@ -1,0 +1,38 @@
+[
+  {
+    "id": "building-evidence-backed-personas-application",
+    "kind": "application",
+    "input": "Task directly requiring building evidence backed personas within ux lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "building-evidence-backed-personas-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require building evidence backed personas within ux lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "building-evidence-backed-personas-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "building-evidence-backed-personas-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "building-evidence-backed-personas-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "building-evidence-backed-personas-transfer",
+    "kind": "transfer",
+    "input": "Apply the building-evidence-backed-personas mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

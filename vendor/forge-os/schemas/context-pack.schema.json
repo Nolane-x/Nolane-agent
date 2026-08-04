@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forgeos.dev/schemas/v0.4/context-pack.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "bundleId",
+    "bundleSha256",
+    "capabilityId",
+    "materials",
+    "bytes",
+    "estimatedTokens",
+    "generatedAt",
+    "contextPackSha256"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "enum": [
+        1,
+        2
+      ]
+    },
+    "bundleId": {
+      "type": "string"
+    },
+    "bundleSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "capabilityId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,159}$"
+    },
+    "materials": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "maxItems": 3
+    },
+    "bytes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "estimatedTokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "contextPackSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

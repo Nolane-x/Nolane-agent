@@ -1,0 +1,27 @@
+{
+  "schema": "nolane.small-model.repository-specialist-dataset-receipt.v1",
+  "specialist": "patch-ranker",
+  "trajectoryDatasetReceiptSha256": "c08a63762070d3358522bddad2bc481e437d9890239d75ce4985e8971f4d58f2",
+  "datasetReceiptSha256": "df2af48f59580285f220a68e723a30124b1b2bdac679354cc9cf02854cd44ec8",
+  "splitReceiptSha256": "799b5aa827266266cbb9d0357e244c406d8084212d425bd1bb58850be47d49f7",
+  "labels": [
+    "accept",
+    "reject",
+    "review",
+    "rollback"
+  ],
+  "counts": {
+    "total": 32,
+    "train": 24,
+    "validation": 4,
+    "heldOut": 4
+  },
+  "disjointBy": "scenarioGroup",
+  "groupCounts": {
+    "train": 24,
+    "validation": 4,
+    "heldOut": 4
+  },
+  "hiddenChainOfThoughtStored": false,
+  "receiptSha256": "5e6ffbacd1b06533f47b493ff62a2efe85e43a10158c5a0f3462e888bc38cffe"
+}

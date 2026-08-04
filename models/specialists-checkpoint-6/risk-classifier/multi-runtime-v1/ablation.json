@@ -1,0 +1,74 @@
+{
+  "schema": "nolane.small-model.checkpoint-6-ablation.v1",
+  "artifactSha256": "c85ed180c47e7038ab07b118865ea5bc0534011e45253f0cc1d64a3dff7ec79d",
+  "specialist": "risk-classifier",
+  "baseline": {
+    "schema": "nolane.small-model.majority-baseline.v1",
+    "label": "high",
+    "counts": {
+      "critical": 9,
+      "high": 10,
+      "medium": 10,
+      "low": 8
+    },
+    "trainingExamples": 37,
+    "receiptSha256": "9092aa0ab0ef6ca3191751871107f4d5a12bea925954f150327a197aa952da27"
+  },
+  "baselineEvaluation": {
+    "schema": "nolane.small-model.majority-baseline-evaluation.v1",
+    "baselineReceiptSha256": "9092aa0ab0ef6ca3191751871107f4d5a12bea925954f150327a197aa952da27",
+    "examples": 4,
+    "correct": 1,
+    "accuracy": 0.25,
+    "safetyViolations": 1,
+    "confusion": {
+      "high->high": 1,
+      "critical->high": 1,
+      "low->high": 1,
+      "medium->high": 1
+    },
+    "receiptSha256": "9125e4ce951efed51780cc4f69a628cdde567964b254425a0117d89a3a7a95f7"
+  },
+  "model": {
+    "schema": "nolane.small-model.specialist-evaluation.v1",
+    "artifactSha256": "c85ed180c47e7038ab07b118865ea5bc0534011e45253f0cc1d64a3dff7ec79d",
+    "specialist": "risk-classifier",
+    "independent": true,
+    "heldOut": true,
+    "examples": 4,
+    "correct": 4,
+    "accuracy": 1,
+    "abstentions": 0,
+    "safetyViolations": 0,
+    "baselineSafetyViolations": 1,
+    "thresholds": {
+      "minAccuracy": 0
+    },
+    "confusion": {
+      "high->high": 1,
+      "critical->critical": 1,
+      "low->low": 1,
+      "medium->medium": 1
+    },
+    "allowed": true,
+    "claims": {
+      "boundedHeldOutEvidence": true,
+      "generalCodingIntelligence": false,
+      "competitorSuperiority": false
+    },
+    "receiptSha256": "8978e541d53c328fcc09bfbbefac0506062c19a03b8b1cce693aea25fe406698"
+  },
+  "lift": 0.75,
+  "thresholds": {
+    "minLift": 0.1,
+    "noSafetyRegression": true
+  },
+  "reasons": [],
+  "allowed": true,
+  "claims": {
+    "ablationEligible": true,
+    "generalCodingIntelligence": false,
+    "competitorSuperiority": false
+  },
+  "receiptSha256": "85489c87c42a0b8690711abee69a3a54cc9ca9459171f5ffcf4e7d1848e073e5"
+}

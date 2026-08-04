@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.api-integration",
+  "domain": "api-integration",
+  "title": "API and Integration Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "contracts",
+    "versioning",
+    "authentication",
+    "webhooks",
+    "idempotency",
+    "SDKs",
+    "rate limits",
+    "compatibility"
+  ],
+  "capabilities": [
+    "api-integration.map-landscape",
+    "api-integration.frame-problem",
+    "api-integration.research-users",
+    "api-integration.define-requirements",
+    "api-integration.model-domain",
+    "api-integration.compare-alternatives",
+    "api-integration.design-concept",
+    "api-integration.prototype-critical-flow",
+    "api-integration.validate-prototype",
+    "api-integration.design-architecture",
+    "api-integration.model-data",
+    "api-integration.model-threats",
+    "api-integration.plan-delivery",
+    "api-integration.implement-core",
+    "api-integration.integrate-dependencies",
+    "api-integration.verify-contracts",
+    "api-integration.test-boundaries",
+    "api-integration.test-resilience",
+    "api-integration.test-performance",
+    "api-integration.test-security",
+    "api-integration.audit-accessibility",
+    "api-integration.optimize-quality",
+    "api-integration.optimize-cost",
+    "api-integration.document-system",
+    "api-integration.prepare-migration",
+    "api-integration.plan-rollout",
+    "api-integration.instrument-observability",
+    "api-integration.operate-lifecycle",
+    "api-integration.respond-incidents",
+    "api-integration.govern-evolution",
+    "api-integration.measure-outcomes",
+    "api-integration.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "superpowers",
+      "title": "Superpowers",
+      "url": "https://github.com/obra/superpowers",
+      "authority": "community",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

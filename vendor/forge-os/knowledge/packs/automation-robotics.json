@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.automation-robotics",
+  "domain": "automation-robotics",
+  "title": "Automation and Robotics Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "workflow",
+    "sensors",
+    "actuators",
+    "safety",
+    "scheduling",
+    "retries",
+    "control",
+    "human override"
+  ],
+  "capabilities": [
+    "automation-robotics.map-landscape",
+    "automation-robotics.frame-problem",
+    "automation-robotics.research-users",
+    "automation-robotics.define-requirements",
+    "automation-robotics.model-domain",
+    "automation-robotics.compare-alternatives",
+    "automation-robotics.design-concept",
+    "automation-robotics.prototype-critical-flow",
+    "automation-robotics.validate-prototype",
+    "automation-robotics.design-architecture",
+    "automation-robotics.model-data",
+    "automation-robotics.model-threats",
+    "automation-robotics.plan-delivery",
+    "automation-robotics.implement-core",
+    "automation-robotics.integrate-dependencies",
+    "automation-robotics.verify-contracts",
+    "automation-robotics.test-boundaries",
+    "automation-robotics.test-resilience",
+    "automation-robotics.test-performance",
+    "automation-robotics.test-security",
+    "automation-robotics.audit-accessibility",
+    "automation-robotics.optimize-quality",
+    "automation-robotics.optimize-cost",
+    "automation-robotics.document-system",
+    "automation-robotics.prepare-migration",
+    "automation-robotics.plan-rollout",
+    "automation-robotics.instrument-observability",
+    "automation-robotics.operate-lifecycle",
+    "automation-robotics.respond-incidents",
+    "automation-robotics.govern-evolution",
+    "automation-robotics.measure-outcomes",
+    "automation-robotics.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "nvidia-skills",
+      "title": "NVIDIA Agent Skills",
+      "url": "https://github.com/NVIDIA/skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "Mixed",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

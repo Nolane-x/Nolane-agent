@@ -1,0 +1,298 @@
+{
+  "schemaVersion": 2,
+  "id": "packaging-release-evidence",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "stable",
+  "identity": {
+    "title": "Packaging Release Evidence",
+    "description": "Use when assemble a reproducible release dossier linking requirements, build identity, tests, findings, migrations, rollback, and residual risks, especially when can another reviewer reproduce each verification command?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "operations"
+    ],
+    "keywords": [
+      "packaging-release-evidence",
+      "assemble",
+      "a",
+      "reproducible",
+      "release",
+      "dossier",
+      "linking",
+      "requirements",
+      "build"
+    ],
+    "antiTriggers": [
+      "an unreleased local experiment",
+      "a release whose source and verification subjects are not frozen"
+    ]
+  },
+  "relations": {
+    "requires": [
+      "verification-report",
+      "security-review",
+      "operations-evidence"
+    ],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "verification-report",
+        "schema": "artifact://forgeos/verification-report/v1"
+      },
+      {
+        "type": "security-review",
+        "schema": "artifact://forgeos/security-review/v1"
+      },
+      {
+        "type": "operations-evidence",
+        "schema": "artifact://forgeos/operations-evidence/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "release-dossier",
+        "schema": "artifact://forgeos/release-dossier/v1"
+      }
+    ],
+    "invariants": [
+      "Output remains within the packaging-release-evidence responsibility boundary",
+      "Every pass claim is backed by current trusted evidence"
+    ],
+    "requiredTools": [],
+    "optionalTools": [
+      "shell",
+      "container-runtime"
+    ]
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Freeze the release candidate and record source, dependency, build, and artifact hashes.",
+        "evidence": "release dossier"
+      },
+      {
+        "id": "step-2",
+        "action": "Collect requirement traceability, test logs, coverage, mutation, fuzz, security, UX, performance, compatibility, migration, and rollback evidence required by assurance.",
+        "evidence": "hash manifest"
+      },
+      {
+        "id": "step-3",
+        "action": "Verify evidence freshness and that every report targets the frozen candidate.",
+        "evidence": "traceability matrix"
+      },
+      {
+        "id": "step-4",
+        "action": "List unresolved findings and exact human acceptances without summarizing them away.",
+        "evidence": "known-risk register"
+      },
+      {
+        "id": "step-5",
+        "action": "Generate a machine-readable dossier plus a concise human release decision.",
+        "evidence": "known-risk register"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required tool, input, or approval is unavailable",
+        "action": "stop and record a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Can another reviewer reproduce each verification command?",
+      "Do screenshots and logs identify the tested version?",
+      "Are missing evidence and skipped controls explicit?",
+      "Does the dossier distinguish tested claims from assumptions?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "release dossier",
+      "hash manifest",
+      "traceability matrix",
+      "known-risk register"
+    ],
+    "evaluatorIds": [
+      "packaging-release-evidence-evaluator"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 682,
+    "hardTokens": 1098,
+    "outputReserveTokens": 274
+  },
+  "quality": {
+    "benchmarkIds": [
+      "v04-packaging-release-evidence-behavior"
+    ],
+    "minimumSkillDepthScore": 82,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2"
+  ],
+  "capabilityMappings": [
+    {
+      "capabilityId": "devops-sre.certify-release",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:packaging-release-evidence",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "software-testing.certify-release",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:packaging-release-evidence",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.packaging-release-evidence",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:packaging-release-evidence",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "53c75554f7bdcb96c2e18399896754750f4fa3eadcd48fbc92745447aa1d148c",
+        "bytes": 924,
+        "tokens": {
+          "gpt-5.6": 249,
+          "claude-opus-4.2": 261,
+          "gemini-3.0-pro": 237,
+          "qwen3.5-32b": 276
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "807f35a97fdf6018c6480cbdede2b597fbb01cd2314eb3ff70c4b56264770d64",
+        "bytes": 902,
+        "tokens": {
+          "gpt-5.6": 243,
+          "claude-opus-4.2": 255,
+          "gemini-3.0-pro": 232,
+          "qwen3.5-32b": 270
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "f9bfe6ef36de59d9db6341e6221b617221c90ebbc72b538c413f967f5f21581a",
+        "bytes": 346,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 98,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 104
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "0a7630e5da6bbfdb07f056f9598677f6d1e1d4bb67f90f48694c1be5b7b7670f",
+        "bytes": 346,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 98,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 104
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "a9ad0951589be867362b78e2e84fcef573eb9d4b3e664cdf30560c607514eeac",
+        "bytes": 266,
+        "tokens": {
+          "gpt-5.6": 72,
+          "claude-opus-4.2": 75,
+          "gemini-3.0-pro": 69,
+          "qwen3.5-32b": 80
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "911d16f1c4107e5e569ec7abdf27a401b3c7d850b6d0091991e4973964a09a66",
+        "bytes": 333,
+        "tokens": {
+          "gpt-5.6": 90,
+          "claude-opus-4.2": 94,
+          "gemini-3.0-pro": 86,
+          "qwen3.5-32b": 100
+        }
+      }
+    ],
+    "indexSha256": "e32226e44e2c8e74b37092d8a28f5293ab192473d022ac71d26e7cbf5fe259b3"
+  },
+  "manifestSha256": "5c4152f2f30adc2e078054a020971be5babd61eae6618f96ae2f7a7b75d4582f",
+  "kernelLevel": "L1"
+}

@@ -1,0 +1,75 @@
+{
+  "schema": "forge.studio.verification-learned-routing-measurement.v1",
+  "version": "3.2.0",
+  "pyramid": {
+    "lowRiskNarrow": true,
+    "highRiskExpanded": true,
+    "highRiskStageCount": 10
+  },
+  "testIntegrity": {
+    "falseGreenBlocked": true,
+    "categories": [
+      "test-skip",
+      "assertion-weakened",
+      "negative-case-removed"
+    ]
+  },
+  "api": {
+    "missingApiBlocked": true,
+    "exactApiAllowed": true
+  },
+  "review": {
+    "independentReviewerSelected": true,
+    "rationaleOmitted": true,
+    "disagreementBlocked": true,
+    "resolvedAfterReceipt": true
+  },
+  "failure": {
+    "recoveredAndReverified": true,
+    "directOsFaultInjected": false
+  },
+  "confidence": {
+    "weakestLinkBounded": true,
+    "finalConfidence": 0.7167999999999999
+  },
+  "bandit": {
+    "verifiedOnly": true,
+    "shadowOnly": true,
+    "hardConstraintsPreserved": true,
+    "providerHarnessPaired": true
+  },
+  "completion": {
+    "greenSuiteInsufficient": true,
+    "passWithAllEvidence": true
+  },
+  "lifecycle": {
+    "closed": false,
+    "plannerLoaded": true,
+    "testIntegrityLoaded": true,
+    "apiGateLoaded": true,
+    "reviewLoaded": true,
+    "failureLabLoaded": true,
+    "calibratorLoaded": true,
+    "banditLoaded": true,
+    "completionGateLoaded": true
+  },
+  "privacy": {
+    "privateReasoningStored": false,
+    "rawPromptsStored": false,
+    "rawModelOutputsStored": false
+  },
+  "composition": {
+    "appStaticImports": 154,
+    "appConstructors": 172
+  },
+  "boundaries": {
+    "productionTrafficChanged": false,
+    "productionMultiProviderReviewCertified": false,
+    "hiddenRegressionSetCertified": false,
+    "directOsFaultInjectionCertified": false,
+    "longTermPatchSurvivalCertified": false,
+    "heldOutRouterPromotionCertified": false,
+    "comparativeSuperiorityClaimed": false
+  },
+  "receiptSha256": "1725c17c0bfd313f79e5aa5ed3ff61e6794e65590ea13ceac83c9c22de26a0ca"
+}

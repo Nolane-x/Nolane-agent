@@ -1,0 +1,309 @@
+{
+  "schemaVersion": 2,
+  "id": "classifying-delivery-risk",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Classifying Delivery Risk",
+    "description": "Use when classifying delivery risk within planning lifecycle boundaries, especially when does the artifact make the owned decision for classifying delivery risk explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "planning"
+    ],
+    "keywords": [
+      "classifying-delivery-risk",
+      "classifying",
+      "delivery",
+      "risk",
+      "within",
+      "planning",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require classifying delivery risk within planning lifecycle boundaries",
+      "the typed inputs for classifying-delivery-risk are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "architecture-decision",
+        "schema": "artifact://forgeos/architecture-decision/v1"
+      },
+      {
+        "type": "threat-model",
+        "schema": "artifact://forgeos/threat-model/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "execution-plan",
+        "schema": "artifact://forgeos/execution-plan/v1"
+      },
+      {
+        "type": "acceptance-contracts",
+        "schema": "artifact://forgeos/acceptance-contracts/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for classifying delivery risk explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by classifying delivery risk.",
+        "evidence": "classifying-delivery-risk-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to classifying delivery risk.",
+        "evidence": "classifying-delivery-risk-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply classifying delivery risk only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "classifying-delivery-risk-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "classifying-delivery-risk-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if classifying delivery risk were incomplete or implemented incorrectly.",
+        "evidence": "classifying-delivery-risk-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for classifying delivery risk explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "classifying-delivery-risk-decision-table",
+      "classifying-delivery-risk-verification-report",
+      "classifying-delivery-risk-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "classifying-delivery-risk-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 698,
+    "hardTokens": 1093,
+    "outputReserveTokens": 273
+  },
+  "quality": {
+    "benchmarkIds": [
+      "classifying-delivery-risk-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "product-management.plan-delivery",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:classifying-delivery-risk",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "df7c915ac34085e4469df437b40a952bbf0512c69840388417f10614685c4adf",
+        "bytes": 930,
+        "tokens": {
+          "gpt-5.6": 250,
+          "claude-opus-4.2": 262,
+          "gemini-3.0-pro": 239,
+          "qwen3.5-32b": 278
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "627df263f91c38b1e070692e34f3586553d46738bfb063216b92c672181adb5c",
+        "bytes": 706,
+        "tokens": {
+          "gpt-5.6": 190,
+          "claude-opus-4.2": 199,
+          "gemini-3.0-pro": 182,
+          "qwen3.5-32b": 211
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "e935535609c6ee5ea166f1756566e9117c91087afdd979247c6dad04cdc29e26",
+        "bytes": 301,
+        "tokens": {
+          "gpt-5.6": 81,
+          "claude-opus-4.2": 85,
+          "gemini-3.0-pro": 78,
+          "qwen3.5-32b": 90
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "7bea7e4f18b50dac8728ad625af67527591c7484140fd715696160a6a70a82c9",
+        "bytes": 601,
+        "tokens": {
+          "gpt-5.6": 162,
+          "claude-opus-4.2": 170,
+          "gemini-3.0-pro": 155,
+          "qwen3.5-32b": 180
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "b582c48c4f640a42fadabc6b33e969d5de8a004eb90acac63117e26535fc40f1",
+        "bytes": 329,
+        "tokens": {
+          "gpt-5.6": 89,
+          "claude-opus-4.2": 93,
+          "gemini-3.0-pro": 85,
+          "qwen3.5-32b": 99
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "6084651ee2156041bb69ad325a3e84f0e078e7f8636fbe58157b576c4fc7ddf0",
+        "bytes": 239,
+        "tokens": {
+          "gpt-5.6": 65,
+          "claude-opus-4.2": 68,
+          "gemini-3.0-pro": 62,
+          "qwen3.5-32b": 72
+        }
+      }
+    ],
+    "indexSha256": "aaeaa73320493016265e39e18db01add4986a4f2175bbbe036ed541241dd4864"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "427d08825e75099450d5654113bcd4d617a4419f3d3e545e0706db382884d001"
+}

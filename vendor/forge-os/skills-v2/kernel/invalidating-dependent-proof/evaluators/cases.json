@@ -1,0 +1,20 @@
+[
+  {
+    "id": "invalidating-dependent-proof-positive",
+    "kind": "application",
+    "input": "A task requiring Invalidating Dependent Proof",
+    "expectedEvidence": [
+      "Invalidation is transitive and deterministic.",
+      "Historical proof remains visible but cannot satisfy current policy.",
+      "Unaffected branches stay valid."
+    ],
+    "baselineFailure": "Invalidating the whole project for a local change."
+  },
+  {
+    "id": "invalidating-dependent-proof-anti-trigger",
+    "kind": "counter-example",
+    "input": "a cosmetic change does not affect any proof input",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

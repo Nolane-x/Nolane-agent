@@ -1,0 +1,148 @@
+{
+  "name": "developing-features-with-tdd",
+  "version": "0.2.0",
+  "kind": "core",
+  "pack": "implementation",
+  "domain": null,
+  "status": "stable",
+  "stages": [
+    "implementation"
+  ],
+  "domains": [
+    "all"
+  ],
+  "consumes": [
+    "execution-plan",
+    "acceptance-contracts"
+  ],
+  "produces": [
+    "implemented-increment"
+  ],
+  "preconditions": [
+    "intent.confirmed"
+  ],
+  "invalidates": [
+    "downstream:implemented-increment"
+  ],
+  "tools": [
+    "filesystem",
+    "shell"
+  ],
+  "assurance": [
+    "A0",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "conflicts": [],
+  "reference": "skills/references/core/implementation.md",
+  "method": {
+    "focus": "implement one externally observable feature through a verified red-green-refactor cycle",
+    "steps": [
+      "Write the smallest behavior test from the acceptance contract before production code.",
+      "Run it and confirm it fails for the intended missing behavior rather than setup or syntax.",
+      "Implement only enough behavior to pass, then run the focused and relevant regression suites.",
+      "Refactor only while all tests remain green and no behavior changes.",
+      "Record the red output, green output, diff review, and remaining risks."
+    ],
+    "verification": [
+      "Was the failure observed before implementation?",
+      "Does the test assert behavior rather than mocks or internals?",
+      "Did implementation add anything not demanded by the test?",
+      "Are warnings and unrelated regressions zero?"
+    ],
+    "evidence": [
+      "red test log",
+      "green test log",
+      "diff review",
+      "commit hash"
+    ],
+    "traps": [
+      "tests written after code",
+      "broad mocks hiding integration behavior",
+      "speculative options and abstractions"
+    ],
+    "source": "flagship"
+  },
+  "procedure": [
+    "Load one task, its direct contracts, and its failing test.",
+    "Verify the test fails for the intended missing behavior.",
+    "Write the smallest behavior test from the acceptance contract before production code.",
+    "Run it and confirm it fails for the intended missing behavior rather than setup or syntax.",
+    "Implement only enough behavior to pass, then run the focused and relevant regression suites.",
+    "Refactor only while all tests remain green and no behavior changes.",
+    "Record the red output, green output, diff review, and remaining risks.",
+    "Implement the minimum sufficient change.",
+    "Run focused tests, then relevant regression tests.",
+    "Review the diff for complexity, security, and contract drift.",
+    "Commit evidence and hand off to independent review."
+  ],
+  "gate": {
+    "reviewerRole": "independent-reviewer",
+    "rules": [
+      "The output directly and completely performs developing features with tdd within its declared boundary.",
+      "Was the failure observed before implementation?",
+      "Does the test assert behavior rather than mocks or internals?",
+      "Did implementation add anything not demanded by the test?",
+      "Are warnings and unrelated regressions zero?",
+      "Every material claim is traceable to an input, decision, executable check, or evidence item.",
+      "Required fields are complete and machine-readable.",
+      "The producing agent is not the approving reviewer.",
+      "Open uncertainty and residual risk are explicit; critical findings are never hidden by an aggregate score."
+    ],
+    "passCondition": "All mandatory rules pass, evidence targets the current artifact hash, and no unresolved critical finding applies."
+  },
+  "handoff": {
+    "next": {
+      "mode": "graph-router",
+      "outputTypes": [
+        "implemented-increment"
+      ]
+    },
+    "requiredEvidence": [
+      "contract-validation",
+      "independent-review",
+      "red test log",
+      "green test log",
+      "diff review",
+      "commit hash"
+    ],
+    "requiredFields": [
+      "artifactId",
+      "schemaVersion",
+      "sha256",
+      "producingSkill",
+      "producingAgent",
+      "consumedArtifacts",
+      "decisionIds",
+      "evidenceIds",
+      "residualRisks",
+      "validationState",
+      "invalidationTargets",
+      "stopCondition"
+    ],
+    "stopWhen": "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+  },
+  "context": {
+    "estimatedTokens": 1601,
+    "maxArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "verbosity": "domain-precise"
+  },
+  "failureModes": [
+    "guessing a material requirement",
+    "producing prose without the contracted artifact",
+    "self-approving the output",
+    "expanding scope without a decision record",
+    "tests written after code",
+    "broad mocks hiding integration behavior",
+    "speculative options and abstractions"
+  ],
+  "optionalConsumes": [],
+  "requiredTools": [
+    "filesystem",
+    "shell"
+  ],
+  "optionalTools": [],
+  "description": "Use when developing features with tdd is required during implementation work, especially when the result must be traceable, independently reviewable, and safe to hand to another agent."
+}

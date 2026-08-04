@@ -1,0 +1,305 @@
+{
+  "schemaVersion": 2,
+  "id": "designing-information-architecture",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Designing Information Architecture",
+    "description": "Use when designing information architecture within ux lifecycle boundaries, especially when does the artifact make the owned decision for designing information architecture explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "ux"
+    ],
+    "keywords": [
+      "designing-information-architecture",
+      "designing",
+      "information",
+      "architecture",
+      "within",
+      "ux",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require designing information architecture within ux lifecycle boundaries",
+      "the typed inputs for designing-information-architecture are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "product-definition",
+        "schema": "artifact://forgeos/product-definition/v1"
+      },
+      {
+        "type": "user-workflows",
+        "schema": "artifact://forgeos/user-workflows/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "ux-contract",
+        "schema": "artifact://forgeos/ux-contract/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for designing information architecture explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by designing information architecture.",
+        "evidence": "designing-information-architecture-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to designing information architecture.",
+        "evidence": "designing-information-architecture-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply designing information architecture only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "designing-information-architecture-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "designing-information-architecture-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if designing information architecture were incomplete or implemented incorrectly.",
+        "evidence": "designing-information-architecture-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for designing information architecture explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "designing-information-architecture-decision-table",
+      "designing-information-architecture-verification-report",
+      "designing-information-architecture-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "designing-information-architecture-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 731,
+    "hardTokens": 1133,
+    "outputReserveTokens": 283
+  },
+  "quality": {
+    "benchmarkIds": [
+      "designing-information-architecture-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ux-research.research-users",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:designing-information-architecture",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "bee1fd350b68140bfa2ef0b12889706527b2fd2860f1eaa1a6f583534e142eff",
+        "bytes": 975,
+        "tokens": {
+          "gpt-5.6": 263,
+          "claude-opus-4.2": 275,
+          "gemini-3.0-pro": 250,
+          "qwen3.5-32b": 292
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "f2f633601b58b0dc8ee36f38d32bf5f3c434fd2ff22994345593a8ab66ff5c2b",
+        "bytes": 742,
+        "tokens": {
+          "gpt-5.6": 200,
+          "claude-opus-4.2": 210,
+          "gemini-3.0-pro": 191,
+          "qwen3.5-32b": 222
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "0a782f57a50998ab6fcbfd2f3646ba53d1c09324fc8f69d158c79c01e7cfc29b",
+        "bytes": 310,
+        "tokens": {
+          "gpt-5.6": 84,
+          "claude-opus-4.2": 88,
+          "gemini-3.0-pro": 80,
+          "qwen3.5-32b": 93
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "76fd2ca76408035ee1f917ad973d245191d2e9847fba9b52f29b7f58f03bba92",
+        "bytes": 637,
+        "tokens": {
+          "gpt-5.6": 172,
+          "claude-opus-4.2": 180,
+          "gemini-3.0-pro": 164,
+          "qwen3.5-32b": 191
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "97f8e95cd7c6d7007c98532d2ea37879b05974566edfdfe1f7a71f75ebb0fb64",
+        "bytes": 338,
+        "tokens": {
+          "gpt-5.6": 91,
+          "claude-opus-4.2": 96,
+          "gemini-3.0-pro": 87,
+          "qwen3.5-32b": 101
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "f885cc64438ef050807b1e4204756eb63b5751f53b16ab377b7176cee3c2c1ff",
+        "bytes": 248,
+        "tokens": {
+          "gpt-5.6": 67,
+          "claude-opus-4.2": 70,
+          "gemini-3.0-pro": 64,
+          "qwen3.5-32b": 75
+        }
+      }
+    ],
+    "indexSha256": "89786152ff1bf1b3b5cab36e80dc46c7c7a188fa88dbfdc6b2bed112d4fa9c96"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "a24e673d12cbf7c087c1495ef001a6fd39e2ba04c2b8a1dd66bf17afd8f2547f"
+}

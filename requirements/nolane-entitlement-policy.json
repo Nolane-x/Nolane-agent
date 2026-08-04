@@ -1,0 +1,29 @@
+{
+  "schema": "nolane.entitlement-policy.v1",
+  "owner": "Nolane Agent",
+  "defaultTier": "community",
+  "upstreamBillingCopied": false,
+  "secretFields": [],
+  "capabilities": {
+    "community": [
+      "agent:local",
+      "browser:approved-local",
+      "execution:local",
+      "memory:local",
+      "plugins:local-signed",
+      "providers:bring-your-own-key",
+      "sessions:unlimited-local"
+    ],
+    "pro": [
+      "agent:local",
+      "browser:approved-local",
+      "execution:local",
+      "memory:local",
+      "plugins:local-signed",
+      "provider:hosted",
+      "providers:bring-your-own-key",
+      "sessions:unlimited-local",
+      "support:priority"
+    ]
+  }
+}

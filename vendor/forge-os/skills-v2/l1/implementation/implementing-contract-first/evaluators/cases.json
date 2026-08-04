@@ -1,0 +1,38 @@
+[
+  {
+    "id": "implementing-contract-first-application",
+    "kind": "application",
+    "input": "Task directly requiring implementing contract first within implementation lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "implementing-contract-first-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require implementing contract first within implementation lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "implementing-contract-first-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "implementing-contract-first-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "implementing-contract-first-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "implementing-contract-first-transfer",
+    "kind": "transfer",
+    "input": "Apply the implementing-contract-first mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

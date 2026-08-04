@@ -1,0 +1,38 @@
+[
+  {
+    "id": "mapping-existing-solutions-application",
+    "kind": "application",
+    "input": "Task directly requiring mapping existing solutions within research lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "mapping-existing-solutions-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require mapping existing solutions within research lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "mapping-existing-solutions-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "mapping-existing-solutions-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "mapping-existing-solutions-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "mapping-existing-solutions-transfer",
+    "kind": "transfer",
+    "input": "Apply the mapping-existing-solutions mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

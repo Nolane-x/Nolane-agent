@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forgeos.dev/schemas/v0.4/capability.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "capabilityId",
+    "title",
+    "domain",
+    "discipline",
+    "intentSignals",
+    "consumes",
+    "produces",
+    "evidence",
+    "riskClass",
+    "knowledgeTopics",
+    "requiredTools",
+    "conflictTags",
+    "preferredSourceIds",
+    "knowledgePackId",
+    "knowledgeSourceIds",
+    "mcpCapabilities",
+    "qualityDimensions",
+    "dependencies",
+    "deliveryModel",
+    "phase",
+    "ordinal",
+    "providerPolicy",
+    "contextBudget"
+  ],
+  "properties": {
+    "capabilityId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,159}$"
+    },
+    "title": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,159}$"
+    },
+    "discipline": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,159}$"
+    },
+    "intentSignals": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "consumes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "produces": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "riskClass": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "knowledgeTopics": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "requiredTools": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "conflictTags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "preferredSourceIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "knowledgePackId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,159}$"
+    },
+    "knowledgeSourceIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "mcpCapabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "qualityDimensions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "deliveryModel": {
+      "const": "federated-resolution"
+    },
+    "phase": {
+      "type": "string"
+    },
+    "ordinal": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "providerPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimumTrust",
+        "allowLinkOnly",
+        "preferLocal"
+      ],
+      "properties": {
+        "minimumTrust": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "allowLinkOnly": {
+          "type": "boolean"
+        },
+        "preferLocal": {
+          "type": "boolean"
+        }
+      }
+    },
+    "contextBudget": {
+      "type": "integer",
+      "minimum": 128,
+      "maximum": 100000
+    }
+  }
+}

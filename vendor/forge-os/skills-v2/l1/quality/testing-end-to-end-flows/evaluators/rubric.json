@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "items": {
+    "triggerPrecision": {
+      "weight": 0.2
+    },
+    "methodSpecificity": {
+      "weight": 0.25
+    },
+    "decisionCompleteness": {
+      "weight": 0.15
+    },
+    "failureCoverage": {
+      "weight": 0.15
+    },
+    "verification": {
+      "weight": 0.25
+    }
+  },
+  "criticalBlockers": [
+    "self-attestation",
+    "missing-evidence",
+    "scope-omission"
+  ]
+}

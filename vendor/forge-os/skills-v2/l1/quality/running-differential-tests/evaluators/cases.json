@@ -1,0 +1,38 @@
+[
+  {
+    "id": "running-differential-tests-application",
+    "kind": "application",
+    "input": "Task directly requiring running differential tests within quality lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "running-differential-tests-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require running differential tests within quality lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "running-differential-tests-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "running-differential-tests-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "running-differential-tests-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "running-differential-tests-transfer",
+    "kind": "transfer",
+    "input": "Apply the running-differential-tests mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

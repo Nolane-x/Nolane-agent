@@ -1,0 +1,45 @@
+html.forge-reduced-effects *,
+html.forge-reduced-effects *::before,
+html.forge-reduced-effects *::after {
+  animation: none !important;
+  transition-duration: 0.001ms !important;
+  transition-delay: 0ms !important;
+  scroll-behavior: auto !important;
+}
+
+html.forge-reduced-effects *,
+html.forge-reduced-effects *::before,
+html.forge-reduced-effects *::after {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html.forge-suspend-optional-visuals .home-ambient,
+html.forge-suspend-optional-visuals [class*="aurora"],
+html.forge-suspend-optional-visuals [class*="orbit"],
+html.forge-suspend-optional-visuals [class*="animated-background"],
+html.forge-suspend-optional-visuals [class*="neural-grid"] {
+  display: none !important;
+}
+
+html.forge-profile-lite [class*="graph-grid"],
+html.forge-resource-brownout [class*="graph-grid"],
+html.forge-resource-emergency [class*="graph-grid"] {
+  opacity: 0.06 !important;
+  mask-image: none !important;
+}
+
+html.forge-resource-emergency .trace-payload,
+html.forge-resource-emergency .activity-stream,
+html.forge-resource-emergency .recent-runs {
+  contain: strict;
+  content-visibility: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

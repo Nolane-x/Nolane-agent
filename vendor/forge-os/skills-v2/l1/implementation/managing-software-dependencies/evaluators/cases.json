@@ -1,0 +1,38 @@
+[
+  {
+    "id": "managing-software-dependencies-application",
+    "kind": "application",
+    "input": "Task directly requiring managing software dependencies within implementation lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "managing-software-dependencies-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require managing software dependencies within implementation lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "managing-software-dependencies-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "managing-software-dependencies-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "managing-software-dependencies-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "managing-software-dependencies-transfer",
+    "kind": "transfer",
+    "input": "Apply the managing-software-dependencies mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

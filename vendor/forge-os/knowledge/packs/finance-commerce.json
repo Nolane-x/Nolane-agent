@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.finance-commerce",
+  "domain": "finance-commerce",
+  "title": "Finance and Commerce Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "payments",
+    "pricing",
+    "risk",
+    "fraud",
+    "accounting",
+    "inventory",
+    "checkout",
+    "reporting"
+  ],
+  "capabilities": [
+    "finance-commerce.map-landscape",
+    "finance-commerce.frame-problem",
+    "finance-commerce.research-users",
+    "finance-commerce.define-requirements",
+    "finance-commerce.model-domain",
+    "finance-commerce.compare-alternatives",
+    "finance-commerce.design-concept",
+    "finance-commerce.prototype-critical-flow",
+    "finance-commerce.validate-prototype",
+    "finance-commerce.design-architecture",
+    "finance-commerce.model-data",
+    "finance-commerce.model-threats",
+    "finance-commerce.plan-delivery",
+    "finance-commerce.implement-core",
+    "finance-commerce.integrate-dependencies",
+    "finance-commerce.verify-contracts",
+    "finance-commerce.test-boundaries",
+    "finance-commerce.test-resilience",
+    "finance-commerce.test-performance",
+    "finance-commerce.test-security",
+    "finance-commerce.audit-accessibility",
+    "finance-commerce.optimize-quality",
+    "finance-commerce.optimize-cost",
+    "finance-commerce.document-system",
+    "finance-commerce.prepare-migration",
+    "finance-commerce.plan-rollout",
+    "finance-commerce.instrument-observability",
+    "finance-commerce.operate-lifecycle",
+    "finance-commerce.respond-incidents",
+    "finance-commerce.govern-evolution",
+    "finance-commerce.measure-outcomes",
+    "finance-commerce.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "owasp-asvs",
+      "title": "OWASP ASVS",
+      "url": "https://owasp.org/www-project-application-security-verification-standard/",
+      "authority": "standards-body",
+      "trust": "verified",
+      "revision": "web:2026-07-25",
+      "license": {
+        "spdx": "CC-BY-SA-4.0",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

@@ -1,0 +1,49 @@
+services:
+  forgeos:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: forgeos:0.4.0
+    restart: unless-stopped
+    init: true
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      HOST: 0.0.0.0
+      FORGEOS_PORT: 8787
+      FORGEOS_STORAGE_BACKEND: sqlite
+      FORGEOS_DATA_DIR: /var/lib/forgeos
+      FORGEOS_API_KEY_FILE: /run/secrets/forgeos_api_key
+      FORGEOS_PUBLIC_BASE_URL: ${FORGEOS_PUBLIC_BASE_URL:?set FORGEOS_PUBLIC_BASE_URL}
+      FORGEOS_ALLOWED_ORIGINS: ${FORGEOS_ALLOWED_ORIGINS:?set FORGEOS_ALLOWED_ORIGINS}
+      NODE_ENV: production
+    secrets:
+      - forgeos_api_key
+    volumes:
+      - forgeos-data:/var/lib/forgeos
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    ports:
+      - "127.0.0.1:${FORGEOS_PORT:-8787}:8787"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8787/readyz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+        reservations:
+          memory: 256M
+
+secrets:
+  forgeos_api_key:
+    file: ${FORGEOS_API_KEY_FILE:-./secrets/forgeos_api_key}
+
+volumes:
+  forgeos-data:

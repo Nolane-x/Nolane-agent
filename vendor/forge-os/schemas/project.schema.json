@@ -1,0 +1,1248 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forgeos.dev/schemas/project.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "revision",
+    "semanticRevision",
+    "id",
+    "name",
+    "domain",
+    "assurance",
+    "stage",
+    "createdAt",
+    "updatedAt",
+    "access",
+    "metadata",
+    "research",
+    "ideas",
+    "scores",
+    "decisions",
+    "artifacts",
+    "evidence",
+    "gates",
+    "findings",
+    "risks",
+    "routes",
+    "skillUtility",
+    "skillRuns",
+    "pendingApprovals",
+    "history",
+    "audit"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 5
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "semanticRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^forge_[A-Za-z0-9_-]+$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "domain": {
+      "enum": [
+        "all",
+        "saas",
+        "automation",
+        "developer-tools",
+        "browser-extensions",
+        "games",
+        "ai-products",
+        "data-platforms",
+        "mobile",
+        "desktop",
+        "ecommerce",
+        "enterprise",
+        "api-products",
+        "visual-design",
+        "interactive-3d",
+        "physical-products",
+        "physical-ai"
+      ]
+    },
+    "assurance": {
+      "enum": [
+        "A0",
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ]
+    },
+    "stage": {
+      "enum": [
+        "intent",
+        "discovery",
+        "research",
+        "divergence",
+        "synthesis",
+        "selection",
+        "product-definition",
+        "ux-design",
+        "architecture",
+        "planning",
+        "implementation",
+        "verification",
+        "release-readiness",
+        "released"
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "access": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ownerPrincipalId",
+        "ownerTrustDomain",
+        "entries"
+      ],
+      "properties": {
+        "ownerPrincipalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "ownerTrustDomain": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "principalId",
+              "trustDomain",
+              "capabilities",
+              "grantedBy",
+              "grantedAt"
+            ],
+            "properties": {
+              "principalId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "trustDomain": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "capabilities": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "read",
+                    "write",
+                    "review",
+                    "release",
+                    "admin"
+                  ]
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "grantedBy": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "type",
+                  "roles",
+                  "trustDomain"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9:._@/-]{0,159}$"
+                  },
+                  "type": {
+                    "enum": [
+                      "human",
+                      "agent",
+                      "service",
+                      "system"
+                    ]
+                  },
+                  "roles": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "uniqueItems": true
+                  },
+                  "scopes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "uniqueItems": true
+                  },
+                  "trustDomain": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  }
+                }
+              },
+              "grantedAt": {
+                "type": "string",
+                "minLength": 1,
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "intent": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": true
+    },
+    "brief": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": true
+    },
+    "research": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+      },
+      "uniqueItems": true
+    },
+    "ideas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "sha256",
+          "fingerprint"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "sha256": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "fingerprint": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    },
+    "scores": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "ideaId",
+          "ideaSha256",
+          "evaluator",
+          "rubricVersion"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "ideaId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "ideaSha256": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "evaluator": {
+            "type": "object",
+            "required": [
+              "id",
+              "type",
+              "roles",
+              "trustDomain"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9:._@/-]{0,159}$"
+              },
+              "type": {
+                "enum": [
+                  "human",
+                  "agent",
+                  "service",
+                  "system"
+                ]
+              },
+              "roles": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "scopes": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "trustDomain": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            }
+          },
+          "rubricVersion": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "selectedIdeaId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "selectionReason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://forgeos.dev/schemas/artifact.schema.json",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "projectId",
+          "type",
+          "slot",
+          "schemaVersion",
+          "version",
+          "state",
+          "sha256",
+          "contentHash",
+          "envelopeHash",
+          "title",
+          "content",
+          "producedBy",
+          "consumes",
+          "dependencyHashes",
+          "decisions",
+          "residualRisks",
+          "evidence",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+          },
+          "projectId": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+          },
+          "type": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "slot": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "schemaVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "state": {
+            "enum": [
+              "draft",
+              "review",
+              "verified",
+              "superseded",
+              "invalidated"
+            ]
+          },
+          "sha256": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "contentHash": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "envelopeHash": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "content": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "producedBy": {
+            "type": "object",
+            "required": [
+              "skill",
+              "principalId",
+              "principalType",
+              "trustDomain"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "skill": {
+                "type": "string",
+                "minLength": 1
+              },
+              "skillRunId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "principalId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9:._@/-]{0,159}$"
+              },
+              "principalType": {
+                "enum": [
+                  "human",
+                  "agent",
+                  "service",
+                  "system"
+                ]
+              },
+              "trustDomain": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            }
+          },
+          "consumes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+            },
+            "uniqueItems": true,
+            "maxItems": 200
+          },
+          "dependencyHashes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "decisions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+            },
+            "uniqueItems": true,
+            "maxItems": 200
+          },
+          "residualRisks": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+            },
+            "uniqueItems": true,
+            "maxItems": 200
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+            },
+            "uniqueItems": true,
+            "maxItems": 500
+          },
+          "sourceIdeaId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sourceIdeaSha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "supersedes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "supersededBy": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "migration": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true
+          },
+          "review": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true
+          },
+          "verification": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true
+          },
+          "invalidation": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true
+          },
+          "createdAt": {
+            "type": "string",
+            "minLength": 1,
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "minLength": 1,
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://forgeos.dev/schemas/evidence.schema.json",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "title",
+          "status",
+          "summary",
+          "sha256",
+          "subject",
+          "producer",
+          "method",
+          "createdAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+          },
+          "type": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "status": {
+            "enum": [
+              "pass",
+              "fail",
+              "inconclusive",
+              "unverified"
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "uri": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "sha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "subject": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "projectId": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "semanticRevision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "artifactId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "artifactSha256": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "findingId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "skillRunId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "sourceCommit": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 128
+              }
+            }
+          },
+          "producer": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "required": [
+              "id",
+              "type",
+              "roles",
+              "trustDomain"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9:._@/-]{0,159}$"
+              },
+              "type": {
+                "enum": [
+                  "human",
+                  "agent",
+                  "service",
+                  "system"
+                ]
+              },
+              "roles": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "scopes": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "trustDomain": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            }
+          },
+          "requestedBy": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "required": [
+              "id",
+              "type",
+              "roles",
+              "trustDomain"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9:._@/-]{0,159}$"
+              },
+              "type": {
+                "enum": [
+                  "human",
+                  "agent",
+                  "service",
+                  "system"
+                ]
+              },
+              "roles": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "scopes": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "trustDomain": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            }
+          },
+          "method": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true
+          },
+          "receipt": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "executionId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "trusted": {
+                "const": true
+              },
+              "providerId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "providerVersion": {
+                "type": "string",
+                "minLength": 1
+              },
+              "payloadSha256": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "requestSha256": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "claimsSha256": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "requestedBy": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "type",
+                  "roles",
+                  "trustDomain"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9:._@/-]{0,159}$"
+                  },
+                  "type": {
+                    "enum": [
+                      "human",
+                      "agent",
+                      "service",
+                      "system"
+                    ]
+                  },
+                  "roles": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "uniqueItems": true
+                  },
+                  "scopes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "uniqueItems": true
+                  },
+                  "trustDomain": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  }
+                }
+              },
+              "issuedBy": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "type",
+                  "roles",
+                  "trustDomain"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9:._@/-]{0,159}$"
+                  },
+                  "type": {
+                    "enum": [
+                      "human",
+                      "agent",
+                      "service",
+                      "system"
+                    ]
+                  },
+                  "roles": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "uniqueItems": true
+                  },
+                  "scopes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "uniqueItems": true
+                  },
+                  "trustDomain": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  }
+                }
+              },
+              "completedAt": {
+                "type": "string",
+                "minLength": 1,
+                "format": "date-time"
+              },
+              "receiptSha256": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "createdAt": {
+            "type": "string",
+            "minLength": 1,
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "gates": {
+      "type": "array",
+      "items": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://forgeos.dev/schemas/gate-result.schema.json",
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "id",
+          "stage",
+          "status",
+          "score",
+          "rules",
+          "checkedAt",
+          "evaluatedRevision",
+          "evaluatedSemanticRevision",
+          "inputSha256"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+          },
+          "stage": {
+            "enum": [
+              "intent",
+              "discovery",
+              "research",
+              "divergence",
+              "synthesis",
+              "selection",
+              "product-definition",
+              "ux-design",
+              "architecture",
+              "planning",
+              "implementation",
+              "verification",
+              "release-readiness",
+              "released"
+            ]
+          },
+          "status": {
+            "enum": [
+              "pass",
+              "fail",
+              "blocked",
+              "stale"
+            ]
+          },
+          "score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,99}$"
+            },
+            "uniqueItems": true
+          },
+          "checkedAt": {
+            "type": "string",
+            "minLength": 1,
+            "format": "date-time"
+          },
+          "evaluatedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "evaluatedSemanticRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "inputSha256": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "routes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "skillUtility": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "skillRuns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "pendingApprovals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "sealedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "releaseRevision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+    "migrations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "audit": {
+      "type": "object",
+      "required": [
+        "sequence",
+        "headSha256",
+        "events"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "headSha256": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "events": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "sequence",
+              "type",
+              "revision",
+              "semanticRevision",
+              "stateSha256",
+              "prevSha256",
+              "eventSha256",
+              "metadata",
+              "at"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "sequence": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "semanticRevision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "stateSha256": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "prevSha256": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "eventSha256": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "metadata": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "at": {
+                "type": "string",
+                "minLength": 1,
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    }
+  }
+}

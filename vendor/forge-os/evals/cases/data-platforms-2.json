@@ -1,0 +1,34 @@
+{
+  "id": "data-platforms-2",
+  "domain": "data-platforms",
+  "mode": "grounded",
+  "prompt": "Design a lineage-first data workflow with schema evolution and cheap recovery.",
+  "forbiddenPatterns": [
+    "generic chatbot",
+    "rename an existing product",
+    "add AI without a new mechanism"
+  ],
+  "requiredEvidence": [
+    "closest existing pattern",
+    "meaningful differences",
+    "cheapest falsifiable experiment"
+  ],
+  "rubric": {
+    "novelty": {
+      "weight": 0.35,
+      "min": 70
+    },
+    "usefulness": {
+      "weight": 0.3,
+      "min": 70
+    },
+    "distinctMechanisms": {
+      "weight": 0.2,
+      "min": 3
+    },
+    "testability": {
+      "weight": 0.15,
+      "min": 65
+    }
+  }
+}

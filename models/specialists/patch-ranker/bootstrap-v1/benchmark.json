@@ -1,0 +1,76 @@
+{
+  "schema": "nolane.small-model.bootstrap-specialist-benchmark.v1",
+  "specialist": "patch-ranker",
+  "artifactSha256": "1fc552f6caf6dce9c26828a346a4f11faa3afce5630e5bb6c793c2b91d3d76c6",
+  "datasetReceiptSha256": "82628b9db5490b46309438b0bda0e157874e6bfebd2d671e5711e38c3053e3af",
+  "validation": {
+    "schema": "nolane.small-model.specialist-evaluation.v1",
+    "artifactSha256": "1fc552f6caf6dce9c26828a346a4f11faa3afce5630e5bb6c793c2b91d3d76c6",
+    "specialist": "patch-ranker",
+    "independent": true,
+    "heldOut": true,
+    "examples": 24,
+    "correct": 24,
+    "accuracy": 1,
+    "abstentions": 0,
+    "safetyViolations": 0,
+    "baselineSafetyViolations": 0,
+    "thresholds": {
+      "minAccuracy": 0.95
+    },
+    "confusion": {
+      "accept->accept": 6,
+      "reject->reject": 6,
+      "review->review": 6,
+      "rollback->rollback": 6
+    },
+    "allowed": true,
+    "claims": {
+      "boundedHeldOutEvidence": true,
+      "generalCodingIntelligence": false,
+      "competitorSuperiority": false
+    },
+    "receiptSha256": "e0f16f452a5d5aae7b5fc2d8552d6ba48e7ba7c83601eba7722f6653daab4598"
+  },
+  "heldOut": {
+    "schema": "nolane.small-model.specialist-evaluation.v1",
+    "artifactSha256": "1fc552f6caf6dce9c26828a346a4f11faa3afce5630e5bb6c793c2b91d3d76c6",
+    "specialist": "patch-ranker",
+    "independent": true,
+    "heldOut": true,
+    "examples": 24,
+    "correct": 24,
+    "accuracy": 1,
+    "abstentions": 0,
+    "safetyViolations": 0,
+    "baselineSafetyViolations": 0,
+    "thresholds": {
+      "minAccuracy": 0.95
+    },
+    "confusion": {
+      "accept->accept": 6,
+      "reject->reject": 6,
+      "review->review": 6,
+      "rollback->rollback": 6
+    },
+    "allowed": true,
+    "claims": {
+      "boundedHeldOutEvidence": true,
+      "generalCodingIntelligence": false,
+      "competitorSuperiority": false
+    },
+    "receiptSha256": "e0f16f452a5d5aae7b5fc2d8552d6ba48e7ba7c83601eba7722f6653daab4598"
+  },
+  "resourceProfile": {
+    "runtime": "node-js-linear-policy",
+    "dimensions": 256,
+    "parameters": 1028
+  },
+  "claims": {
+    "boundedSpecialistModel": true,
+    "generalCodingIntelligence": false,
+    "frontierParity": false,
+    "competitorSuperiority": false
+  },
+  "receiptSha256": "07aa5bef26359578695a89168e63fe9ffc09001002da86763567fcf08e429c1d"
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "defining-error-budget-policy-application",
+    "kind": "application",
+    "input": "Task directly requiring defining error budget policy within operations lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "defining-error-budget-policy-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require defining error budget policy within operations lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "defining-error-budget-policy-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "defining-error-budget-policy-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "defining-error-budget-policy-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "defining-error-budget-policy-transfer",
+    "kind": "transfer",
+    "input": "Apply the defining-error-budget-policy mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

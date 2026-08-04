@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "decision": {
+    "promote": "No critical failures and measurable pass-rate or quality improvement.",
+    "quarantine": "Any critical failure, pass-rate regression, or token-only growth beyond policy."
+  },
+  "metrics": ["passRate", "quality", "tokenCount", "criticalFailures"]
+}

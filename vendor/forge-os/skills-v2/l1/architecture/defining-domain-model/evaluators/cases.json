@@ -1,0 +1,38 @@
+[
+  {
+    "id": "defining-domain-model-application",
+    "kind": "application",
+    "input": "Task directly requiring defining domain model within architecture lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "defining-domain-model-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require defining domain model within architecture lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "defining-domain-model-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "defining-domain-model-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "defining-domain-model-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "defining-domain-model-transfer",
+    "kind": "transfer",
+    "input": "Apply the defining-domain-model mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

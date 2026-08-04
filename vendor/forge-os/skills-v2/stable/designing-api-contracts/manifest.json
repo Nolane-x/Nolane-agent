@@ -1,0 +1,290 @@
+{
+  "schemaVersion": 2,
+  "id": "designing-api-contracts",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "stable",
+  "identity": {
+    "title": "Designing Api Contracts",
+    "description": "Use when define stable request, response, error, idempotency, authorization, pagination, versioning, and observability contracts before implementation, especially when can a client recover from every documented error?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "architecture"
+    ],
+    "keywords": [
+      "designing-api-contracts",
+      "define",
+      "stable",
+      "request",
+      "response",
+      "error",
+      "idempotency",
+      "authorization",
+      "pagination"
+    ],
+    "antiTriggers": [
+      "internal code with no boundary or consumer",
+      "observability instrumentation without an API change"
+    ]
+  },
+  "relations": {
+    "requires": [
+      "system-boundaries",
+      "product-definition"
+    ],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "system-boundaries",
+        "schema": "artifact://forgeos/system-boundaries/v1"
+      },
+      {
+        "type": "product-definition",
+        "schema": "artifact://forgeos/product-definition/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "architecture-decision",
+        "schema": "artifact://forgeos/architecture-decision/v1"
+      }
+    ],
+    "invariants": [
+      "Output remains within the designing-api-contracts responsibility boundary",
+      "Every pass claim is backed by current trusted evidence"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Map API operations to user and domain capabilities rather than database tables.",
+        "evidence": "API specification"
+      },
+      {
+        "id": "step-2",
+        "action": "Define schemas, constraints, examples, errors, side effects, authorization, and idempotency semantics.",
+        "evidence": "contract tests"
+      },
+      {
+        "id": "step-3",
+        "action": "Specify pagination, filtering, concurrency control, rate limits, retries, and backward compatibility.",
+        "evidence": "error catalog"
+      },
+      {
+        "id": "step-4",
+        "action": "Generate consumer and provider contract tests from the same specification.",
+        "evidence": "compatibility report"
+      },
+      {
+        "id": "step-5",
+        "action": "Review sensitive fields, tenant boundaries, and logging behavior before implementation.",
+        "evidence": "compatibility report"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required tool, input, or approval is unavailable",
+        "action": "stop and record a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Can a client recover from every documented error?",
+      "Are retries safe and duplicate requests defined?",
+      "Does authorization apply to each object and action?",
+      "Can an old client continue after a compatible server change?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "API specification",
+      "contract tests",
+      "error catalog",
+      "compatibility report"
+    ],
+    "evaluatorIds": [
+      "designing-api-contracts-evaluator"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 670,
+    "hardTokens": 1082,
+    "outputReserveTokens": 270
+  },
+  "quality": {
+    "benchmarkIds": [
+      "v04-designing-api-contracts-behavior"
+    ],
+    "minimumSkillDepthScore": 82,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2"
+  ],
+  "capabilityMappings": [
+    {
+      "capabilityId": "api-integration.define-requirements",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:designing-api-contracts",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "api-integration.verify-contracts",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:designing-api-contracts",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.designing-api-contracts",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:designing-api-contracts",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "26f0fb8fd1eae1324053f8209a8ae8d79678ca465aee280a3b1a10a133fa10ad",
+        "bytes": 922,
+        "tokens": {
+          "gpt-5.6": 248,
+          "claude-opus-4.2": 260,
+          "gemini-3.0-pro": 237,
+          "qwen3.5-32b": 276
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "80a79985bb441fc7580b5bcbf02dc131cac00897fb4f15563af2db4ee6c68114",
+        "bytes": 875,
+        "tokens": {
+          "gpt-5.6": 236,
+          "claude-opus-4.2": 247,
+          "gemini-3.0-pro": 225,
+          "qwen3.5-32b": 262
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "f9bfe6ef36de59d9db6341e6221b617221c90ebbc72b538c413f967f5f21581a",
+        "bytes": 346,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 98,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 104
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "16fd6be5c01778d37a354db874be497110dee4fdf4e301e47ae0665484a1e01b",
+        "bytes": 332,
+        "tokens": {
+          "gpt-5.6": 90,
+          "claude-opus-4.2": 94,
+          "gemini-3.0-pro": 86,
+          "qwen3.5-32b": 100
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "80f2920ffd209918d9e5917f4a2a3016ba979ee9a6d3f8d4f0e2e029958ca849",
+        "bytes": 248,
+        "tokens": {
+          "gpt-5.6": 67,
+          "claude-opus-4.2": 70,
+          "gemini-3.0-pro": 64,
+          "qwen3.5-32b": 75
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "4538c8fe28fd30039a5b90b42314d6203cac40f5b3f475023a254010a726af91",
+        "bytes": 336,
+        "tokens": {
+          "gpt-5.6": 91,
+          "claude-opus-4.2": 95,
+          "gemini-3.0-pro": 87,
+          "qwen3.5-32b": 101
+        }
+      }
+    ],
+    "indexSha256": "bd4630c3c887b0dab8348a150e23b5ee8124ef255d44cbee64f23fa27eaed102"
+  },
+  "manifestSha256": "402acd72632e36097dd8870887eb30680bdef60991becf0d89933e2cfd8d0cc5",
+  "kernelLevel": "L1"
+}

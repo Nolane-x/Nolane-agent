@@ -1,0 +1,20 @@
+[
+  {
+    "id": "enforcing-review-separation-positive",
+    "kind": "application",
+    "input": "A task requiring Enforcing Review Separation",
+    "expectedEvidence": [
+      "Producer cannot be sole verifier for critical work.",
+      "Reviewer authority is scoped to tenant and artifact type.",
+      "Separation remains true after role delegation."
+    ],
+    "baselineFailure": "Comparing display names instead of authenticated principals."
+  },
+  {
+    "id": "enforcing-review-separation-anti-trigger",
+    "kind": "counter-example",
+    "input": "A0 prototype policy explicitly permits self-review",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.ui-design",
+  "domain": "ui-design",
+  "title": "UI Design Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "layout",
+    "typography",
+    "color",
+    "components",
+    "interaction",
+    "accessibility",
+    "responsive design",
+    "design tokens"
+  ],
+  "capabilities": [
+    "ui-design.map-landscape",
+    "ui-design.frame-problem",
+    "ui-design.research-users",
+    "ui-design.define-requirements",
+    "ui-design.model-domain",
+    "ui-design.compare-alternatives",
+    "ui-design.design-concept",
+    "ui-design.prototype-critical-flow",
+    "ui-design.validate-prototype",
+    "ui-design.design-architecture",
+    "ui-design.model-data",
+    "ui-design.model-threats",
+    "ui-design.plan-delivery",
+    "ui-design.implement-core",
+    "ui-design.integrate-dependencies",
+    "ui-design.verify-contracts",
+    "ui-design.test-boundaries",
+    "ui-design.test-resilience",
+    "ui-design.test-performance",
+    "ui-design.test-security",
+    "ui-design.audit-accessibility",
+    "ui-design.optimize-quality",
+    "ui-design.optimize-cost",
+    "ui-design.document-system",
+    "ui-design.prepare-migration",
+    "ui-design.plan-rollout",
+    "ui-design.instrument-observability",
+    "ui-design.operate-lifecycle",
+    "ui-design.respond-incidents",
+    "ui-design.govern-evolution",
+    "ui-design.measure-outcomes",
+    "ui-design.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "vercel-skills-cli",
+      "title": "Vercel open agent skills ecosystem",
+      "url": "https://github.com/vercel-labs/skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "material-design",
+      "title": "Material Design",
+      "url": "https://m3.material.io/",
+      "authority": "vendor",
+      "trust": "verified",
+      "revision": "web:2026-07-25",
+      "license": {
+        "spdx": "Reference",
+        "mode": "link-only"
+      }
+    },
+    {
+      "id": "apple-hig",
+      "title": "Apple Human Interface Guidelines",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/",
+      "authority": "vendor",
+      "trust": "verified",
+      "revision": "web:2026-07-25",
+      "license": {
+        "spdx": "Reference",
+        "mode": "link-only"
+      }
+    },
+    {
+      "id": "w3c-wcag",
+      "title": "W3C WCAG",
+      "url": "https://www.w3.org/WAI/standards-guidelines/wcag/",
+      "authority": "standards-body",
+      "trust": "verified",
+      "revision": "web:2026-07-25",
+      "license": {
+        "spdx": "W3C-Document",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 2,
+  "id": "backcasting-from-the-future",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Backcasting From The Future",
+    "description": "Use when backcasting from the future within creativity lifecycle boundaries, especially when does the artifact make the owned decision for backcasting from the future explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "creativity"
+    ],
+    "keywords": [
+      "backcasting-from-the-future",
+      "backcasting",
+      "from",
+      "the",
+      "future",
+      "within",
+      "creativity",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require backcasting from the future within creativity lifecycle boundaries",
+      "the typed inputs for backcasting-from-the-future are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "creative-brief",
+        "schema": "artifact://forgeos/creative-brief/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "candidate-ideas",
+        "schema": "artifact://forgeos/candidate-ideas/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for backcasting from the future explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by backcasting from the future.",
+        "evidence": "backcasting-from-the-future-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to backcasting from the future.",
+        "evidence": "backcasting-from-the-future-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply backcasting from the future only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "backcasting-from-the-future-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "backcasting-from-the-future-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if backcasting from the future were incomplete or implemented incorrectly.",
+        "evidence": "backcasting-from-the-future-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for backcasting from the future explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "backcasting-from-the-future-decision-table",
+      "backcasting-from-the-future-verification-report",
+      "backcasting-from-the-future-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "backcasting-from-the-future-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 708,
+    "hardTokens": 1104,
+    "outputReserveTokens": 276
+  },
+  "quality": {
+    "benchmarkIds": [
+      "backcasting-from-the-future-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "graphic-design.design-concept",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:backcasting-from-the-future",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "5b45821f4185c8b67ce4f6a423d617d62008c53f1a1beab8fd4e4aa4f3dc58dd",
+        "bytes": 950,
+        "tokens": {
+          "gpt-5.6": 256,
+          "claude-opus-4.2": 268,
+          "gemini-3.0-pro": 244,
+          "qwen3.5-32b": 284
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "ad36463242aff9a3a9110914aa459d809115e9a2a61671f80eb35d7b35573d06",
+        "bytes": 714,
+        "tokens": {
+          "gpt-5.6": 192,
+          "claude-opus-4.2": 202,
+          "gemini-3.0-pro": 184,
+          "qwen3.5-32b": 214
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "636f6de324c3ef2827808eb1c351333ea92a87f866ea952095ecce47877cf1f3",
+        "bytes": 303,
+        "tokens": {
+          "gpt-5.6": 82,
+          "claude-opus-4.2": 86,
+          "gemini-3.0-pro": 78,
+          "qwen3.5-32b": 91
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "c65e7a74df89be4ff4f52d5646459375d808b5dde3bea84d24b1b2fcf7b18c44",
+        "bytes": 609,
+        "tokens": {
+          "gpt-5.6": 164,
+          "claude-opus-4.2": 172,
+          "gemini-3.0-pro": 157,
+          "qwen3.5-32b": 182
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "a639d5fdd655866cc3f6651a4a3f901e76774616b6df273bf186dc94b6154786",
+        "bytes": 331,
+        "tokens": {
+          "gpt-5.6": 89,
+          "claude-opus-4.2": 94,
+          "gemini-3.0-pro": 85,
+          "qwen3.5-32b": 99
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "cc0784c928b2b7fe86814bc8f6ad7b759b3e825aa172bdec62fbb1f351916627",
+        "bytes": 241,
+        "tokens": {
+          "gpt-5.6": 65,
+          "claude-opus-4.2": 68,
+          "gemini-3.0-pro": 62,
+          "qwen3.5-32b": 72
+        }
+      }
+    ],
+    "indexSha256": "70911ad72b7b831b446111f2ff3c24e25e696aad17de1c1cdbe23626df4c2c25"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "a80dc8ce41dc7ffdc01db78f1c397c925f88d331cda26712bfa5407a9185667f"
+}

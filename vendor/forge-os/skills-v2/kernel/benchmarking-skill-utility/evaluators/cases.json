@@ -1,0 +1,20 @@
+[
+  {
+    "id": "benchmarking-skill-utility-positive",
+    "kind": "application",
+    "input": "A task requiring Benchmarking Skill Utility",
+    "expectedEvidence": [
+      "Producer cannot self-report decisive metrics.",
+      "Confidence lower bounds govern promotion.",
+      "Utility remains segmented by model and task class."
+    ],
+    "baselineFailure": "Comparing runs on different case sets."
+  },
+  {
+    "id": "benchmarking-skill-utility-anti-trigger",
+    "kind": "counter-example",
+    "input": "single anecdotal success without a baseline",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

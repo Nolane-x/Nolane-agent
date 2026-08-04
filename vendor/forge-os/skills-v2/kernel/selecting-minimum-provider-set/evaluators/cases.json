@@ -1,0 +1,20 @@
+[
+  {
+    "id": "selecting-minimum-provider-set-positive",
+    "kind": "application",
+    "input": "A task requiring Selecting the Minimum Provider Set",
+    "expectedEvidence": [
+      "No selected provider is redundant for the current route.",
+      "Knowledge mappings are not counted as procedural execution.",
+      "Credential scope is minimal."
+    ],
+    "baselineFailure": "Selecting one provider of every kind by default."
+  },
+  {
+    "id": "selecting-minimum-provider-set-anti-trigger",
+    "kind": "counter-example",
+    "input": "the selected technique has one mandatory provider",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

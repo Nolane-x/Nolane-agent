@@ -1,0 +1,287 @@
+{
+  "schemaVersion": 2,
+  "id": "choosing-system-architecture",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "stable",
+  "identity": {
+    "title": "Choosing System Architecture",
+    "description": "Use when select the simplest architecture that satisfies quality attributes, failure boundaries, extension needs, and operational constraints, especially when can the architecture be explained through bounded responsibilities?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "architecture"
+    ],
+    "keywords": [
+      "choosing-system-architecture",
+      "select",
+      "the",
+      "simplest",
+      "architecture",
+      "that",
+      "satisfies",
+      "quality",
+      "attributes"
+    ],
+    "antiTriggers": [
+      "a local implementation detail with no system trade-off",
+      "an architecture decision already fixed by a confirmed constraint"
+    ]
+  },
+  "relations": {
+    "requires": [
+      "product-definition",
+      "ux-contract"
+    ],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "product-definition",
+        "schema": "artifact://forgeos/product-definition/v1"
+      },
+      {
+        "type": "ux-contract",
+        "schema": "artifact://forgeos/ux-contract/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "system-boundaries",
+        "schema": "artifact://forgeos/system-boundaries/v1"
+      },
+      {
+        "type": "architecture-decision",
+        "schema": "artifact://forgeos/architecture-decision/v1"
+      }
+    ],
+    "invariants": [
+      "Output remains within the choosing-system-architecture responsibility boundary",
+      "Every pass claim is backed by current trusted evidence"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Translate product capabilities into measurable quality attributes and workload assumptions.",
+        "evidence": "architecture decision record"
+      },
+      {
+        "id": "step-2",
+        "action": "Model at least two viable architectures with boundaries, data ownership, failure propagation, deployment, and cost.",
+        "evidence": "quality-attribute scenarios"
+      },
+      {
+        "id": "step-3",
+        "action": "Use decision drivers and disqualifiers rather than trend preference.",
+        "evidence": "failure map"
+      },
+      {
+        "id": "step-4",
+        "action": "Threat-model and operate the leading option on paper, including migration and rollback.",
+        "evidence": "validation plan"
+      },
+      {
+        "id": "step-5",
+        "action": "Record the decision, rejected alternatives, assumptions, validation experiments, and expiry conditions.",
+        "evidence": "validation plan"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required tool, input, or approval is unavailable",
+        "action": "stop and record a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Can the architecture be explained through bounded responsibilities?",
+      "Is each added component justified by a current quality attribute?",
+      "What happens when every dependency is slow, unavailable, or duplicated?",
+      "Which future change would force this decision to be revisited?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "architecture decision record",
+      "quality-attribute scenarios",
+      "failure map",
+      "validation plan"
+    ],
+    "evaluatorIds": [
+      "choosing-system-architecture-evaluator"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 705,
+    "hardTokens": 1131,
+    "outputReserveTokens": 282
+  },
+  "quality": {
+    "benchmarkIds": [
+      "v04-choosing-system-architecture-behavior"
+    ],
+    "minimumSkillDepthScore": 82,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2"
+  ],
+  "capabilityMappings": [
+    {
+      "capabilityId": "software-architecture.design-architecture",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:choosing-system-architecture",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.choosing-system-architecture",
+      "fitScore": 99,
+      "mappingEvidence": "reviewed:v0.5:choosing-system-architecture",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "73ebc6e84d070d69f9b4894c37ab1bd574a1e8dbf4cb92780ad5255bd5b0862d",
+        "bytes": 957,
+        "tokens": {
+          "gpt-5.6": 258,
+          "claude-opus-4.2": 270,
+          "gemini-3.0-pro": 246,
+          "qwen3.5-32b": 286
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "a69f9b490e113279b32baa6828c684ef43d96f43c57b588722943ff029464c46",
+        "bytes": 896,
+        "tokens": {
+          "gpt-5.6": 241,
+          "claude-opus-4.2": 253,
+          "gemini-3.0-pro": 230,
+          "qwen3.5-32b": 268
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "f9bfe6ef36de59d9db6341e6221b617221c90ebbc72b538c413f967f5f21581a",
+        "bytes": 346,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 98,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 104
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "f021311f8e5b4bf2daf0c84b3bfcbd9930a482fc9052584945174e0f779d0763",
+        "bytes": 406,
+        "tokens": {
+          "gpt-5.6": 110,
+          "claude-opus-4.2": 115,
+          "gemini-3.0-pro": 105,
+          "qwen3.5-32b": 122
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "58d1da081e6e71c22f968b33f9e4c8444e7b0c0fdf704c814ffa1ca4415c4e73",
+        "bytes": 279,
+        "tokens": {
+          "gpt-5.6": 75,
+          "claude-opus-4.2": 79,
+          "gemini-3.0-pro": 72,
+          "qwen3.5-32b": 84
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "757b38de9315491d82085ed8efe8e87cd7f052470600eb23a546f4d4ed4179df",
+        "bytes": 360,
+        "tokens": {
+          "gpt-5.6": 97,
+          "claude-opus-4.2": 102,
+          "gemini-3.0-pro": 93,
+          "qwen3.5-32b": 108
+        }
+      }
+    ],
+    "indexSha256": "28d899362d23e8be2b906f680aefac12a7120fb92d931d0e8e1412e53d6d9375"
+  },
+  "manifestSha256": "e11d5eb7e196808cba02caa7becdc0d421bce04b6e44d70774852c0eebadb834",
+  "kernelLevel": "L1"
+}

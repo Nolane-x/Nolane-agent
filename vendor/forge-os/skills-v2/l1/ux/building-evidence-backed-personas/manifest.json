@@ -1,0 +1,306 @@
+{
+  "schemaVersion": 2,
+  "id": "building-evidence-backed-personas",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Building Evidence Backed Personas",
+    "description": "Use when building evidence backed personas within ux lifecycle boundaries, especially when does the artifact make the owned decision for building evidence backed personas explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "ux"
+    ],
+    "keywords": [
+      "building-evidence-backed-personas",
+      "building",
+      "evidence",
+      "backed",
+      "personas",
+      "within",
+      "ux",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require building evidence backed personas within ux lifecycle boundaries",
+      "the typed inputs for building-evidence-backed-personas are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "product-definition",
+        "schema": "artifact://forgeos/product-definition/v1"
+      },
+      {
+        "type": "user-workflows",
+        "schema": "artifact://forgeos/user-workflows/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "ux-contract",
+        "schema": "artifact://forgeos/ux-contract/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for building evidence backed personas explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by building evidence backed personas.",
+        "evidence": "building-evidence-backed-personas-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to building evidence backed personas.",
+        "evidence": "building-evidence-backed-personas-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply building evidence backed personas only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "building-evidence-backed-personas-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "building-evidence-backed-personas-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if building evidence backed personas were incomplete or implemented incorrectly.",
+        "evidence": "building-evidence-backed-personas-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for building evidence backed personas explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "building-evidence-backed-personas-decision-table",
+      "building-evidence-backed-personas-verification-report",
+      "building-evidence-backed-personas-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "building-evidence-backed-personas-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 727,
+    "hardTokens": 1129,
+    "outputReserveTokens": 282
+  },
+  "quality": {
+    "benchmarkIds": [
+      "building-evidence-backed-personas-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ux-research.research-users",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:building-evidence-backed-personas",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "ef99d55e614d0d69eb06c001af4ebfdbad21fe3a495284a61f34aa4053bde6ed",
+        "bytes": 968,
+        "tokens": {
+          "gpt-5.6": 261,
+          "claude-opus-4.2": 273,
+          "gemini-3.0-pro": 249,
+          "qwen3.5-32b": 289
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "6de55adb71197caf65fee1a5e0cd3073d34ba2b63a531009aa6b7a05e74bc74d",
+        "bytes": 738,
+        "tokens": {
+          "gpt-5.6": 199,
+          "claude-opus-4.2": 208,
+          "gemini-3.0-pro": 190,
+          "qwen3.5-32b": 221
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "a35e9cc28af8b4bc4f88cb0f3b2ade417b4f6f80a0f6824a5a48095dd3a3fd44",
+        "bytes": 309,
+        "tokens": {
+          "gpt-5.6": 84,
+          "claude-opus-4.2": 88,
+          "gemini-3.0-pro": 80,
+          "qwen3.5-32b": 93
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "9542c409241069317947b3a754591ab9eb3b291799aa29970ad82b7472076627",
+        "bytes": 633,
+        "tokens": {
+          "gpt-5.6": 171,
+          "claude-opus-4.2": 179,
+          "gemini-3.0-pro": 163,
+          "qwen3.5-32b": 189
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "005c663f0f5946d074f15dd52245067a06c3e2aa5772030c65e787152d173f73",
+        "bytes": 337,
+        "tokens": {
+          "gpt-5.6": 91,
+          "claude-opus-4.2": 95,
+          "gemini-3.0-pro": 87,
+          "qwen3.5-32b": 101
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "db074cd44418ba815e33dc241d9075326fc381fe9074a27340640c03c53b4860",
+        "bytes": 247,
+        "tokens": {
+          "gpt-5.6": 67,
+          "claude-opus-4.2": 70,
+          "gemini-3.0-pro": 64,
+          "qwen3.5-32b": 74
+        }
+      }
+    ],
+    "indexSha256": "5e17737e9968c35856194b322fe66b4af3c53b9938578023199f4765d10eeb76"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "cd31b84d1d050e87d086f597d572fe88eadb2d35602366a6263d751510018c90"
+}

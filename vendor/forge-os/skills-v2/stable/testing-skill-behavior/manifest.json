@@ -1,0 +1,290 @@
+{
+  "schemaVersion": 2,
+  "id": "testing-skill-behavior",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "stable",
+  "identity": {
+    "title": "Testing Skill Behavior",
+    "description": "Use when prove that a skill changes agent behavior under realistic pressure rather than merely sounding persuasive, especially when was a failing baseline observed?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "meta"
+    ],
+    "keywords": [
+      "testing-skill-behavior",
+      "prove",
+      "that",
+      "a",
+      "skill",
+      "changes",
+      "agent",
+      "behavior",
+      "under"
+    ],
+    "antiTriggers": [
+      "a runtime code bug unrelated to agent instructions",
+      "a reference document with no behavioral expectation"
+    ]
+  },
+  "relations": {
+    "requires": [
+      "behavioral-baseline",
+      "candidate-change"
+    ],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "behavioral-baseline",
+        "schema": "artifact://forgeos/behavioral-baseline/v1"
+      },
+      {
+        "type": "candidate-change",
+        "schema": "artifact://forgeos/candidate-change/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "skill-evaluation",
+        "schema": "artifact://forgeos/skill-evaluation/v1"
+      }
+    ],
+    "invariants": [
+      "Output remains within the testing-skill-behavior responsibility boundary",
+      "Every pass claim is backed by current trusted evidence"
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Create a baseline scenario that exposes the target failure without the skill.",
+        "evidence": "baseline transcripts"
+      },
+      {
+        "id": "step-2",
+        "action": "Record the agent’s exact choices, omissions, and rationalizations.",
+        "evidence": "candidate transcripts"
+      },
+      {
+        "id": "step-3",
+        "action": "Add the smallest skill guidance that targets the observed failure form.",
+        "evidence": "scored comparison"
+      },
+      {
+        "id": "step-4",
+        "action": "Repeat across task variations, pressure combinations, models, and context sizes.",
+        "evidence": "rationalization catalog"
+      },
+      {
+        "id": "step-5",
+        "action": "Measure compliance, output quality, task success, token cost, and new failure modes before promotion.",
+        "evidence": "rationalization catalog"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required tool, input, or approval is unavailable",
+        "action": "stop and record a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Was a failing baseline observed?",
+      "Does the skill improve behavior beyond one prompt seed?",
+      "Does it create a new regression or context burden?",
+      "Can an agent recognize when the skill should not apply?"
+    ],
+    "reviewerRole": "independent-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "baseline transcripts",
+      "candidate transcripts",
+      "scored comparison",
+      "rationalization catalog"
+    ],
+    "evaluatorIds": [
+      "testing-skill-behavior-evaluator"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 638,
+    "hardTokens": 1056,
+    "outputReserveTokens": 264
+  },
+  "quality": {
+    "benchmarkIds": [
+      "v04-testing-skill-behavior-behavior"
+    ],
+    "minimumSkillDepthScore": 82,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Migrated from the v0.4 stable behavioral contract; independent v0.5 holdout expansion remains required."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2"
+  ],
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.measure-outcomes",
+      "fitScore": 98,
+      "mappingEvidence": "reviewed:v0.5:testing-skill-behavior",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "software-testing.measure-outcomes",
+      "fitScore": 98,
+      "mappingEvidence": "reviewed:v0.5:testing-skill-behavior",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.testing-skill-behavior",
+      "fitScore": 98,
+      "mappingEvidence": "reviewed:v0.5:testing-skill-behavior",
+      "reviewer": "forgeos-release-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "eac3b2c1422163ec5d53680d80367549ac86771c66d07895ee5d8adf9799c343",
+        "bytes": 839,
+        "tokens": {
+          "gpt-5.6": 226,
+          "claude-opus-4.2": 237,
+          "gemini-3.0-pro": 216,
+          "qwen3.5-32b": 251
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "532600ce47f576c6763c4bf9858fcfd1cb3130fe5c8f01f8d620ce55b437fc8b",
+        "bytes": 840,
+        "tokens": {
+          "gpt-5.6": 226,
+          "claude-opus-4.2": 237,
+          "gemini-3.0-pro": 216,
+          "qwen3.5-32b": 251
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "f9bfe6ef36de59d9db6341e6221b617221c90ebbc72b538c413f967f5f21581a",
+        "bytes": 346,
+        "tokens": {
+          "gpt-5.6": 94,
+          "claude-opus-4.2": 98,
+          "gemini-3.0-pro": 89,
+          "qwen3.5-32b": 104
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "040b6073d9d4cb3d37b3c563d636d6f8a8137783621ed555a7a468b559948b4f",
+        "bytes": 333,
+        "tokens": {
+          "gpt-5.6": 90,
+          "claude-opus-4.2": 94,
+          "gemini-3.0-pro": 86,
+          "qwen3.5-32b": 100
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "a206ed70aced3e9680e144ecc19a774b758870276d3e7acd19a9420a184d62f0",
+        "bytes": 276,
+        "tokens": {
+          "gpt-5.6": 75,
+          "claude-opus-4.2": 78,
+          "gemini-3.0-pro": 71,
+          "qwen3.5-32b": 83
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "842df497c65da530c1b329b1650220494f1cf1c609f3fe17ca0d0272d83eac9e",
+        "bytes": 330,
+        "tokens": {
+          "gpt-5.6": 89,
+          "claude-opus-4.2": 93,
+          "gemini-3.0-pro": 85,
+          "qwen3.5-32b": 99
+        }
+      }
+    ],
+    "indexSha256": "65463b5a726f55210444ee7618c8b9f9df793f506b78681894faa44c592056bc"
+  },
+  "manifestSha256": "bcac099d2bb9ddba9dad4c1595b4650d1a3e014746894d08cb123b5e50a850f9",
+  "kernelLevel": "L1"
+}

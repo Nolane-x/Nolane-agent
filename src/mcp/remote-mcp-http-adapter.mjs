@@ -1,0 +1,18 @@
+function json(res, status, value, headers = {}) { const body = JSON.stringify(value); res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'content-length': Buffer.byteLength(body), 'cache-control': 'no-store', ...headers }); res.end(body); }
+async function readJson(req, maxBytes) { let bytes = 0; const chunks = []; for await (const chunk of req) { bytes += chunk.length; if (bytes > maxBytes) throw Object.assign(new Error('MCP request body too large'), { statusCode: 413, code: 'mcp-body-too-large' }); chunks.push(chunk); } try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch { throw Object.assign(new Error('Invalid MCP JSON body'), { statusCode: 400, code: 'mcp-json-invalid' }); } }
+function sessionId(req, url) { return String(req.headers['mcp-session-id'] ?? url.searchParams.get('sessionId') ?? ''); }
+function sse(events) { return events.map((event) => `id: ${event.id}\nevent: ${event.type}\ndata: ${JSON.stringify(event.data)}\n\n`).join(''); }
+export class RemoteMcpHttpAdapter {
+  constructor({ resourceUrl, authorizationServers = [], oauth, server, sessions, maxBodyBytes = 1_000_000 } = {}) { if (!resourceUrl || !oauth || !server || !sessions) throw new TypeError('resourceUrl, oauth, server and sessions are required'); this.resourceUrl = String(resourceUrl); this.authorizationServers = authorizationServers.map(String); this.oauth = oauth; this.server = server; this.sessions = sessions; this.maxBodyBytes = Math.max(1024, maxBodyBytes); }
+  async handle(req, res, url) {
+    if (req.method === 'GET' && url.pathname === '/.well-known/oauth-protected-resource') { json(res, 200, { resource: this.resourceUrl, authorization_servers: this.authorizationServers, scopes_supported: ['mcp:read','mcp:invoke'], bearer_methods_supported: ['header'] }); return true; }
+    if (url.pathname !== '/mcp') return false;
+    try {
+      const principal = await this.oauth.authenticate(req, { scopes: req.method === 'GET' ? ['mcp:read'] : ['mcp:invoke'] });
+      if (req.method === 'POST') { const message = await readJson(req, this.maxBodyBytes); const result = await this.server.handleMessage({ sessionId: sessionId(req, url) || undefined, principal, message }); const headers = result.sessionId ? { 'mcp-session-id': result.sessionId } : {}; if (result.response === null) { res.writeHead(202, headers); res.end(); } else json(res, 200, result.response, headers); return true; }
+      if (req.method === 'GET') { const id = sessionId(req, url); if (!id) throw Object.assign(new Error('MCP session id is required'), { statusCode: 400, code: 'mcp-session-required' }); const afterEventId = Number(url.searchParams.get('after') ?? req.headers['last-event-id'] ?? 0) || 0; const events = this.sessions.read({ sessionId: id, organizationId: principal.organizationId, workspaceId: principal.workspaceId, afterEventId }); const body = sse(events); res.writeHead(200, { 'content-type': 'text/event-stream; charset=utf-8', 'cache-control': 'no-cache, no-transform', 'content-length': Buffer.byteLength(body), 'mcp-session-id': id }); res.end(body); return true; }
+      if (req.method === 'DELETE') { const id = sessionId(req, url); this.sessions.close({ sessionId: id, organizationId: principal.organizationId, workspaceId: principal.workspaceId }); res.writeHead(204); res.end(); return true; }
+      json(res, 405, { error: 'method-not-allowed' }, { allow: 'GET, POST, DELETE' }); return true;
+    } catch (error) { json(res, error.statusCode ?? 500, { error: error.statusCode ? String(error.message) : 'internal-error', code: error.code ?? undefined }); return true; }
+  }
+}

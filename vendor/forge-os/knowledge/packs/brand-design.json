@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.brand-design",
+  "domain": "brand-design",
+  "title": "Brand Design Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "positioning",
+    "identity",
+    "voice",
+    "logo systems",
+    "brand architecture",
+    "guidelines",
+    "campaigns",
+    "consistency"
+  ],
+  "capabilities": [
+    "brand-design.map-landscape",
+    "brand-design.frame-problem",
+    "brand-design.research-users",
+    "brand-design.define-requirements",
+    "brand-design.model-domain",
+    "brand-design.compare-alternatives",
+    "brand-design.design-concept",
+    "brand-design.prototype-critical-flow",
+    "brand-design.validate-prototype",
+    "brand-design.design-architecture",
+    "brand-design.model-data",
+    "brand-design.model-threats",
+    "brand-design.plan-delivery",
+    "brand-design.implement-core",
+    "brand-design.integrate-dependencies",
+    "brand-design.verify-contracts",
+    "brand-design.test-boundaries",
+    "brand-design.test-resilience",
+    "brand-design.test-performance",
+    "brand-design.test-security",
+    "brand-design.audit-accessibility",
+    "brand-design.optimize-quality",
+    "brand-design.optimize-cost",
+    "brand-design.document-system",
+    "brand-design.prepare-migration",
+    "brand-design.plan-rollout",
+    "brand-design.instrument-observability",
+    "brand-design.operate-lifecycle",
+    "brand-design.respond-incidents",
+    "brand-design.govern-evolution",
+    "brand-design.measure-outcomes",
+    "brand-design.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "anthropic-skills",
+      "title": "Anthropic Agent Skills",
+      "url": "https://github.com/anthropics/skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "Mixed",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "total": 7,
+  "killed": 7,
+  "survived": [],
+  "results": [
+    {
+      "id": "acl-gate-read",
+      "killed": true,
+      "exitCode": 1,
+      "signal": null,
+      "tests": [
+        "tests/project-access-v3.test.mjs"
+      ],
+      "stdoutTail": "✔ project owner is bound at creation and outsiders cannot read, list, mutate, or export (87.04448ms)\n✖ owner can grant scoped reviewer access without granting write or release capabilities (32.23933ms)\n✔ legacy schema v4 projects migrate to schema v5 with system-owned access (4.255851ms)\nℹ tests 3\nℹ suites 0\nℹ pass 2\nℹ fail 1\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 189.13659\n\n✖ failing tests:\n\ntest at tests/project-access-v3.test.mjs:34:1\n✖ owner can grant scoped reviewer access without granting write or release capabilities (32.23933ms)\n  AssertionError [ERR_ASSERTION]: Missing expected rejection.\n      at async TestContext.<anonymous> (file:///tmp/forgeos-critical-mutations-sEA277/tests/project-access-v3.test.mjs:42:3)\n      at async Test.run (node:internal/test_runner/test:1054:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:744:7) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: undefined,\n    expected: /Project capability write is required/,\n    operator: 'rejects'\n  }\n",
+      "stderrTail": ""
+    },
+    {
+      "id": "embedded-mcp-system-fallback",
+      "killed": true,
+      "exitCode": 1,
+      "signal": null,
+      "tests": [
+        "tests/mcp.test.mjs"
+      ],
+      "stdoutTail": "✔ MCP advertises deterministic precise tools, prompts, and MCP App resource after lifecycle negotiation (5.934238ms)\n✔ MCP tool calls return schema-validated structured content and widget metadata (8.88638ms)\n✔ MCP unknown methods remain protocol errors while notifications remain silent (0.983173ms)\n✖ MCP tools/call fails closed when an embedded host omits authenticated principal (4.892888ms)\n✔ MCP project mutations preserve authenticated principal provenance in project history (18.256178ms)\nℹ tests 5\nℹ suites 0\nℹ pass 4\nℹ fail 1\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 103.556488\n\n✖ failing tests:\n\ntest at tests/mcp.test.mjs:20:1\n✖ MCP tools/call fails closed when an embedded host omits authenticated principal (4.892888ms)\n  TypeError [Error]: Cannot read properties of undefined (reading 'code')\n      at TestContext.<anonymous> (file:///tmp/forgeos-critical-mutations-sEA277/tests/mcp.test.mjs:26:54)\n      at async Test.run (node:internal/test_runner/test:1054:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n",
+      "stderrTail": ""
+    },
+    {
+      "id": "evidence-descendant-leak",
+      "killed": true,
+      "exitCode": 1,
+      "signal": null,
+      "tests": [
+        "tests/trusted-evidence.test.mjs"
+      ],
+      "stdoutTail": "✔ caller cannot submit a passing evidence record or choose its digest (26.231012ms)\n✔ trusted command provider derives status and content digest from actual execution (73.221487ms)\n✔ provider authorization rejects an evidence type outside its allowlist (4.552252ms)\n✔ critical finding requires trusted proof and independent authorized closer (72.781722ms)\n✖ trusted command provider reaps descendant processes after a successful recipe (1534.440974ms)\nℹ tests 5\nℹ suites 0\nℹ pass 4\nℹ fail 1\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1770.455325\n\n✖ failing tests:\n\ntest at tests/trusted-evidence.test.mjs:82:1\n✖ trusted command provider reaps descendant processes after a successful recipe (1534.440974ms)\n  AssertionError [ERR_ASSERTION]: descendant process 8075 survived trusted recipe completion\n  \n  false !== true\n  \n      at TestContext.<anonymous> (file:///tmp/forgeos-critical-mutations-sEA277/tests/trusted-evidence.test.mjs:102:10)\n      at async Test.run (node:internal/test_runner/test:1054:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:744:7) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: false,\n    expected: true,\n    operator: 'strictEqual'\n  }\n",
+      "stderrTail": ""
+    },
+    {
+      "id": "mcp-timeout-no-abort",
+      "killed": true,
+      "exitCode": 1,
+      "signal": null,
+      "tests": [
+        "tests/mcp-broker.test.mjs"
+      ],
+      "stdoutTail": "✔ MCP broker executes only stable scanned allowlisted tools and emits content-addressed audit receipt (3.218728ms)\n✔ MCP broker rejects untrusted providers, undeclared tools, inline secrets, and agent write execution (0.863174ms)\n✔ Streamable HTTP MCP transport negotiates lifecycle, forwards session, and terminates it (18.682031ms)\n✔ MCP broker keeps receipts local to each execution and does not retain shared receipt state (21.129023ms)\n✔ MCP broker honors an already-aborted execution signal without waiting for timeout (0.396019ms)\n✔ Streamable HTTP MCP transport parses a JSON-RPC response delivered as server-sent events (2.504736ms)\n✖ MCP broker aborts the underlying tool execution when its timeout expires (21.110294ms)\nℹ tests 7\nℹ suites 0\nℹ pass 6\nℹ fail 1\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 138.061474\n\n✖ failing tests:\n\ntest at tests/mcp-broker.test.mjs:111:1\n✖ MCP broker aborts the underlying tool execution when its timeout expires (21.110294ms)\n  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  false !== true\n  \n      at TestContext.<anonymous> (file:///tmp/forgeos-critical-mutations-sEA277/tests/mcp-broker.test.mjs:124:10)\n      at async Test.run (node:internal/test_runner/test:1054:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:744:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: false,\n    expected: true,\n    operator: 'strictEqual'\n  }\n",
+      "stderrTail": ""
+    },
+    {
+      "id": "artifact-envelope-bypass",
+      "killed": true,
+      "exitCode": 1,
+      "signal": null,
+      "tests": [
+        "tests/artifact-trust-envelope.test.mjs"
+      ],
+      "stdoutTail": "✖ artifact envelope detects lifecycle and provenance tampering at rest (25.323322ms)\n✔ artifact slots allow composition while preventing duplicate active versions in one slot (38.682359ms)\n✔ A1 artifact verification requires review by an authorized independent trust domain (95.408547ms)\n✔ dependency hashes are derived by the server and bound to active inputs (37.52966ms)\n✔ supersession records two-way lineage and invalidates downstream consumers (38.589982ms)\nℹ tests 5\nℹ suites 0\nℹ pass 4\nℹ fail 1\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 294.301827\n\n✖ failing tests:\n\ntest at tests/artifact-trust-envelope.test.mjs:26:1\n✖ artifact envelope detects lifecycle and provenance tampering at rest (25.323322ms)\n  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /envelope hash mismatch/i. Input:\n  \n  'Error: Project state digest does not match audit head'\n  \n      at async TestContext.<anonymous> (file:///tmp/forgeos-critical-mutations-sEA277/tests/artifact-trust-envelope.test.mjs:35:3)\n      at async Test.run (node:internal/test_runner/test:1054:7)\n      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: Error: Project state digest does not match audit head\n        at validateAuditChain (file:///tmp/forgeos-critical-mutations-sEA277/src/core/audit-chain.mjs:43:63)\n        at validateProjectAggregate (file:///tmp/forgeos-critical-mutations-sEA277/src/core/project-validator.mjs:80:3)\n        at #readValidated (file:///tmp/forgeos-critical-mutations-sEA277/src/core/project-store.mjs:152:5)\n        at async ProjectStore.read (file:///tmp/forgeos-critical-mutations-sEA277/src/core/project-store.mjs:156:43)\n        at async waitForActual (node:assert:566:5)\n        at async Function.rejects (node:assert:687:25)\n        at async TestContext.<anonymous> (file:///tmp/forgeos-critical-mutations-sEA277/tests/artifact-trust-envelope.test.mjs:35:3)\n        at async Test.run (node:internal/test_runner/test:1054:7)\n        at async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3),\n    expected: /envelope hash mismatch/i,\n    operator: 'rejects'\n  }\n",
+      "stderrTail": ""
+    },
+    {
+      "id": "a2a-principal-drop",
+      "killed": true,
+      "exitCode": 1,
+      "signal": null,
+      "tests": [
+        "tests/a2a-v1-invariants.test.mjs"
+      ],
+      "stdoutTail": "✔ A2A 1.0 Agent Card accurately declares supported interfaces (1.186595ms)\n✖ A2A SendMessage accepts data-only parts, calls ForgeOS, and persists task history (33.006391ms)\n✔ A2A task visibility is scoped to authenticated principal (25.354458ms)\n✔ A2A validates part union and v1 method names (0.997804ms)\n✔ A2A CancelTask cancels non-terminal tasks and persists transition history (20.736458ms)\n✖ A2A read-only project access cannot invoke mutating planning or gate actions (41.415831ms)\nℹ tests 6\nℹ suites 0\nℹ pass 4\nℹ fail 2\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 182.537267\n\n✖ failing tests:\n\ntest at tests/a2a-v1-invariants.test.mjs:43:1\n✖ A2A SendMessage accepts data-only parts, calls ForgeOS, and persists task history (33.006391ms)\n  Error: Project access denied: forge_86fa1881ca7c4bd680a8\n      at assertProjectAccess (file:///tmp/forgeos-critical-mutations-sEA277/src/core/project-access.mjs:58:32)\n      at ForgeOrchestrator.getProject (file:///tmp/forgeos-critical-mutations-sEA277/src/core/orchestrator.mjs:77:146)\n      at async TestContext.<anonymous> (file:///tmp/forgeos-critical-mutations-sEA277/tests/a2a-v1-invariants.test.mjs:52:22)\n      at async Test.run (node:internal/test_runner/test:1054:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n\ntest at tests/a2a-v1-invariants.test.mjs:91:1\n✖ A2A read-only project access cannot invoke mutating planning or gate actions (41.415831ms)\n  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'TASK_STATE_COMPLETED'\n  - 'TASK_STATE_FAILED'\n                ^\n  \n      at TestContext.<anonymous> (file:///tmp/forgeos-critical-mutations-sEA277/tests/a2a-v1-invariants.test.mjs:97:10)\n      at async Test.run (node:internal/test_runner/test:1054:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:744:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: 'TASK_STATE_COMPLETED',\n    expected: 'TASK_STATE_FAILED',\n    operator: 'strictEqual'\n  }\n",
+      "stderrTail": ""
+    },
+    {
+      "id": "archive-success-descendant-leak",
+      "killed": true,
+      "exitCode": 1,
+      "signal": null,
+      "tests": [
+        "tests/release-runner-v06.test.mjs"
+      ],
+      "stdoutTail": "✖ release command matrix reaps a successful command descendant before returning (1070.824857ms)\nℹ tests 1\nℹ suites 0\nℹ pass 0\nℹ fail 1\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1112.865152\n\n✖ failing tests:\n\ntest at tests/release-runner-v06.test.mjs:43:1\n✖ release command matrix reaps a successful command descendant before returning (1070.824857ms)\n  AssertionError [ERR_ASSERTION]: grandchild process 8180 survived successful command cleanup\n  \n  true !== false\n  \n      at TestContext.<anonymous> (file:///tmp/forgeos-critical-mutations-sEA277/tests/release-runner-v06.test.mjs:61:12)\n      at async Test.run (node:internal/test_runner/test:1054:7)\n      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: true,\n    expected: false,\n    operator: 'strictEqual'\n  }\n",
+      "stderrTail": ""
+    }
+  ]
+}

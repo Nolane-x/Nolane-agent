@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 2,
+  "id": "validating-evidence-freshness",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Validating Evidence Freshness",
+    "description": "Use when a gate, artifact verification, finding closure, or release decision depends on evidence that may target an old revision, artifact hash, provider version, or environment.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "kernel"
+    ],
+    "keywords": [
+      "validating-evidence-freshness",
+      "a",
+      "gate",
+      "artifact",
+      "verification",
+      "finding",
+      "closure",
+      "or",
+      "release"
+    ],
+    "antiTriggers": [
+      "the evidence is informational and cannot change a decision",
+      "no subject identity is available"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "project-state",
+        "schema": "artifact://forgeos/project-state/v2"
+      }
+    ],
+    "produces": [
+      {
+        "type": "freshness-decision",
+        "schema": "artifact://forgeos/freshness-decision/v1"
+      }
+    ],
+    "invariants": [
+      "A stale passing receipt cannot open a gate.",
+      "Freshness rules vary by assurance and evidence type.",
+      "Clock time is not used as the only identity signal."
+    ],
+    "requiredTools": [],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "confirmed intent and current semantic revision exist"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Resolve the exact subject revision, hashes, and policy version required.",
+        "evidence": "A stale passing receipt cannot open a gate."
+      },
+      {
+        "id": "step-2",
+        "action": "Verify receipt integrity, issuer authority, method, age, and environment.",
+        "evidence": "Freshness rules vary by assurance and evidence type."
+      },
+      {
+        "id": "step-3",
+        "action": "Reject evidence whose upstream dependencies have changed.",
+        "evidence": "Clock time is not used as the only identity signal."
+      },
+      {
+        "id": "step-4",
+        "action": "Record per-rule accepted evidence and stale rejection reasons.",
+        "evidence": "Clock time is not used as the only identity signal."
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "freshness-decision is produced with current evidence or a blocker is recorded"
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "A stale passing receipt cannot open a gate.",
+      "Freshness rules vary by assurance and evidence type.",
+      "Clock time is not used as the only identity signal."
+    ],
+    "reviewerRole": "kernel-skill-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "behavioral-eval-receipt",
+      "context-receipt"
+    ],
+    "evaluatorIds": [
+      "validating-evidence-freshness-evaluator-v2"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 5,
+    "maxReferenceDepth": 2,
+    "targetTokens": 517,
+    "hardTokens": 905,
+    "outputReserveTokens": 256
+  },
+  "quality": {
+    "benchmarkIds": [
+      "validating-evidence-freshness-public-v1"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L0",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "coverage-ledger",
+      "typed-preconditions",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionability-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.verify-contracts",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:l0:validating-evidence-freshness",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.validating-evidence-freshness",
+      "fitScore": 100,
+      "mappingEvidence": "reviewed:l0:validating-evidence-freshness",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "216dbb8f465d74bbe1bfec43fb3e4969c4d6a7f14af01f6e1a6e06e260b23625",
+        "bytes": 887,
+        "tokens": {
+          "gpt-5.6": 239,
+          "claude-opus-4.2": 250,
+          "gemini-3.0-pro": 228,
+          "qwen3.5-32b": 265
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "6448295783decb7a107dd750893f89eea48bcd0a7e793803be8d30c12d293513",
+        "bytes": 543,
+        "tokens": {
+          "gpt-5.6": 146,
+          "claude-opus-4.2": 153,
+          "gemini-3.0-pro": 140,
+          "qwen3.5-32b": 163
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "ce6b780e7111bd23302b7787a5ac03cd99f1711936b70d624202d73da690a469",
+        "bytes": 391,
+        "tokens": {
+          "gpt-5.6": 106,
+          "claude-opus-4.2": 111,
+          "gemini-3.0-pro": 101,
+          "qwen3.5-32b": 117
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "260674c27c8bad03a0ce67652e401135e879c497b49c37e4bdb61c97c3e1a4e1",
+        "bytes": 252,
+        "tokens": {
+          "gpt-5.6": 68,
+          "claude-opus-4.2": 71,
+          "gemini-3.0-pro": 65,
+          "qwen3.5-32b": 76
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "d11d7013db4e204d1a1f49549bdf512f0f928205096655b47946d2160ef87b3e",
+        "bytes": 214,
+        "tokens": {
+          "gpt-5.6": 58,
+          "claude-opus-4.2": 61,
+          "gemini-3.0-pro": 55,
+          "qwen3.5-32b": 64
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "942fa2e69db727ce641791fb21be01c98b62b9bcf7f4cbdbd1acc9af03ddc2fd",
+        "bytes": 355,
+        "tokens": {
+          "gpt-5.6": 96,
+          "claude-opus-4.2": 100,
+          "gemini-3.0-pro": 92,
+          "qwen3.5-32b": 106
+        }
+      }
+    ],
+    "indexSha256": "12ec44bd1b60ce62c6989251db5a0e68ba6ed3ce20b76b78de72abdffe5675fb"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "2f81c9cd93994f3796f8b884fb8b530fd9be446db260aa0c3d89eda14f2e89a3"
+}

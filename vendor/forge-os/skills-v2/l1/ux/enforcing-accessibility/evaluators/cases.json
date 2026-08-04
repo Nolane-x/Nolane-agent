@@ -1,0 +1,38 @@
+[
+  {
+    "id": "enforcing-accessibility-application",
+    "kind": "application",
+    "input": "Task directly requiring enforcing accessibility within ux lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "enforcing-accessibility-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require enforcing accessibility within ux lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "enforcing-accessibility-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "enforcing-accessibility-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "enforcing-accessibility-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "enforcing-accessibility-transfer",
+    "kind": "transfer",
+    "input": "Apply the enforcing-accessibility mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]

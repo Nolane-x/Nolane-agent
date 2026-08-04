@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forgeos.dev/schemas/v0.5/skill-intelligence-status.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "outcomeCount",
+    "techniqueCount",
+    "l0TechniqueCount",
+    "l1TechniqueCount",
+    "kernelTechniqueCount",
+    "evaluatorCount",
+    "providerCount",
+    "stableProceduralProviders",
+    "candidateProceduralProviders",
+    "graphSha256"
+  ],
+  "properties": {
+    "outcomeCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "techniqueCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "l0TechniqueCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "l1TechniqueCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "kernelTechniqueCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "evaluatorCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "providerCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "stableProceduralProviders": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "candidateProceduralProviders": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "graphSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

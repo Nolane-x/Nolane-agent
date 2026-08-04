@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 2,
+  "id": "planning-parallel-agent-work",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Planning Parallel Agent Work",
+    "description": "Use when several work units are independent enough to execute concurrently but still need deterministic ownership, coverage, resource locks, and verified joins.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "kernel"
+    ],
+    "keywords": [
+      "planning-parallel-agent-work",
+      "several",
+      "work",
+      "units",
+      "are",
+      "independent",
+      "enough",
+      "to",
+      "execute"
+    ],
+    "antiTriggers": [
+      "shared mutable state cannot be isolated",
+      "the next task requires the previous task output"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "project-state",
+        "schema": "artifact://forgeos/project-state/v2"
+      }
+    ],
+    "produces": [
+      {
+        "type": "parallel-execution-plan",
+        "schema": "artifact://forgeos/parallel-execution-plan/v1"
+      }
+    ],
+    "invariants": [
+      "No output target has two active writers.",
+      "Coverage ledger accounts for every scoped unit.",
+      "Join failure leaves resumable state."
+    ],
+    "requiredTools": [
+      "planning"
+    ],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "confirmed intent and current semantic revision exist"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Derive work units from dependency and change graphs.",
+        "evidence": "No output target has two active writers."
+      },
+      {
+        "id": "step-2",
+        "action": "Assign one owner and output lock per unit.",
+        "evidence": "Coverage ledger accounts for every scoped unit."
+      },
+      {
+        "id": "step-3",
+        "action": "Define context packs that omit unrelated sibling work.",
+        "evidence": "Join failure leaves resumable state."
+      },
+      {
+        "id": "step-4",
+        "action": "Join only after every unit has a trusted completion receipt.",
+        "evidence": "Join failure leaves resumable state."
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "parallel-execution-plan is produced with current evidence or a blocker is recorded"
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "No output target has two active writers.",
+      "Coverage ledger accounts for every scoped unit.",
+      "Join failure leaves resumable state."
+    ],
+    "reviewerRole": "kernel-skill-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "behavioral-eval-receipt",
+      "context-receipt"
+    ],
+    "evaluatorIds": [
+      "planning-parallel-agent-work-evaluator-v2"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 5,
+    "maxReferenceDepth": 2,
+    "targetTokens": 484,
+    "hardTokens": 874,
+    "outputReserveTokens": 256
+  },
+  "quality": {
+    "benchmarkIds": [
+      "planning-parallel-agent-work-public-v1"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L0",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "coverage-ledger",
+      "typed-preconditions",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionability-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.plan-delivery",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:l0:planning-parallel-agent-work",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.planning-parallel-agent-work",
+      "fitScore": 100,
+      "mappingEvidence": "reviewed:l0:planning-parallel-agent-work",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "0a637416bc11ffc09224c04351db0ad142f0f0966fd48b57c95d92657b8a89ba",
+        "bytes": 841,
+        "tokens": {
+          "gpt-5.6": 227,
+          "claude-opus-4.2": 237,
+          "gemini-3.0-pro": 216,
+          "qwen3.5-32b": 252
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "a6649950559b00af0b0255548983b0fd8951b49a675f2f9c1e80e201211088d2",
+        "bytes": 487,
+        "tokens": {
+          "gpt-5.6": 131,
+          "claude-opus-4.2": 138,
+          "gemini-3.0-pro": 125,
+          "qwen3.5-32b": 146
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "ce6b780e7111bd23302b7787a5ac03cd99f1711936b70d624202d73da690a469",
+        "bytes": 391,
+        "tokens": {
+          "gpt-5.6": 106,
+          "claude-opus-4.2": 111,
+          "gemini-3.0-pro": 101,
+          "qwen3.5-32b": 117
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "b3b400ce2784e7fd6a6ba2195090ded223eb8880cf2ffb16521c1d9345d26f1e",
+        "bytes": 229,
+        "tokens": {
+          "gpt-5.6": 62,
+          "claude-opus-4.2": 65,
+          "gemini-3.0-pro": 59,
+          "qwen3.5-32b": 69
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "b592abbb521c282b018cffd93b9af5aa744a90498189ad3f15a32e53f1a969d4",
+        "bytes": 218,
+        "tokens": {
+          "gpt-5.6": 59,
+          "claude-opus-4.2": 62,
+          "gemini-3.0-pro": 56,
+          "qwen3.5-32b": 66
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "5d7235e0af1d2be989ba2d2d5d5b23cafffd7ab6af0d255d245130ab649ef8c9",
+        "bytes": 360,
+        "tokens": {
+          "gpt-5.6": 97,
+          "claude-opus-4.2": 102,
+          "gemini-3.0-pro": 93,
+          "qwen3.5-32b": 108
+        }
+      }
+    ],
+    "indexSha256": "29ec883c683cbc282fba715f310d865dbbd4d3034aaafdf2076b75c4686162d9"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "ca499dd40c194e1cbcedc1f9095a4649b14435c38f2c2060f1572efbab3dbfa3"
+}

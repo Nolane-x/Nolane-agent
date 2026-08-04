@@ -1,0 +1,307 @@
+{
+  "schemaVersion": 2,
+  "id": "scanning-dependency-vulnerabilities",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Scanning Dependency Vulnerabilities",
+    "description": "Use when scanning dependency vulnerabilities within security lifecycle boundaries, especially when does the artifact make the owned decision for scanning dependency vulnerabilities explicit and bounded?.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "security"
+    ],
+    "keywords": [
+      "scanning-dependency-vulnerabilities",
+      "scanning",
+      "dependency",
+      "vulnerabilities",
+      "within",
+      "security",
+      "lifecycle",
+      "boundaries"
+    ],
+    "antiTriggers": [
+      "the requested outcome does not require scanning dependency vulnerabilities within security lifecycle boundaries",
+      "the typed inputs for scanning-dependency-vulnerabilities are absent and another technique owns the outcome"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "threat-model",
+        "schema": "artifact://forgeos/threat-model/v1"
+      },
+      {
+        "type": "verified-build",
+        "schema": "artifact://forgeos/verified-build/v1"
+      }
+    ],
+    "produces": [
+      {
+        "type": "security-review",
+        "schema": "artifact://forgeos/security-review/v1"
+      }
+    ],
+    "invariants": [
+      "Does the artifact make the owned decision for scanning dependency vulnerabilities explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "requiredTools": [
+      "security-scanner"
+    ],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "intent.confirmed"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Define the exact decision, actors, objects, states, invariants, side effects, and non-goals owned by scanning dependency vulnerabilities.",
+        "evidence": "scanning-dependency-vulnerabilities-decision-table"
+      },
+      {
+        "id": "step-2",
+        "action": "Build a decision table for normal, boundary, invalid, permission, failure, retry, recovery, concurrency, migration, and abuse conditions relevant to scanning dependency vulnerabilities.",
+        "evidence": "scanning-dependency-vulnerabilities-verification-report"
+      },
+      {
+        "id": "step-3",
+        "action": "Apply scanning dependency vulnerabilities only to direct input artifacts; record assumptions, rejected alternatives, and any human decision still required.",
+        "evidence": "scanning-dependency-vulnerabilities-handoff-envelope"
+      },
+      {
+        "id": "step-4",
+        "action": "Trace the resulting contract to user value, security, reliability, cost, operability, and downstream consumers.",
+        "evidence": "scanning-dependency-vulnerabilities-handoff-envelope"
+      },
+      {
+        "id": "step-5",
+        "action": "Create reproducible checks that would fail if scanning dependency vulnerabilities were incomplete or implemented incorrectly.",
+        "evidence": "scanning-dependency-vulnerabilities-handoff-envelope"
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "Output contract is satisfied, a blocker is recorded, or a material human decision is required."
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Does the artifact make the owned decision for scanning dependency vulnerabilities explicit and bounded?",
+      "Are failure, recovery, permissions, concurrency, and irreversible side effects addressed where applicable?",
+      "Can every load-bearing claim be traced to a confirmed fact, direct artifact, executable check, or declared assumption?",
+      "Would a downstream agent know exactly what changed, what remains open, and what must be invalidated?"
+    ],
+    "reviewerRole": "security-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "scanning-dependency-vulnerabilities-decision-table",
+      "scanning-dependency-vulnerabilities-verification-report",
+      "scanning-dependency-vulnerabilities-handoff-envelope"
+    ],
+    "evaluatorIds": [
+      "scanning-dependency-vulnerabilities-evaluator-v06"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 8,
+    "maxReferenceDepth": 1,
+    "targetTokens": 739,
+    "hardTokens": 1142,
+    "outputReserveTokens": 285
+  },
+  "quality": {
+    "benchmarkIds": [
+      "scanning-dependency-vulnerabilities-public-v06"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has public RED fixtures but lacks independent multi-model holdout evidence."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L1",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "work-unit-bundling",
+      "coverage-ledger",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionable-output-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "cybersecurity.test-security",
+      "fitScore": 90,
+      "mappingEvidence": "reviewed:l1-v06:scanning-dependency-vulnerabilities",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "da4d0390b320a30cda6f235851123bbcb8b0d6aff85379e7a51d868cc31cdf32",
+        "bytes": 1000,
+        "tokens": {
+          "gpt-5.6": 269,
+          "claude-opus-4.2": 282,
+          "gemini-3.0-pro": 257,
+          "qwen3.5-32b": 299
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "1d45501f7c8483aa3c8f965753215f4507b12f9e8f724369ac47dc0978f2fe6a",
+        "bytes": 746,
+        "tokens": {
+          "gpt-5.6": 201,
+          "claude-opus-4.2": 211,
+          "gemini-3.0-pro": 192,
+          "qwen3.5-32b": 223
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "d1e06077f328ecb4d2124b7dc5e66f69d3ef0cbf0f49b37dc990da98f09a367d",
+        "bytes": 311,
+        "tokens": {
+          "gpt-5.6": 84,
+          "claude-opus-4.2": 88,
+          "gemini-3.0-pro": 80,
+          "qwen3.5-32b": 93
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "7c3d0f0a41bbae00545b21771a779db0da202777a55ff8ad648abc8239e7e652",
+        "bytes": 641,
+        "tokens": {
+          "gpt-5.6": 173,
+          "claude-opus-4.2": 181,
+          "gemini-3.0-pro": 165,
+          "qwen3.5-32b": 192
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "df811c1b78e216749d3b1ef91c91d9b4c123616cef7182418ee58babb5ef1bc4",
+        "bytes": 339,
+        "tokens": {
+          "gpt-5.6": 92,
+          "claude-opus-4.2": 96,
+          "gemini-3.0-pro": 87,
+          "qwen3.5-32b": 102
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "a22ce01e9ff537e5a33e307fc8c31b02138478b620207b79e87e43fde1e55711",
+        "bytes": 249,
+        "tokens": {
+          "gpt-5.6": 67,
+          "claude-opus-4.2": 71,
+          "gemini-3.0-pro": 64,
+          "qwen3.5-32b": 75
+        }
+      }
+    ],
+    "indexSha256": "a9ee4c6cfb10f5d3662af8f3c700f37204e5a699902798867c5bdc17ece7e28c"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "492af01ea8a50d940e1068b0acec55f303883db100ae4e7250bceedcab43e0bf"
+}

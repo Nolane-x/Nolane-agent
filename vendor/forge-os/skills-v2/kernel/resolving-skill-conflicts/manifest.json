@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 2,
+  "id": "resolving-skill-conflicts",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Resolving Skill Conflicts",
+    "description": "Use when candidate techniques, providers, policy profiles, ownership rules, or tool effects cannot safely coexist in the same execution route.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "kernel"
+    ],
+    "keywords": [
+      "resolving-skill-conflicts",
+      "candidate",
+      "techniques",
+      "providers",
+      "policy",
+      "profiles",
+      "ownership",
+      "rules",
+      "or"
+    ],
+    "antiTriggers": [
+      "alternatives are compatible and can run independently",
+      "a provider is merely lower ranked without a conflict"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "project-state",
+        "schema": "artifact://forgeos/project-state/v2"
+      }
+    ],
+    "produces": [
+      {
+        "type": "conflict-decision",
+        "schema": "artifact://forgeos/conflict-decision/v1"
+      }
+    ],
+    "invariants": [
+      "No conflicting writer owns the same output slot.",
+      "Resolution does not weaken assurance silently.",
+      "Human choice is required for value trade-offs, not guessed."
+    ],
+    "requiredTools": [
+      "planning"
+    ],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "confirmed intent and current semantic revision exist"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Classify conflict as semantic, resource, authority, state, or side-effect conflict.",
+        "evidence": "No conflicting writer owns the same output slot."
+      },
+      {
+        "id": "step-2",
+        "action": "Determine whether ordering, isolation, substitution, or human choice can resolve it.",
+        "evidence": "Resolution does not weaken assurance silently."
+      },
+      {
+        "id": "step-3",
+        "action": "Prefer the option preserving the target outcome with the least new authority.",
+        "evidence": "Human choice is required for value trade-offs, not guessed."
+      },
+      {
+        "id": "step-4",
+        "action": "Record excluded alternatives and invalidation consequences.",
+        "evidence": "Human choice is required for value trade-offs, not guessed."
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "conflict-decision is produced with current evidence or a blocker is recorded"
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "No conflicting writer owns the same output slot.",
+      "Resolution does not weaken assurance silently.",
+      "Human choice is required for value trade-offs, not guessed."
+    ],
+    "reviewerRole": "kernel-skill-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "behavioral-eval-receipt",
+      "context-receipt"
+    ],
+    "evaluatorIds": [
+      "resolving-skill-conflicts-evaluator-v2"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 5,
+    "maxReferenceDepth": 2,
+    "targetTokens": 524,
+    "hardTokens": 917,
+    "outputReserveTokens": 256
+  },
+  "quality": {
+    "benchmarkIds": [
+      "resolving-skill-conflicts-public-v1"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L0",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "coverage-ledger",
+      "typed-preconditions",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionability-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.govern-evolution",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:l0:resolving-skill-conflicts",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.resolving-skill-conflicts",
+      "fitScore": 100,
+      "mappingEvidence": "reviewed:l0:resolving-skill-conflicts",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "89b5e89c842363d568c22667090aeef53f17947ca3305c8f85353ddbf6664b44",
+        "bytes": 866,
+        "tokens": {
+          "gpt-5.6": 233,
+          "claude-opus-4.2": 244,
+          "gemini-3.0-pro": 223,
+          "qwen3.5-32b": 259
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "fa77dd636768348f9264eba69a2562810c50d87633fbe904595363c9860aba06",
+        "bytes": 582,
+        "tokens": {
+          "gpt-5.6": 157,
+          "claude-opus-4.2": 164,
+          "gemini-3.0-pro": 150,
+          "qwen3.5-32b": 174
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "ce6b780e7111bd23302b7787a5ac03cd99f1711936b70d624202d73da690a469",
+        "bytes": 391,
+        "tokens": {
+          "gpt-5.6": 106,
+          "claude-opus-4.2": 111,
+          "gemini-3.0-pro": 101,
+          "qwen3.5-32b": 117
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "9e321fd98cd755026c7b323d77feb6240e6043ea1f70afc2d8e012ab7a269b6b",
+        "bytes": 259,
+        "tokens": {
+          "gpt-5.6": 70,
+          "claude-opus-4.2": 73,
+          "gemini-3.0-pro": 67,
+          "qwen3.5-32b": 78
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "ffc6a77be258105322bd02b78e1db74efdf35eaa3dbb4687c7c2be6520b0e3ce",
+        "bytes": 232,
+        "tokens": {
+          "gpt-5.6": 63,
+          "claude-opus-4.2": 66,
+          "gemini-3.0-pro": 60,
+          "qwen3.5-32b": 70
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "8506227c95a66d7d6b3513d28ed87b6474212cc79c8f71dc553105be6cadd878",
+        "bytes": 354,
+        "tokens": {
+          "gpt-5.6": 96,
+          "claude-opus-4.2": 100,
+          "gemini-3.0-pro": 91,
+          "qwen3.5-32b": 106
+        }
+      }
+    ],
+    "indexSha256": "bc3b80fbcc7bc261494454fc049c61b6a3b6c283ec9073b225aeaaed69501272"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "fc76b37e9890ef93b6ddf3026df7aa43dfcd90a8af3b35dc99aca0241e2e0682"
+}

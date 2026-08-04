@@ -1,0 +1,49 @@
+{
+  "schema": "nolane.small-model.checkpoint-6-specialist-dataset-receipt.v1",
+  "specialist": "risk-classifier",
+  "datasetReceiptSha256": "5800f86eebbfd9612be8f674598bebbe625918a7eec07a05832d035c07e041df",
+  "splitReceiptSha256": "3f86436862897eb8dbd3fce145c29577fa08b145cc09f888fae71680e650352f",
+  "labels": [
+    "critical",
+    "high",
+    "low",
+    "medium"
+  ],
+  "counts": {
+    "total": 45,
+    "train": 37,
+    "validation": 4,
+    "heldOut": 4
+  },
+  "disjointBy": "projectId:scenarioGroup",
+  "groupCounts": {
+    "train": 37,
+    "validation": 4,
+    "heldOut": 4
+  },
+  "lineage": {
+    "repositoryDatasetReceiptSha256": "c08a63762070d3358522bddad2bc481e437d9890239d75ce4985e8971f4d58f2",
+    "multiRuntimeDatasetReceiptSha256": "502fb426e4a829ac617c16e792dcba1ef8bf04e9c055102241af1d7661f7e671",
+    "recoveryDatasetReceiptSha256": "a9ec47ce9e898cc2ded822b146bb1bfbc541c0270b3d26780e4c59c192ca5b05",
+    "repositoryEpisodes": 32,
+    "multiRuntimeEpisodes": 7,
+    "recoveryEpisodes": 6,
+    "projects": [
+      "launcher-go",
+      "native-credential-go",
+      "native-pty-go",
+      "nolane-agent-node",
+      "nolane-node",
+      "python-sdk"
+    ],
+    "runtimes": [
+      "go",
+      "node",
+      "python"
+    ],
+    "mutationObserved": true,
+    "recoveryObserved": true
+  },
+  "hiddenChainOfThoughtStored": false,
+  "receiptSha256": "04edd3e089eb4635728587abf227562102255b7f11ca5d037e332f93651d4ae4"
+}

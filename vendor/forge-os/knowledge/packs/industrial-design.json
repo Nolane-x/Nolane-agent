@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.industrial-design",
+  "domain": "industrial-design",
+  "title": "Industrial Design Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "ergonomics",
+    "materials",
+    "manufacturing",
+    "prototyping",
+    "sustainability",
+    "safety",
+    "form",
+    "serviceability"
+  ],
+  "capabilities": [
+    "industrial-design.map-landscape",
+    "industrial-design.frame-problem",
+    "industrial-design.research-users",
+    "industrial-design.define-requirements",
+    "industrial-design.model-domain",
+    "industrial-design.compare-alternatives",
+    "industrial-design.design-concept",
+    "industrial-design.prototype-critical-flow",
+    "industrial-design.validate-prototype",
+    "industrial-design.design-architecture",
+    "industrial-design.model-data",
+    "industrial-design.model-threats",
+    "industrial-design.plan-delivery",
+    "industrial-design.implement-core",
+    "industrial-design.integrate-dependencies",
+    "industrial-design.verify-contracts",
+    "industrial-design.test-boundaries",
+    "industrial-design.test-resilience",
+    "industrial-design.test-performance",
+    "industrial-design.test-security",
+    "industrial-design.audit-accessibility",
+    "industrial-design.optimize-quality",
+    "industrial-design.optimize-cost",
+    "industrial-design.document-system",
+    "industrial-design.prepare-migration",
+    "industrial-design.plan-rollout",
+    "industrial-design.instrument-observability",
+    "industrial-design.operate-lifecycle",
+    "industrial-design.respond-incidents",
+    "industrial-design.govern-evolution",
+    "industrial-design.measure-outcomes",
+    "industrial-design.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "nvidia-skills",
+      "title": "NVIDIA Agent Skills",
+      "url": "https://github.com/NVIDIA/skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "Mixed",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

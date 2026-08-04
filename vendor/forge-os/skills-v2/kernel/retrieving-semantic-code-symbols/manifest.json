@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 2,
+  "id": "retrieving-semantic-code-symbols",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Retrieving Semantic Code Symbols",
+    "description": "Use when an agent must orient in a large codebase or fetch one implementation body by stable symbol identity, content hash, dependency, test, or call-site relation.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "kernel"
+    ],
+    "keywords": [
+      "retrieving-semantic-code-symbols",
+      "an",
+      "agent",
+      "must",
+      "orient",
+      "in",
+      "a",
+      "large",
+      "codebase"
+    ],
+    "antiTriggers": [
+      "a tiny file can be read safely in full",
+      "the language adapter cannot identify symbol boundaries"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "project-state",
+        "schema": "artifact://forgeos/project-state/v2"
+      }
+    ],
+    "produces": [
+      {
+        "type": "semantic-symbol-pack",
+        "schema": "artifact://forgeos/semantic-symbol-pack/v1"
+      }
+    ],
+    "invariants": [
+      "Symbol IDs remain stable across body-only edits.",
+      "Stale content hashes are rejected.",
+      "Permission boundaries apply before retrieval."
+    ],
+    "requiredTools": [
+      "repository"
+    ],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "confirmed intent and current semantic revision exist"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Build or update a language-specific symbol graph incrementally.",
+        "evidence": "Symbol IDs remain stable across body-only edits."
+      },
+      {
+        "id": "step-2",
+        "action": "Return compact IDs, signatures, hashes, and graph neighbors for orientation.",
+        "evidence": "Stale content hashes are rejected."
+      },
+      {
+        "id": "step-3",
+        "action": "Fetch bodies only for explicitly requested symbol IDs and expected hashes.",
+        "evidence": "Permission boundaries apply before retrieval."
+      },
+      {
+        "id": "step-4",
+        "action": "Reject stale requests and include directly relevant tests and call sites.",
+        "evidence": "Permission boundaries apply before retrieval."
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "semantic-symbol-pack is produced with current evidence or a blocker is recorded"
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Symbol IDs remain stable across body-only edits.",
+      "Stale content hashes are rejected.",
+      "Permission boundaries apply before retrieval."
+    ],
+    "reviewerRole": "kernel-skill-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "behavioral-eval-receipt",
+      "context-receipt"
+    ],
+    "evaluatorIds": [
+      "retrieving-semantic-code-symbols-evaluator-v2"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 5,
+    "maxReferenceDepth": 2,
+    "targetTokens": 517,
+    "hardTokens": 903,
+    "outputReserveTokens": 256
+  },
+  "quality": {
+    "benchmarkIds": [
+      "retrieving-semantic-code-symbols-public-v1"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L0",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "coverage-ledger",
+      "typed-preconditions",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionability-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.model-data",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:l0:retrieving-semantic-code-symbols",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.retrieving-semantic-code-symbols",
+      "fitScore": 100,
+      "mappingEvidence": "reviewed:l0:retrieving-semantic-code-symbols",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "5706c14c7f0c0ef2feaf16c0800257f1eed75baca944dd845920cfaf50220949",
+        "bytes": 883,
+        "tokens": {
+          "gpt-5.6": 238,
+          "claude-opus-4.2": 249,
+          "gemini-3.0-pro": 227,
+          "qwen3.5-32b": 264
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "bf3e1af50c6f26a281c85b952559bb9621c8cae6ec2ec3b70da3a34d2d72a28d",
+        "bytes": 565,
+        "tokens": {
+          "gpt-5.6": 152,
+          "claude-opus-4.2": 160,
+          "gemini-3.0-pro": 145,
+          "qwen3.5-32b": 169
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "ce6b780e7111bd23302b7787a5ac03cd99f1711936b70d624202d73da690a469",
+        "bytes": 391,
+        "tokens": {
+          "gpt-5.6": 106,
+          "claude-opus-4.2": 111,
+          "gemini-3.0-pro": 101,
+          "qwen3.5-32b": 117
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "106c530a65206b0f64d4193eea8fb61c4fd5909a005baec101f295f1f4706a68",
+        "bytes": 233,
+        "tokens": {
+          "gpt-5.6": 63,
+          "claude-opus-4.2": 66,
+          "gemini-3.0-pro": 60,
+          "qwen3.5-32b": 70
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "308910ea0dfc5d7b51811529056c23745ff5eebec51f77b70462583f3e19e74c",
+        "bytes": 207,
+        "tokens": {
+          "gpt-5.6": 56,
+          "claude-opus-4.2": 59,
+          "gemini-3.0-pro": 54,
+          "qwen3.5-32b": 62
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "201986e7198f156d4f22f0fe630098723662b25b0bcfd23469540f31fb270f94",
+        "bytes": 357,
+        "tokens": {
+          "gpt-5.6": 96,
+          "claude-opus-4.2": 101,
+          "gemini-3.0-pro": 92,
+          "qwen3.5-32b": 107
+        }
+      }
+    ],
+    "indexSha256": "ae02ed3be7c8b0892a9ada6f68ec9e7270dcb18ab4909cd981b02763f8690555"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "de43e0aa132f9d44a722e742f1ba54fb9d7709e29aeb8afec373e122e454d4b7"
+}

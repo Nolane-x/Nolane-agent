@@ -1,0 +1,1 @@
+{"id":"fresh-evidence-v2","version":"2.0.0","category":"evidence","description":"Evidence must target the current subject digest and semantic revision.","rules":[{"id":"subject","enforce":"receipt subject hash matches current artifact"},{"id":"freshness","enforce":"receipt is within policy age"},{"id":"trusted-provider","enforce":"receipt was issued by an allowed executor"}]}

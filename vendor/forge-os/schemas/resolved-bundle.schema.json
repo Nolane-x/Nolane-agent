@@ -1,0 +1,496 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forgeos.dev/schemas/v0.4/resolved-bundle.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "bundleId",
+    "bundleSha256",
+    "capability",
+    "selected",
+    "context",
+    "execution",
+    "approvalsRequired",
+    "conflicts",
+    "reasons",
+    "unresolved"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "enum": [
+        1,
+        2
+      ]
+    },
+    "bundleId": {
+      "type": "string",
+      "pattern": "^bundle_[a-f0-9]{24}$"
+    },
+    "bundleSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capabilityId",
+        "contractSha256",
+        "title",
+        "domain",
+        "riskClass",
+        "consumes",
+        "produces",
+        "evidence",
+        "requiredTools",
+        "mcpCapabilities",
+        "qualityDimensions",
+        "dependencies",
+        "conflictTags",
+        "providerPolicy",
+        "contextBudget"
+      ],
+      "properties": {
+        "capabilityId": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,159}$"
+        },
+        "contractSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "title": {
+          "type": "string"
+        },
+        "domain": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,159}$"
+        },
+        "discipline": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "phase": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ordinal": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "riskClass": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "consumes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "produces": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "requiredTools": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "mcpCapabilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "qualityDimensions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "conflictTags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "knowledgePackId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "providerPolicy": {
+          "type": "object"
+        },
+        "contextBudget": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "selected": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "providerId",
+          "providerDigest",
+          "kind",
+          "status",
+          "sourceId",
+          "title",
+          "license",
+          "trust",
+          "compatibility",
+          "estimatedTokens",
+          "conflicts"
+        ],
+        "properties": {
+          "providerId": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]{2,159}$"
+          },
+          "providerDigest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "contentDigest": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "kind": {
+            "enum": [
+              "skill",
+              "knowledge",
+              "mcp",
+              "composite"
+            ]
+          },
+          "status": {
+            "enum": [
+              "stable"
+            ]
+          },
+          "sourceId": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]{2,159}$"
+          },
+          "sourceCoordinate": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "license": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "spdx",
+                  "mode"
+                ],
+                "properties": {
+                  "spdx": {
+                    "type": "string"
+                  },
+                  "mode": {
+                    "enum": [
+                      "vendor-allowed",
+                      "link-only"
+                    ]
+                  },
+                  "ambiguous": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "trust": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "score",
+              "blockers"
+            ],
+            "properties": {
+              "score": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "blockers": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              }
+            }
+          },
+          "compatibility": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "agents",
+              "tools"
+            ],
+            "properties": {
+              "agents": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "tools": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              }
+            }
+          },
+          "estimatedTokens": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "selectedSections": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "materialType": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "validUntil": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "conflicts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "maxItems": 3
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "budgetTokens",
+        "estimatedTokens",
+        "remainingTokens",
+        "withinBudget"
+      ],
+      "properties": {
+        "model": {
+          "type": "string"
+        },
+        "budgetSource": {
+          "type": "string"
+        },
+        "budgetTokens": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "estimatedTokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "remainingTokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "hardTokens": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "outputReserveTokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "safetyReserveTokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "withinBudget": {
+          "type": "boolean"
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "agent",
+        "assurance",
+        "requiredTools",
+        "consumes",
+        "produces",
+        "evidenceObligations",
+        "stopCondition"
+      ],
+      "properties": {
+        "agent": {
+          "type": "string"
+        },
+        "assurance": {
+          "enum": [
+            "A0",
+            "A1",
+            "A2",
+            "A3",
+            "A4"
+          ]
+        },
+        "requiredTools": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "consumes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "produces": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "evidenceObligations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "stopCondition": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "approvalsRequired": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "reasons": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "unresolved": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "executable": {
+      "type": "boolean"
+    }
+  },
+  "description": "Deprecated alias. Use execution-bundle.schema.json."
+}

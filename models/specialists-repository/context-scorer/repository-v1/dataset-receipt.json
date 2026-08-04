@@ -1,0 +1,27 @@
+{
+  "schema": "nolane.small-model.repository-specialist-dataset-receipt.v1",
+  "specialist": "context-scorer",
+  "trajectoryDatasetReceiptSha256": "c08a63762070d3358522bddad2bc481e437d9890239d75ce4985e8971f4d58f2",
+  "datasetReceiptSha256": "da49bc79f8a86b112dd3676727e68b5dc231a3745fa9c83efa37ccc2a816fab8",
+  "splitReceiptSha256": "aa7856441f556d1dfb60594a6235b7944c5a948dbca34cb91b58624c9bcaab42",
+  "labels": [
+    "counter-evidence",
+    "exclude",
+    "pin",
+    "support"
+  ],
+  "counts": {
+    "total": 32,
+    "train": 24,
+    "validation": 4,
+    "heldOut": 4
+  },
+  "disjointBy": "scenarioGroup",
+  "groupCounts": {
+    "train": 24,
+    "validation": 4,
+    "heldOut": 4
+  },
+  "hiddenChainOfThoughtStored": false,
+  "receiptSha256": "a0866a190d195586e784e7324c70bf38f83f632ea49438c771b29735f08ee328"
+}

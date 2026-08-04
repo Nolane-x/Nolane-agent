@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "knowledge-pack.media-production",
+  "domain": "media-production",
+  "title": "Media Production Knowledge Pack",
+  "loadingPolicy": "references-only-progressive-disclosure",
+  "topics": [
+    "script",
+    "storyboard",
+    "audio",
+    "video",
+    "lighting",
+    "editing",
+    "distribution",
+    "rights"
+  ],
+  "capabilities": [
+    "media-production.map-landscape",
+    "media-production.frame-problem",
+    "media-production.research-users",
+    "media-production.define-requirements",
+    "media-production.model-domain",
+    "media-production.compare-alternatives",
+    "media-production.design-concept",
+    "media-production.prototype-critical-flow",
+    "media-production.validate-prototype",
+    "media-production.design-architecture",
+    "media-production.model-data",
+    "media-production.model-threats",
+    "media-production.plan-delivery",
+    "media-production.implement-core",
+    "media-production.integrate-dependencies",
+    "media-production.verify-contracts",
+    "media-production.test-boundaries",
+    "media-production.test-resilience",
+    "media-production.test-performance",
+    "media-production.test-security",
+    "media-production.audit-accessibility",
+    "media-production.optimize-quality",
+    "media-production.optimize-cost",
+    "media-production.document-system",
+    "media-production.prepare-migration",
+    "media-production.plan-rollout",
+    "media-production.instrument-observability",
+    "media-production.operate-lifecycle",
+    "media-production.respond-incidents",
+    "media-production.govern-evolution",
+    "media-production.measure-outcomes",
+    "media-production.certify-release"
+  ],
+  "sources": [
+    {
+      "id": "forgeos-local",
+      "title": "ForgeOS first-party skills",
+      "url": "https://github.com/forgeos/forge-os",
+      "authority": "local",
+      "trust": "local",
+      "revision": "release:v0.4.0",
+      "license": {
+        "spdx": "MIT",
+        "mode": "vendor-allowed"
+      }
+    },
+    {
+      "id": "anthropic-skills",
+      "title": "Anthropic Agent Skills",
+      "url": "https://github.com/anthropics/skills",
+      "authority": "vendor",
+      "trust": "discovery",
+      "revision": "resolve-on-sync",
+      "license": {
+        "spdx": "Mixed",
+        "mode": "link-only"
+      }
+    }
+  ],
+  "qualityPolicy": {
+    "minimumAuthoritativeSources": 1,
+    "requirePinnedRevision": true,
+    "licenseAware": true,
+    "noRemoteContentVendoring": true
+  }
+}

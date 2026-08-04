@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 2,
+  "id": "detecting-semantic-duplication",
+  "version": "1.0.0",
+  "skillType": "technique",
+  "maturity": "candidate",
+  "identity": {
+    "title": "Detecting Semantic Skill Duplication",
+    "description": "Use when several skills or providers may express the same trigger, mechanism, outputs, evaluation surface, or benchmark coverage under different names.",
+    "domains": [
+      "all"
+    ],
+    "subdomains": [
+      "kernel"
+    ],
+    "keywords": [
+      "detecting-semantic-duplication",
+      "several",
+      "skills",
+      "or",
+      "providers",
+      "may",
+      "express",
+      "the",
+      "same"
+    ],
+    "antiTriggers": [
+      "two techniques share an outcome but use distinct mechanisms",
+      "exact duplicates already match by content hash"
+    ]
+  },
+  "relations": {
+    "requires": [],
+    "specializes": [],
+    "composedWith": [],
+    "conflictsWith": [],
+    "alternativesTo": [],
+    "supersedes": []
+  },
+  "contract": {
+    "consumes": [
+      {
+        "type": "project-state",
+        "schema": "artifact://forgeos/project-state/v2"
+      }
+    ],
+    "produces": [
+      {
+        "type": "duplication-review",
+        "schema": "artifact://forgeos/duplication-review/v1"
+      }
+    ],
+    "invariants": [
+      "Embedding similarity alone never auto-merges skills.",
+      "Specializations remain linked rather than collapsed.",
+      "Duplicate findings include evidence spans."
+    ],
+    "requiredTools": [
+      "model"
+    ],
+    "optionalTools": []
+  },
+  "procedure": {
+    "entryConditions": [
+      "confirmed intent and current semantic revision exist"
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "action": "Compare exact and normalized structural signatures.",
+        "evidence": "Embedding similarity alone never auto-merges skills."
+      },
+      {
+        "id": "step-2",
+        "action": "Measure trigger, output, procedure mechanism, and benchmark overlap separately.",
+        "evidence": "Specializations remain linked rather than collapsed."
+      },
+      {
+        "id": "step-3",
+        "action": "Preserve alternatives when trade-offs or failure modes differ.",
+        "evidence": "Duplicate findings include evidence spans."
+      },
+      {
+        "id": "step-4",
+        "action": "Require human merge review before changing canonical identity.",
+        "evidence": "Duplicate findings include evidence spans."
+      }
+    ],
+    "fallbackPaths": [
+      {
+        "condition": "required deterministic stage cannot run",
+        "action": "stop and emit a typed blocker"
+      }
+    ],
+    "stopConditions": [
+      "duplication-review is produced with current evidence or a blocker is recorded"
+    ]
+  },
+  "verification": {
+    "executableChecks": [
+      "Embedding similarity alone never auto-merges skills.",
+      "Specializations remain linked rather than collapsed.",
+      "Duplicate findings include evidence spans."
+    ],
+    "reviewerRole": "kernel-skill-reviewer",
+    "independentReview": true,
+    "evidenceTypes": [
+      "behavioral-eval-receipt",
+      "context-receipt"
+    ],
+    "evaluatorIds": [
+      "detecting-semantic-duplication-evaluator-v2"
+    ]
+  },
+  "context": {
+    "defaultSections": [
+      "overview",
+      "procedure",
+      "verification"
+    ],
+    "optionalSections": [
+      "decision-tables",
+      "failure-modes",
+      "examples"
+    ],
+    "maxDirectArtifacts": 5,
+    "maxReferenceDepth": 2,
+    "targetTokens": 508,
+    "hardTokens": 900,
+    "outputReserveTokens": 256
+  },
+  "quality": {
+    "benchmarkIds": [
+      "detecting-semantic-duplication-public-v1"
+    ],
+    "minimumSkillDepthScore": 60,
+    "compatibleModels": [
+      "frontier",
+      "mid-size",
+      "local-7b-plus"
+    ],
+    "knownLimitations": [
+      "Candidate has RED fixtures but not enough independent holdout evidence for stable status."
+    ]
+  },
+  "policyProfiles": [
+    "forgeos-artifact-envelope-v2",
+    "independent-review-v1",
+    "fresh-evidence-v2",
+    "bounded-context-v2",
+    "deterministic-execution-v1"
+  ],
+  "kernelLevel": "L0",
+  "executionProgram": {
+    "executionMode": "hybrid",
+    "hardPipeline": [
+      "scope-selection",
+      "coverage-ledger",
+      "typed-preconditions",
+      "rule-resolution",
+      "output-anchoring",
+      "evidence-validation"
+    ],
+    "agentStages": [
+      "contextual-investigation",
+      "domain-judgment"
+    ],
+    "reflectionStages": [
+      "contradiction-check",
+      "false-positive-filter",
+      "actionability-check"
+    ]
+  },
+  "capabilityMappings": [
+    {
+      "capabilityId": "ai-agent-engineering.govern-evolution",
+      "fitScore": 96,
+      "mappingEvidence": "reviewed:l0:detecting-semantic-duplication",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    },
+    {
+      "capabilityId": "technique.detecting-semantic-duplication",
+      "fitScore": 100,
+      "mappingEvidence": "reviewed:l0:detecting-semantic-duplication",
+      "reviewer": "forgeos-kernel-reviewer",
+      "reviewedAt": "2026-07-25T00:00:00.000Z"
+    }
+  ],
+  "policyProfileHashes": [
+    {
+      "id": "forgeos-artifact-envelope-v2",
+      "version": "2.0.0",
+      "sha256": "8b407c0ea5da14fa10effade7192125c2c01d68332b932dd65a90fa56de66505"
+    },
+    {
+      "id": "independent-review-v1",
+      "version": "1.0.0",
+      "sha256": "dd3d0cf67378e9aa681c0c53fa13b1de10eb1c2ca21b5d14b3a32f80ad630632"
+    },
+    {
+      "id": "fresh-evidence-v2",
+      "version": "2.0.0",
+      "sha256": "2aa63f96a57ef479c7242124ae4e8de1f234123995229c51efe7245fed131580"
+    },
+    {
+      "id": "bounded-context-v2",
+      "version": "2.0.0",
+      "sha256": "4515e6ce0b557d33e8457dd29cbf50481372123c5e16248d6cc7f97051907a85"
+    },
+    {
+      "id": "deterministic-execution-v1",
+      "version": "1.0.0",
+      "sha256": "370d85f4cfcd2dbf0faeccde650d8b652a4b926cf23207436494026a7d0f7429"
+    }
+  ],
+  "sectionIndex": {
+    "schemaVersion": 1,
+    "generatedAt": null,
+    "sections": [
+      {
+        "id": "overview",
+        "path": "SKILL.md",
+        "sha256": "6ea6f1f911e93d3b8b38dd58e6fae34aa56e6672617dbf8a47e239d053099319",
+        "bytes": 862,
+        "tokens": {
+          "gpt-5.6": 232,
+          "claude-opus-4.2": 243,
+          "gemini-3.0-pro": 222,
+          "qwen3.5-32b": 258
+        }
+      },
+      {
+        "id": "procedure",
+        "path": "sections/procedure.md",
+        "sha256": "4fd04f962cb339ad570777a4c8c28bcebb028603e8b87b8a32187cdcc02469d9",
+        "bytes": 533,
+        "tokens": {
+          "gpt-5.6": 144,
+          "claude-opus-4.2": 151,
+          "gemini-3.0-pro": 137,
+          "qwen3.5-32b": 160
+        }
+      },
+      {
+        "id": "decision-tables",
+        "path": "sections/decision-tables.md",
+        "sha256": "ce6b780e7111bd23302b7787a5ac03cd99f1711936b70d624202d73da690a469",
+        "bytes": 391,
+        "tokens": {
+          "gpt-5.6": 106,
+          "claude-opus-4.2": 111,
+          "gemini-3.0-pro": 101,
+          "qwen3.5-32b": 117
+        }
+      },
+      {
+        "id": "verification",
+        "path": "sections/verification.md",
+        "sha256": "f74c72621129edd3d56e30ca413b8a9a0c42afde842188cd544fcc9feca449fb",
+        "bytes": 252,
+        "tokens": {
+          "gpt-5.6": 68,
+          "claude-opus-4.2": 71,
+          "gemini-3.0-pro": 65,
+          "qwen3.5-32b": 76
+        }
+      },
+      {
+        "id": "failure-modes",
+        "path": "sections/failure-modes.md",
+        "sha256": "5ca7abaeb000aee33f67cb5a578c0f41135cf0420ee323ef5b0e96593574b759",
+        "bytes": 227,
+        "tokens": {
+          "gpt-5.6": 62,
+          "claude-opus-4.2": 64,
+          "gemini-3.0-pro": 59,
+          "qwen3.5-32b": 68
+        }
+      },
+      {
+        "id": "examples",
+        "path": "sections/examples.md",
+        "sha256": "37081ed2fbdb31880ac8beeb7cdff71459cbdf922bd4b03445023a886efa34b7",
+        "bytes": 355,
+        "tokens": {
+          "gpt-5.6": 96,
+          "claude-opus-4.2": 100,
+          "gemini-3.0-pro": 92,
+          "qwen3.5-32b": 106
+        }
+      }
+    ],
+    "indexSha256": "1b930671cd94e2fca0de1750d24ab77b5f09f49901639c97d0b31a09331bb6ab"
+  },
+  "evaluatorPackage": {
+    "cases": "evaluators/cases.json",
+    "rubric": "evaluators/rubric.json",
+    "baseline": "evaluators/baseline.json",
+    "holdout": "not-vendored"
+  },
+  "manifestSha256": "7300d2862a1e13ccba7d25cfa936e574444c350f0153a8eae0d44b6ffe5a77bb"
+}

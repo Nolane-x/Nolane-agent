@@ -1,0 +1,23 @@
+{
+  "schema": "nolane.small-model.process-reward-dataset-receipt.v1",
+  "datasetReceiptSha256": "91ef5a4373681ceb8fcbec84a703a5336ed057a63c077e93490343844c68afd0",
+  "splitReceiptSha256": "a766910f1e97c3c95155a5cfbffb68a34972be2bf020d86d5a861821fb80ca2e",
+  "counts": {
+    "total": 21,
+    "train": 7,
+    "validation": 7,
+    "heldOut": 7
+  },
+  "repositories": {
+    "train": "heldout-go-normalizer",
+    "validation": "heldout-node-normalizer",
+    "heldOut": "heldout-python-normalizer"
+  },
+  "labels": [
+    "neutral",
+    "progress",
+    "regression"
+  ],
+  "hiddenChainOfThoughtStored": false,
+  "receiptSha256": "87c297de1b6db7f3a65f400b40f8f6666a42291e6c7f7f4bef1b711491069294"
+}

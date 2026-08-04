@@ -1,0 +1,20 @@
+[
+  {
+    "id": "auditing-agent-actions-positive",
+    "kind": "application",
+    "input": "A task requiring Auditing Agent Actions",
+    "expectedEvidence": [
+      "Every state mutation has an audit event.",
+      "Chain tampering is detectable.",
+      "Metrics labels exclude private high-cardinality IDs."
+    ],
+    "baselineFailure": "Using chat prose as the audit log."
+  },
+  {
+    "id": "auditing-agent-actions-anti-trigger",
+    "kind": "counter-example",
+    "input": "high-volume debug telemetry with no audit value",
+    "expectedRoute": "exclude",
+    "baselineFailure": "superficial keyword activation"
+  }
+]

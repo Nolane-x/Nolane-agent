@@ -1,0 +1,38 @@
+[
+  {
+    "id": "evolving-skill-packs-application",
+    "kind": "application",
+    "input": "Task directly requiring evolving skill packs within meta lifecycle boundaries",
+    "expected": "produce typed output with evidence"
+  },
+  {
+    "id": "evolving-skill-packs-boundary",
+    "kind": "boundary",
+    "input": "the requested outcome does not require evolving skill packs within meta lifecycle boundaries",
+    "expected": "exclude"
+  },
+  {
+    "id": "evolving-skill-packs-missing-input",
+    "kind": "missing-information",
+    "input": "Required input artifact is missing",
+    "expected": "typed blocker"
+  },
+  {
+    "id": "evolving-skill-packs-tool-unavailable",
+    "kind": "tool-unavailable",
+    "input": "A required tool cannot be invoked",
+    "expected": "stop without approximation"
+  },
+  {
+    "id": "evolving-skill-packs-conflict",
+    "kind": "conflicting-constraints",
+    "input": "Two constraints cannot both be satisfied",
+    "expected": "decision or escalation"
+  },
+  {
+    "id": "evolving-skill-packs-transfer",
+    "kind": "transfer",
+    "input": "Apply the evolving-skill-packs mechanism in a different domain",
+    "expected": "preserve mechanism and evidence"
+  }
+]
