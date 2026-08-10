@@ -11,7 +11,6 @@ import { StudioStore } from '../src/storage/studio-store.mjs';
 
 test('loadConfig resolves paths and applies lightweight bounded defaults', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-studio-config-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const config = loadConfig({ dataDir: './data', workspaceRoot: root, port: 0, totalMemoryBytes: 8 * 1024 ** 3 });
   assert.equal(config.host, '127.0.0.1');
   assert.equal(config.port, 0);
@@ -46,7 +45,6 @@ test('createEvent returns a deeply immutable stable envelope', () => {
 
 test('StudioStore migrates and persists projects, tasks, and append-only events', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-studio-store-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const file = path.join(root, 'studio.db');
   const store = new StudioStore(file);
   t.after(() => store.close());
@@ -70,4 +68,5 @@ test('StudioStore migrates and persists projects, tasks, and append-only events'
   t.after(() => raw.close());
   assert.throws(() => raw.exec(`UPDATE events SET type='tampered' WHERE id='${event.id}'`), /append-only/i);
   assert.throws(() => raw.exec(`DELETE FROM events WHERE id='${event.id}'`), /append-only/i);
+  t.after(() => rm(root, { recursive: true, force: true }));
 });

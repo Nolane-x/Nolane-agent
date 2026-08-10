@@ -35,10 +35,10 @@ const solverInput = {
 
 test('alpha.4 authenticated HTTP routes expose bounded foundation and Nolane-native operations', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-alpha4-http-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(path.join(root, 'index.html'), '<!doctype html>');
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const smallModelFoundation = new SmallModelFoundationService();
   const operationalBoundary = new NolaneOperationalBoundaryService();
   const dependencyPreflight = new DependencyPreflightService({

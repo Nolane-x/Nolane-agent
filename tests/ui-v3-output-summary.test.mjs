@@ -12,3 +12,11 @@ test('output summary renders outputs background processes and sources with empty
   assert.match(html, /Sources/);
   assert.match(html, /npm test/);
 });
+
+test('output summary localizes its chrome when Vietnamese is active', () => {
+  const html = renderOutputSummary({ language: 'vi', open: true, status: 'ready', value: { outputs: [], processes: [], terminals: [], sources: [], availability: {} } });
+  assert.match(html, /Tóm tắt hoạt động/);
+  assert.match(html, /Tiến trình nền/);
+  assert.match(html, /Chưa có nguồn kết nối/);
+  assert.doesNotMatch(html, />Activity summary</);
+});

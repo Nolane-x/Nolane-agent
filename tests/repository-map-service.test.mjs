@@ -10,13 +10,17 @@ import { StudioStore } from '../src/storage/studio-store.mjs';
 
 test('RepositoryMapService builds a compact dependency-ranked symbol map', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-repo-map-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
+  let store = null;
+  t.after(async () => {
+    store?.close();
+    await rm(root, { recursive: true, force: true });
+  });
   await mkdir(path.join(root, 'src'), { recursive: true });
   await writeFile(path.join(root, 'src', 'core.mjs'), 'export function authenticate() { return true; }\nexport const TOKEN = 1;\n');
   await writeFile(path.join(root, 'src', 'api.mjs'), "import { authenticate } from './core.mjs';\nexport function login() { return authenticate(); }\n");
   await writeFile(path.join(root, 'src', 'ui.mjs'), "import { login } from './api.mjs';\nexport function Button() { return login(); }\n");
   await writeFile(path.join(root, 'src', 'worker.mjs'), "import { authenticate } from './core.mjs';\nexport function work() { return authenticate(); }\n");
-  const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
+  store = new StudioStore(path.join(root, 'studio.db'));
   const project = store.createProject({ name: 'Map', workspaceRoot: root });
   await new RepositoryIndex({ store }).index(project);
   const service = new RepositoryMapService({ store });

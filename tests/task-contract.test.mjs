@@ -59,9 +59,9 @@ test('task contract blocks scope expansion, undeclared commands, network, commit
 
 test('StudioStore normalizes a supplied task contract and binds task paths to its scope', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-task-contract-store-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const task = store.createTask({ projectId: project.id, title: 'Latency', objective: valid().objective, metadata: { taskContract: valid() } });
   assert.equal(task.metadata.taskContract.schema, 'forge.task-contract.v1');

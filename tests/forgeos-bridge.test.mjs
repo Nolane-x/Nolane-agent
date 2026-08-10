@@ -24,6 +24,17 @@ test('ForgeOsBridge creates authenticated projects and snapshots', async (t) => 
   assert.ok(snapshot.intelligence.kernelTechniqueCount >= 100);
 });
 
+test('ForgeOsBridge exposes upstream provenance without claiming remote freshness', async (t) => {
+  const { bridge } = await bridgeFixture(t);
+  const result = await bridge.upstreamStatus();
+  assert.equal(result.schema, 'nolane.forgeos.upstream-verification.v1');
+  assert.equal(result.repository, 'https://github.com/Nolane-x/forge-os');
+  assert.equal(result.claims.localManifestVerified, true);
+  assert.equal(result.claims.remoteFreshnessVerified, false);
+  assert.equal(result.claims.externallyCertified, false);
+  assert.equal(result.status, 'blocked');
+});
+
 test('ForgeOsBridge routes deterministically and materializes only selected skill sections', async (t) => {
   const { bridge } = await bridgeFixture(t);
   const input = {

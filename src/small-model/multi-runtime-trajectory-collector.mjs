@@ -14,6 +14,7 @@ const RUNTIMES = Object.freeze({
 const HIDDEN = /(?:chain.?of.?thought|hidden.?reasoning|reasoning.?trace|private.?scratchpad)/i;
 
 function sha256(value) { return createHash('sha256').update(value).digest('hex'); }
+function canonicalText(value) { return String(value).replace(/\r\n?/g, '\n'); }
 function scanPublic(value, cursor = '$') {
   if (!value || typeof value !== 'object') return;
   for (const [key, child] of Object.entries(value)) {
@@ -169,8 +170,9 @@ export async function writeMultiRuntimeTrajectoryDataset({ outputDir, collection
   await fs.mkdir(outputDir, { recursive: true });
   const ordered = [...collection.episodes].sort((a, b) => a.id.localeCompare(b.id));
   const text = ordered.map((entry) => canonicalStringify(entry)).join('\n') + (ordered.length ? '\n' : '');
-  const executionEpisodesSha256 = sha256(text);
-  await fs.writeFile(path.join(outputDir, 'execution-episodes.jsonl'), text);
+  const canonicalEpisodesText = canonicalText(text);
+  const executionEpisodesSha256 = sha256(canonicalEpisodesText);
+  await fs.writeFile(path.join(outputDir, 'execution-episodes.jsonl'), canonicalEpisodesText);
   const runtimes = [...new Set(ordered.map((entry) => entry.state.runtime))].sort();
   const projects = [...new Set(ordered.map((entry) => entry.state.projectId))].sort();
   const base = { schema: 'nolane.small-model.multi-runtime-trajectory-dataset.v1', episodeCount: ordered.length, attemptCount: collection.attempts?.length ?? ordered.length, excludedCount: collection.excluded?.length ?? 0, executionEpisodesSha256, collectionReceiptSha256: collection.receiptSha256, runtimes, projects, hiddenChainOfThoughtStored: false };
@@ -188,8 +190,9 @@ export async function verifyMultiRuntimeTrajectoryDataset({ outputDir } = {}) {
   const receipt = JSON.parse(receiptText);
   const { receiptSha256, ...base } = receipt;
   if (canonicalSha256(base) !== receiptSha256) throw new Error('Multi-runtime trajectory receipt hash mismatch');
-  if (sha256(text) !== receipt.executionEpisodesSha256) throw new Error('Multi-runtime execution episodes hash mismatch');
-  const lines = text.split(/\r?\n/).filter(Boolean);
+  const canonicalEpisodesText = canonicalText(text);
+  if (sha256(canonicalEpisodesText) !== receipt.executionEpisodesSha256) throw new Error('Multi-runtime execution episodes hash mismatch');
+  const lines = canonicalEpisodesText.split('\n').filter(Boolean);
   if (lines.length !== receipt.episodeCount) throw new Error('Multi-runtime trajectory episode count mismatch');
   const episodes = lines.map((line, index) => {
     const value = JSON.parse(line);

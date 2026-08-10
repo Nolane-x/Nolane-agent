@@ -9,10 +9,10 @@ import { GoalService } from '../src/goals/goal-service.mjs';
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-goal-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const file = path.join(root, 'studio.db');
   const store = new StudioStore(file);
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'Goal Project', workspaceRoot: root });
   return { root, file, store, project, service: new GoalService({ store }) };
 }
@@ -60,11 +60,14 @@ test('GoalService persists durable goals, criteria, budget, facts, and revisions
   assert.equal(f.service.listPlanRevisions(goal.id).length, 1);
 
   const reopenedStore = new StudioStore(f.file);
-  t.after(() => reopenedStore.close());
-  const reopened = new GoalService({ store: reopenedStore });
-  assert.equal(reopened.get(goal.id).activeMissionId, mission.id);
-  assert.equal(reopened.listFacts(goal.id)[0].claim, fact.claim);
-  assert.equal(reopened.listPlanRevisions(goal.id)[0].summary, revision.summary);
+  try {
+    const reopened = new GoalService({ store: reopenedStore });
+    assert.equal(reopened.get(goal.id).activeMissionId, mission.id);
+    assert.equal(reopened.listFacts(goal.id)[0].claim, fact.claim);
+    assert.equal(reopened.listPlanRevisions(goal.id)[0].summary, revision.summary);
+  } finally {
+    reopenedStore.close();
+  }
 });
 
 test('GoalService validates immutable identity and emits goal events', async (t) => {

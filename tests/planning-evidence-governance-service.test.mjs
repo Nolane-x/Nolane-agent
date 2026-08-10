@@ -10,7 +10,6 @@ import { PlanningEvidenceGovernanceService } from '../src/orchestration/planning
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-planning-evidence-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await mkdir(path.join(root, 'src'), { recursive: true });
   await mkdir(path.join(root, 'tests'), { recursive: true });
   await mkdir(path.join(root, 'docs'), { recursive: true });
@@ -21,6 +20,7 @@ async function fixture(t) {
   await writeFile(path.join(root, 'docs', 'architecture.md'), '# Router architecture\nThe router selects providers.\n');
   const store = new StudioStore(path.join(root, '.forge', 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'Planning fixture', workspaceRoot: root });
   const repositoryIndex = new RepositoryIndex({ store });
   const service = new PlanningEvidenceGovernanceService({ store, repositoryIndex, maxSteps: 12, maxEvidencePerKind: 8 });
@@ -123,4 +123,27 @@ test('preflight works through an adaptive repository facade without depending on
   assert.equal(result.status, 'ready');
   assert.equal(result.evidence.sources.some((item) => item.path === 'src/router.mjs'), true);
   assert.equal(result.evidence.tests.some((item) => item.path === 'tests/router.test.mjs'), true);
+});
+
+test('preflight does not block sending while a large workspace refresh is running', { timeout: 3_000 }, async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-planning-evidence-large-'));
+  await Promise.all(Array.from({ length: 257 }, (_, index) => writeFile(path.join(root, `file-${index}.mjs`), `export const value${index} = ${index};\n`)));
+  const store = new StudioStore(path.join(root, 'studio.db'));
+  t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const project = store.createProject({ name: 'Large workspace', workspaceRoot: root });
+  let refreshCalls = 0;
+  const repositoryIndex = {
+    index() {
+      refreshCalls += 1;
+      return new Promise(() => {});
+    },
+    async search() { return { items: [] }; },
+  };
+  const service = new PlanningEvidenceGovernanceService({ store, repositoryIndex });
+  const result = await service.preflight({ projectId: project.id, objective: 'Verify provider connectivity and record the result' });
+  assert.equal(result.status, 'ready');
+  assert.equal(result.indexRefresh.mode, 'background');
+  assert.equal(result.indexRefresh.scheduled, true);
+  assert.equal(refreshCalls, 1);
 });

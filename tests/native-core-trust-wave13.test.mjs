@@ -20,7 +20,11 @@ test('secret provider TCK resolves by reference without exposing raw values', as
   const envProvider = new EnvironmentSecretProviderWave13({ env: { NOLANE_TOKEN: 'env-secret' }, allow: ['NOLANE_TOKEN'] });
   const fileProvider = new FileSecretProviderWave13({ root, allow: ['provider-key'] });
   assert.equal(await envProvider.resolve({ ref: 'env:NOLANE_TOKEN' }), 'env-secret');
-  assert.equal(await fileProvider.resolve({ ref: 'file:provider-key' }), 'file-secret');
+  if (process.platform === 'win32') {
+    await assert.rejects(() => fileProvider.resolve({ ref: 'file:provider-key' }), (error) => error.code === 'SECRET_FILE_PERMISSIONS');
+  } else {
+    assert.equal(await fileProvider.resolve({ ref: 'file:provider-key' }), 'file-secret');
+  }
   assert.equal(JSON.stringify(envProvider.snapshot()).includes('env-secret'), false);
   assert.equal((await new SecretProviderTckWave13().verify(envProvider, { ref: 'env:NOLANE_TOKEN' })).status, 'pass');
   await assert.rejects(() => envProvider.resolve({ ref: 'env:OTHER' }), (error) => error.code === 'SECRET_REFERENCE_DENIED');

@@ -8,6 +8,7 @@ import { SkillIntelligenceService } from '../../vendor/forge-os/src/intelligence
 import { V06RuntimeService } from '../../vendor/forge-os/src/v06/service.mjs';
 import { createRemoteMicroVmSandboxFromEnv } from '../../vendor/forge-os/src/execution/remote-microvm-sandbox.mjs';
 import { assessSkillIntake } from '../../vendor/forge-os/src/federation/skill-intake.mjs';
+import { verifyForgeOsUpstream } from '../nolane-native/forgeos-upstream-provenance.mjs';
 
 const DEFAULT_POLICY = Object.freeze({
   modelContextLimit: 32_000,
@@ -32,10 +33,11 @@ function contextItems(value) {
 }
 
 export class ForgeOsBridge {
-  constructor({ forgeOsRoot, dataDir, principal, environment = process.env, remoteSandbox = null } = {}) {
+  constructor({ forgeOsRoot, dataDir, principal, environment = process.env, remoteSandbox = null, projectRoot = null } = {}) {
     if (!forgeOsRoot) throw new TypeError('forgeOsRoot is required');
     if (!dataDir) throw new TypeError('dataDir is required');
     this.forgeOsRoot = path.resolve(forgeOsRoot);
+    this.projectRoot = path.resolve(projectRoot ?? path.join(this.forgeOsRoot, '..', '..'));
     this.dataDir = path.resolve(dataDir);
     this.principal = principal ?? createPrincipal({
       id: 'human:forge-studio-local',
@@ -166,6 +168,10 @@ export class ForgeOsBridge {
       universalLanes,
       remoteSandbox,
     });
+  }
+
+  async upstreamStatus() {
+    return verifyForgeOsUpstream(this.projectRoot);
   }
 
   async listUniversalLanes() {

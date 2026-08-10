@@ -31,6 +31,6 @@ test('window state is atomically stored outside the installation tree with a rec
   assert.match(saved.receiptSha256, /^[a-f0-9]{64}$/);
   assert.equal(store.read().maximized, true);
   const file = path.join(root, 'session', 'window-state.json');
-  assert.equal((await stat(file)).mode & 0o777, 0o600);
+  if (process.platform !== 'win32') assert.equal((await stat(file)).mode & 0o777, 0o600);
   assert.equal(JSON.parse(await readFile(file, 'utf8')).displayId, '1');
 });

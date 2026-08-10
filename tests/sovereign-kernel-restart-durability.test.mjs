@@ -7,9 +7,12 @@ import { SovereignAgentKernel } from '../src/kernel/sovereign-agent-kernel.mjs';
 
 test('sovereign kernel restores plans, context packets and capability leases after restart', async (t) => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'nolane-sovereign-restart-'));
-  t.after(() => rm(dir, { recursive: true, force: true }));
 
   let kernel = SovereignAgentKernel.create({ dataDir: dir });
+  t.after(async () => {
+    kernel?.close();
+    await rm(dir, { recursive: true, force: true });
+  });
   const thread = kernel.createThread({ projectId: 'project-restart', title: 'Restart durable kernel', objective: 'Continue governed work after a process restart.' });
   const context = kernel.compileContext(thread.id, {
     tokenBudget: 8_000,
@@ -22,7 +25,6 @@ test('sovereign kernel restores plans, context packets and capability leases aft
   kernel.close();
 
   kernel = SovereignAgentKernel.create({ dataDir: dir });
-  t.after(() => kernel.close());
   const snapshot = kernel.snapshot({ threadId: thread.id });
   assert.equal(snapshot.metrics.threads, 1);
   assert.equal(snapshot.metrics.plans, 1);

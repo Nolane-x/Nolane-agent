@@ -71,6 +71,17 @@ export function createRouter({ initialPath = '/' } = {}) {
     return resolve(history[index]);
   }
 
-  const api = Object.freeze({ register, setNotFound, navigate, back, forward, current: () => current, routes: () => Object.freeze([...routes]) });
+  function invalidate({ keepCurrent = false } = {}) {
+    if (!keepCurrent || !current) cache.clear();
+    else {
+      const currentKey = routeCacheKey(current.route, current.path);
+      for (const key of cache.keys()) {
+        if (key !== currentKey) cache.delete(key);
+      }
+    }
+    return api;
+  }
+
+  const api = Object.freeze({ register, setNotFound, navigate, back, forward, invalidate, current: () => current, routes: () => Object.freeze([...routes]) });
   return api;
 }

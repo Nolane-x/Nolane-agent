@@ -1,4 +1,6 @@
-import { spawn } from 'node:child_process';
+import { execFile, spawn } from 'node:child_process';
+import { access, readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { buildForgeActionPrompt, parseForgeActionEnvelope } from './forge-action-protocol.mjs';
 
 function text(value, label) {
@@ -16,14 +18,98 @@ function parseVersion(output) {
   return String(output ?? '').match(/\b(\d+\.\d+(?:\.\d+)?(?:[-+][\w.-]+)?)\b/)?.[1] ?? null;
 }
 
+const ANSI_ESCAPE = /[\u001B\u009B][[\]()#;?]*(?:(?:(?:[a-zA-Z\d]*(?:;[-a-zA-Z\d/#&.:=?%@~_]+)*)?\u0007)|(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-nq-uy=><~]))/g;
+const MODEL_NOISE = new Set(['model', 'models', 'available', 'available-models', 'name', 'id', 'provider', 'providers', 'list']);
+
+function normalizeModelId(value) {
+  const candidate = String(value ?? '')
+    .replace(ANSI_ESCAPE, '')
+    .trim()
+    .replace(/^[`"'|•*+\-\s]+|[`"',;:|\s]+$/g, '');
+  if (!candidate || candidate.length > 256 || MODEL_NOISE.has(candidate.toLowerCase())) return null;
+  if (/\s/.test(candidate) || /[\u0000-\u001f\u007f]/.test(candidate)) return null;
+  if (!/^[A-Za-z0-9][A-Za-z0-9._:/@+~-]*$/.test(candidate)) return null;
+  return candidate;
+}
+
+function modelCandidates(output) {
+  const values = [];
+  for (const line of String(output ?? '').split(/\r?\n/)) {
+    const clean = line.replace(ANSI_ESCAPE, '').trim();
+    if (!clean) continue;
+    const whole = normalizeModelId(clean);
+    if (whole) values.push(whole);
+    // Some CLIs render a table. Only accept slash-qualified or recognisable
+    // model-shaped tokens from those rows so headers and account metadata do
+    // not become fake models.
+    for (const token of clean.match(/[A-Za-z0-9][A-Za-z0-9._:/@+~-]{1,255}/g) ?? []) {
+      const normalized = normalizeModelId(token);
+      if (normalized && (normalized.includes('/') || /^(?:gpt|o[1-9]|claude|gemini|codex|deepseek|qwen|llama|mistral|sonnet|opus|haiku)[-_.:/@+~]/i.test(normalized))) values.push(normalized);
+    }
+  }
+  return [...new Set(values)];
+}
+
+function discoveryModel(providerId, modelId, source, observedAt) {
+  return Object.freeze({ id: modelId, modelId, displayName: modelId, providerId, discoveredAt: observedAt, source: Object.freeze({ ...source, observedAt }) });
+}
+
+function diagnostic(output) {
+  return String(output ?? '').replace(ANSI_ESCAPE, '').replace(/(?:sk|key|token)-[A-Za-z0-9._-]+/gi, '[REDACTED]').replace(/(api[_-]?key|authorization|password|secret)\s*[:=]\s*\S+/gi, '$1=[REDACTED]').trim().slice(0, 500);
+}
+
+function detectError(result) {
+  const output = `${result.stderr}\n${result.stdout}`.toLowerCase();
+  if (/config|configuration|settings|invalid|schema|expected/.test(output)) return 'configuration-error';
+  return result.exitCode === 0 ? null : `exit-${result.exitCode ?? 'unknown'}`;
+}
+
 function estimateTokens(value) {
   const bytes = Buffer.byteLength(String(value ?? ''), 'utf8');
   return Math.max(1, Math.min(10_000_000, Math.ceil(bytes / 4)));
 }
 
+const WINDOWS_EXECUTABLE_EXTENSIONS = new Set(['.exe', '.com']);
+
+function execFileText(command, args, options = {}) {
+  return new Promise((resolve, reject) => {
+    execFile(command, args, { ...options, shell: false, windowsHide: true, encoding: 'utf8' }, (error, stdout = '', stderr = '') => {
+      if (error) { error.stdout = stdout; error.stderr = stderr; reject(error); return; }
+      resolve({ stdout, stderr });
+    });
+  });
+}
+
+async function existingFile(candidate) {
+  try { await access(candidate); return candidate; } catch { return null; }
+}
+
+async function resolveNpmWindowsWrapper(candidate) {
+  if (!/\.cmd$/i.test(candidate)) return null;
+  const source = await readFile(candidate, 'utf8').catch(() => null);
+  if (!source) return null;
+  const root = path.dirname(candidate);
+  const directTarget = source.match(/%dp0%[\\/]([^"\r\n]+\.exe)/i)?.[1];
+  if (directTarget) {
+    const executable = await existingFile(path.resolve(root, directTarget));
+    if (executable) return Object.freeze({ executable, prefix: Object.freeze([]) });
+  }
+  const scriptTarget = source.match(/%dp0%[\\/]([^"\r\n]+\.js)/i)?.[1];
+  if (scriptTarget) {
+    const script = await existingFile(path.resolve(root, scriptTarget));
+    if (script) {
+      const bundledNode = await existingFile(path.join(root, 'node.exe'));
+      return Object.freeze({ executable: bundledNode ?? process.execPath, prefix: Object.freeze([script]) });
+    }
+  }
+  return null;
+}
+
 
 export class CliProvider {
-  constructor({ id, label, executable, versionArgs = ['--version'], baseArgs = [], promptMode = 'stdin', promptFlag = null, timeoutMs = 10 * 60_000, env = {}, secretEnvKeys = [], cwd = null, credentialOwner = 'official-cli', harnessFamily = 'generic-local', profile = {} } = {}) {
+  #resolvedExecutable = null;
+
+  constructor({ id, label, executable, versionArgs = ['--version'], baseArgs = [], promptMode = 'stdin', promptFlag = null, modelFlag = '--model', modelDiscoveryArgs = null, modelCatalog = [], timeoutMs = 10 * 60_000, env = {}, secretEnvKeys = [], cwd = null, credentialOwner = 'official-cli', harnessFamily = 'generic-local', profile = {} } = {}) {
     this.id = text(id, 'provider id');
     this.label = text(label ?? id, 'provider label');
     this.kind = 'cli';
@@ -33,6 +119,10 @@ export class CliProvider {
     if (!['stdin', 'arg', 'none'].includes(promptMode)) throw new TypeError('promptMode must be stdin, arg, or none');
     this.promptMode = promptMode;
     this.promptFlag = promptFlag == null ? null : String(promptFlag);
+    this.modelFlag = modelFlag == null ? null : String(modelFlag).trim() || null;
+    this.modelDiscoveryArgs = modelDiscoveryArgs == null ? null : argv(modelDiscoveryArgs, 'modelDiscoveryArgs');
+    if (!Array.isArray(modelCatalog) || modelCatalog.some((item) => typeof item !== 'string')) throw new TypeError('modelCatalog must be an array of strings');
+    this.modelCatalog = Object.freeze([...new Set(modelCatalog.map(normalizeModelId).filter(Boolean))]);
     this.timeoutMs = Number(timeoutMs);
     if (!Number.isInteger(this.timeoutMs) || this.timeoutMs < 10 || this.timeoutMs > 24 * 60 * 60_000) throw new TypeError('timeoutMs is invalid');
     this.env = Object.fromEntries(Object.entries(env).map(([key, value]) => [String(key), String(value)]));
@@ -52,23 +142,54 @@ export class CliProvider {
       credentialOwner: this.credentialOwner,
       promptMode: this.promptMode,
       harnessFamily: this.harnessFamily,
+      modelDiscovery: Object.freeze({
+        supported: Boolean(this.modelDiscoveryArgs?.length || this.modelCatalog.length),
+        mode: this.modelDiscoveryArgs?.length ? 'command' : (this.modelCatalog.length ? 'compatibility-catalog' : 'unsupported'),
+        live: Boolean(this.modelDiscoveryArgs?.length),
+      }),
       ...this.profile,
     });
   }
 
-  async detect() {
+  async discoverModels({ timeoutMs = Math.min(this.timeoutMs, 15_000) } = {}) {
+    const observedAt = new Date().toISOString();
+    if (this.modelCatalog.length) {
+      const source = Object.freeze({ type: 'cli-compatibility-catalog', live: false });
+      const models = this.modelCatalog.map((modelId) => discoveryModel(this.id, modelId, source, observedAt));
+      return Object.freeze({ schema: 'nolane.cli-model-discovery.v1', providerId: this.id, status: 'compatibility', source, models: Object.freeze(models), errors: Object.freeze([]), observedAt });
+    }
+    if (!this.modelDiscoveryArgs?.length) {
+      return Object.freeze({ schema: 'nolane.cli-model-discovery.v1', providerId: this.id, status: 'unsupported', source: Object.freeze({ type: 'cli-capability', live: false }), models: Object.freeze([]), errors: Object.freeze([]), reason: 'CLI does not expose a model listing command; add a model manually.', observedAt });
+    }
     try {
-      const result = await this.#spawn(this.versionArgs, { timeoutMs: Math.min(this.timeoutMs, 5_000), input: '' });
-      const output = `${result.stdout}\n${result.stderr}`.trim();
-      return Object.freeze({ ...this.publicView(), available: result.exitCode === 0, version: parseVersion(output), versionOutput: output.slice(0, 500) });
+      const result = await this.#spawn(this.modelDiscoveryArgs, { timeoutMs, input: '' });
+      if (result.timedOut) throw new Error('model discovery timed out');
+      if (result.aborted) throw new Error('model discovery cancelled');
+      if (result.exitCode !== 0) throw new Error(`model discovery exited with ${result.exitCode}`);
+      const source = Object.freeze({ type: 'cli-command', live: true });
+      const models = modelCandidates(`${result.stdout}\n${result.stderr}`).map((modelId) => discoveryModel(this.id, modelId, source, observedAt));
+      return Object.freeze({ schema: 'nolane.cli-model-discovery.v1', providerId: this.id, status: 'discovered', source, models: Object.freeze(models), errors: Object.freeze([]), observedAt });
     } catch (error) {
-      return Object.freeze({ ...this.publicView(), available: false, version: null, error: error.code === 'ENOENT' ? 'not-found' : error.message });
+      return Object.freeze({ schema: 'nolane.cli-model-discovery.v1', providerId: this.id, status: 'error', source: Object.freeze({ type: 'cli-command', live: true }), models: Object.freeze([]), errors: Object.freeze([String(error?.message ?? error).slice(0, 300)]), observedAt });
     }
   }
 
-  async complete({ messages = [], tools = [], signal = null, timeoutMs = this.timeoutMs, cwd = this.cwd } = {}) {
+  async detect() {
+    try {
+      // Version probes must tolerate the cold-start/configuration path of
+      // heavyweight CLIs (notably Gemini on Windows) without extending the
+      // much longer execution timeout used for actual agent work.
+      const result = await this.#spawn(this.versionArgs, { timeoutMs: Math.min(this.timeoutMs, 15_000), input: '' });
+      const output = `${result.stdout}\n${result.stderr}`.trim();
+      return Object.freeze({ ...this.publicView(), available: result.exitCode === 0, version: parseVersion(output), versionOutput: diagnostic(output), error: detectError(result) });
+    } catch (error) {
+      return Object.freeze({ ...this.publicView(), available: false, version: null, error: error.code === 'ENOENT' ? 'not-found' : diagnostic(error.message) || 'spawn-error' });
+    }
+  }
+
+  async complete({ messages = [], tools = [], model = null, signal = null, timeoutMs = this.timeoutMs, cwd = this.cwd } = {}) {
     const prompt = buildForgeActionPrompt(messages, tools);
-    const result = await this.invoke({ prompt, signal, timeoutMs, cwd });
+    const result = await this.invoke({ prompt, model, signal, timeoutMs, cwd });
     if (result.timedOut) throw new Error(`${this.label} timed out`);
     if (result.aborted) throw new Error(`${this.label} cancelled`);
     if (result.exitCode !== 0) throw new Error(`${this.label} exited with ${result.exitCode}: ${result.stderr.slice(0, 1000)}`);
@@ -87,12 +208,18 @@ export class CliProvider {
     const finalText = envelope ? envelope.text : (outputText || result.stdout);
     const promptTokens = estimateTokens(prompt);
     const completionTokens = estimateTokens(finalText);
-    return Object.freeze({ providerId: this.id, model: this.id, text: finalText, toolCalls: envelope?.toolCalls ?? Object.freeze([]), finishReason: 'stop', usage: Object.freeze({ promptTokens, completionTokens, totalTokens: promptTokens + completionTokens, estimated: true }), raw: result });
+    return Object.freeze({ providerId: this.id, model: model && !['auto', 'cli-selected'].includes(String(model)) ? String(model) : this.id, text: finalText, toolCalls: envelope?.toolCalls ?? Object.freeze([]), finishReason: 'stop', usage: Object.freeze({ promptTokens, completionTokens, totalTokens: promptTokens + completionTokens, estimated: true }), raw: result });
   }
 
-  async invoke({ prompt = '', args = [], cwd = this.cwd, env = {}, timeoutMs = this.timeoutMs, signal = null } = {}) {
+  async invoke({ prompt = '', model = null, args = [], cwd = this.cwd, env = {}, timeoutMs = this.timeoutMs, signal = null } = {}) {
     const extraArgs = argv(args, 'args');
     const finalArgs = [...this.baseArgs];
+    const selectedModel = String(model ?? '').trim();
+    if (this.modelFlag && selectedModel && !['auto', 'cli-selected'].includes(selectedModel)) {
+      const sentinel = finalArgs.indexOf('-');
+      const insertion = sentinel >= 0 ? sentinel : finalArgs.length;
+      finalArgs.splice(insertion, 0, this.modelFlag, selectedModel);
+    }
     let input = '';
     if (this.promptMode === 'stdin') input = String(prompt);
     else if (this.promptMode === 'arg') {
@@ -103,9 +230,37 @@ export class CliProvider {
     return this.#spawn(finalArgs, { cwd, env, timeoutMs, signal, input });
   }
 
+  async #resolveExecutable() {
+    if (this.#resolvedExecutable) return this.#resolvedExecutable;
+    if (process.platform !== 'win32') {
+      this.#resolvedExecutable = Object.freeze({ executable: this.executable, prefix: Object.freeze([]) });
+      return this.#resolvedExecutable;
+    }
+    const explicit = path.isAbsolute(this.executable) || this.executable.includes(path.sep) || this.executable.includes('/') ? this.executable : null;
+    const candidates = explicit ? [explicit] : [];
+    if (!explicit) {
+      try {
+        const located = await execFileText('where.exe', [this.executable], { timeout: 2_000, maxBuffer: 32 * 1024 });
+        candidates.push(...String(located.stdout).split(/\r?\n/).map((item) => item.trim()).filter(Boolean));
+      } catch { /* the normal spawn below returns the bounded not-found error */ }
+    }
+    const direct = candidates.find((candidate) => WINDOWS_EXECUTABLE_EXTENSIONS.has(path.extname(candidate).toLowerCase()));
+    if (direct && await existingFile(direct)) {
+      this.#resolvedExecutable = Object.freeze({ executable: direct, prefix: Object.freeze([]) });
+      return this.#resolvedExecutable;
+    }
+    for (const candidate of candidates) {
+      const wrapper = await resolveNpmWindowsWrapper(candidate);
+      if (wrapper) { this.#resolvedExecutable = wrapper; return wrapper; }
+    }
+    this.#resolvedExecutable = Object.freeze({ executable: this.executable, prefix: Object.freeze([]) });
+    return this.#resolvedExecutable;
+  }
+
   async #spawn(args, { cwd = this.cwd, env = {}, timeoutMs = this.timeoutMs, signal = null, input = '' } = {}) {
     const safeEnv = { ...process.env, ...this.env, ...Object.fromEntries(Object.entries(env).map(([key, value]) => [String(key), String(value)])) };
-    const child = spawn(this.executable, args, { cwd: cwd ?? undefined, env: safeEnv, shell: false, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'], detached: process.platform !== 'win32' });
+    const resolved = await this.#resolveExecutable();
+    const child = spawn(resolved.executable, [...resolved.prefix, ...args], { cwd: cwd ?? undefined, env: safeEnv, shell: false, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'], detached: process.platform !== 'win32' });
     let stdout = ''; let stderr = ''; let timedOut = false; let aborted = false;
     child.stdout.on('data', (chunk) => { stdout += chunk.toString('utf8'); });
     child.stderr.on('data', (chunk) => { stderr += chunk.toString('utf8'); });
@@ -122,6 +277,6 @@ export class CliProvider {
       child.once('error', reject);
       child.once('close', (exitCode, signalName) => resolve({ exitCode, signalName }));
     }).finally(() => { clearTimeout(timer); signal?.removeEventListener?.('abort', onAbort); });
-    return Object.freeze({ providerId: this.id, executable: this.executable, args: [...args], exitCode: result.exitCode, signal: result.signalName ?? null, stdout, stderr, timedOut, aborted });
+    return Object.freeze({ providerId: this.id, executable: resolved.executable, args: [...resolved.prefix, ...args], exitCode: result.exitCode, signal: result.signalName ?? null, stdout, stderr, timedOut, aborted });
   }
 }

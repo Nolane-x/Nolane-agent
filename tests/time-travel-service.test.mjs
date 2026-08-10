@@ -14,13 +14,13 @@ async function git(root, args) { return exec('git', args, { cwd: root, windowsHi
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-time-travel-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const repo = path.join(root, 'repo'); const dataDir = path.join(root, 'data');
   await mkdir(repo, { recursive: true });
-  await git(repo, ['init']); await git(repo, ['config', 'user.email', 'test@nolane.local']); await git(repo, ['config', 'user.name', 'Nolane Test']);
+  await git(repo, ['init']); await git(repo, ['config', 'core.autocrlf', 'false']); await git(repo, ['config', 'user.email', 'test@nolane.local']); await git(repo, ['config', 'user.name', 'Nolane Test']);
   await writeFile(path.join(repo, 'app.txt'), 'v1\n'); await writeFile(path.join(repo, 'old.txt'), 'old\n');
   await git(repo, ['add', '.']); await git(repo, ['commit', '-m', 'initial']);
   const store = new StudioStore(path.join(dataDir, 'studio.db')); t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'Repo', workspaceRoot: repo });
   const mission = store.createMission({ projectId: project.id, objective: 'Implement feature', status: 'running' });
   const task = store.createTask({ projectId: project.id, missionId: mission.id, title: 'Build feature', objective: 'Build feature', status: 'running', role: 'builder', dependencies: [] });
@@ -39,7 +39,8 @@ test('Time Travel captures dirty project state, compares, restores one file, bra
   assert.equal(checkpoint.manifest.some((item) => item.path === 'new.txt'), true);
   assert.equal(checkpoint.excluded.some((item) => item.path === '.env'), true);
   assert.equal(checkpoint.completeWorkingTreeCapture, false);
-  assert.equal((await stat(path.join(dataDir, 'time-travel', 'checkpoint-index.json'))).mode & 0o777, 0o600);
+  const checkpointMode = (await stat(path.join(dataDir, 'time-travel', 'checkpoint-index.json'))).mode & 0o777;
+  if (process.platform !== 'win32') assert.equal(checkpointMode, 0o600);
 
   await writeFile(path.join(repo, 'app.txt'), 'v3 current\n');
   await rm(path.join(repo, 'new.txt'));

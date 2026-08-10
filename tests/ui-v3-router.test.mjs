@@ -32,3 +32,28 @@ test('router can opt into path-scoped view caching for dynamic surfaces', async 
   assert.equal((await router.navigate('/control/overview')).view.path, '/control/overview');
   assert.deepEqual(loaded, ['/control/overview', '/control/runtime']);
 });
+
+test('router invalidation reloads a cached route view', async () => {
+  let loads = 0;
+  const router = createRouter({ initialPath: '/' });
+  router.register({ id: 'home', pattern: '/', load: async () => ({ revision: ++loads }) });
+  assert.equal((await router.navigate('/')).view.revision, 1);
+  assert.equal((await router.navigate('/')).view.revision, 1);
+  router.invalidate();
+  assert.equal((await router.navigate('/')).view.revision, 2);
+});
+
+test('router invalidation can preserve the current route while expiring other cached views', async () => {
+  let homeLoads = 0;
+  let settingsLoads = 0;
+  const router = createRouter({ initialPath: '/' });
+  router.register({ id: 'home', pattern: '/', load: async () => ({ revision: ++homeLoads }) });
+  router.register({ id: 'settings', pattern: '/settings', load: async () => ({ revision: ++settingsLoads }) });
+
+  assert.equal((await router.navigate('/')).view.revision, 1);
+  assert.equal((await router.navigate('/settings')).view.revision, 1);
+  router.invalidate({ keepCurrent: true });
+
+  assert.equal((await router.navigate('/settings')).view.revision, 1);
+  assert.equal((await router.navigate('/')).view.revision, 2);
+});

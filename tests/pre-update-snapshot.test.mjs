@@ -11,21 +11,20 @@ import { UpdateMigrationJournal } from '../src/update/migration-journal.mjs';
 
 async function rootFixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-pre-update-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   return root;
 }
 
 test('StudioStore creates a consistent SQLite snapshot without closing the live store', async (t) => {
   const root = await rootFixture(t);
   const store = new StudioStore(path.join(root, 'nolane-agent.db'));
-  t.after(() => store.close());
+  let copy = null;
+  t.after(async () => { copy?.close(); store.close(); await rm(root, { recursive: true, force: true }); });
   const project = store.createProject({ name: 'Snapshot project', workspaceRoot: path.join(root, 'workspace') });
   store.createMission({ projectId: project.id, objective: 'Preserve me', status: 'planned' });
   const target = path.join(root, 'snapshot', 'nolane-agent.db');
   store.snapshotTo(target);
   assert.ok((await stat(target)).isFile());
-  const copy = new StudioStore(target);
-  t.after(() => copy.close());
+  copy = new StudioStore(target);
   assert.equal(copy.listProjects().length, 1);
   assert.equal(copy.listMissions({}).length, 1);
   store.createMission({ projectId: project.id, objective: 'Live store still writable', status: 'planned' });

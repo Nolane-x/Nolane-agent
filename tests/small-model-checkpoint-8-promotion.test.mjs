@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { buildCheckpoint8MissionPortfolio } from '../src/small-model/checkpoint-8-mission-portfolio.mjs';
 import { buildCheckpoint8EvidenceBundle } from '../src/small-model/checkpoint-8-evidence-bundle.mjs';
 import { VerifiedSkillRegistry } from '../src/small-model/verified-skill-registry.mjs';
 
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 test('VerifiedSkillRegistry promotes AST and constraint skills only with explicit solver evidence approval', async () => {
   const portfolio = await buildCheckpoint8MissionPortfolio({ root });

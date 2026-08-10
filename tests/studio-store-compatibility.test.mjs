@@ -7,9 +7,9 @@ import { StudioStore } from '../src/storage/studio-store.mjs';
 
 async function storeFixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-store-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   return store;
 }
 

@@ -9,7 +9,7 @@ import { SettingsService } from '../src/settings/settings-service.mjs';
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-settings-service-')); t.after(() => rm(root, { recursive: true, force: true }));
   const project = { id: 'project-1', workspaceRoot: path.join(root, 'workspace') };
-  const service = new SettingsService({ dataDir: path.join(root, 'data'), getProject: (id) => id === project.id ? project : null, defaults: { agent: { model: 'auto', maxAgents: 2 }, security: { sandbox: true } }, lockedKeys: ['security.*'] });
+  const service = new SettingsService({ dataDir: path.join(root, 'data'), getProject: (id) => id === project.id ? project : null, defaults: { agent: { model: 'auto', maxAgents: 2 }, security: { sandbox: true, redactSecrets: true } }, lockedKeys: ['security.*'] });
   return { root, project, service };
 }
 
@@ -24,12 +24,14 @@ test('SettingsService persists user/project/local layers and returns provenance'
   assert.equal(effective.value.security.sandbox, true);
   assert.equal(effective.provenance['agent.model'], 'local');
   assert.equal(effective.warnings.some((item) => item.key === 'security.sandbox'), true);
-  const reopened = new SettingsService({ dataDir: path.join(f.root, 'data'), getProject: (id) => id === f.project.id ? f.project : null, defaults: { agent: { model: 'auto', maxAgents: 2 }, security: { sandbox: true } }, lockedKeys: ['security.*'] });
+  const reopened = new SettingsService({ dataDir: path.join(f.root, 'data'), getProject: (id) => id === f.project.id ? f.project : null, defaults: { agent: { model: 'auto', maxAgents: 2 }, security: { sandbox: true, redactSecrets: true } }, lockedKeys: ['security.*'] });
   assert.equal((await reopened.effective(f.project.id)).value.agent.model, 'claude');
 });
 
 test('SettingsService rejects secret-like settings and unknown project/layer', async (t) => {
   const f = await fixture(t);
+  await f.service.update({ layer: 'user', patch: { security: { redactSecrets: false } } });
+  assert.equal((await f.service.layer('user')).security.redactSecrets, false);
   await assert.rejects(() => f.service.update({ layer: 'user', patch: { provider: { apiKey: 'sk-secret-value' } } }), /credential vault|secret/i);
   await assert.rejects(() => f.service.update({ layer: 'project', projectId: 'missing', patch: {} }), /Unknown project/i);
   await assert.rejects(() => f.service.update({ layer: 'machine', patch: {} }), /layer/i);

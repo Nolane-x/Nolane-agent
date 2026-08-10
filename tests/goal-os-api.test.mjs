@@ -13,7 +13,7 @@ import { AdaptiveReplanner } from '../src/goals/adaptive-replanner.mjs';
 function auth(init = {}) { return { ...init, headers: { authorization: 'Bearer goal-token', 'content-type': 'application/json', ...(init.headers ?? {}) } }; }
 
 async function fixture(t) {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-goal-api-')); t.after(() => rm(root, { recursive: true, force: true }));
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-goal-api-'));
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const goalService = new GoalService({ store });
@@ -24,7 +24,7 @@ async function fixture(t) {
     start(goalId, input) { calls.push(['goal-resume', goalId, input]); const goal = goalService.get(goalId); const mission = store.createMission({ projectId: goal.projectId, objective: goal.objective, status: 'running', metadata: { goalId } }); goalService.attachMission(goalId, mission.id, { relation: 'primary' }); return { goal: goalService.get(goalId), run: { mission } }; },
   };
   const commandRegistry = { list: () => [{ name: 'goal' }], async execute(command, context) { calls.push(['command', command, context]); return { ok: true, command: 'goal', value: { goals: [] } }; } };
-  const browserService = {}; for (const action of ['detect','open','goto','snapshot','find','click','fill','press','tabs','screenshot','close','status']) browserService[action] = async (input = {}) => { calls.push(['browser', action, input]); return { action, input, untrusted: true }; };
+  const browserService = {}; for (const action of ['detect','open','goto','snapshot','find','click','fill','press','tabs','screenshot','artifact','close','status']) browserService[action] = async (input = {}) => { calls.push(['browser', action, input]); return { action, input, untrusted: true }; };
   const browserRuntimeInstaller = { async status() { calls.push(['browser-runtime-status']); return { ready: false, version: '0.1.17' }; }, async install(input) { calls.push(['browser-runtime-install', input]); return { ready: true, version: '0.1.17' }; } };
   const pluginService = {
     publicView: () => [{ id: 'plugin-1', name: 'feature-dev' }], listMarketplaces: () => [{ id: 'market-1' }],
@@ -37,6 +37,7 @@ async function fixture(t) {
   const goalScheduler = { async tick() { calls.push(['scheduler']); return { started: [], skipped: [] }; } };
   const service = await createHttpServer({ config: { host: '127.0.0.1', port: 0, authToken: 'goal-token' }, store, providers: new ProviderRegistry(), missionRunner: {}, goalService, goalRunService, replanner, commandRegistry, browserService, pluginService, settingsService, missionGraph, goalScheduler, browserRuntimeInstaller, uiRoot: path.resolve('ui') });
   t.after(() => service.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   return { ...service, store, project, goalService, calls };
 }
 
@@ -64,6 +65,7 @@ test('Goal OS API exposes commands, browser, plugins, settings, and scheduler th
   assert.equal((await fetch(`${f.url}/api/commands`, auth({ method: 'POST', body: JSON.stringify({ command: '/goal list', context: { projectId: f.project.id } }) }))).status, 200);
   assert.equal((await fetch(`${f.url}/api/browser/open`, auth({ method: 'POST', body: JSON.stringify({ projectId: f.project.id, url: 'https://example.com' }) }))).status, 200);
   assert.equal((await fetch(`${f.url}/api/browser/snapshot`, auth({ method: 'POST', body: JSON.stringify({ projectId: f.project.id, depth: 3 }) }))).status, 200);
+  assert.equal((await fetch(`${f.url}/api/browser/artifact`, auth({ method: 'POST', body: JSON.stringify({ projectId: f.project.id, filename: 'workspace.png' }) }))).status, 200);
   assert.equal((await fetch(`${f.url}/api/browser/runtime`, auth())).status, 200);
   assert.equal((await fetch(`${f.url}/api/browser/runtime/install`, auth({ method: 'POST', body: JSON.stringify({ force: true }) }))).status, 200);
   assert.equal((await fetch(`${f.url}/api/plugins`, auth())).status, 200);

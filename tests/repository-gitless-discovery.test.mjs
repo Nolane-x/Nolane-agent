@@ -10,7 +10,11 @@ import { enumerateRepositoryFiles } from '../src/repository/repository-file-enum
 
 test('Gitless repository enumeration is bounded, explicit, and never follows symlinks', async (t) => {
   const parent = await mkdtemp(path.join(os.tmpdir(), 'nolane-gitless-'));
-  t.after(() => rm(parent, { recursive: true, force: true }));
+  let store = null;
+  t.after(async () => {
+    store?.close();
+    await rm(parent, { recursive: true, force: true });
+  });
   const root = path.join(parent, 'project');
   const outside = path.join(parent, 'outside');
   await mkdir(path.join(root, 'src'), { recursive: true });
@@ -29,8 +33,7 @@ test('Gitless repository enumeration is bounded, explicit, and never follows sym
   assert.equal(enumeration.claims.symlinksFollowed, false);
   assert.match(enumeration.receiptSha256, /^[a-f0-9]{64}$/);
 
-  const store = new StudioStore(path.join(parent, 'studio.db'));
-  t.after(() => store.close());
+  store = new StudioStore(path.join(parent, 'studio.db'));
   const project = store.createProject({ name: 'Gitless', workspaceRoot: root });
   const indexed = await new RepositoryIndex({ store }).index(project);
   assert.equal(indexed.discoveryMode, 'filesystem-fallback');

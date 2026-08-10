@@ -44,7 +44,9 @@ test('native browser facade delegates bounded actions to an injected driver and 
 });
 
 test('NativeNotebookService runs persistent JavaScript cells in worker isolation with timeout and output limits', async () => {
-  const notebook = new NativeNotebookService({ timeoutMs: 100, maxOutputBytes: 128, maxSessions: 2 });
+  // Worker startup can exceed 100ms after the full Windows suite; retain a
+  // bounded timeout while leaving enough room for a cold worker handshake.
+  const notebook = new NativeNotebookService({ timeoutMs: 1_000, maxOutputBytes: 128, maxSessions: 2 });
   const session = await notebook.openSession({ id: 'nb-1' });
   const first = await notebook.executeCell({ sessionId: session.id, source: 'globalThis.counter = (globalThis.counter ?? 0) + 1; console.log(counter); counter', input: {} });
   assert.equal(first.result, 1);

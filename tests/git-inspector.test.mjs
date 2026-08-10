@@ -14,7 +14,6 @@ const exec = promisify(execFile);
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-git-inspector-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await exec('git', ['init'], { cwd: root });
   await exec('git', ['config', 'user.email', 'forge@example.test'], { cwd: root });
   await exec('git', ['config', 'user.name', 'Forge Test'], { cwd: root });
@@ -24,6 +23,7 @@ async function fixture(t) {
   await writeFile(path.join(root, 'a.txt'), 'one\ntwo\n');
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const task = store.createTask({ projectId: project.id, title: 'Edit', objective: 'Edit a.txt', metadata: { executionWorkspace: root } });
   const inspector = new GitInspector({

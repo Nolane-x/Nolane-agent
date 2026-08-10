@@ -11,10 +11,10 @@ import { StudioStore } from '../src/storage/studio-store.mjs';
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-adaptive-repo-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(path.join(root, 'auth.mjs'), 'export function authenticateUser(token) { return token === "ok"; }\n');
   await writeFile(path.join(root, 'billing.mjs'), 'export function chargeCard() { return true; }\n');
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   return { project, intelligence: new AdaptiveRepositoryIntelligence({ lexicalIndex: new RepositoryIndex({ store }), semanticIndex: new SecureSemanticIndex({ store }) }) };
 }

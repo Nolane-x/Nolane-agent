@@ -61,11 +61,14 @@ function commandFinding(command, source) {
 }
 async function gitState(root) {
   try {
-    const [{ stdout: head }, { stdout: branch }, { stdout: statusText }] = await Promise.all([
-      execFileAsync('git', ['rev-parse', 'HEAD'], { cwd: root, timeout: 10_000, maxBuffer: 128_000 }),
-      execFileAsync('git', ['branch', '--show-current'], { cwd: root, timeout: 10_000, maxBuffer: 128_000 }),
-      execFileAsync('git', ['status', '--porcelain=v1', '-z'], { cwd: root, encoding: 'buffer', timeout: 10_000, maxBuffer: 4_000_000 }),
-    ]);
+    // Probe repository membership before launching the metadata calls. In a
+    // temporary/non-git workspace, starting all three commands concurrently
+    // can leave Windows child processes alive long enough to lock the fixture
+    // directory during cleanup.
+    await execFileAsync('git', ['rev-parse', '--is-inside-work-tree'], { cwd: root, timeout: 10_000, maxBuffer: 128_000 });
+    const { stdout: head } = await execFileAsync('git', ['rev-parse', 'HEAD'], { cwd: root, timeout: 10_000, maxBuffer: 128_000 });
+    const { stdout: branch } = await execFileAsync('git', ['branch', '--show-current'], { cwd: root, timeout: 10_000, maxBuffer: 128_000 });
+    const { stdout: statusText } = await execFileAsync('git', ['status', '--porcelain=v1', '-z'], { cwd: root, encoding: 'buffer', timeout: 10_000, maxBuffer: 4_000_000 });
     const entries = statusText.toString('utf8').split('\0').filter(Boolean);
     const changedPaths = []; const untrackedPaths = [];
     for (const entry of entries) {

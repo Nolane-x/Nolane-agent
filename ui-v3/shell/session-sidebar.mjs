@@ -1,3 +1,7 @@
+import { icon } from '../core/icon.mjs';
+import { t } from '../core/i18n.mjs';
+import { renderProjectPicker } from './project-picker.mjs';
+
 const NEEDS_USER = new Set(['needs_input', 'awaiting_approval', 'permission_required', 'action_required']);
 const RUNNING = new Set(['planning', 'running', 'testing', 'recovering', 'paused']);
 const REVIEW = new Set(['review', 'ready_to_review', 'ready_to_ship']);
@@ -60,7 +64,12 @@ export function createSessionSidebarModel() {
   });
 }
 
-export function renderSessionSidebar(snapshot) {
-  const section = (title, items) => items.length ? `<section><h2>${title}</h2>${items.map((item) => `<button class="session-row" data-mission-id="${item.id}"><span>${item.title ?? item.id}</span><small>${item.status}</small></button>`).join('')}</section>` : '';
-  return [section('Needs You', snapshot.groups.needsYou), section('Running', snapshot.groups.running), section('Ready to Review', snapshot.groups.review), section('Recent', snapshot.groups.recent)].join('');
+const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+
+export function renderSessionSidebar(snapshot, { projects = [], selectedProjectId = null, language = 'en' } = {}) {
+  const section = (title, items) => items.length ? `<section><h2>${title}</h2>${items.map((item) => `<button class="session-row" data-mission-id="${escapeHtml(item.id)}"><span>${escapeHtml(item.title ?? item.id)}</span><small>${escapeHtml(item.status)}</small></button>`).join('')}</section>` : '';
+  const projectRows = projects.length
+    ? `<section class="session-sidebar__projects"><header><h2>${t('shell.projects', language)}</h2><button type="button" data-project-action="new" aria-label="${escapeHtml(t('shell.newProject', language))}">${icon('plus', { size: 14 })}</button></header>${projects.slice(0, 8).map((project) => `<button type="button" class="session-project-row" data-project-choice data-project-id="${escapeHtml(project.id)}" aria-current="${String(project.id) === String(selectedProjectId) ? 'true' : 'false'}"><span>${icon('projects', { size: 15 })}</span><span>${escapeHtml(project.name ?? project.workspaceRoot ?? project.id)}</span></button>`).join('')}</section>`
+    : '';
+  return `${renderProjectPicker({ id: 'sidebar-project-picker', projects, selectedProjectId, language, mode: 'sidebar' })}${projectRows}${[section(t('session.needsYou', language), snapshot.groups.needsYou), section(t('session.running', language), snapshot.groups.running), section(t('session.review', language), snapshot.groups.review), section(t('session.recent', language), snapshot.groups.recent)].join('')}`;
 }

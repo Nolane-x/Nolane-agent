@@ -98,6 +98,6 @@ export class WorkspacePolicy {
   relative(absolutePath) {
     const candidate = path.resolve(absolutePath);
     if (!within(this.root, candidate)) throw boundaryError('Path escapes workspace', 403, 'PATH_ESCAPE');
-    return path.relative(this.root, candidate) || '.';
+    return (path.relative(this.root, candidate) || '.').replaceAll('\\', '/');
   }
 }

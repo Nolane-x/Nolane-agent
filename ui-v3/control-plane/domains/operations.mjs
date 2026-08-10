@@ -1,3 +1,4 @@
+import { t } from '../../core/i18n.mjs';
 const freezeList = (items) => Object.freeze(items.map((item) => Object.freeze({ ...item })));
 export function buildOperationsView({ missions = [], agents = [], queues = [], recoveries = [] } = {}) {
   return Object.freeze({
@@ -7,4 +8,4 @@ export function buildOperationsView({ missions = [], agents = [], queues = [], r
     recoveries: Object.freeze(recoveries.map((item) => Object.freeze({ ...item, actions: Object.freeze(['inspect', 'restore']) }))),
   });
 }
-export function renderOperationsView(value) { return `<section><h1>Operations</h1><p>${value.missions.length} missions · ${value.agents.length} agents</p></section>`; }
+export function renderOperationsView(value, { language = 'en' } = {}) { return `<section><h1>${t('control.domain.operations', language)}</h1><p>${value.missions.length} ${t('control.missions', language)} · ${value.agents.length} ${t('control.agents', language)}</p></section>`; }

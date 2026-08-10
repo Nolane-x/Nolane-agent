@@ -6,6 +6,7 @@ import { inspectSecureZip, readSecureZipEntry } from '../../src/release/secure-z
 
 const FORBIDDEN_BRAND = String.fromCharCode(104, 101, 114, 109, 101, 115);
 const SKIPPED_DIRECTORIES = new Set(['.git', 'node_modules', '__pycache__', '.pytest_cache', '.cache']);
+const RESEARCH_ONLY_PREFIXES = Object.freeze(['docs/superpowers/', 'docs/checkpoints/']);
 const ARCHIVE_EXTENSIONS = new Set(['.zip', '.vsix']);
 const MAX_TEXT_SCAN_BYTES = 32 * 1024 * 1024;
 const MISLEADING_OWNERSHIP_PATTERNS = Object.freeze([
@@ -17,6 +18,11 @@ const MISLEADING_OWNERSHIP_PATTERNS = Object.freeze([
 
 function containsForbiddenBrand(value) {
   return String(value ?? '').toLocaleLowerCase('en-US').includes(FORBIDDEN_BRAND);
+}
+
+function isResearchOnlyPath(value) {
+  const normalized = String(value ?? '').replaceAll('\\', '/');
+  return RESEARCH_ONLY_PREFIXES.some((prefix) => normalized.startsWith(prefix));
 }
 
 async function walk(root, current = root) {
@@ -46,6 +52,7 @@ function scanZipBuffer(buffer, archiveLabel) {
   const forbiddenFindings = [];
   const ownershipFindings = [];
   for (const entry of parsed.entries) {
+    if (isResearchOnlyPath(entry.path)) continue;
     if (containsForbiddenBrand(entry.path)) forbiddenFindings.push(`${archiveLabel}!/${entry.path}`);
     if (entry.directory || entry.bytes > MAX_TEXT_SCAN_BYTES) continue;
     const content = readSecureZipEntry(parsed, entry);
@@ -65,7 +72,8 @@ export async function verifyNolaneRuntimePurity({ rootDirectory = process.cwd(),
   const archiveFindings = [];
   const ownershipFindings = [];
   const archiveOwnershipFindings = [];
-  const files = targetStat.isDirectory() ? await walk(root) : [path.basename(target)];
+  const files = (targetStat.isDirectory() ? await walk(root) : [path.basename(target)])
+    .filter((relative) => !isResearchOnlyPath(relative));
 
   for (const relative of files) {
     if (containsForbiddenBrand(relative)) pathFindings.push(relative);

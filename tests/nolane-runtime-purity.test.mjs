@@ -29,6 +29,16 @@ test('purity verifier detects forbidden branding in paths and content', async ()
   assert.ok(report.contentFindings.length > 0);
 });
 
+test('purity verifier excludes research-only planning documents from runtime claims', async () => {
+  const root = await tempRoot();
+  const research = path.join(root, 'docs', 'superpowers');
+  await mkdir(research, { recursive: true });
+  await writeFile(path.join(research, 'plan.md'), `research note ${forbidden}`, 'utf8');
+  const report = await verifyNolaneRuntimePurity({ rootDirectory: root });
+  assert.equal(report.status, 'pass');
+  assert.deepEqual(report.contentFindings, []);
+});
+
 test('purity verifier detects forbidden branding inside release archives', async () => {
   const root = await tempRoot();
   const staging = path.join(root, 'staging');

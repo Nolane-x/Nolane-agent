@@ -13,15 +13,18 @@ const child = spawn(process.execPath, [entry], {
   env: { ...process.env, FORGE_STUDIO_HOST: '127.0.0.1', FORGE_STUDIO_PORT: '0', FORGE_STUDIO_DATA_DIR: path.join(root, 'data'), FORGE_STUDIO_WORKSPACE: root, FORGE_STUDIO_RUNTIME_FILE: runtimeFile },
 });
 let stdout = ''; let stderr = '';
+let exited = false;
+child.once('exit', () => { exited = true; });
 child.stdout.on('data', (chunk) => { stdout += chunk; });
 child.stderr.on('data', (chunk) => { stderr += chunk; });
 try {
-  const deadline = Date.now() + 8_000; let runtime;
+  const deadline = Date.now() + 45_000; let runtime;
   while (Date.now() < deadline) {
     try { runtime = JSON.parse(await readFile(runtimeFile, 'utf8')); break; } catch {}
+    if (exited) break;
     await new Promise((resolve) => setTimeout(resolve, 50));
   }
-  if (!runtime) throw new Error(`Runtime handoff timed out\n${stdout}\n${stderr}`);
+  if (!runtime) throw new Error(`Runtime handoff failed before the 45000ms startup budget (exit=${exited ? 'exited' : 'running'})\n${stdout}\n${stderr}`);
   const health = await fetch(`${runtime.url}/health`);
   if (!health.ok) throw new Error(`Health failed with ${health.status}`);
   const unauthorized = await fetch(`${runtime.url}/api/projects`);
@@ -30,7 +33,7 @@ try {
   if (!projects.ok || !Array.isArray(await projects.json())) throw new Error('Authenticated project API failed');
   console.log(JSON.stringify({ status: 'ok', startup: true, loopback: runtime.url, authGuard: true }));
 } finally {
-  if (child.exitCode === null) child.kill('SIGTERM');
-  await new Promise((resolve) => child.exitCode === null ? child.once('exit', resolve) : resolve());
+  if (!exited) child.kill('SIGTERM');
+  await new Promise((resolve) => exited ? resolve() : child.once('exit', resolve));
   await rm(root, { recursive: true, force: true });
 }

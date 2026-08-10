@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -9,6 +10,9 @@ import {
   writeMultiRuntimeTrajectoryDataset,
   verifyMultiRuntimeTrajectoryDataset,
 } from '../src/small-model/multi-runtime-trajectory-collector.mjs';
+
+const GO_AVAILABLE = spawnSync(process.env.GO_BINARY || 'go', ['version'], { stdio: 'ignore', windowsHide: true }).status === 0;
+const GO_SKIP = GO_AVAILABLE ? false : 'Go executable is unavailable on this host';
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-multi-runtime-'));
@@ -38,7 +42,7 @@ function probes() {
   ];
 }
 
-test('multi-runtime collector records real Node Go and Python verifier outcomes', async (t) => {
+test('multi-runtime collector records real Node Go and Python verifier outcomes', { skip: GO_SKIP }, async (t) => {
   const root = await fixture(t);
   const result = await collectMultiRuntimeTrajectories({ root, probes: probes(), timeoutMs: 30_000 });
   assert.equal(result.episodes.length, 3);
@@ -54,7 +58,7 @@ test('multi-runtime collector rejects traversal shell strings and unsupported ru
   await assert.rejects(() => collectMultiRuntimeTrajectories({ root, probes: [{ ...probes()[0], runtime: 'bash' }] }), /unsupported runtime/i);
 });
 
-test('multi-runtime dataset is content addressed and rejects tampering', async (t) => {
+test('multi-runtime dataset is content addressed and rejects tampering', { skip: GO_SKIP }, async (t) => {
   const root = await fixture(t);
   const collection = await collectMultiRuntimeTrajectories({ root, probes: probes() });
   const outputDir = path.join(root, 'dataset');

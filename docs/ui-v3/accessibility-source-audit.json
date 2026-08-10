@@ -1,9 +1,7 @@
 {
   "schema": "nolane.ui.accessibility-source-audit.v1",
-  "sourceLocalPass": false,
-  "missing": [
-    "focus-target"
-  ],
+  "sourceLocalPass": true,
+  "missing": [],
   "checks": [
     {
       "id": "document-language",
@@ -43,7 +41,7 @@
     {
       "id": "focus-target",
       "path": "ui-v3/app.mjs",
-      "pass": false
+      "pass": true
     }
   ],
   "screenReaderCertified": false,

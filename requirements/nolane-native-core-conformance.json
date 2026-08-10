@@ -16895,7 +16895,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/turn-state-machine.mjs",
-          "sha256": "0c20e37320e6f0027d9ee95deadb67cfd5c58a34b0f8381f24433ec6c9782a22"
+          "sha256": "7483d0ab4dfa119734a77009fa9320a051b49fa5453dace5d49e4a523072ce37"
         }
       ],
       "externalCondition": null,
@@ -16903,21 +16903,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-runtime-kernel.test.mjs",
-          "sha256": "74bece21974723629367c805e3cb9b8a4056af0d0f424a364ec4b8647dd03473"
+          "sha256": "552fa4d1030ba2e135c08a6ae56f9cb187030ce165840478e60fe7500c603ecd"
         }
       ],
       "productionWiring": [
         {
           "contains": "TurnStateMachine",
           "path": "src/nolane-native/agent-loop.mjs",
-          "sha256": "7be72ac39edd1416b1a13994ae24a18947b4343d913a8996ce6d93a51dde23d2"
+          "sha256": "2d57552d683f41f71bf934b0d0d07f67974be96a58811ebfc670bd05f000d2cb"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-runtime-kernel.test.mjs",
-          "sha256": "74bece21974723629367c805e3cb9b8a4056af0d0f424a364ec4b8647dd03473"
+          "sha256": "552fa4d1030ba2e135c08a6ae56f9cb187030ce165840478e60fe7500c603ecd"
         }
       ],
       "title": "Bounded turn lifecycle, tool loop, verification and receipts",
@@ -16955,7 +16955,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/goal-evidence-contract.mjs",
-          "sha256": "13f0a548d493a65c8fb4ff7ca5614bb7e85512ad292b873b370815d49d9d774b"
+          "sha256": "1a9d893e6f05dc91a6535c34d8e183e55ddbe19e4566f2f2089ae86ca0065e5b"
         }
       ],
       "externalCondition": null,
@@ -16963,21 +16963,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-goal-evidence.test.mjs",
-          "sha256": "a3a14b789afb6b1ead72de837dc5155cd0a4041bf1d86c5b603d46ea6a8f7e1a"
+          "sha256": "acaa90dd6145ad3ddc620efbdb1b16dda376db52b676f5666a6c8b267faab9de"
         }
       ],
       "productionWiring": [
         {
           "contains": "GoalEvidenceContract",
           "path": "src/nolane-native/agent-service.mjs",
-          "sha256": "94c057c36b9b2843fa0a20b5b2340b27ec130a979c86c34af4214b90ec7dc226"
+          "sha256": "c09b001a8aa6d555949554b9806ab2384988f8fdacc852f970a0e22113cbe099"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-goal-evidence.test.mjs",
-          "sha256": "a3a14b789afb6b1ead72de837dc5155cd0a4041bf1d86c5b603d46ea6a8f7e1a"
+          "sha256": "acaa90dd6145ad3ddc620efbdb1b16dda376db52b676f5666a6c8b267faab9de"
         }
       ],
       "title": "Independent evidence-gated goal completion without hidden reasoning",
@@ -17005,7 +17005,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/runtime-receipt-ledger.mjs",
-          "sha256": "415f5cd8839cacb6905a0c57957bd0d003529122adfe8414c9a206e8159ef0a5"
+          "sha256": "f5ab024232fbcfd8464b951bc97895ee75f2488f9363600cf396f26d6cc0842f"
         }
       ],
       "externalCondition": null,
@@ -17013,21 +17013,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-runtime-kernel.test.mjs",
-          "sha256": "74bece21974723629367c805e3cb9b8a4056af0d0f424a364ec4b8647dd03473"
+          "sha256": "552fa4d1030ba2e135c08a6ae56f9cb187030ce165840478e60fe7500c603ecd"
         }
       ],
       "productionWiring": [
         {
           "contains": "RuntimeReceiptLedger",
           "path": "src/nolane-native/runtime-service.mjs",
-          "sha256": "f73305de28f88b91c8667209423d733e7b44fce9774e214d292877e7ac40c518"
+          "sha256": "f8c8e535b0be9c473a37d33ce2820bd45f3ac6aaaf335b23bb0b9ce7b34e7eff"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-runtime-kernel.test.mjs",
-          "sha256": "74bece21974723629367c805e3cb9b8a4056af0d0f424a364ec4b8647dd03473"
+          "sha256": "552fa4d1030ba2e135c08a6ae56f9cb187030ce165840478e60fe7500c603ecd"
         }
       ],
       "title": "Native worker lifecycle, protocol handshake and fail-closed runtime",
@@ -17065,7 +17065,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/prompt-tier-assembler.mjs",
-          "sha256": "93a1cc613653f54a392449adc044f6a04b525d0b333642d8f3082ec844a52884"
+          "sha256": "680dc574525e9428a1a8a3c9660eb494aa9c954887f758a52ec1177ed772641b"
         }
       ],
       "externalCondition": null,
@@ -17073,21 +17073,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-context-provider.test.mjs",
-          "sha256": "b3872b1f86835468e8cb42e7a33aad9fa1af269fe330cca3350b6c81c72f69fd"
+          "sha256": "3f27fb05596351abf0a905ac13e02e7c0b3dda35301fb5f0af39c81137243a1a"
         }
       ],
       "productionWiring": [
         {
           "contains": "PromptTierAssembler",
           "path": "src/agent/context-builder.mjs",
-          "sha256": "f9a1c8251d833546f4ae36d3be37623f7c8b10352bd7e2d09f75c3e10d9f88b4"
+          "sha256": "8714aa70ae937975a9a691df615d8a81cd5c73ee1b044199175f938a9b50ae66"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-context-provider.test.mjs",
-          "sha256": "b3872b1f86835468e8cb42e7a33aad9fa1af269fe330cca3350b6c81c72f69fd"
+          "sha256": "3f27fb05596351abf0a905ac13e02e7c0b3dda35301fb5f0af39c81137243a1a"
         }
       ],
       "title": "Tiered context, compression, references and cache boundaries",
@@ -17155,7 +17155,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/provider-fallback-fabric.mjs",
-          "sha256": "9283cba4158862e3430106608f23cded35487623790aafc7e63dc9587628d58d"
+          "sha256": "13c21aace5a1febfeff833277b624b9b21a330d14f39861ea9fe4cf44768d8fe"
         }
       ],
       "externalCondition": null,
@@ -17163,21 +17163,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-context-provider.test.mjs",
-          "sha256": "b3872b1f86835468e8cb42e7a33aad9fa1af269fe330cca3350b6c81c72f69fd"
+          "sha256": "3f27fb05596351abf0a905ac13e02e7c0b3dda35301fb5f0af39c81137243a1a"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProviderFallbackFabric",
           "path": "src/nolane-native/provider-registry.mjs",
-          "sha256": "391f89e403069e2eea39f0425b16ad32fdf9ce242e70068099ac8256f06fd635"
+          "sha256": "05f0fc63653aa32de7095e9f954a1fbefc7b4b378cb8d5c1ad220ff4a85e738e"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-context-provider.test.mjs",
-          "sha256": "b3872b1f86835468e8cb42e7a33aad9fa1af269fe330cca3350b6c81c72f69fd"
+          "sha256": "3f27fb05596351abf0a905ac13e02e7c0b3dda35301fb5f0af39c81137243a1a"
         }
       ],
       "title": "Provider registry, aliases, credentials, retry classification and usage accounting",
@@ -17225,7 +17225,7 @@
       "entrypoints": [
         {
           "path": "src/providers/provider-registry.mjs",
-          "sha256": "c07cbee0f59c5d1dfde7d9648cf09486d9aac6ccd671978c4db08d8ff36cc60b"
+          "sha256": "33143044ace8745fd66eb29c1fbe446dc3dfb3d210a092f418ccce82b43cc741"
         }
       ],
       "externalCondition": "Run each provider adapter with real credentials or local endpoint and attach replayable request, usage, rate-limit and cancellation receipts.",
@@ -17233,21 +17233,21 @@
       "negativeTests": [
         {
           "path": "tests/direct-api-providers.test.mjs",
-          "sha256": "356221c91df05e609c163f09a23b5ed739b358df83e3761f8ae479c6e7dfe6e9"
+          "sha256": "d85d720bd3c9937853f982e1d98acc1d3ee2809c2f46221ef055b0401514a663"
         }
       ],
       "productionWiring": [
         {
           "contains": "new ProviderRegistry",
           "path": "src/app.mjs",
-          "sha256": "ae1da032352811e4df1fe8deecad2d4e6dd7db34ffcc958855ca662402656045"
+          "sha256": "175936a69c83c8e02382e8e35284ebba7ca63003bfa4abaca93026453d18f093"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/direct-api-providers.test.mjs",
-          "sha256": "356221c91df05e609c163f09a23b5ed739b358df83e3761f8ae479c6e7dfe6e9"
+          "sha256": "d85d720bd3c9937853f982e1d98acc1d3ee2809c2f46221ef055b0401514a663"
         }
       ],
       "title": "Provider-specific transports and real credential execution",
@@ -17645,7 +17645,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/tool-execution-fabric.mjs",
-          "sha256": "4c44ddb07bc356c46532ecb64a0275c2e087450a2e3ab79ab5df5ecd39c5b3f3"
+          "sha256": "d74e38ffef6e33233af6e318ac2eb038f97a9c523c716454524177873e6d3a6b"
         }
       ],
       "externalCondition": null,
@@ -17653,21 +17653,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-tool-execution.test.mjs",
-          "sha256": "6dc6263e342d357d577fc8c57c93c4b592d00234a2b32a4186722a751adb40ec"
+          "sha256": "116f791eaa7c8917997d191c2f61d0ccf17bce5a26e0a304a820306bdd9333bd"
         }
       ],
       "productionWiring": [
         {
           "contains": "ToolExecutionFabric",
           "path": "src/execution/tool-broker.mjs",
-          "sha256": "faaf587b28767e01ee72b5a9c370a589792637e36397aed58d491a6708180916"
+          "sha256": "5ea350fdaabbd3533b1d3b3bc14b2b047b251949342159ae8e02f3428d87ecba"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-tool-execution.test.mjs",
-          "sha256": "6dc6263e342d357d577fc8c57c93c4b592d00234a2b32a4186722a751adb40ec"
+          "sha256": "116f791eaa7c8917997d191c2f61d0ccf17bce5a26e0a304a820306bdd9333bd"
         }
       ],
       "title": "Tool discovery, approval, timeout, process registry and normalized results",
@@ -17760,7 +17760,7 @@
       "entrypoints": [
         {
           "path": "src/sandbox/local-resource-sandbox-service.mjs",
-          "sha256": "36a2fdd5bb847e0225fdcb034d5f9e573c52e73b6de5be5819e835217f86af4b"
+          "sha256": "1f04552b603149530a4353c6f290912dd930ed6ee7bf4a361ffd88514844959a"
         }
       ],
       "externalCondition": "Exercise each remote backend with real infrastructure, quotas, teardown and credential-isolation receipts.",
@@ -17768,21 +17768,21 @@
       "negativeTests": [
         {
           "path": "tests/local-resource-sandbox-service.test.mjs",
-          "sha256": "49b8914f7748f7e4365d8ab99bdaba8ad5e9faf34dc02d2ab7eb010a8b6abde3"
+          "sha256": "af955ae46390317a35109c395a7b6ec4dbe3b688408f33fb92f0e75db584474c"
         }
       ],
       "productionWiring": [
         {
           "contains": "new LocalResourceSandboxService",
           "path": "src/app.mjs",
-          "sha256": "ae1da032352811e4df1fe8deecad2d4e6dd7db34ffcc958855ca662402656045"
+          "sha256": "175936a69c83c8e02382e8e35284ebba7ca63003bfa4abaca93026453d18f093"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/local-resource-sandbox-service.test.mjs",
-          "sha256": "49b8914f7748f7e4365d8ab99bdaba8ad5e9faf34dc02d2ab7eb010a8b6abde3"
+          "sha256": "af955ae46390317a35109c395a7b6ec4dbe3b688408f33fb92f0e75db584474c"
         }
       ],
       "title": "Remote and hosted execution backends",
@@ -17825,7 +17825,7 @@
       "entrypoints": [
         {
           "path": "src/workroom/file-service.mjs",
-          "sha256": "d4d38fb3ca99b9d4e8ef1162845b05c1c1fa3061bfa3f6e2553cf83322699c00"
+          "sha256": "7e582b3dd52033b529a47cec4cd6ffe8f048411fb3459a2c8128cf9a1160fb87"
         }
       ],
       "externalCondition": null,
@@ -17833,21 +17833,21 @@
       "negativeTests": [
         {
           "path": "tests/file-service.test.mjs",
-          "sha256": "d2b20bce4cb025626b527a4c5e35027ca5d536ca8d93d2b61fc55d017d28ab30"
+          "sha256": "50817230becfcb6761c855a520931613afb812d8886be179c6d1c3c6d1d2b850"
         }
       ],
       "productionWiring": [
         {
           "contains": "new FileService",
           "path": "src/app.mjs",
-          "sha256": "ae1da032352811e4df1fe8deecad2d4e6dd7db34ffcc958855ca662402656045"
+          "sha256": "175936a69c83c8e02382e8e35284ebba7ca63003bfa4abaca93026453d18f093"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/file-service.test.mjs",
-          "sha256": "d2b20bce4cb025626b527a4c5e35027ca5d536ca8d93d2b61fc55d017d28ab30"
+          "sha256": "50817230becfcb6761c855a520931613afb812d8886be179c6d1c3c6d1d2b850"
         }
       ],
       "title": "Safe file reads, writes, patches, checkpoints and diff projection",
@@ -17885,7 +17885,7 @@
       "entrypoints": [
         {
           "path": "src/repository/lsp-client.mjs",
-          "sha256": "c6d2210aa392bc8d36055b38fc59fbf2ad07ea1c4196122ec329c971f0a32b73"
+          "sha256": "0635c1e5266e814c8a4a2d987cf648a845de8ecc5921d2190f5a4c4ea2b3c5d6"
         }
       ],
       "externalCondition": null,
@@ -17893,21 +17893,21 @@
       "negativeTests": [
         {
           "path": "tests/lsp-intelligence.test.mjs",
-          "sha256": "d0feda524ddf485d6df8322204a792dc4d9a7028c34d8099a14fda8ec1320d7c"
+          "sha256": "20e202df02c4c7f1684b1624e5c5a86c74b407ba1ef12a941432f7fd38aff3c0"
         }
       ],
       "productionWiring": [
         {
           "contains": "CodeIntelligenceService.pooled",
           "path": "src/app.mjs",
-          "sha256": "ae1da032352811e4df1fe8deecad2d4e6dd7db34ffcc958855ca662402656045"
+          "sha256": "175936a69c83c8e02382e8e35284ebba7ca63003bfa4abaca93026453d18f093"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/lsp-intelligence.test.mjs",
-          "sha256": "d0feda524ddf485d6df8322204a792dc4d9a7028c34d8099a14fda8ec1320d7c"
+          "sha256": "20e202df02c4c7f1684b1624e5c5a86c74b407ba1ef12a941432f7fd38aff3c0"
         }
       ],
       "title": "Bounded LSP lifecycle, definitions, references, rename, diagnostics and fallback",
@@ -17975,7 +17975,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/media-core-wave14.mjs",
-          "sha256": "668c950685c8198767c2d64262b1c07b4a47e23cd3b8c3870c1eb6888104e69c"
+          "sha256": "af5431b7f08c0228901fabe4c868f1f09a5465e295bf8d19818a4ab1819a17ec"
         }
       ],
       "externalCondition": null,
@@ -17983,21 +17983,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-media-wave14.test.mjs",
-          "sha256": "250ba68a2491d99c29207321228aec433793f81962afcce13f8e5296c7d6d8d1"
+          "sha256": "e70d8c85fe5d5f4378816948da4c967ced26d4845ed71322bf4b03f50996cc1a"
         }
       ],
       "productionWiring": [
         {
           "contains": "MediaCoreRuntimeWave14",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-media-wave14.test.mjs",
-          "sha256": "250ba68a2491d99c29207321228aec433793f81962afcce13f8e5296c7d6d8d1"
+          "sha256": "e70d8c85fe5d5f4378816948da4c967ced26d4845ed71322bf4b03f50996cc1a"
         }
       ],
       "title": "Content-addressed media, provider registry, transcription, streaming TTS and cancellation core",
@@ -18075,7 +18075,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/trust-core-wave13.mjs",
-          "sha256": "7ada8c112c10eac3c36a65afdede25ab411620eafe62552a9a200526574caca8"
+          "sha256": "f826147ec3078ab417635e358bea81093c7da7ae5721320a48a7cb8343005b87"
         }
       ],
       "externalCondition": null,
@@ -18083,21 +18083,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-trust-wave13.test.mjs",
-          "sha256": "28f207a35fe6d0e8f0e1f12ac523c128bb882dd37a4f1df53b67f990aaf71cb3"
+          "sha256": "f9ee4123e16cfd02f69372cfd82a54d8f9df36d1dab25d06ae8b704c9f7f0c93"
         }
       ],
       "productionWiring": [
         {
           "contains": "TrustCoreRuntimeWave13",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-trust-wave13.test.mjs",
-          "sha256": "28f207a35fe6d0e8f0e1f12ac523c128bb882dd37a4f1df53b67f990aaf71cb3"
+          "sha256": "f9ee4123e16cfd02f69372cfd82a54d8f9df36d1dab25d06ae8b704c9f7f0c93"
         }
       ],
       "title": "Reference-only environment, file and command secret provider contract",
@@ -18135,7 +18135,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/trust-core-wave13.mjs",
-          "sha256": "7ada8c112c10eac3c36a65afdede25ab411620eafe62552a9a200526574caca8"
+          "sha256": "f826147ec3078ab417635e358bea81093c7da7ae5721320a48a7cb8343005b87"
         }
       ],
       "externalCondition": null,
@@ -18143,21 +18143,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-trust-wave13.test.mjs",
-          "sha256": "28f207a35fe6d0e8f0e1f12ac523c128bb882dd37a4f1df53b67f990aaf71cb3"
+          "sha256": "f9ee4123e16cfd02f69372cfd82a54d8f9df36d1dab25d06ae8b704c9f7f0c93"
         }
       ],
       "productionWiring": [
         {
           "contains": "TrustCoreRuntimeWave13",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-trust-wave13.test.mjs",
-          "sha256": "28f207a35fe6d0e8f0e1f12ac523c128bb882dd37a4f1df53b67f990aaf71cb3"
+          "sha256": "f9ee4123e16cfd02f69372cfd82a54d8f9df36d1dab25d06ae8b704c9f7f0c93"
         }
       ],
       "title": "Profile-scoped dashboard authentication, session tickets, audit and revoke-safe permissions",
@@ -18230,7 +18230,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/adapter-ecosystem-wave12.mjs",
-          "sha256": "33c7a87044a226f967b705795e306aa9b0b45b93109767f7bdce334b44dca761"
+          "sha256": "0acbaad175e7b5fb9c1a2642e4837209b8432239320275d4944fa9627869ea09"
         }
       ],
       "externalCondition": null,
@@ -18238,21 +18238,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-adapter-ecosystem-wave12.test.mjs",
-          "sha256": "301bf20997c6f8be5915ebf7cd94e90d9b3abc87e5cb46d3464d721b81c18fdc"
+          "sha256": "08d34d8e7491e1f396351e0daab2040a42b360b46b00000fa7754958342dbf4c"
         }
       ],
       "productionWiring": [
         {
           "contains": "AdapterEcosystemRuntimeWave12",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-adapter-ecosystem-wave12.test.mjs",
-          "sha256": "301bf20997c6f8be5915ebf7cd94e90d9b3abc87e5cb46d3464d721b81c18fdc"
+          "sha256": "08d34d8e7491e1f396351e0daab2040a42b360b46b00000fa7754958342dbf4c"
         }
       ],
       "title": "Durable versioned local memory adapter contract, retention and provider TCK",
@@ -18280,7 +18280,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/adapter-ecosystem-wave12.mjs",
-          "sha256": "33c7a87044a226f967b705795e306aa9b0b45b93109767f7bdce334b44dca761"
+          "sha256": "0acbaad175e7b5fb9c1a2642e4837209b8432239320275d4944fa9627869ea09"
         }
       ],
       "externalCondition": null,
@@ -18288,21 +18288,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-adapter-ecosystem-wave12.test.mjs",
-          "sha256": "301bf20997c6f8be5915ebf7cd94e90d9b3abc87e5cb46d3464d721b81c18fdc"
+          "sha256": "08d34d8e7491e1f396351e0daab2040a42b360b46b00000fa7754958342dbf4c"
         }
       ],
       "productionWiring": [
         {
           "contains": "AdapterEcosystemRuntimeWave12",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-adapter-ecosystem-wave12.test.mjs",
-          "sha256": "301bf20997c6f8be5915ebf7cd94e90d9b3abc87e5cb46d3464d721b81c18fdc"
+          "sha256": "08d34d8e7491e1f396351e0daab2040a42b360b46b00000fa7754958342dbf4c"
         }
       ],
       "title": "Signed plugin package verification, capabilities, transparency log, disable and rollback",
@@ -18320,7 +18320,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/adapter-ecosystem-wave12.mjs",
-          "sha256": "33c7a87044a226f967b705795e306aa9b0b45b93109767f7bdce334b44dca761"
+          "sha256": "0acbaad175e7b5fb9c1a2642e4837209b8432239320275d4944fa9627869ea09"
         }
       ],
       "externalCondition": null,
@@ -18328,21 +18328,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-adapter-ecosystem-wave12.test.mjs",
-          "sha256": "301bf20997c6f8be5915ebf7cd94e90d9b3abc87e5cb46d3464d721b81c18fdc"
+          "sha256": "08d34d8e7491e1f396351e0daab2040a42b360b46b00000fa7754958342dbf4c"
         }
       ],
       "productionWiring": [
         {
           "contains": "AdapterEcosystemRuntimeWave12",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-adapter-ecosystem-wave12.test.mjs",
-          "sha256": "301bf20997c6f8be5915ebf7cd94e90d9b3abc87e5cb46d3464d721b81c18fdc"
+          "sha256": "08d34d8e7491e1f396351e0daab2040a42b360b46b00000fa7754958342dbf4c"
         }
       ],
       "title": "Durable adapter scheduling with skew-safe idempotent delivery",
@@ -18370,7 +18370,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/adapter-ecosystem-wave12.mjs",
-          "sha256": "33c7a87044a226f967b705795e306aa9b0b45b93109767f7bdce334b44dca761"
+          "sha256": "0acbaad175e7b5fb9c1a2642e4837209b8432239320275d4944fa9627869ea09"
         }
       ],
       "externalCondition": null,
@@ -18378,21 +18378,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-adapter-ecosystem-wave12.test.mjs",
-          "sha256": "301bf20997c6f8be5915ebf7cd94e90d9b3abc87e5cb46d3464d721b81c18fdc"
+          "sha256": "08d34d8e7491e1f396351e0daab2040a42b360b46b00000fa7754958342dbf4c"
         }
       ],
       "productionWiring": [
         {
           "contains": "AdapterEcosystemRuntimeWave12",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-adapter-ecosystem-wave12.test.mjs",
-          "sha256": "301bf20997c6f8be5915ebf7cd94e90d9b3abc87e5cb46d3464d721b81c18fdc"
+          "sha256": "08d34d8e7491e1f396351e0daab2040a42b360b46b00000fa7754958342dbf4c"
         }
       ],
       "title": "Conflict-safe versioned Kanban synchronization and duplicate suppression",
@@ -18415,7 +18415,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/adapter-ecosystem-wave12.mjs",
-          "sha256": "33c7a87044a226f967b705795e306aa9b0b45b93109767f7bdce334b44dca761"
+          "sha256": "0acbaad175e7b5fb9c1a2642e4837209b8432239320275d4944fa9627869ea09"
         }
       ],
       "externalCondition": null,
@@ -18423,21 +18423,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-adapter-ecosystem-wave12.test.mjs",
-          "sha256": "301bf20997c6f8be5915ebf7cd94e90d9b3abc87e5cb46d3464d721b81c18fdc"
+          "sha256": "08d34d8e7491e1f396351e0daab2040a42b360b46b00000fa7754958342dbf4c"
         }
       ],
       "productionWiring": [
         {
           "contains": "AdapterEcosystemRuntimeWave12",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-adapter-ecosystem-wave12.test.mjs",
-          "sha256": "301bf20997c6f8be5915ebf7cd94e90d9b3abc87e5cb46d3464d721b81c18fdc"
+          "sha256": "08d34d8e7491e1f396351e0daab2040a42b360b46b00000fa7754958342dbf4c"
         }
       ],
       "title": "Redacted observability adapter queue, backpressure, disconnect and flush contract",
@@ -18460,7 +18460,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/browser-engine-wave11.mjs",
-          "sha256": "1e2214236cf706f249ecb26a3b3422d8c428fdbb2b812c7fbca48deba6757e4c"
+          "sha256": "f10c38b57961d7e1e8b5bfc2b4207a50d323988aa3d9f38c74fc3f53922c0817"
         }
       ],
       "externalCondition": null,
@@ -18468,21 +18468,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-browser-wave11.test.mjs",
-          "sha256": "c662bbfd2d9fe14f4122e9f9f092acd14d875c4cd65e3c46e88bce481a492bd1"
+          "sha256": "b23c0809b8d3fc47391440f53d96d52fc8ed84e894ade2882422df815fe4ca1d"
         }
       ],
       "productionWiring": [
         {
           "contains": "BrowserEngineWave11",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-browser-wave11.test.mjs",
-          "sha256": "c662bbfd2d9fe14f4122e9f9f092acd14d875c4cd65e3c46e88bce481a492bd1"
+          "sha256": "b23c0809b8d3fc47391440f53d96d52fc8ed84e894ade2882422df815fe4ca1d"
         }
       ],
       "title": "Profile-isolated browser engine, action policy, selectors, quarantine, recovery and replay",
@@ -18545,7 +18545,7 @@
       "entrypoints": [
         {
           "path": "src/browser/browser-agent-service.mjs",
-          "sha256": "10618599f94ddcb9bcf174a64793acb26250a3245031dcf85b6fc04426016aa9"
+          "sha256": "fc4632e8f81c3148da6cb6c143ce9237af4bf2290012f98df0faf53d4c641b0a"
         }
       ],
       "externalCondition": "Run Playwright/CDP, search-provider and computer-use journeys on a real desktop/browser with visual, download and permission receipts.",
@@ -18553,21 +18553,21 @@
       "negativeTests": [
         {
           "path": "tests/browser-agent-service.test.mjs",
-          "sha256": "d5f7cf84bd61d5f2da9784e3acffb58e448e410f7de99d16fa22e03353ab4cb8"
+          "sha256": "658695174c6175c944742d8fbfb6b2e16798881b4d3b4ce79b64bba94b296b3c"
         }
       ],
       "productionWiring": [
         {
           "contains": "new BrowserAgentService",
           "path": "src/app.mjs",
-          "sha256": "ae1da032352811e4df1fe8deecad2d4e6dd7db34ffcc958855ca662402656045"
+          "sha256": "175936a69c83c8e02382e8e35284ebba7ca63003bfa4abaca93026453d18f093"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/browser-agent-service.test.mjs",
-          "sha256": "d5f7cf84bd61d5f2da9784e3acffb58e448e410f7de99d16fa22e03353ab4cb8"
+          "sha256": "658695174c6175c944742d8fbfb6b2e16798881b4d3b4ce79b64bba94b296b3c"
         }
       ],
       "title": "Browser and computer-use actions with approvals and bounded output",
@@ -18755,7 +18755,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/session-memory-learning-fabric.mjs",
-          "sha256": "5b3265936d7d262ed89588160e51a90e62bb1217c4caa6dbf0d47a1313dd9323"
+          "sha256": "c10ef56ca13b6445476c810a29192b20eee9c933b4a02627f96d929304f26c90"
         }
       ],
       "externalCondition": null,
@@ -18763,21 +18763,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-state-learning.test.mjs",
-          "sha256": "9cd8acc7e06a9234fb0780df83e7a9d29982c2219830777d7028b85d5d3def38"
+          "sha256": "c264b5e5b7a9794b0781429c5aba3c8af231098283f44486e3b26f6bbd159125"
         }
       ],
       "productionWiring": [
         {
           "contains": "SessionMemoryLearningFabric",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-state-learning.test.mjs",
-          "sha256": "9cd8acc7e06a9234fb0780df83e7a9d29982c2219830777d7028b85d5d3def38"
+          "sha256": "c264b5e5b7a9794b0781429c5aba3c8af231098283f44486e3b26f6bbd159125"
         }
       ],
       "title": "Durable sessions, lineage, search and corrupt-primary recovery",
@@ -18795,7 +18795,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/session-memory-learning-fabric.mjs",
-          "sha256": "5b3265936d7d262ed89588160e51a90e62bb1217c4caa6dbf0d47a1313dd9323"
+          "sha256": "c10ef56ca13b6445476c810a29192b20eee9c933b4a02627f96d929304f26c90"
         }
       ],
       "externalCondition": null,
@@ -18803,21 +18803,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-state-learning.test.mjs",
-          "sha256": "9cd8acc7e06a9234fb0780df83e7a9d29982c2219830777d7028b85d5d3def38"
+          "sha256": "c264b5e5b7a9794b0781429c5aba3c8af231098283f44486e3b26f6bbd159125"
         }
       ],
       "productionWiring": [
         {
           "contains": "SessionMemoryLearningFabric",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-state-learning.test.mjs",
-          "sha256": "9cd8acc7e06a9234fb0780df83e7a9d29982c2219830777d7028b85d5d3def38"
+          "sha256": "c264b5e5b7a9794b0781429c5aba3c8af231098283f44486e3b26f6bbd159125"
         }
       ],
       "title": "Bounded memory, provenance, consolidation and verified learning",
@@ -18865,7 +18865,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/native-adapter-tck.mjs",
-          "sha256": "fcd0f0c4b5ef555c4fbb4f06822a65c887a851f0daf6696f87e260f382916469"
+          "sha256": "bab605ad10d7fa0b569a48727e99147a4936e2e59b31bd9e52b7694aa8814ad1"
         }
       ],
       "externalCondition": "Run each memory provider with real storage, restart, conflict, deletion and credential-redaction receipts.",
@@ -18873,21 +18873,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-adapter-tck.test.mjs",
-          "sha256": "aef878a7486f8f364e4f8935d2229d056c431a1a54a913a2038faa7a40748687"
+          "sha256": "066a17017754aa0f160daa5acc07b9cb661588de9936885bd8a9e2594c6e64bc"
         }
       ],
       "productionWiring": [
         {
           "contains": "NativeAdapterTck",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/native-core-adapter-tck.test.mjs",
-          "sha256": "aef878a7486f8f364e4f8935d2229d056c431a1a54a913a2038faa7a40748687"
+          "sha256": "066a17017754aa0f160daa5acc07b9cb661588de9936885bd8a9e2594c6e64bc"
         }
       ],
       "title": "External memory provider adapters behind the native memory contract",
@@ -19045,7 +19045,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/extension-automation-fabric.mjs",
-          "sha256": "78c613f77b9a6e06e2552b86f6e9e13000e4354b57e228f66fa442699e33d5df"
+          "sha256": "de15724919c7a865b39fa60662123405c6a818f39ad85da97dec5653684e362f"
         }
       ],
       "externalCondition": null,
@@ -19053,21 +19053,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-extension-automation.test.mjs",
-          "sha256": "f64569383b4e9276c4e9d817dda2ee55e45a63a0ffc79af502b93b6292a6614c"
+          "sha256": "ad565d0af60ea0524a55632909cc49e1db1147a28596e7e89bfebd048ab0f917"
         }
       ],
       "productionWiring": [
         {
           "contains": "ExtensionAutomationFabric",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-extension-automation.test.mjs",
-          "sha256": "f64569383b4e9276c4e9d817dda2ee55e45a63a0ffc79af502b93b6292a6614c"
+          "sha256": "ad565d0af60ea0524a55632909cc49e1db1147a28596e7e89bfebd048ab0f917"
         }
       ],
       "title": "Plugin manifests, capability quarantine, activation and typed dispatch",
@@ -19085,7 +19085,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/native-adapter-tck.mjs",
-          "sha256": "fcd0f0c4b5ef555c4fbb4f06822a65c887a851f0daf6696f87e260f382916469"
+          "sha256": "bab605ad10d7fa0b569a48727e99147a4936e2e59b31bd9e52b7694aa8814ad1"
         }
       ],
       "externalCondition": null,
@@ -19093,21 +19093,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-adapter-tck.test.mjs",
-          "sha256": "aef878a7486f8f364e4f8935d2229d056c431a1a54a913a2038faa7a40748687"
+          "sha256": "066a17017754aa0f160daa5acc07b9cb661588de9936885bd8a9e2594c6e64bc"
         }
       ],
       "productionWiring": [
         {
           "contains": "NativeAdapterTck",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-adapter-tck.test.mjs",
-          "sha256": "aef878a7486f8f364e4f8935d2229d056c431a1a54a913a2038faa7a40748687"
+          "sha256": "066a17017754aa0f160daa5acc07b9cb661588de9936885bd8a9e2594c6e64bc"
         }
       ],
       "title": "Typed adapter manifests, lifecycle, permission bounds, timeout, redaction and receipts",
@@ -19140,7 +19140,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/native-adapter-tck.mjs",
-          "sha256": "fcd0f0c4b5ef555c4fbb4f06822a65c887a851f0daf6696f87e260f382916469"
+          "sha256": "bab605ad10d7fa0b569a48727e99147a4936e2e59b31bd9e52b7694aa8814ad1"
         }
       ],
       "externalCondition": "Run each optional plugin against its real auth or dashboard surface and attach lifecycle, permission and rollback receipts.",
@@ -19148,21 +19148,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-adapter-tck.test.mjs",
-          "sha256": "aef878a7486f8f364e4f8935d2229d056c431a1a54a913a2038faa7a40748687"
+          "sha256": "066a17017754aa0f160daa5acc07b9cb661588de9936885bd8a9e2594c6e64bc"
         }
       ],
       "productionWiring": [
         {
           "contains": "NativeAdapterTck",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/native-core-adapter-tck.test.mjs",
-          "sha256": "aef878a7486f8f364e4f8935d2229d056c431a1a54a913a2038faa7a40748687"
+          "sha256": "066a17017754aa0f160daa5acc07b9cb661588de9936885bd8a9e2594c6e64bc"
         }
       ],
       "title": "Dashboard authentication and optional plugin behavior",
@@ -19190,7 +19190,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/extension-automation-fabric.mjs",
-          "sha256": "78c613f77b9a6e06e2552b86f6e9e13000e4354b57e228f66fa442699e33d5df"
+          "sha256": "de15724919c7a865b39fa60662123405c6a818f39ad85da97dec5653684e362f"
         }
       ],
       "externalCondition": null,
@@ -19198,21 +19198,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-extension-automation.test.mjs",
-          "sha256": "f64569383b4e9276c4e9d817dda2ee55e45a63a0ffc79af502b93b6292a6614c"
+          "sha256": "ad565d0af60ea0524a55632909cc49e1db1147a28596e7e89bfebd048ab0f917"
         }
       ],
       "productionWiring": [
         {
           "contains": "ExtensionAutomationFabric",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-extension-automation.test.mjs",
-          "sha256": "f64569383b4e9276c4e9d817dda2ee55e45a63a0ffc79af502b93b6292a6614c"
+          "sha256": "ad565d0af60ea0524a55632909cc49e1db1147a28596e7e89bfebd048ab0f917"
         }
       ],
       "title": "MCP stdio/HTTP lifecycle, OAuth, filtering and reconnect",
@@ -19230,7 +19230,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/extension-automation-fabric.mjs",
-          "sha256": "78c613f77b9a6e06e2552b86f6e9e13000e4354b57e228f66fa442699e33d5df"
+          "sha256": "de15724919c7a865b39fa60662123405c6a818f39ad85da97dec5653684e362f"
         }
       ],
       "externalCondition": null,
@@ -19238,21 +19238,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-extension-automation.test.mjs",
-          "sha256": "f64569383b4e9276c4e9d817dda2ee55e45a63a0ffc79af502b93b6292a6614c"
+          "sha256": "ad565d0af60ea0524a55632909cc49e1db1147a28596e7e89bfebd048ab0f917"
         }
       ],
       "productionWiring": [
         {
           "contains": "ExtensionAutomationFabric",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-extension-automation.test.mjs",
-          "sha256": "f64569383b4e9276c4e9d817dda2ee55e45a63a0ffc79af502b93b6292a6614c"
+          "sha256": "ad565d0af60ea0524a55632909cc49e1db1147a28596e7e89bfebd048ab0f917"
         }
       ],
       "title": "Persistent schedules, duplicate prevention, retry and restart recovery",
@@ -19325,7 +19325,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/native-adapter-tck.mjs",
-          "sha256": "fcd0f0c4b5ef555c4fbb4f06822a65c887a851f0daf6696f87e260f382916469"
+          "sha256": "bab605ad10d7fa0b569a48727e99147a4936e2e59b31bd9e52b7694aa8814ad1"
         }
       ],
       "externalCondition": "Run each external scheduler with real clock, retry, pause, resume, stale-lease and delivery receipts.",
@@ -19333,21 +19333,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-adapter-tck.test.mjs",
-          "sha256": "aef878a7486f8f364e4f8935d2229d056c431a1a54a913a2038faa7a40748687"
+          "sha256": "066a17017754aa0f160daa5acc07b9cb661588de9936885bd8a9e2594c6e64bc"
         }
       ],
       "productionWiring": [
         {
           "contains": "NativeAdapterTck",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/native-core-adapter-tck.test.mjs",
-          "sha256": "aef878a7486f8f364e4f8935d2229d056c431a1a54a913a2038faa7a40748687"
+          "sha256": "066a17017754aa0f160daa5acc07b9cb661588de9936885bd8a9e2594c6e64bc"
         }
       ],
       "title": "External scheduler provider adapters",
@@ -19365,7 +19365,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/extension-automation-fabric.mjs",
-          "sha256": "78c613f77b9a6e06e2552b86f6e9e13000e4354b57e228f66fa442699e33d5df"
+          "sha256": "de15724919c7a865b39fa60662123405c6a818f39ad85da97dec5653684e362f"
         }
       ],
       "externalCondition": null,
@@ -19373,21 +19373,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-extension-automation.test.mjs",
-          "sha256": "f64569383b4e9276c4e9d817dda2ee55e45a63a0ffc79af502b93b6292a6614c"
+          "sha256": "ad565d0af60ea0524a55632909cc49e1db1147a28596e7e89bfebd048ab0f917"
         }
       ],
       "productionWiring": [
         {
           "contains": "ExtensionAutomationFabric",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-extension-automation.test.mjs",
-          "sha256": "f64569383b4e9276c4e9d817dda2ee55e45a63a0ffc79af502b93b6292a6614c"
+          "sha256": "ad565d0af60ea0524a55632909cc49e1db1147a28596e7e89bfebd048ab0f917"
         }
       ],
       "title": "Delegation, workers, leases, blackboard, verification and synthesis",
@@ -19420,7 +19420,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/mixture-of-agents-coordinator.mjs",
-          "sha256": "3b2ed502546b82653800bd2c25b881cb4139740e132b7d1fa7ce39dab44303b5"
+          "sha256": "7abe9236d068db4e898d50baf55cf5b84a0ae7274832ca13c5c1f81eba864d50"
         }
       ],
       "externalCondition": null,
@@ -19428,21 +19428,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-mixture-of-agents.test.mjs",
-          "sha256": "a27e396f4924750e047be5cfef425ff67c9826fc450f3b8b1ccf40f7373d7eef"
+          "sha256": "bd96b723df1a163c7a476224859c1c9fee5d6acc439c0af12ca7cf306e6c31d4"
         }
       ],
       "productionWiring": [
         {
           "contains": "MixtureOfAgentsCoordinator",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-mixture-of-agents.test.mjs",
-          "sha256": "a27e396f4924750e047be5cfef425ff67c9826fc450f3b8b1ccf40f7373d7eef"
+          "sha256": "bd96b723df1a163c7a476224859c1c9fee5d6acc439c0af12ca7cf306e6c31d4"
         }
       ],
       "title": "Independent proposal, disagreement-preserving synthesis and verifier-gated completion",
@@ -19465,7 +19465,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/gateway-api-surface.mjs",
-          "sha256": "21ba87de3301b9dcf47e8ff394bff94a3d83b3ed6879178cf07747df2993a061"
+          "sha256": "73d1b3f520ad4b16cab309ea89fc2e4171af60f65f5c0b9b849766228cc7079b"
         }
       ],
       "externalCondition": null,
@@ -19473,21 +19473,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-gateway-api.test.mjs",
-          "sha256": "ee2e0fa30fb3305b5481d330052da36a24c170e8d08693fd498eb7e5eabea801"
+          "sha256": "34a46d06e6655d4e10144310f84db13604273f33860beb8b0240e687e3644a3e"
         }
       ],
       "productionWiring": [
         {
           "contains": "GatewayApiSurface",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-gateway-api.test.mjs",
-          "sha256": "ee2e0fa30fb3305b5481d330052da36a24c170e8d08693fd498eb7e5eabea801"
+          "sha256": "34a46d06e6655d4e10144310f84db13604273f33860beb8b0240e687e3644a3e"
         }
       ],
       "title": "Gateway registry, authorization, delivery, pairing, draining and streaming",
@@ -19615,7 +19615,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/native-adapter-tck.mjs",
-          "sha256": "fcd0f0c4b5ef555c4fbb4f06822a65c887a851f0daf6696f87e260f382916469"
+          "sha256": "bab605ad10d7fa0b569a48727e99147a4936e2e59b31bd9e52b7694aa8814ad1"
         }
       ],
       "externalCondition": "Run every platform adapter against its real service with credential, rate-limit, attachment, reconnect and delivery receipts.",
@@ -19623,21 +19623,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-adapter-tck.test.mjs",
-          "sha256": "aef878a7486f8f364e4f8935d2229d056c431a1a54a913a2038faa7a40748687"
+          "sha256": "066a17017754aa0f160daa5acc07b9cb661588de9936885bd8a9e2594c6e64bc"
         }
       ],
       "productionWiring": [
         {
           "contains": "NativeAdapterTck",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/native-core-adapter-tck.test.mjs",
-          "sha256": "aef878a7486f8f364e4f8935d2229d056c431a1a54a913a2038faa7a40748687"
+          "sha256": "066a17017754aa0f160daa5acc07b9cb661588de9936885bd8a9e2594c6e64bc"
         }
       ],
       "title": "Platform-specific messaging adapters and credential certification",
@@ -20225,7 +20225,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/gateway-api-surface.mjs",
-          "sha256": "21ba87de3301b9dcf47e8ff394bff94a3d83b3ed6879178cf07747df2993a061"
+          "sha256": "73d1b3f520ad4b16cab309ea89fc2e4171af60f65f5c0b9b849766228cc7079b"
         }
       ],
       "externalCondition": null,
@@ -20233,21 +20233,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-gateway-api.test.mjs",
-          "sha256": "ee2e0fa30fb3305b5481d330052da36a24c170e8d08693fd498eb7e5eabea801"
+          "sha256": "34a46d06e6655d4e10144310f84db13604273f33860beb8b0240e687e3644a3e"
         }
       ],
       "productionWiring": [
         {
           "contains": "/api/nolane/native-core/status",
           "path": "src/server/routes.mjs",
-          "sha256": "7a57415e7051442822b7220f20c6b46f119ca6033793b9ea254c9313bc408d07"
+          "sha256": "a77ac283f9d0c43e245c23fe9d3110465efa6e5b4e3b01d610348d2636bffeca"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-gateway-api.test.mjs",
-          "sha256": "ee2e0fa30fb3305b5481d330052da36a24c170e8d08693fd498eb7e5eabea801"
+          "sha256": "34a46d06e6655d4e10144310f84db13604273f33860beb8b0240e687e3644a3e"
         }
       ],
       "title": "ACP/JSON-RPC and OpenAI-compatible streaming API surface",
@@ -20335,7 +20335,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/gateway-api-surface.mjs",
-          "sha256": "21ba87de3301b9dcf47e8ff394bff94a3d83b3ed6879178cf07747df2993a061"
+          "sha256": "73d1b3f520ad4b16cab309ea89fc2e4171af60f65f5c0b9b849766228cc7079b"
         }
       ],
       "externalCondition": null,
@@ -20343,21 +20343,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-gateway-api.test.mjs",
-          "sha256": "ee2e0fa30fb3305b5481d330052da36a24c170e8d08693fd498eb7e5eabea801"
+          "sha256": "34a46d06e6655d4e10144310f84db13604273f33860beb8b0240e687e3644a3e"
         }
       ],
       "productionWiring": [
         {
           "contains": "GatewayApiSurface",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-gateway-api.test.mjs",
-          "sha256": "ee2e0fa30fb3305b5481d330052da36a24c170e8d08693fd498eb7e5eabea801"
+          "sha256": "34a46d06e6655d4e10144310f84db13604273f33860beb8b0240e687e3644a3e"
         }
       ],
       "title": "Ordered single-writer event projection with idempotency and bounded delivery",
@@ -20375,7 +20375,7 @@
       "entrypoints": [
         {
           "path": "src/nolane-native/media-provider-registry.mjs",
-          "sha256": "6a1dae5a5f3309b46f9cbc11a9d3dbd1dcd5ba5f43a8c74f1db3c31e474d0d54"
+          "sha256": "3ff81587bf267ae9f1fa348e3e5b4f387955cfbf902e72e03749828ccbce770e"
         }
       ],
       "externalCondition": "Run real media, meeting and voice providers with credential redaction, byte limits, cancellation and output receipts.",
@@ -20383,21 +20383,21 @@
       "negativeTests": [
         {
           "path": "tests/nolane-native-capability-pack.test.mjs",
-          "sha256": "63fa32086c1f3dc8a53433bb1ec4113a860cf5e373ebb552fa66a822a9df94c0"
+          "sha256": "7bbb71ad0b3798a8ea09918653ece50a64659b2d423d211237ae1f896b495012"
         }
       ],
       "productionWiring": [
         {
           "contains": "MediaProviderRegistry",
           "path": "src/nolane-native/capability-pack.mjs",
-          "sha256": "27afddb0617ea821e898002c5bd238761146fd7eea1182a6b01e52d49af5c24f"
+          "sha256": "ef490c491293f71d54a992d95e2a240a48cbb37fbd43ccbc12a280f434f6c00f"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/nolane-native-capability-pack.test.mjs",
-          "sha256": "63fa32086c1f3dc8a53433bb1ec4113a860cf5e373ebb552fa66a822a9df94c0"
+          "sha256": "7bbb71ad0b3798a8ea09918653ece50a64659b2d423d211237ae1f896b495012"
         }
       ],
       "title": "Media, vision, image, video, meeting, STT and TTS provider routing",
@@ -20605,7 +20605,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/operations-security-fabric.mjs",
-          "sha256": "cffded57b52e5ced86e6c2e524d5b177c8dd1074872d1ccd4ad35f4f1b01f153"
+          "sha256": "1c7b013ec80e35638c66b5a007b3aa86a86ea0f8ff2ff424e353b86fe24440f3"
         }
       ],
       "externalCondition": null,
@@ -20613,21 +20613,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-operations-security.test.mjs",
-          "sha256": "247380a32f61f38b8e6e88fbb60a18c62462a67a6d73b6db98f782cbe745dacf"
+          "sha256": "07dfe8cf388772c07923b657b7245d98195b4b4a984624e08164e6de2305c5a3"
         }
       ],
       "productionWiring": [
         {
           "contains": "OperationsSecurityFabric",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-operations-security.test.mjs",
-          "sha256": "247380a32f61f38b8e6e88fbb60a18c62462a67a6d73b6db98f782cbe745dacf"
+          "sha256": "07dfe8cf388772c07923b657b7245d98195b4b4a984624e08164e6de2305c5a3"
         }
       ],
       "title": "Usage, traces, diagnostics, health, recovery and tamper-evident evidence",
@@ -20680,7 +20680,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/native-adapter-tck.mjs",
-          "sha256": "fcd0f0c4b5ef555c4fbb4f06822a65c887a851f0daf6696f87e260f382916469"
+          "sha256": "bab605ad10d7fa0b569a48727e99147a4936e2e59b31bd9e52b7694aa8814ad1"
         }
       ],
       "externalCondition": "Run each observability adapter against a real sink and verify redaction, backpressure, disconnect and retention receipts.",
@@ -20688,21 +20688,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-adapter-tck.test.mjs",
-          "sha256": "aef878a7486f8f364e4f8935d2229d056c431a1a54a913a2038faa7a40748687"
+          "sha256": "066a17017754aa0f160daa5acc07b9cb661588de9936885bd8a9e2594c6e64bc"
         }
       ],
       "productionWiring": [
         {
           "contains": "NativeAdapterTck",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/native-core-adapter-tck.test.mjs",
-          "sha256": "aef878a7486f8f364e4f8935d2229d056c431a1a54a913a2038faa7a40748687"
+          "sha256": "066a17017754aa0f160daa5acc07b9cb661588de9936885bd8a9e2594c6e64bc"
         }
       ],
       "title": "External observability and maintenance adapters",
@@ -20725,7 +20725,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/operations-security-fabric.mjs",
-          "sha256": "cffded57b52e5ced86e6c2e524d5b177c8dd1074872d1ccd4ad35f4f1b01f153"
+          "sha256": "1c7b013ec80e35638c66b5a007b3aa86a86ea0f8ff2ff424e353b86fe24440f3"
         }
       ],
       "externalCondition": null,
@@ -20733,21 +20733,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-operations-security.test.mjs",
-          "sha256": "247380a32f61f38b8e6e88fbb60a18c62462a67a6d73b6db98f782cbe745dacf"
+          "sha256": "07dfe8cf388772c07923b657b7245d98195b4b4a984624e08164e6de2305c5a3"
         }
       ],
       "productionWiring": [
         {
           "contains": "OperationsSecurityFabric",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-operations-security.test.mjs",
-          "sha256": "247380a32f61f38b8e6e88fbb60a18c62462a67a6d73b6db98f782cbe745dacf"
+          "sha256": "07dfe8cf388772c07923b657b7245d98195b4b4a984624e08164e6de2305c5a3"
         }
       ],
       "title": "Secrets, redaction, approvals, egress and adversarial boundary enforcement",
@@ -20800,7 +20800,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/operations-security-fabric.mjs",
-          "sha256": "cffded57b52e5ced86e6c2e524d5b177c8dd1074872d1ccd4ad35f4f1b01f153"
+          "sha256": "1c7b013ec80e35638c66b5a007b3aa86a86ea0f8ff2ff424e353b86fe24440f3"
         }
       ],
       "externalCondition": "Run each secret or OAuth provider with real credential references, revocation, expiry, redaction and audit receipts.",
@@ -20808,21 +20808,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-operations-security.test.mjs",
-          "sha256": "247380a32f61f38b8e6e88fbb60a18c62462a67a6d73b6db98f782cbe745dacf"
+          "sha256": "07dfe8cf388772c07923b657b7245d98195b4b4a984624e08164e6de2305c5a3"
         }
       ],
       "productionWiring": [
         {
           "contains": "OperationsSecurityFabric",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/native-core-operations-security.test.mjs",
-          "sha256": "247380a32f61f38b8e6e88fbb60a18c62462a67a6d73b6db98f782cbe745dacf"
+          "sha256": "07dfe8cf388772c07923b657b7245d98195b4b4a984624e08164e6de2305c5a3"
         }
       ],
       "title": "External secret stores, OAuth and dashboard authentication",
@@ -20920,7 +20920,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/gateway-api-surface.mjs",
-          "sha256": "21ba87de3301b9dcf47e8ff394bff94a3d83b3ed6879178cf07747df2993a061"
+          "sha256": "73d1b3f520ad4b16cab309ea89fc2e4171af60f65f5c0b9b849766228cc7079b"
         }
       ],
       "externalCondition": null,
@@ -20928,21 +20928,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-gateway-api.test.mjs",
-          "sha256": "ee2e0fa30fb3305b5481d330052da36a24c170e8d08693fd498eb7e5eabea801"
+          "sha256": "34a46d06e6655d4e10144310f84db13604273f33860beb8b0240e687e3644a3e"
         }
       ],
       "productionWiring": [
         {
           "contains": "/api/nolane/native-core/status",
           "path": "src/server/routes.mjs",
-          "sha256": "7a57415e7051442822b7220f20c6b46f119ca6033793b9ea254c9313bc408d07"
+          "sha256": "a77ac283f9d0c43e245c23fe9d3110465efa6e5b4e3b01d610348d2636bffeca"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-gateway-api.test.mjs",
-          "sha256": "ee2e0fa30fb3305b5481d330052da36a24c170e8d08693fd498eb7e5eabea801"
+          "sha256": "34a46d06e6655d4e10144310f84db13604273f33860beb8b0240e687e3644a3e"
         }
       ],
       "title": "CLI, web and TUI consume the shared runtime and state",
@@ -21005,7 +21005,7 @@
       "entrypoints": [
         {
           "path": "src/terminal/terminal-manager.mjs",
-          "sha256": "6ef1da345c5a05378277348c09b44d1551f8f0af0e508914f5ab1f080a95f11d"
+          "sha256": "b8f34ef4f12838762c9a3dd87542deb5494da330b7b5591280a5951270afc72a"
         }
       ],
       "externalCondition": null,
@@ -21013,21 +21013,21 @@
       "negativeTests": [
         {
           "path": "tests/terminal-manager.test.mjs",
-          "sha256": "d495d5a8014bdd1a3ff1f56b549b5bb29a143234525b49cc07985cfa39a29787"
+          "sha256": "5827dea0dba2574e6672b0e42de3adfa9c05bbef8e8b12c4a2b0ec057bd87ee8"
         }
       ],
       "productionWiring": [
         {
           "contains": "new TerminalManager",
           "path": "src/app.mjs",
-          "sha256": "ae1da032352811e4df1fe8deecad2d4e6dd7db34ffcc958855ca662402656045"
+          "sha256": "175936a69c83c8e02382e8e35284ebba7ca63003bfa4abaca93026453d18f093"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/terminal-manager.test.mjs",
-          "sha256": "d495d5a8014bdd1a3ff1f56b549b5bb29a143234525b49cc07985cfa39a29787"
+          "sha256": "5827dea0dba2574e6672b0e42de3adfa9c05bbef8e8b12c4a2b0ec057bd87ee8"
         }
       ],
       "title": "Terminal and TUI lifecycle with bounded output and process cleanup",
@@ -21065,7 +21065,7 @@
       "entrypoints": [
         {
           "path": "desktop/main.cjs",
-          "sha256": "f4b28d0a69ff328d6074fb04d40cf1895343e9317d062ab48d48c4d608416760"
+          "sha256": "42c5bf5c42b02ce74535fc0ec85fab2e03eb13a9e6b018ffbeb48bb253fd91a3"
         }
       ],
       "externalCondition": "Build and execute the signed NSIS installer on Windows, then attach update, performance, accessibility and recovery receipts.",
@@ -21073,21 +21073,21 @@
       "negativeTests": [
         {
           "path": "tests/electron-runtime-supervisor.test.mjs",
-          "sha256": "89e2f88413533aa42dc6774fca46a2df9bedaa34fae6fd22bce758b41f9d7763"
+          "sha256": "b7567bf0924a7b7547174af083274a38a3a7315cdaa1c2f8c9bdd9f2aa7f4fb0"
         }
       ],
       "productionWiring": [
         {
           "contains": "BrowserWindow",
           "path": "desktop/main.cjs",
-          "sha256": "f4b28d0a69ff328d6074fb04d40cf1895343e9317d062ab48d48c4d608416760"
+          "sha256": "42c5bf5c42b02ce74535fc0ec85fab2e03eb13a9e6b018ffbeb48bb253fd91a3"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/electron-runtime-supervisor.test.mjs",
-          "sha256": "89e2f88413533aa42dc6774fca46a2df9bedaa34fae6fd22bce758b41f9d7763"
+          "sha256": "b7567bf0924a7b7547174af083274a38a3a7315cdaa1c2f8c9bdd9f2aa7f4fb0"
         }
       ],
       "title": "Electron desktop installer, update and real Windows runtime certification",
@@ -24495,7 +24495,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/gateway-api-surface.mjs",
-          "sha256": "21ba87de3301b9dcf47e8ff394bff94a3d83b3ed6879178cf07747df2993a061"
+          "sha256": "73d1b3f520ad4b16cab309ea89fc2e4171af60f65f5c0b9b849766228cc7079b"
         }
       ],
       "externalCondition": "Run keyboard, screen-reader, responsive, visual-regression, CLI and TUI journeys against the shared runtime on Windows.",
@@ -24503,21 +24503,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-gateway-api.test.mjs",
-          "sha256": "ee2e0fa30fb3305b5481d330052da36a24c170e8d08693fd498eb7e5eabea801"
+          "sha256": "34a46d06e6655d4e10144310f84db13604273f33860beb8b0240e687e3644a3e"
         }
       ],
       "productionWiring": [
         {
           "contains": "/api/nolane/native-core/status",
           "path": "src/server/routes.mjs",
-          "sha256": "7a57415e7051442822b7220f20c6b46f119ca6033793b9ea254c9313bc408d07"
+          "sha256": "a77ac283f9d0c43e245c23fe9d3110465efa6e5b4e3b01d610348d2636bffeca"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/native-core-gateway-api.test.mjs",
-          "sha256": "ee2e0fa30fb3305b5481d330052da36a24c170e8d08693fd498eb7e5eabea801"
+          "sha256": "34a46d06e6655d4e10144310f84db13604273f33860beb8b0240e687e3644a3e"
         }
       ],
       "title": "CLI, TUI and web behavioral and accessibility certification",
@@ -25425,7 +25425,7 @@
       "entrypoints": [
         {
           "path": "src/settings/settings-service.mjs",
-          "sha256": "49a8eb79b3679df6823cd1c6cc6a538271d0b409a102165d3476413d935d78f7"
+          "sha256": "d43a7ca5dea2ebc2ebe939140140e09959dbe67a40cf772146e85d93ebddd20b"
         }
       ],
       "externalCondition": null,
@@ -25433,21 +25433,21 @@
       "negativeTests": [
         {
           "path": "tests/settings-service.test.mjs",
-          "sha256": "91f99e05aa17485c8ae210b5608103a1cb468f78659ab0a77cce6f749f2cab54"
+          "sha256": "01f874f531de7304bfbbc54b2be9820bda878de0e0a0088f944e49431e50a47a"
         }
       ],
       "productionWiring": [
         {
           "contains": "new SettingsService",
           "path": "src/adoption/trust-adoption-foundation.mjs",
-          "sha256": "a21938a8f3f92adf715ee790f79121113e73abe2c21eed188f95967b173d689c"
+          "sha256": "3c0fcb702ebdfce1bbacea51eb09bad28dc10b20d126ea403e267e9af9365217"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/settings-service.test.mjs",
-          "sha256": "91f99e05aa17485c8ae210b5608103a1cb468f78659ab0a77cce6f749f2cab54"
+          "sha256": "01f874f531de7304bfbbc54b2be9820bda878de0e0a0088f944e49431e50a47a"
         }
       ],
       "title": "Layered settings, profiles, migrations and secret references",
@@ -25485,7 +25485,7 @@
       "entrypoints": [
         {
           "path": "src/update/update-service.mjs",
-          "sha256": "bc3fd7437d791f989247a3ee8e175763b6e6f8080fb599a224a3b49c2e625801"
+          "sha256": "28d4ffbe13e63b499b6f3e325e326a1a34c12dcc4949917543c6633cedf56c42"
         }
       ],
       "externalCondition": null,
@@ -25493,21 +25493,21 @@
       "negativeTests": [
         {
           "path": "tests/update-service.test.mjs",
-          "sha256": "7b9aa86bffdae059c4bee4866162a80205c020d5fd07485b46ceb19d3dfc63be"
+          "sha256": "c2fc748b30695b624e70d14583d27564ab3823fc9dd35b4e465a04183bf28abe"
         }
       ],
       "productionWiring": [
         {
           "contains": "new UpdateService",
           "path": "src/app.mjs",
-          "sha256": "ae1da032352811e4df1fe8deecad2d4e6dd7db34ffcc958855ca662402656045"
+          "sha256": "175936a69c83c8e02382e8e35284ebba7ca63003bfa4abaca93026453d18f093"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/update-service.test.mjs",
-          "sha256": "7b9aa86bffdae059c4bee4866162a80205c020d5fd07485b46ceb19d3dfc63be"
+          "sha256": "c2fc748b30695b624e70d14583d27564ab3823fc9dd35b4e465a04183bf28abe"
         }
       ],
       "title": "Signed update policy, recovery markers and user-data preservation",
@@ -25525,7 +25525,7 @@
       "entrypoints": [
         {
           "path": "electron-builder.config.cjs",
-          "sha256": "1feafe4ada852cba5c2802159b05ebfafd4ea6356b84ec9f2c13f21377be8e40"
+          "sha256": "9ed9cc52f1c7c95bbff65ecf558dee041d0492040d5cff9237ac75498758d9e3"
         }
       ],
       "externalCondition": "Build, install, upgrade, uninstall and recover on each supported operating system with data-preservation receipts.",
@@ -25533,21 +25533,21 @@
       "negativeTests": [
         {
           "path": "tests/electron-installer-config.test.mjs",
-          "sha256": "734c2f11064887e32d27e18fea6db5fc3f5e3a8276de2963fb232310ac1d686b"
+          "sha256": "ae38bdf5a7fd8b85984e7b29ff88bcd0cd20751391ea2865692a9e01595fc728"
         }
       ],
       "productionWiring": [
         {
           "contains": "nsis",
           "path": "electron-builder.config.cjs",
-          "sha256": "1feafe4ada852cba5c2802159b05ebfafd4ea6356b84ec9f2c13f21377be8e40"
+          "sha256": "9ed9cc52f1c7c95bbff65ecf558dee041d0492040d5cff9237ac75498758d9e3"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/electron-installer-config.test.mjs",
-          "sha256": "734c2f11064887e32d27e18fea6db5fc3f5e3a8276de2963fb232310ac1d686b"
+          "sha256": "ae38bdf5a7fd8b85984e7b29ff88bcd0cd20751391ea2865692a9e01595fc728"
         }
       ],
       "title": "Installer and bootstrap journeys across supported operating systems",
@@ -25695,7 +25695,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/delegation-context-runtime.mjs",
-          "sha256": "b0f40d0bf7f2421582536ed63f5980f581d4a17dae92331bdaaf828d6b4163bc"
+          "sha256": "5dc6887c6c8476be19959e3c555a228b6fd6bc1279b1dc31e3a4f9ee0cef6a31"
         }
       ],
       "externalCondition": null,
@@ -25703,21 +25703,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-runtime-wave3.test.mjs",
-          "sha256": "cb4e3495ad8c27c0d5df83cf9d3b2c78ba700fe05ea6112a9c2899fa0d2fb129"
+          "sha256": "b2bb009a2075ce1990979564b3e55c68194a5520e0c79cb24b3196273b3920c9"
         }
       ],
       "productionWiring": [
         {
           "contains": "DelegationContextRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-runtime-wave3.test.mjs",
-          "sha256": "cb4e3495ad8c27c0d5df83cf9d3b2c78ba700fe05ea6112a9c2899fa0d2fb129"
+          "sha256": "b2bb009a2075ce1990979564b3e55c68194a5520e0c79cb24b3196273b3920c9"
         }
       ],
       "title": "Bounded delegation context with omissions, safe paths and no hidden reasoning",
@@ -25750,7 +25750,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/provider-protocol-runtime.mjs",
-          "sha256": "f646d0e19eeb4299fb5ae1f29e16af2dbab4971015fa313e2b759f68939d69b7"
+          "sha256": "e3c8e281f9959e2fb646ad3293adb6b06da7398b7e1a794ba0fdacfee2232862"
         }
       ],
       "externalCondition": null,
@@ -25758,21 +25758,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-runtime-wave3.test.mjs",
-          "sha256": "cb4e3495ad8c27c0d5df83cf9d3b2c78ba700fe05ea6112a9c2899fa0d2fb129"
+          "sha256": "b2bb009a2075ce1990979564b3e55c68194a5520e0c79cb24b3196273b3920c9"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProviderProtocolRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-runtime-wave3.test.mjs",
-          "sha256": "cb4e3495ad8c27c0d5df83cf9d3b2c78ba700fe05ea6112a9c2899fa0d2fb129"
+          "sha256": "b2bb009a2075ce1990979564b3e55c68194a5520e0c79cb24b3196273b3920c9"
         }
       ],
       "title": "Provider protocol normalization, streamed text/tool assembly, cancellation and secret isolation",
@@ -25800,7 +25800,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/repository-intelligence-fabric.mjs",
-          "sha256": "532b5cf55e345d8249fb322402da158efdcc2de96dc382effeb32b8702560cda"
+          "sha256": "df5eb89ab6dff0dde5ee84fee5640363cd13d20744adede80d728f98635f2bca"
         }
       ],
       "externalCondition": null,
@@ -25808,21 +25808,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-runtime-wave3.test.mjs",
-          "sha256": "cb4e3495ad8c27c0d5df83cf9d3b2c78ba700fe05ea6112a9c2899fa0d2fb129"
+          "sha256": "b2bb009a2075ce1990979564b3e55c68194a5520e0c79cb24b3196273b3920c9"
         }
       ],
       "productionWiring": [
         {
           "contains": "repositoryIndex.search",
           "path": "src/app.mjs",
-          "sha256": "ae1da032352811e4df1fe8deecad2d4e6dd7db34ffcc958855ca662402656045"
+          "sha256": "175936a69c83c8e02382e8e35284ebba7ca63003bfa4abaca93026453d18f093"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-runtime-wave3.test.mjs",
-          "sha256": "cb4e3495ad8c27c0d5df83cf9d3b2c78ba700fe05ea6112a9c2899fa0d2fb129"
+          "sha256": "b2bb009a2075ce1990979564b3e55c68194a5520e0c79cb24b3196273b3920c9"
         }
       ],
       "title": "Bounded repository search, code symbols, safe hints and content-addressed file-sync planning",
@@ -25860,7 +25860,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/browser-computer-use-fabric.mjs",
-          "sha256": "147ddcf364e26f0c0b4387816e493868645c5f10de70419da8f486dbcdca06a4"
+          "sha256": "31bba7d340c2f95dbe3fe0eb95461519338aae6c1e8a878404cf496b8e81ef2a"
         }
       ],
       "externalCondition": null,
@@ -25868,21 +25868,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-surface-wave3.test.mjs",
-          "sha256": "ba255ca4d005f8c5d22174eb9f7bc23596521128cfee35a09569b4eb732ba067"
+          "sha256": "b186c0892201cdd289b60a8b6087c9ae4cc85595d0a7341c7e23b826c76091b6"
         }
       ],
       "productionWiring": [
         {
           "contains": "nativeOrchestration.attachRuntimeWave3",
           "path": "src/app.mjs",
-          "sha256": "ae1da032352811e4df1fe8deecad2d4e6dd7db34ffcc958855ca662402656045"
+          "sha256": "175936a69c83c8e02382e8e35284ebba7ca63003bfa4abaca93026453d18f093"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-surface-wave3.test.mjs",
-          "sha256": "ba255ca4d005f8c5d22174eb9f7bc23596521128cfee35a09569b4eb732ba067"
+          "sha256": "b186c0892201cdd289b60a8b6087c9ae4cc85595d0a7341c7e23b826c76091b6"
         }
       ],
       "title": "Approved browser actions and bounded web-search provider registry",
@@ -25900,7 +25900,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/acp-streaming-runtime.mjs",
-          "sha256": "67e61013108c1df259483ec82bc756623892c5bd133e705c146e852cc599de6f"
+          "sha256": "8e1af2bda6c63dc7649154d1e25156781ef13c4dd0585d149d56f0234cde419c"
         }
       ],
       "externalCondition": null,
@@ -25908,21 +25908,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-runtime-wave3.test.mjs",
-          "sha256": "cb4e3495ad8c27c0d5df83cf9d3b2c78ba700fe05ea6112a9c2899fa0d2fb129"
+          "sha256": "b2bb009a2075ce1990979564b3e55c68194a5520e0c79cb24b3196273b3920c9"
         }
       ],
       "productionWiring": [
         {
           "contains": "/api/nolane/native-core/acp",
           "path": "src/server/routes.mjs",
-          "sha256": "7a57415e7051442822b7220f20c6b46f119ca6033793b9ea254c9313bc408d07"
+          "sha256": "a77ac283f9d0c43e245c23fe9d3110465efa6e5b4e3b01d610348d2636bffeca"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-runtime-wave3.test.mjs",
-          "sha256": "cb4e3495ad8c27c0d5df83cf9d3b2c78ba700fe05ea6112a9c2899fa0d2fb129"
+          "sha256": "b2bb009a2075ce1990979564b3e55c68194a5520e0c79cb24b3196273b3920c9"
         }
       ],
       "title": "JSON-RPC 2.0 request lifecycle, ordered event receipts, replay and cancellation",
@@ -25950,7 +25950,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/gateway-adapter-runtime.mjs",
-          "sha256": "12d2d83e275e0b6c9979bf8100e6ad06cfa49087e506bda49c1e1a300767146d"
+          "sha256": "b2669cbb68d7dd6aaece2250ad0b8d399b2feb23e350f14cf6cc3a6210639f30"
         }
       ],
       "externalCondition": null,
@@ -25958,21 +25958,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-surface-wave3.test.mjs",
-          "sha256": "ba255ca4d005f8c5d22174eb9f7bc23596521128cfee35a09569b4eb732ba067"
+          "sha256": "b186c0892201cdd289b60a8b6087c9ae4cc85595d0a7341c7e23b826c76091b6"
         }
       ],
       "productionWiring": [
         {
           "contains": "GatewayAdapterRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-surface-wave3.test.mjs",
-          "sha256": "ba255ca4d005f8c5d22174eb9f7bc23596521128cfee35a09569b4eb732ba067"
+          "sha256": "b186c0892201cdd289b60a8b6087c9ae4cc85595d0a7341c7e23b826c76091b6"
         }
       ],
       "title": "Gateway adapter lifecycle, inbound normalization and exactly-once delivery",
@@ -26115,7 +26115,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/command-surface-runtime.mjs",
-          "sha256": "26246ab3fea27639a6a4290b6f05bb9643d8194664a569a40d3912e6540ae1a9"
+          "sha256": "436170f77e26502aac6ca65eb006b4c2bd13b7748f1941b090ca14afd32bbcec"
         }
       ],
       "externalCondition": null,
@@ -26123,21 +26123,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-surface-wave3.test.mjs",
-          "sha256": "ba255ca4d005f8c5d22174eb9f7bc23596521128cfee35a09569b4eb732ba067"
+          "sha256": "b186c0892201cdd289b60a8b6087c9ae4cc85595d0a7341c7e23b826c76091b6"
         }
       ],
       "productionWiring": [
         {
           "contains": "/api/nolane/native-core/commands/execute",
           "path": "src/server/routes.mjs",
-          "sha256": "7a57415e7051442822b7220f20c6b46f119ca6033793b9ea254c9313bc408d07"
+          "sha256": "a77ac283f9d0c43e245c23fe9d3110465efa6e5b4e3b01d610348d2636bffeca"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-surface-wave3.test.mjs",
-          "sha256": "ba255ca4d005f8c5d22174eb9f7bc23596521128cfee35a09569b4eb732ba067"
+          "sha256": "b186c0892201cdd289b60a8b6087c9ae4cc85595d0a7341c7e23b826c76091b6"
         }
       ],
       "title": "Shared CLI/TUI/web/Electron command registry, ordered events and ANSI-safe bounded output",
@@ -26260,7 +26260,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/usage-observability-runtime.mjs",
-          "sha256": "e409018f02c1401022b58a38957ab219bab484e4bed69a5405aaa50f5c2c5d3a"
+          "sha256": "a4457fe4edc62088dc33954f3721c86fad01f9b9426172b03a8a3716c98d357e"
         }
       ],
       "externalCondition": null,
@@ -26268,21 +26268,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-surface-wave3.test.mjs",
-          "sha256": "ba255ca4d005f8c5d22174eb9f7bc23596521128cfee35a09569b4eb732ba067"
+          "sha256": "b186c0892201cdd289b60a8b6087c9ae4cc85595d0a7341c7e23b826c76091b6"
         }
       ],
       "productionWiring": [
         {
           "contains": "UsageObservabilityRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-surface-wave3.test.mjs",
-          "sha256": "ba255ca4d005f8c5d22174eb9f7bc23596521128cfee35a09569b4eb732ba067"
+          "sha256": "b186c0892201cdd289b60a8b6087c9ae4cc85595d0a7341c7e23b826c76091b6"
         }
       ],
       "title": "Provider usage, pricing, cost budgets, latency and tamper-evident accounting",
@@ -26315,7 +26315,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/agent-behavior-runtime.mjs",
-          "sha256": "a341a098e03bd114bbd1a68b38196a51eaebb07eeb7e9a97bd70b23870e84279"
+          "sha256": "ccaf1a59d36738e4cd2fb0f490b8bb8f1dfcc692b28ebfd4dac56dd6e6245989"
         }
       ],
       "externalCondition": null,
@@ -26323,21 +26323,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-agent-behavior-wave4.test.mjs",
-          "sha256": "12eddf9ca0ff03e0a4dace00a62e6b09dc0d9935bfaeb1f6341d4a30d8c9ade2"
+          "sha256": "b7b986a26f3f7debfd7a6afcfec5fb9fb31c2f847474f093396fb10d57a77410"
         }
       ],
       "productionWiring": [
         {
           "contains": "AgentBehaviorRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-agent-behavior-wave4.test.mjs",
-          "sha256": "12eddf9ca0ff03e0a4dace00a62e6b09dc0d9935bfaeb1f6341d4a30d8c9ade2"
+          "sha256": "b7b986a26f3f7debfd7a6afcfec5fb9fb31c2f847474f093396fb10d57a77410"
         }
       ],
       "title": "Public message normalization, deterministic titles, bounded one-shot execution, independent review and replay cleanup",
@@ -26435,7 +26435,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/session-lifecycle-runtime.mjs",
-          "sha256": "9b790486b8d95071b998e44fc7143b1a137773ac9b27440e999004cabcbfa83c"
+          "sha256": "c585a0689fb12172b7444fedbcede32400afcfa003207a66a4c71f19a6d7dc2f"
         }
       ],
       "externalCondition": null,
@@ -26443,21 +26443,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-session-lifecycle-wave4.test.mjs",
-          "sha256": "ff8c7aa4e4861e8f262d4d6c6cf57d6e7258ae402a86132353c11d5a7ffac438"
+          "sha256": "3aa7108fdc40143fa6a6588741bd3c8ee0033a3fdd9642507c2c9059bfecd9ae"
         }
       ],
       "productionWiring": [
         {
           "contains": "SessionLifecycleRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-session-lifecycle-wave4.test.mjs",
-          "sha256": "ff8c7aa4e4861e8f262d4d6c6cf57d6e7258ae402a86132353c11d5a7ffac438"
+          "sha256": "3aa7108fdc40143fa6a6588741bd3c8ee0033a3fdd9642507c2c9059bfecd9ae"
         }
       ],
       "title": "Persistent session metadata, search, branching, rewind, history, prompt queues and safe export",
@@ -26650,7 +26650,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/tool-governance-runtime.mjs",
-          "sha256": "bfddc412a8c49f9ebb32f1ce106337ffd54167f5096228d09bd9d5d3c5e30ac3"
+          "sha256": "fde416f07cfd91a89a763e7608319955293e401ffb7163c0815ddf0fe76c9492"
         }
       ],
       "externalCondition": null,
@@ -26658,21 +26658,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-tool-governance-wave4.test.mjs",
-          "sha256": "d7e0ca1f7055ce46108fea2e893d16b6f2871cd781dd45d04addb996e9fc5104"
+          "sha256": "b879a15fb2e5ccfb51edad15b6c009bb00cd639e5ba500bbc149b7cfd5a73902"
         }
       ],
       "productionWiring": [
         {
           "contains": "ToolGovernanceRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-tool-governance-wave4.test.mjs",
-          "sha256": "d7e0ca1f7055ce46108fea2e893d16b6f2871cd781dd45d04addb996e9fc5104"
+          "sha256": "b879a15fb2e5ccfb51edad15b6c009bb00cd639e5ba500bbc149b7cfd5a73902"
         }
       ],
       "title": "Schema sanitization, URL and path safety, ANSI-safe output, diff/checkpoint receipts and execution budgets",
@@ -26755,7 +26755,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/profile-configuration-runtime.mjs",
-          "sha256": "284f568c0bc8e4a4a64cddc0983dece1a23869f08440b2026ff88bd4d027ea40"
+          "sha256": "7412897f6cccebaab067a862060d0a4cdf8df19be7e5396b047c320d4b63c274"
         }
       ],
       "externalCondition": null,
@@ -26763,21 +26763,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-profile-oauth-wave4.test.mjs",
-          "sha256": "c83068146d04886802754634a073ec825028f4cd44e8bc6ea21cc8be0a9c7768"
+          "sha256": "d4621b1eacdcbbd8fad1f3de080853098610a9767c9e599840676020978edcc0"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProfileConfigurationRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-profile-oauth-wave4.test.mjs",
-          "sha256": "c83068146d04886802754634a073ec825028f4cd44e8bc6ea21cc8be0a9c7768"
+          "sha256": "d4621b1eacdcbbd8fad1f3de080853098610a9767c9e599840676020978edcc0"
         }
       ],
       "title": "Profile-scoped versioned configuration, credential references, migration-safe export and lifecycle",
@@ -27070,7 +27070,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/oauth-security-runtime.mjs",
-          "sha256": "36d8d3f179aaa59e1283f771be5d44071357704dccd4a6bfca427bf970b18cda"
+          "sha256": "81767a9a2ea967755ee7f2145e83689d6576eb72b37ca1f98bde693616c4c081"
         }
       ],
       "externalCondition": null,
@@ -27078,21 +27078,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-profile-oauth-wave4.test.mjs",
-          "sha256": "c83068146d04886802754634a073ec825028f4cd44e8bc6ea21cc8be0a9c7768"
+          "sha256": "d4621b1eacdcbbd8fad1f3de080853098610a9767c9e599840676020978edcc0"
         }
       ],
       "productionWiring": [
         {
           "contains": "/api/nolane/native-core/oauth/begin",
           "path": "src/server/routes.mjs",
-          "sha256": "7a57415e7051442822b7220f20c6b46f119ca6033793b9ea254c9313bc408d07"
+          "sha256": "a77ac283f9d0c43e245c23fe9d3110465efa6e5b4e3b01d610348d2636bffeca"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-profile-oauth-wave4.test.mjs",
-          "sha256": "c83068146d04886802754634a073ec825028f4cd44e8bc6ea21cc8be0a9c7768"
+          "sha256": "d4621b1eacdcbbd8fad1f3de080853098610a9767c9e599840676020978edcc0"
         }
       ],
       "title": "PKCE authorization state, callback validation, one-time completion, credential references and revocation receipts",
@@ -27140,7 +27140,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/local-observability-runtime.mjs",
-          "sha256": "63b4aec12419daa01d665b724c746f2b8f7a2e4b5a82719ccdd54f6110dd6dec"
+          "sha256": "9bc65cb96d3ab07e9c1ac80f1bccb1e6e54f5826f5380f860c3b21b088ff1bd9"
         }
       ],
       "externalCondition": null,
@@ -27148,21 +27148,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-runtime-wave5.test.mjs",
-          "sha256": "a395e0ac370b789476c6747e5309f5eb61d4431bc5329110598043b3171fb814"
+          "sha256": "d2d56d2cfd0034f1fae7bb93254954f7339aba318d49603444732ed5a8a8225b"
         }
       ],
       "productionWiring": [
         {
           "contains": "LocalObservabilityRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-runtime-wave5.test.mjs",
-          "sha256": "a395e0ac370b789476c6747e5309f5eb61d4431bc5329110598043b3171fb814"
+          "sha256": "d2d56d2cfd0034f1fae7bb93254954f7339aba318d49603444732ed5a8a8225b"
         }
       ],
       "title": "Redacted local JSONL telemetry, rotation, backpressure and disk cleanup",
@@ -27190,7 +27190,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/skill-bundle-runtime.mjs",
-          "sha256": "529aba6c08191c996c3a6bc85b405f774c62b7f85c028b45b6879b7ce33ed438"
+          "sha256": "a85e24144380b1a78742e94f4736bdc49025ca87454279c067d5f4efe85ad9c7"
         }
       ],
       "externalCondition": null,
@@ -27198,21 +27198,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-runtime-wave5.test.mjs",
-          "sha256": "a395e0ac370b789476c6747e5309f5eb61d4431bc5329110598043b3171fb814"
+          "sha256": "d2d56d2cfd0034f1fae7bb93254954f7339aba318d49603444732ed5a8a8225b"
         }
       ],
       "productionWiring": [
         {
           "contains": "SkillBundleRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-runtime-wave5.test.mjs",
-          "sha256": "a395e0ac370b789476c6747e5309f5eb61d4431bc5329110598043b3171fb814"
+          "sha256": "d2d56d2cfd0034f1fae7bb93254954f7339aba318d49603444732ed5a8a8225b"
         }
       ],
       "title": "Safe skill preprocessing, immutable bundles, permissions and provenance hashes",
@@ -27245,7 +27245,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/dashboard-auth-runtime.mjs",
-          "sha256": "91c4561228d50287d3c74a1416b749c21ddbc1a50049a329d61c14b25a7561f6"
+          "sha256": "5372b6039c9da384e510582869dc5597947c34b53bea6ecf59ae21605df935e0"
         }
       ],
       "externalCondition": null,
@@ -27253,21 +27253,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-runtime-wave5.test.mjs",
-          "sha256": "a395e0ac370b789476c6747e5309f5eb61d4431bc5329110598043b3171fb814"
+          "sha256": "d2d56d2cfd0034f1fae7bb93254954f7339aba318d49603444732ed5a8a8225b"
         }
       ],
       "productionWiring": [
         {
           "contains": "DashboardAuthRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-runtime-wave5.test.mjs",
-          "sha256": "a395e0ac370b789476c6747e5309f5eb61d4431bc5329110598043b3171fb814"
+          "sha256": "d2d56d2cfd0034f1fae7bb93254954f7339aba318d49603444732ed5a8a8225b"
         }
       ],
       "title": "Local dashboard authentication, role authorization and drain mode without token leakage",
@@ -27295,7 +27295,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/session-search-runtime.mjs",
-          "sha256": "88ab8aedfe249c9a65878afc935f9b94b930d0c5ae70f1c00eb6af050a3accfd"
+          "sha256": "584cd1d0db77541eccbc9e1e80f46c4e0d474de369c9953590fe7ebc9a329e22"
         }
       ],
       "externalCondition": null,
@@ -27303,21 +27303,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-runtime-wave5.test.mjs",
-          "sha256": "a395e0ac370b789476c6747e5309f5eb61d4431bc5329110598043b3171fb814"
+          "sha256": "d2d56d2cfd0034f1fae7bb93254954f7339aba318d49603444732ed5a8a8225b"
         }
       ],
       "productionWiring": [
         {
           "contains": "/api/nolane/native-core/session-search",
           "path": "src/server/routes.mjs",
-          "sha256": "7a57415e7051442822b7220f20c6b46f119ca6033793b9ea254c9313bc408d07"
+          "sha256": "a77ac283f9d0c43e245c23fe9d3110465efa6e5b4e3b01d610348d2636bffeca"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-runtime-wave5.test.mjs",
-          "sha256": "a395e0ac370b789476c6747e5309f5eb61d4431bc5329110598043b3171fb814"
+          "sha256": "d2d56d2cfd0034f1fae7bb93254954f7339aba318d49603444732ed5a8a8225b"
         }
       ],
       "title": "Bounded public session indexing, profile filters and hidden-reasoning exclusion",
@@ -27335,7 +27335,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/json-fast-path-runtime.mjs",
-          "sha256": "b26ffc19a62a9186cceab3bddf347e6e236d61e0f98953885a9309cb6ed5f8a8"
+          "sha256": "348b346e797ae027b817700c048df9acf162b491ecbdf3ade0c37d301715de52"
         }
       ],
       "externalCondition": null,
@@ -27343,21 +27343,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-runtime-wave5.test.mjs",
-          "sha256": "a395e0ac370b789476c6747e5309f5eb61d4431bc5329110598043b3171fb814"
+          "sha256": "d2d56d2cfd0034f1fae7bb93254954f7339aba318d49603444732ed5a8a8225b"
         }
       ],
       "productionWiring": [
         {
           "contains": "JsonFastPathRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-runtime-wave5.test.mjs",
-          "sha256": "a395e0ac370b789476c6747e5309f5eb61d4431bc5329110598043b3171fb814"
+          "sha256": "d2d56d2cfd0034f1fae7bb93254954f7339aba318d49603444732ed5a8a8225b"
         }
       ],
       "title": "Bounded JSON parsing with duplicate-key rejection and safe fallback receipts",
@@ -27375,7 +27375,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/mcp-oauth-runtime.mjs",
-          "sha256": "fc18fd96ab2d95947d8ea8152a6b770bbb1aa7b1efaefcd66f6a3d169ca7de15"
+          "sha256": "7d9bc4151f3000fd20de3890d636193ff9ce814557eef738a6cf6dfb65391ff5"
         }
       ],
       "externalCondition": null,
@@ -27383,21 +27383,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-runtime-wave6.test.mjs",
-          "sha256": "7e530a28a1ef91cd6e0bd61df353676ea5450029f823fe573f7ea1585584b9c9"
+          "sha256": "76bc6cd8e366b0dcfb95fe7366539cfcdac01db492a548a694edb227ec06ec24"
         }
       ],
       "productionWiring": [
         {
           "contains": "beginNativeMcpOAuth",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-runtime-wave6.test.mjs",
-          "sha256": "7e530a28a1ef91cd6e0bd61df353676ea5450029f823fe573f7ea1585584b9c9"
+          "sha256": "76bc6cd8e366b0dcfb95fe7366539cfcdac01db492a548a694edb227ec06ec24"
         }
       ],
       "title": "Persistent one-time PKCE lifecycle, credential references and replay-safe MCP authorization",
@@ -27425,7 +27425,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/browser-supervisor-runtime.mjs",
-          "sha256": "37c3f6516ba936dad395b9c81d93e3e569f65de5633a5ab68a3a8cd27d66f3c6"
+          "sha256": "06e7b7942a22ac57173a4dd45bacf8d92cb753c16c3f7ac9caffc70179ae1dc3"
         }
       ],
       "externalCondition": null,
@@ -27433,21 +27433,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-runtime-wave6.test.mjs",
-          "sha256": "7e530a28a1ef91cd6e0bd61df353676ea5450029f823fe573f7ea1585584b9c9"
+          "sha256": "76bc6cd8e366b0dcfb95fe7366539cfcdac01db492a548a694edb227ec06ec24"
         }
       ],
       "productionWiring": [
         {
           "contains": "executeNativeSupervisedBrowser",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-runtime-wave6.test.mjs",
-          "sha256": "7e530a28a1ef91cd6e0bd61df353676ea5450029f823fe573f7ea1585584b9c9"
+          "sha256": "76bc6cd8e366b0dcfb95fe7366539cfcdac01db492a548a694edb227ec06ec24"
         }
       ],
       "title": "Serialized browser actions, dialog lifecycle, crash state and bounded recovery receipts",
@@ -27475,7 +27475,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/async-delegation-runtime.mjs",
-          "sha256": "52571d5d5a982ef5a67d863881348e0daee6f000722d64efe7f5d407c20d700c"
+          "sha256": "18588e3e57fca8cdf47827449cd64b428e2a6b9c6aa2b97ea78a7ece37062585"
         }
       ],
       "externalCondition": null,
@@ -27483,21 +27483,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-runtime-wave6.test.mjs",
-          "sha256": "7e530a28a1ef91cd6e0bd61df353676ea5450029f823fe573f7ea1585584b9c9"
+          "sha256": "76bc6cd8e366b0dcfb95fe7366539cfcdac01db492a548a694edb227ec06ec24"
         }
       ],
       "productionWiring": [
         {
           "contains": "spawnNativeDelegation",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-runtime-wave6.test.mjs",
-          "sha256": "7e530a28a1ef91cd6e0bd61df353676ea5450029f823fe573f7ea1585584b9c9"
+          "sha256": "76bc6cd8e366b0dcfb95fe7366539cfcdac01db492a548a694edb227ec06ec24"
         }
       ],
       "title": "Persistent delegated task leases, bounded live logs, stale-worker recovery and verified completion",
@@ -27520,7 +27520,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/pty-session-runtime.mjs",
-          "sha256": "284483dd1e99a26add10f9468c54fd759226b76a60f42cc8f39448638ba92e90"
+          "sha256": "c8e6bca3e202902b1c47a49f15379f8c2ce58927e71071411505d9823a7fc208"
         }
       ],
       "externalCondition": null,
@@ -27528,21 +27528,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-runtime-wave6.test.mjs",
-          "sha256": "7e530a28a1ef91cd6e0bd61df353676ea5450029f823fe573f7ea1585584b9c9"
+          "sha256": "76bc6cd8e366b0dcfb95fe7366539cfcdac01db492a548a694edb227ec06ec24"
         }
       ],
       "productionWiring": [
         {
           "contains": "startNativePtySession",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-runtime-wave6.test.mjs",
-          "sha256": "7e530a28a1ef91cd6e0bd61df353676ea5450029f823fe573f7ea1585584b9c9"
+          "sha256": "76bc6cd8e366b0dcfb95fe7366539cfcdac01db492a548a694edb227ec06ec24"
         }
       ],
       "title": "Bounded PTY session lifecycle, ordered replay and deterministic retry policy",
@@ -27565,7 +27565,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/gateway-recovery-runtime.mjs",
-          "sha256": "a9f2b477efb4e8ec8752c5dd3293c2c1ebad33c4ae761159d73edb36acd416b4"
+          "sha256": "5af756edbbbbd644985c8784488a66e67fb4b740502e571a33b1967660d992b4"
         }
       ],
       "externalCondition": null,
@@ -27573,21 +27573,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-runtime-wave6.test.mjs",
-          "sha256": "7e530a28a1ef91cd6e0bd61df353676ea5450029f823fe573f7ea1585584b9c9"
+          "sha256": "76bc6cd8e366b0dcfb95fe7366539cfcdac01db492a548a694edb227ec06ec24"
         }
       ],
       "productionWiring": [
         {
           "contains": "heartbeatNativeGatewayHost",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-runtime-wave6.test.mjs",
-          "sha256": "7e530a28a1ef91cd6e0bd61df353676ea5450029f823fe573f7ea1585584b9c9"
+          "sha256": "76bc6cd8e366b0dcfb95fe7366539cfcdac01db492a548a694edb227ec06ec24"
         }
       ],
       "title": "Gateway heartbeat, memory pressure, drain shutdown and tamper-evident forensics",
@@ -27635,7 +27635,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/local-media-pipeline-runtime.mjs",
-          "sha256": "9c43fd73b955b47d4b8881374f58ac57cbf5da1caeabac4f4939a82a237196ba"
+          "sha256": "41c117c8499c9532d6d15a065f50894efe79cad38ede0c9f839154bec84eb6a5"
         }
       ],
       "externalCondition": null,
@@ -27643,21 +27643,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-runtime-wave6.test.mjs",
-          "sha256": "7e530a28a1ef91cd6e0bd61df353676ea5450029f823fe573f7ea1585584b9c9"
+          "sha256": "76bc6cd8e366b0dcfb95fe7366539cfcdac01db492a548a694edb227ec06ec24"
         }
       ],
       "productionWiring": [
         {
           "contains": "putNativeLocalMedia",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-runtime-wave6.test.mjs",
-          "sha256": "7e530a28a1ef91cd6e0bd61df353676ea5450029f823fe573f7ea1585584b9c9"
+          "sha256": "76bc6cd8e366b0dcfb95fe7366539cfcdac01db492a548a694edb227ec06ec24"
         }
       ],
       "title": "Content-addressed local media assets, bounded playback queue and voice barge-in state",
@@ -27715,7 +27715,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/provider-transport-runtime-wave9.mjs",
-          "sha256": "9569e9050789adb080576c602961423adf75f180f49bfb796dd8f041e930fda6"
+          "sha256": "5190aa7bd9722cae247df4236aa9c4ca1ed6006827776c12341665ebcb2d4dc8"
         }
       ],
       "externalCondition": null,
@@ -27723,21 +27723,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-provider-wave9.test.mjs",
-          "sha256": "110c63c3098554e7d9edc0470ce10405a6f45f7505c1b6284120f1da2af543be"
+          "sha256": "e545d59232dfecec3e8eef6d01d2045d332f3fefc714c151558b7dbf9c79977f"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProviderTransportRuntimeWave9",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-provider-wave9.test.mjs",
-          "sha256": "110c63c3098554e7d9edc0470ce10405a6f45f7505c1b6284120f1da2af543be"
+          "sha256": "e545d59232dfecec3e8eef6d01d2045d332f3fefc714c151558b7dbf9c79977f"
         }
       ],
       "title": "Acp Proxy Transport",
@@ -27760,7 +27760,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/provider-transport-runtime-wave9.mjs",
-          "sha256": "9569e9050789adb080576c602961423adf75f180f49bfb796dd8f041e930fda6"
+          "sha256": "5190aa7bd9722cae247df4236aa9c4ca1ed6006827776c12341665ebcb2d4dc8"
         }
       ],
       "externalCondition": null,
@@ -27768,21 +27768,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-provider-wave9.test.mjs",
-          "sha256": "110c63c3098554e7d9edc0470ce10405a6f45f7505c1b6284120f1da2af543be"
+          "sha256": "e545d59232dfecec3e8eef6d01d2045d332f3fefc714c151558b7dbf9c79977f"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProviderTransportRuntimeWave9",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-provider-wave9.test.mjs",
-          "sha256": "110c63c3098554e7d9edc0470ce10405a6f45f7505c1b6284120f1da2af543be"
+          "sha256": "e545d59232dfecec3e8eef6d01d2045d332f3fefc714c151558b7dbf9c79977f"
         }
       ],
       "title": "Anthropic Acp Transport",
@@ -27800,7 +27800,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/provider-transport-runtime-wave9.mjs",
-          "sha256": "9569e9050789adb080576c602961423adf75f180f49bfb796dd8f041e930fda6"
+          "sha256": "5190aa7bd9722cae247df4236aa9c4ca1ed6006827776c12341665ebcb2d4dc8"
         }
       ],
       "externalCondition": null,
@@ -27808,21 +27808,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-provider-wave9.test.mjs",
-          "sha256": "110c63c3098554e7d9edc0470ce10405a6f45f7505c1b6284120f1da2af543be"
+          "sha256": "e545d59232dfecec3e8eef6d01d2045d332f3fefc714c151558b7dbf9c79977f"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProviderTransportRuntimeWave9",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-provider-wave9.test.mjs",
-          "sha256": "110c63c3098554e7d9edc0470ce10405a6f45f7505c1b6284120f1da2af543be"
+          "sha256": "e545d59232dfecec3e8eef6d01d2045d332f3fefc714c151558b7dbf9c79977f"
         }
       ],
       "title": "Bedrock Acp Transport",
@@ -27840,7 +27840,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/product-configuration-runtime-wave15.mjs",
-          "sha256": "91d604a2396f81983620d7babcc4756ff02a6a44446b2b41508471cdd6e9db8e"
+          "sha256": "0e448d7a3300972fa203b55c1015ea1a14b0d44e265e9c3d05e717de4d8b6c0b"
         }
       ],
       "externalCondition": null,
@@ -27848,21 +27848,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "title": "Bootstrap Connection Config",
@@ -27905,7 +27905,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/provider-transport-runtime-wave9.mjs",
-          "sha256": "9569e9050789adb080576c602961423adf75f180f49bfb796dd8f041e930fda6"
+          "sha256": "5190aa7bd9722cae247df4236aa9c4ca1ed6006827776c12341665ebcb2d4dc8"
         }
       ],
       "externalCondition": null,
@@ -27913,21 +27913,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-provider-wave9.test.mjs",
-          "sha256": "110c63c3098554e7d9edc0470ce10405a6f45f7505c1b6284120f1da2af543be"
+          "sha256": "e545d59232dfecec3e8eef6d01d2045d332f3fefc714c151558b7dbf9c79977f"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProviderTransportRuntimeWave9",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-provider-wave9.test.mjs",
-          "sha256": "110c63c3098554e7d9edc0470ce10405a6f45f7505c1b6284120f1da2af543be"
+          "sha256": "e545d59232dfecec3e8eef6d01d2045d332f3fefc714c151558b7dbf9c79977f"
         }
       ],
       "title": "Codex App Server Transport",
@@ -27955,7 +27955,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/session-product-runtime-wave8.mjs",
-          "sha256": "db1b449ea7c787126ac1850d918eda35b38c21ba09dbe386e14dd4813e5a4c78"
+          "sha256": "54129f9ce1f84e65ceec56d9ce65e660f48893d1d020c821064897771205b2c2"
         }
       ],
       "externalCondition": null,
@@ -27963,21 +27963,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-session-wave8.test.mjs",
-          "sha256": "c5216de2e4bc8067f069de1c79be98eef9d25875855a564a6d61a889ee8a732a"
+          "sha256": "0e2251c6d05b9573895b6fbb24b73999b285217b31671714b52ce8d3d5cb5030"
         }
       ],
       "productionWiring": [
         {
           "contains": "SessionProductRuntimeWave8",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-session-wave8.test.mjs",
-          "sha256": "c5216de2e4bc8067f069de1c79be98eef9d25875855a564a6d61a889ee8a732a"
+          "sha256": "0e2251c6d05b9573895b6fbb24b73999b285217b31671714b52ce8d3d5cb5030"
         }
       ],
       "title": "Conversation Correction",
@@ -28015,7 +28015,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/execution/daemon-pool.mjs",
-          "sha256": "8ede636025105b997db0a33a14ac3f955504981889b71a7557187b4614c23aa8"
+          "sha256": "6680bfa140fcccd15aa0cdd5e87af27a552202153eacfeb5c67be25c41b426d4"
         }
       ],
       "externalCondition": null,
@@ -28023,21 +28023,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-execution-wave7.test.mjs",
-          "sha256": "e9bad054bb5c001a0020b504715a5806490f4652b960a87052f28f3f2dcecfbe"
+          "sha256": "9763f70709e5c6b43e1f851b3613bbfeba9b5547c3693ccbe90ccb3a1c2e25a1"
         }
       ],
       "productionWiring": [
         {
           "contains": "ExecutionRuntimeWave7",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-execution-wave7.test.mjs",
-          "sha256": "e9bad054bb5c001a0020b504715a5806490f4652b960a87052f28f3f2dcecfbe"
+          "sha256": "9763f70709e5c6b43e1f851b3613bbfeba9b5547c3693ccbe90ccb3a1c2e25a1"
         }
       ],
       "title": "Daemon Pool Lifecycle",
@@ -28060,7 +28060,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/product-configuration-runtime-wave15.mjs",
-          "sha256": "91d604a2396f81983620d7babcc4756ff02a6a44446b2b41508471cdd6e9db8e"
+          "sha256": "0e448d7a3300972fa203b55c1015ea1a14b0d44e265e9c3d05e717de4d8b6c0b"
         }
       ],
       "externalCondition": null,
@@ -28068,21 +28068,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "title": "Desktop Settings Surface",
@@ -28135,7 +28135,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/product-configuration-runtime-wave15.mjs",
-          "sha256": "91d604a2396f81983620d7babcc4756ff02a6a44446b2b41508471cdd6e9db8e"
+          "sha256": "0e448d7a3300972fa203b55c1015ea1a14b0d44e265e9c3d05e717de4d8b6c0b"
         }
       ],
       "externalCondition": null,
@@ -28143,21 +28143,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "title": "Entitlement Config",
@@ -28265,7 +28265,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/entitlement-policy.mjs",
-          "sha256": "ad49c2c643233f03f2b8df9de711949d9ae970dc0b1d3cc9c58adfaca1174c8d"
+          "sha256": "baa2de74f3595f5e791bbeff32ca6be4acacade00399d8009394c490fa3ab7c5"
         }
       ],
       "externalCondition": null,
@@ -28273,21 +28273,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-residual-decomposition.test.mjs",
-          "sha256": "65c4afa0330cf5d4e3f9eb931cc42cd03e85b324560c13edbbb1fcb0a4bd6136"
+          "sha256": "301a78fa883473fce1f6fa10184fca748022e29197ab0bb50e599d58d2e80a18"
         }
       ],
       "productionWiring": [
         {
           "contains": "EntitlementPolicy",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-residual-decomposition.test.mjs",
-          "sha256": "65c4afa0330cf5d4e3f9eb931cc42cd03e85b324560c13edbbb1fcb0a4bd6136"
+          "sha256": "301a78fa883473fce1f6fa10184fca748022e29197ab0bb50e599d58d2e80a18"
         }
       ],
       "title": "Entitlement Policy",
@@ -28335,7 +28335,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/execution-runtime-wave7.mjs",
-          "sha256": "d1992f16812b856aab96dbe20864beacacb62b392f23ba65a7908e07315a7b06"
+          "sha256": "69556dfbccf92433060717409e7f86ff293a6e85f458d1cf6b78d8954ed04fb2"
         }
       ],
       "externalCondition": null,
@@ -28343,21 +28343,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-execution-wave7.test.mjs",
-          "sha256": "e9bad054bb5c001a0020b504715a5806490f4652b960a87052f28f3f2dcecfbe"
+          "sha256": "9763f70709e5c6b43e1f851b3613bbfeba9b5547c3693ccbe90ccb3a1c2e25a1"
         }
       ],
       "productionWiring": [
         {
           "contains": "ExecutionRuntimeWave7",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-execution-wave7.test.mjs",
-          "sha256": "e9bad054bb5c001a0020b504715a5806490f4652b960a87052f28f3f2dcecfbe"
+          "sha256": "9763f70709e5c6b43e1f851b3613bbfeba9b5547c3693ccbe90ccb3a1c2e25a1"
         }
       ],
       "title": "Execution Environment Backends",
@@ -28385,7 +28385,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/gateway-messaging-runtime-wave10.mjs",
-          "sha256": "f3be41880d442de06ee220096c17e76265d462875dbddc89904b3bc8a41a7e78"
+          "sha256": "e813939c070f90d69b0f776ed9120f58176407064ae5862b8edb91daa155bd8a"
         }
       ],
       "externalCondition": null,
@@ -28393,21 +28393,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-gateway-wave10.test.mjs",
-          "sha256": "6f9bc4f793977d3d627c16c7d85f203bedcaed6a50ca5cf91a9ca48584cded21"
+          "sha256": "9b3b55d1295c76b0eff35f32c2ffcb0fd6ec16c5a427d5d617f6b0fe25d51c46"
         }
       ],
       "productionWiring": [
         {
           "contains": "GatewayMessagingRuntimeWave10",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-gateway-wave10.test.mjs",
-          "sha256": "6f9bc4f793977d3d627c16c7d85f203bedcaed6a50ca5cf91a9ca48584cded21"
+          "sha256": "9b3b55d1295c76b0eff35f32c2ffcb0fd6ec16c5a427d5d617f6b0fe25d51c46"
         }
       ],
       "title": "Gateway Command Manifest",
@@ -28445,7 +28445,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/gateway-messaging-runtime-wave10.mjs",
-          "sha256": "f3be41880d442de06ee220096c17e76265d462875dbddc89904b3bc8a41a7e78"
+          "sha256": "e813939c070f90d69b0f776ed9120f58176407064ae5862b8edb91daa155bd8a"
         }
       ],
       "externalCondition": null,
@@ -28453,21 +28453,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-gateway-wave10.test.mjs",
-          "sha256": "6f9bc4f793977d3d627c16c7d85f203bedcaed6a50ca5cf91a9ca48584cded21"
+          "sha256": "9b3b55d1295c76b0eff35f32c2ffcb0fd6ec16c5a427d5d617f6b0fe25d51c46"
         }
       ],
       "productionWiring": [
         {
           "contains": "GatewayMessagingRuntimeWave10",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-gateway-wave10.test.mjs",
-          "sha256": "6f9bc4f793977d3d627c16c7d85f203bedcaed6a50ca5cf91a9ca48584cded21"
+          "sha256": "9b3b55d1295c76b0eff35f32c2ffcb0fd6ec16c5a427d5d617f6b0fe25d51c46"
         }
       ],
       "title": "Gateway Host Supervision",
@@ -28525,7 +28525,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/gateway-messaging-runtime-wave10.mjs",
-          "sha256": "f3be41880d442de06ee220096c17e76265d462875dbddc89904b3bc8a41a7e78"
+          "sha256": "e813939c070f90d69b0f776ed9120f58176407064ae5862b8edb91daa155bd8a"
         }
       ],
       "externalCondition": null,
@@ -28533,21 +28533,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-gateway-wave10.test.mjs",
-          "sha256": "6f9bc4f793977d3d627c16c7d85f203bedcaed6a50ca5cf91a9ca48584cded21"
+          "sha256": "9b3b55d1295c76b0eff35f32c2ffcb0fd6ec16c5a427d5d617f6b0fe25d51c46"
         }
       ],
       "productionWiring": [
         {
           "contains": "GatewayMessagingRuntimeWave10",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-gateway-wave10.test.mjs",
-          "sha256": "6f9bc4f793977d3d627c16c7d85f203bedcaed6a50ca5cf91a9ca48584cded21"
+          "sha256": "9b3b55d1295c76b0eff35f32c2ffcb0fd6ec16c5a427d5d617f6b0fe25d51c46"
         }
       ],
       "title": "Gateway Pairing Enrollment",
@@ -28575,7 +28575,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/trust-core-wave13.mjs",
-          "sha256": "7ada8c112c10eac3c36a65afdede25ab411620eafe62552a9a200526574caca8"
+          "sha256": "f826147ec3078ab417635e358bea81093c7da7ae5721320a48a7cb8343005b87"
         }
       ],
       "externalCondition": null,
@@ -28583,21 +28583,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-trust-wave13.test.mjs",
-          "sha256": "28f207a35fe6d0e8f0e1f12ac523c128bb882dd37a4f1df53b67f990aaf71cb3"
+          "sha256": "f9ee4123e16cfd02f69372cfd82a54d8f9df36d1dab25d06ae8b704c9f7f0c93"
         }
       ],
       "productionWiring": [
         {
           "contains": "TrustCoreRuntimeWave13",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-trust-wave13.test.mjs",
-          "sha256": "28f207a35fe6d0e8f0e1f12ac523c128bb882dd37a4f1df53b67f990aaf71cb3"
+          "sha256": "f9ee4123e16cfd02f69372cfd82a54d8f9df36d1dab25d06ae8b704c9f7f0c93"
         }
       ],
       "title": "Gateway Pairing Security",
@@ -28615,7 +28615,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/gateway-messaging-runtime-wave10.mjs",
-          "sha256": "f3be41880d442de06ee220096c17e76265d462875dbddc89904b3bc8a41a7e78"
+          "sha256": "e813939c070f90d69b0f776ed9120f58176407064ae5862b8edb91daa155bd8a"
         }
       ],
       "externalCondition": null,
@@ -28623,21 +28623,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-gateway-wave10.test.mjs",
-          "sha256": "6f9bc4f793977d3d627c16c7d85f203bedcaed6a50ca5cf91a9ca48584cded21"
+          "sha256": "9b3b55d1295c76b0eff35f32c2ffcb0fd6ec16c5a427d5d617f6b0fe25d51c46"
         }
       ],
       "productionWiring": [
         {
           "contains": "GatewayMessagingRuntimeWave10",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-gateway-wave10.test.mjs",
-          "sha256": "6f9bc4f793977d3d627c16c7d85f203bedcaed6a50ca5cf91a9ca48584cded21"
+          "sha256": "9b3b55d1295c76b0eff35f32c2ffcb0fd6ec16c5a427d5d617f6b0fe25d51c46"
         }
       ],
       "title": "Gateway Relay Normalization",
@@ -28685,7 +28685,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/gateway-messaging-runtime-wave10.mjs",
-          "sha256": "f3be41880d442de06ee220096c17e76265d462875dbddc89904b3bc8a41a7e78"
+          "sha256": "e813939c070f90d69b0f776ed9120f58176407064ae5862b8edb91daa155bd8a"
         }
       ],
       "externalCondition": null,
@@ -28693,21 +28693,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-gateway-wave10.test.mjs",
-          "sha256": "6f9bc4f793977d3d627c16c7d85f203bedcaed6a50ca5cf91a9ca48584cded21"
+          "sha256": "9b3b55d1295c76b0eff35f32c2ffcb0fd6ec16c5a427d5d617f6b0fe25d51c46"
         }
       ],
       "productionWiring": [
         {
           "contains": "GatewayMessagingRuntimeWave10",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-gateway-wave10.test.mjs",
-          "sha256": "6f9bc4f793977d3d627c16c7d85f203bedcaed6a50ca5cf91a9ca48584cded21"
+          "sha256": "9b3b55d1295c76b0eff35f32c2ffcb0fd6ec16c5a427d5d617f6b0fe25d51c46"
         }
       ],
       "title": "Gateway Remote Lifecycle",
@@ -28780,7 +28780,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/gateway-messaging-runtime-wave10.mjs",
-          "sha256": "f3be41880d442de06ee220096c17e76265d462875dbddc89904b3bc8a41a7e78"
+          "sha256": "e813939c070f90d69b0f776ed9120f58176407064ae5862b8edb91daa155bd8a"
         }
       ],
       "externalCondition": null,
@@ -28788,21 +28788,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-gateway-wave10.test.mjs",
-          "sha256": "6f9bc4f793977d3d627c16c7d85f203bedcaed6a50ca5cf91a9ca48584cded21"
+          "sha256": "9b3b55d1295c76b0eff35f32c2ffcb0fd6ec16c5a427d5d617f6b0fe25d51c46"
         }
       ],
       "productionWiring": [
         {
           "contains": "GatewayMessagingRuntimeWave10",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-gateway-wave10.test.mjs",
-          "sha256": "6f9bc4f793977d3d627c16c7d85f203bedcaed6a50ca5cf91a9ca48584cded21"
+          "sha256": "9b3b55d1295c76b0eff35f32c2ffcb0fd6ec16c5a427d5d617f6b0fe25d51c46"
         }
       ],
       "title": "Gateway Tui Projection",
@@ -28860,7 +28860,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/media-core-wave14.mjs",
-          "sha256": "668c950685c8198767c2d64262b1c07b4a47e23cd3b8c3870c1eb6888104e69c"
+          "sha256": "af5431b7f08c0228901fabe4c868f1f09a5465e295bf8d19818a4ab1819a17ec"
         }
       ],
       "externalCondition": null,
@@ -28868,21 +28868,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-media-wave14.test.mjs",
-          "sha256": "250ba68a2491d99c29207321228aec433793f81962afcce13f8e5296c7d6d8d1"
+          "sha256": "e70d8c85fe5d5f4378816948da4c967ced26d4845ed71322bf4b03f50996cc1a"
         }
       ],
       "productionWiring": [
         {
           "contains": "MediaCoreRuntimeWave14",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-media-wave14.test.mjs",
-          "sha256": "250ba68a2491d99c29207321228aec433793f81962afcce13f8e5296c7d6d8d1"
+          "sha256": "e70d8c85fe5d5f4378816948da4c967ced26d4845ed71322bf4b03f50996cc1a"
         }
       ],
       "title": "Generated Media Projection",
@@ -28935,7 +28935,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/execution/lazy-dependency-resolver.mjs",
-          "sha256": "a59b63859f9bac67dc44f9aac6393a6aeb586ba88ea70a877e1d0a17880637ff"
+          "sha256": "4c2dad2531f06eeaf048c3f2d090610ea2979d3e58b4a7b7ce71ee64021c87a9"
         }
       ],
       "externalCondition": null,
@@ -28943,21 +28943,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-execution-wave7.test.mjs",
-          "sha256": "e9bad054bb5c001a0020b504715a5806490f4652b960a87052f28f3f2dcecfbe"
+          "sha256": "9763f70709e5c6b43e1f851b3613bbfeba9b5547c3693ccbe90ccb3a1c2e25a1"
         }
       ],
       "productionWiring": [
         {
           "contains": "ExecutionRuntimeWave7",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-execution-wave7.test.mjs",
-          "sha256": "e9bad054bb5c001a0020b504715a5806490f4652b960a87052f28f3f2dcecfbe"
+          "sha256": "9763f70709e5c6b43e1f851b3613bbfeba9b5547c3693ccbe90ccb3a1c2e25a1"
         }
       ],
       "title": "Lazy Dependency Resolution",
@@ -28995,7 +28995,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/provider-transport-runtime-wave9.mjs",
-          "sha256": "9569e9050789adb080576c602961423adf75f180f49bfb796dd8f041e930fda6"
+          "sha256": "5190aa7bd9722cae247df4236aa9c4ca1ed6006827776c12341665ebcb2d4dc8"
         }
       ],
       "externalCondition": null,
@@ -29003,21 +29003,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-provider-wave9.test.mjs",
-          "sha256": "110c63c3098554e7d9edc0470ce10405a6f45f7505c1b6284120f1da2af543be"
+          "sha256": "e545d59232dfecec3e8eef6d01d2045d332f3fefc714c151558b7dbf9c79977f"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProviderTransportRuntimeWave9",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-provider-wave9.test.mjs",
-          "sha256": "110c63c3098554e7d9edc0470ce10405a6f45f7505c1b6284120f1da2af543be"
+          "sha256": "e545d59232dfecec3e8eef6d01d2045d332f3fefc714c151558b7dbf9c79977f"
         }
       ],
       "title": "Mcp Tools Server Transport",
@@ -29035,7 +29035,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/media-core-wave14.mjs",
-          "sha256": "668c950685c8198767c2d64262b1c07b4a47e23cd3b8c3870c1eb6888104e69c"
+          "sha256": "af5431b7f08c0228901fabe4c868f1f09a5465e295bf8d19818a4ab1819a17ec"
         }
       ],
       "externalCondition": null,
@@ -29043,21 +29043,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-media-wave14.test.mjs",
-          "sha256": "250ba68a2491d99c29207321228aec433793f81962afcce13f8e5296c7d6d8d1"
+          "sha256": "e70d8c85fe5d5f4378816948da4c967ced26d4845ed71322bf4b03f50996cc1a"
         }
       ],
       "productionWiring": [
         {
           "contains": "MediaCoreRuntimeWave14",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-media-wave14.test.mjs",
-          "sha256": "250ba68a2491d99c29207321228aec433793f81962afcce13f8e5296c7d6d8d1"
+          "sha256": "e70d8c85fe5d5f4378816948da4c967ced26d4845ed71322bf4b03f50996cc1a"
         }
       ],
       "title": "Media Generation Provider Tck",
@@ -29095,7 +29095,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/product-configuration-runtime-wave15.mjs",
-          "sha256": "91d604a2396f81983620d7babcc4756ff02a6a44446b2b41508471cdd6e9db8e"
+          "sha256": "0e448d7a3300972fa203b55c1015ea1a14b0d44e265e9c3d05e717de4d8b6c0b"
         }
       ],
       "externalCondition": null,
@@ -29103,21 +29103,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "title": "Model Profile Surface",
@@ -29185,7 +29185,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/adapter-ecosystem-wave12.mjs",
-          "sha256": "33c7a87044a226f967b705795e306aa9b0b45b93109767f7bdce334b44dca761"
+          "sha256": "0acbaad175e7b5fb9c1a2642e4837209b8432239320275d4944fa9627869ea09"
         }
       ],
       "externalCondition": null,
@@ -29193,21 +29193,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-adapter-ecosystem-wave12.test.mjs",
-          "sha256": "301bf20997c6f8be5915ebf7cd94e90d9b3abc87e5cb46d3464d721b81c18fdc"
+          "sha256": "08d34d8e7491e1f396351e0daab2040a42b360b46b00000fa7754958342dbf4c"
         }
       ],
       "productionWiring": [
         {
           "contains": "AdapterEcosystemRuntimeWave12",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-adapter-ecosystem-wave12.test.mjs",
-          "sha256": "301bf20997c6f8be5915ebf7cd94e90d9b3abc87e5cb46d3464d721b81c18fdc"
+          "sha256": "08d34d8e7491e1f396351e0daab2040a42b360b46b00000fa7754958342dbf4c"
         }
       ],
       "title": "Operations Utility Compat",
@@ -29225,7 +29225,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/product-configuration-runtime-wave15.mjs",
-          "sha256": "91d604a2396f81983620d7babcc4756ff02a6a44446b2b41508471cdd6e9db8e"
+          "sha256": "0e448d7a3300972fa203b55c1015ea1a14b0d44e265e9c3d05e717de4d8b6c0b"
         }
       ],
       "externalCondition": null,
@@ -29233,21 +29233,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "title": "Plugin Surface Projection",
@@ -29305,7 +29305,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/product-configuration-runtime-wave15.mjs",
-          "sha256": "91d604a2396f81983620d7babcc4756ff02a6a44446b2b41508471cdd6e9db8e"
+          "sha256": "0e448d7a3300972fa203b55c1015ea1a14b0d44e265e9c3d05e717de4d8b6c0b"
         }
       ],
       "externalCondition": null,
@@ -29313,21 +29313,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "title": "Profile Model Config",
@@ -29380,7 +29380,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/trust-core-wave13.mjs",
-          "sha256": "7ada8c112c10eac3c36a65afdede25ab411620eafe62552a9a200526574caca8"
+          "sha256": "f826147ec3078ab417635e358bea81093c7da7ae5721320a48a7cb8343005b87"
         }
       ],
       "externalCondition": null,
@@ -29388,21 +29388,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-trust-wave13.test.mjs",
-          "sha256": "28f207a35fe6d0e8f0e1f12ac523c128bb882dd37a4f1df53b67f990aaf71cb3"
+          "sha256": "f9ee4123e16cfd02f69372cfd82a54d8f9df36d1dab25d06ae8b704c9f7f0c93"
         }
       ],
       "productionWiring": [
         {
           "contains": "TrustCoreRuntimeWave13",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-trust-wave13.test.mjs",
-          "sha256": "28f207a35fe6d0e8f0e1f12ac523c128bb882dd37a4f1df53b67f990aaf71cb3"
+          "sha256": "f9ee4123e16cfd02f69372cfd82a54d8f9df36d1dab25d06ae8b704c9f7f0c93"
         }
       ],
       "title": "Reauthentication Flow",
@@ -29435,7 +29435,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/session-product-runtime-wave8.mjs",
-          "sha256": "db1b449ea7c787126ac1850d918eda35b38c21ba09dbe386e14dd4813e5a4c78"
+          "sha256": "54129f9ce1f84e65ceec56d9ce65e660f48893d1d020c821064897771205b2c2"
         }
       ],
       "externalCondition": null,
@@ -29443,21 +29443,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-session-wave8.test.mjs",
-          "sha256": "c5216de2e4bc8067f069de1c79be98eef9d25875855a564a6d61a889ee8a732a"
+          "sha256": "0e2251c6d05b9573895b6fbb24b73999b285217b31671714b52ce8d3d5cb5030"
         }
       ],
       "productionWiring": [
         {
           "contains": "SessionProductRuntimeWave8",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-session-wave8.test.mjs",
-          "sha256": "c5216de2e4bc8067f069de1c79be98eef9d25875855a564a6d61a889ee8a732a"
+          "sha256": "0e2251c6d05b9573895b6fbb24b73999b285217b31671714b52ce8d3d5cb5030"
         }
       ],
       "title": "Session Context Drift",
@@ -29500,7 +29500,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/session-product-runtime-wave8.mjs",
-          "sha256": "db1b449ea7c787126ac1850d918eda35b38c21ba09dbe386e14dd4813e5a4c78"
+          "sha256": "54129f9ce1f84e65ceec56d9ce65e660f48893d1d020c821064897771205b2c2"
         }
       ],
       "externalCondition": null,
@@ -29508,21 +29508,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-session-wave8.test.mjs",
-          "sha256": "c5216de2e4bc8067f069de1c79be98eef9d25875855a564a6d61a889ee8a732a"
+          "sha256": "0e2251c6d05b9573895b6fbb24b73999b285217b31671714b52ce8d3d5cb5030"
         }
       ],
       "productionWiring": [
         {
           "contains": "SessionProductRuntimeWave8",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-session-wave8.test.mjs",
-          "sha256": "c5216de2e4bc8067f069de1c79be98eef9d25875855a564a6d61a889ee8a732a"
+          "sha256": "0e2251c6d05b9573895b6fbb24b73999b285217b31671714b52ce8d3d5cb5030"
         }
       ],
       "title": "Session Performance Scenarios",
@@ -29545,7 +29545,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/session-product-runtime-wave8.mjs",
-          "sha256": "db1b449ea7c787126ac1850d918eda35b38c21ba09dbe386e14dd4813e5a4c78"
+          "sha256": "54129f9ce1f84e65ceec56d9ce65e660f48893d1d020c821064897771205b2c2"
         }
       ],
       "externalCondition": null,
@@ -29553,21 +29553,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-session-wave8.test.mjs",
-          "sha256": "c5216de2e4bc8067f069de1c79be98eef9d25875855a564a6d61a889ee8a732a"
+          "sha256": "0e2251c6d05b9573895b6fbb24b73999b285217b31671714b52ce8d3d5cb5030"
         }
       ],
       "productionWiring": [
         {
           "contains": "SessionProductRuntimeWave8",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-session-wave8.test.mjs",
-          "sha256": "c5216de2e4bc8067f069de1c79be98eef9d25875855a564a6d61a889ee8a732a"
+          "sha256": "0e2251c6d05b9573895b6fbb24b73999b285217b31671714b52ce8d3d5cb5030"
         }
       ],
       "title": "Session Product Lifecycle",
@@ -29625,7 +29625,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/session-product-runtime-wave8.mjs",
-          "sha256": "db1b449ea7c787126ac1850d918eda35b38c21ba09dbe386e14dd4813e5a4c78"
+          "sha256": "54129f9ce1f84e65ceec56d9ce65e660f48893d1d020c821064897771205b2c2"
         }
       ],
       "externalCondition": null,
@@ -29633,21 +29633,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-session-wave8.test.mjs",
-          "sha256": "c5216de2e4bc8067f069de1c79be98eef9d25875855a564a6d61a889ee8a732a"
+          "sha256": "0e2251c6d05b9573895b6fbb24b73999b285217b31671714b52ce8d3d5cb5030"
         }
       ],
       "productionWiring": [
         {
           "contains": "SessionProductRuntimeWave8",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-session-wave8.test.mjs",
-          "sha256": "c5216de2e4bc8067f069de1c79be98eef9d25875855a564a6d61a889ee8a732a"
+          "sha256": "0e2251c6d05b9573895b6fbb24b73999b285217b31671714b52ce8d3d5cb5030"
         }
       ],
       "title": "Session Stream Coordination",
@@ -29695,7 +29695,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/session-product-runtime-wave8.mjs",
-          "sha256": "db1b449ea7c787126ac1850d918eda35b38c21ba09dbe386e14dd4813e5a4c78"
+          "sha256": "54129f9ce1f84e65ceec56d9ce65e660f48893d1d020c821064897771205b2c2"
         }
       ],
       "externalCondition": null,
@@ -29703,21 +29703,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-session-wave8.test.mjs",
-          "sha256": "c5216de2e4bc8067f069de1c79be98eef9d25875855a564a6d61a889ee8a732a"
+          "sha256": "0e2251c6d05b9573895b6fbb24b73999b285217b31671714b52ce8d3d5cb5030"
         }
       ],
       "productionWiring": [
         {
           "contains": "SessionProductRuntimeWave8",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-session-wave8.test.mjs",
-          "sha256": "c5216de2e4bc8067f069de1c79be98eef9d25875855a564a6d61a889ee8a732a"
+          "sha256": "0e2251c6d05b9573895b6fbb24b73999b285217b31671714b52ce8d3d5cb5030"
         }
       ],
       "title": "Session Terminal Binding",
@@ -29735,7 +29735,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/session-product-runtime-wave8.mjs",
-          "sha256": "db1b449ea7c787126ac1850d918eda35b38c21ba09dbe386e14dd4813e5a4c78"
+          "sha256": "54129f9ce1f84e65ceec56d9ce65e660f48893d1d020c821064897771205b2c2"
         }
       ],
       "externalCondition": null,
@@ -29743,21 +29743,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-session-wave8.test.mjs",
-          "sha256": "c5216de2e4bc8067f069de1c79be98eef9d25875855a564a6d61a889ee8a732a"
+          "sha256": "0e2251c6d05b9573895b6fbb24b73999b285217b31671714b52ce8d3d5cb5030"
         }
       ],
       "productionWiring": [
         {
           "contains": "SessionProductRuntimeWave8",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-session-wave8.test.mjs",
-          "sha256": "c5216de2e4bc8067f069de1c79be98eef9d25875855a564a6d61a889ee8a732a"
+          "sha256": "0e2251c6d05b9573895b6fbb24b73999b285217b31671714b52ce8d3d5cb5030"
         }
       ],
       "title": "Session Virtual List",
@@ -29850,7 +29850,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/session-product-runtime-wave8.mjs",
-          "sha256": "db1b449ea7c787126ac1850d918eda35b38c21ba09dbe386e14dd4813e5a4c78"
+          "sha256": "54129f9ce1f84e65ceec56d9ce65e660f48893d1d020c821064897771205b2c2"
         }
       ],
       "externalCondition": null,
@@ -29858,21 +29858,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-session-wave8.test.mjs",
-          "sha256": "c5216de2e4bc8067f069de1c79be98eef9d25875855a564a6d61a889ee8a732a"
+          "sha256": "0e2251c6d05b9573895b6fbb24b73999b285217b31671714b52ce8d3d5cb5030"
         }
       ],
       "productionWiring": [
         {
           "contains": "SessionProductRuntimeWave8",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-session-wave8.test.mjs",
-          "sha256": "c5216de2e4bc8067f069de1c79be98eef9d25875855a564a6d61a889ee8a732a"
+          "sha256": "0e2251c6d05b9573895b6fbb24b73999b285217b31671714b52ce8d3d5cb5030"
         }
       ],
       "title": "Session Window Lease",
@@ -29895,7 +29895,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/product-configuration-runtime-wave15.mjs",
-          "sha256": "91d604a2396f81983620d7babcc4756ff02a6a44446b2b41508471cdd6e9db8e"
+          "sha256": "0e448d7a3300972fa203b55c1015ea1a14b0d44e265e9c3d05e717de4d8b6c0b"
         }
       ],
       "externalCondition": null,
@@ -29903,21 +29903,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "title": "Shared Product Model",
@@ -29945,7 +29945,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/execution/shell-hook-policy.mjs",
-          "sha256": "06ca2f870bea5558c7e12afd3cfdf900563c1a7c5bdef98fc4645a2b44b04df7"
+          "sha256": "5ed3b6b309bdc443ecb11a065679bb9564e383784f3297a6ae67f4c60ac958fd"
         }
       ],
       "externalCondition": null,
@@ -29953,21 +29953,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-execution-wave7.test.mjs",
-          "sha256": "e9bad054bb5c001a0020b504715a5806490f4652b960a87052f28f3f2dcecfbe"
+          "sha256": "9763f70709e5c6b43e1f851b3613bbfeba9b5547c3693ccbe90ccb3a1c2e25a1"
         }
       ],
       "productionWiring": [
         {
           "contains": "ExecutionRuntimeWave7",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-execution-wave7.test.mjs",
-          "sha256": "e9bad054bb5c001a0020b504715a5806490f4652b960a87052f28f3f2dcecfbe"
+          "sha256": "9763f70709e5c6b43e1f851b3613bbfeba9b5547c3693ccbe90ccb3a1c2e25a1"
         }
       ],
       "title": "Shell Hook Policy",
@@ -30020,7 +30020,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/tool-execution-fabric.mjs",
-          "sha256": "4c44ddb07bc356c46532ecb64a0275c2e087450a2e3ab79ab5df5ecd39c5b3f3"
+          "sha256": "d74e38ffef6e33233af6e318ac2eb038f97a9c523c716454524177873e6d3a6b"
         }
       ],
       "externalCondition": "Complete the dedicated NATIVE-SKILL-TOOL-OPERATIONS scenario certification with replayable environment receipts in its assigned wave.",
@@ -30028,21 +30028,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-tool-execution.test.mjs",
-          "sha256": "6dc6263e342d357d577fc8c57c93c4b592d00234a2b32a4186722a751adb40ec"
+          "sha256": "116f791eaa7c8917997d191c2f61d0ccf17bce5a26e0a304a820306bdd9333bd"
         }
       ],
       "productionWiring": [
         {
           "contains": "ToolExecutionFabric",
           "path": "src/execution/tool-broker.mjs",
-          "sha256": "faaf587b28767e01ee72b5a9c370a589792637e36397aed58d491a6708180916"
+          "sha256": "5ea350fdaabbd3533b1d3b3bc14b2b047b251949342159ae8e02f3428d87ecba"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/native-core-tool-execution.test.mjs",
-          "sha256": "6dc6263e342d357d577fc8c57c93c4b592d00234a2b32a4186722a751adb40ec"
+          "sha256": "116f791eaa7c8917997d191c2f61d0ccf17bce5a26e0a304a820306bdd9333bd"
         }
       ],
       "title": "Skill Tool Operations",
@@ -30090,7 +30090,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/execution/tool-dispatch-pipeline.mjs",
-          "sha256": "77a6a02cf0c933385f8d4b4e92c5082fb56448bedf68a6c746795ca6b20d4744"
+          "sha256": "dc0625b94bdd835d5e06bb1a3fa7369c06629250b8b38c01d45d337a9f89b37f"
         }
       ],
       "externalCondition": null,
@@ -30098,21 +30098,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-execution-wave7.test.mjs",
-          "sha256": "e9bad054bb5c001a0020b504715a5806490f4652b960a87052f28f3f2dcecfbe"
+          "sha256": "9763f70709e5c6b43e1f851b3613bbfeba9b5547c3693ccbe90ccb3a1c2e25a1"
         }
       ],
       "productionWiring": [
         {
           "contains": "ExecutionRuntimeWave7",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-execution-wave7.test.mjs",
-          "sha256": "e9bad054bb5c001a0020b504715a5806490f4652b960a87052f28f3f2dcecfbe"
+          "sha256": "9763f70709e5c6b43e1f851b3613bbfeba9b5547c3693ccbe90ccb3a1c2e25a1"
         }
       ],
       "title": "Tool Dispatch Pipeline",
@@ -30180,7 +30180,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/tool-execution-fabric.mjs",
-          "sha256": "4c44ddb07bc356c46532ecb64a0275c2e087450a2e3ab79ab5df5ecd39c5b3f3"
+          "sha256": "d74e38ffef6e33233af6e318ac2eb038f97a9c523c716454524177873e6d3a6b"
         }
       ],
       "externalCondition": "Complete the dedicated NATIVE-TOOL-INTEGRATION-ADAPTERS scenario certification with replayable environment receipts in its assigned wave.",
@@ -30188,21 +30188,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-tool-execution.test.mjs",
-          "sha256": "6dc6263e342d357d577fc8c57c93c4b592d00234a2b32a4186722a751adb40ec"
+          "sha256": "116f791eaa7c8917997d191c2f61d0ccf17bce5a26e0a304a820306bdd9333bd"
         }
       ],
       "productionWiring": [
         {
           "contains": "ToolExecutionFabric",
           "path": "src/execution/tool-broker.mjs",
-          "sha256": "faaf587b28767e01ee72b5a9c370a589792637e36397aed58d491a6708180916"
+          "sha256": "5ea350fdaabbd3533b1d3b3bc14b2b047b251949342159ae8e02f3428d87ecba"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/native-core-tool-execution.test.mjs",
-          "sha256": "6dc6263e342d357d577fc8c57c93c4b592d00234a2b32a4186722a751adb40ec"
+          "sha256": "116f791eaa7c8917997d191c2f61d0ccf17bce5a26e0a304a820306bdd9333bd"
         }
       ],
       "title": "Tool Integration Adapters",
@@ -30320,7 +30320,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/product-configuration-runtime-wave15.mjs",
-          "sha256": "91d604a2396f81983620d7babcc4756ff02a6a44446b2b41508471cdd6e9db8e"
+          "sha256": "0e448d7a3300972fa203b55c1015ea1a14b0d44e265e9c3d05e717de4d8b6c0b"
         }
       ],
       "externalCondition": null,
@@ -30328,21 +30328,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "title": "Tui Product Surface",
@@ -30905,7 +30905,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/product-configuration-runtime-wave15.mjs",
-          "sha256": "91d604a2396f81983620d7babcc4756ff02a6a44446b2b41508471cdd6e9db8e"
+          "sha256": "0e448d7a3300972fa203b55c1015ea1a14b0d44e265e9c3d05e717de4d8b6c0b"
         }
       ],
       "externalCondition": null,
@@ -30913,21 +30913,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "title": "Tui State Stores",
@@ -31020,7 +31020,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/product-configuration-runtime-wave15.mjs",
-          "sha256": "91d604a2396f81983620d7babcc4756ff02a6a44446b2b41508471cdd6e9db8e"
+          "sha256": "0e448d7a3300972fa203b55c1015ea1a14b0d44e265e9c3d05e717de4d8b6c0b"
         }
       ],
       "externalCondition": null,
@@ -31028,21 +31028,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "title": "Update Lifecycle",
@@ -31100,7 +31100,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/media-core-wave14.mjs",
-          "sha256": "668c950685c8198767c2d64262b1c07b4a47e23cd3b8c3870c1eb6888104e69c"
+          "sha256": "af5431b7f08c0228901fabe4c868f1f09a5465e295bf8d19818a4ab1819a17ec"
         }
       ],
       "externalCondition": null,
@@ -31108,21 +31108,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-media-wave14.test.mjs",
-          "sha256": "250ba68a2491d99c29207321228aec433793f81962afcce13f8e5296c7d6d8d1"
+          "sha256": "e70d8c85fe5d5f4378816948da4c967ced26d4845ed71322bf4b03f50996cc1a"
         }
       ],
       "productionWiring": [
         {
           "contains": "MediaCoreRuntimeWave14",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-media-wave14.test.mjs",
-          "sha256": "250ba68a2491d99c29207321228aec433793f81962afcce13f8e5296c7d6d8d1"
+          "sha256": "e70d8c85fe5d5f4378816948da4c967ced26d4845ed71322bf4b03f50996cc1a"
         }
       ],
       "title": "Voice Composer State",
@@ -31160,7 +31160,7 @@
       "entrypoints": [
         {
           "path": "src/native-core/product-configuration-runtime-wave15.mjs",
-          "sha256": "91d604a2396f81983620d7babcc4756ff02a6a44446b2b41508471cdd6e9db8e"
+          "sha256": "0e448d7a3300972fa203b55c1015ea1a14b0d44e265e9c3d05e717de4d8b6c0b"
         }
       ],
       "externalCondition": null,
@@ -31168,21 +31168,21 @@
       "negativeTests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "productionWiring": [
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "2675bec01ad24b56f7723f916ac013a4d8866191b65bc9439970e5fcbf6bcdfb"
+          "sha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9"
         }
       ],
       "status": "verified",
       "tests": [
         {
           "path": "tests/native-core-product-config-wave15.test.mjs",
-          "sha256": "1f08477ea0c89c1ae74d0ed7b3758a1e76daa852a4ed16619d64637de08bd0a9"
+          "sha256": "9be70eb4a99ab6929687a7aaa793f192fa12d0878d4cf012dda2dd4b6ab006df"
         }
       ],
       "title": "Web Dashboard Surface",
@@ -31466,7 +31466,7 @@
     }
   ],
   "productVersion": "5.0.0-beta.7",
-  "receiptSha256": "fbd64863df8e1e9ac62c5f878c8b549ad6d09fc21b1f328cda99a889534a813c",
+  "receiptSha256": "dc6adc114b163887d0b921dafdfd5eab35d73d4312dbb23f9dc286349a196afe",
   "schema": "nolane.native-core.conformance-receipt.v1",
   "status": "pass",
   "summary": {

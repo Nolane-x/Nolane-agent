@@ -5,6 +5,7 @@ import { NolaneDurableScheduler } from './durable-scheduler.mjs';
 import { NolaneGatewayRegistry } from './gateway-registry.mjs';
 import { NolanePluginHost } from './plugin-host.mjs';
 import { NolaneSkillRegistry } from './skill-registry.mjs';
+import { ForgeOsSkillCatalog } from './forgeos-skill-catalog.mjs';
 import { NolaneSubagentManager } from './subagent-manager.mjs';
 import { NolaneTrajectoryStore } from './trajectory-store.mjs';
 import { NolaneSessionStore } from './session-store.mjs';
@@ -54,13 +55,14 @@ const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 const inside = (root, candidate) => { const relative = path.relative(root, candidate); return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative)); };
 
 export class NolaneNativeOrchestrationService {
-  constructor({ dataDir, workspaceRoot = null, egressHosts = [], skillRoots = [], clock = () => Date.now(), eventSink = () => {}, jobHandlers = {}, usagePricing = {}, maxUsageCostUsd = Infinity, nativePtyBackend = null, wave12ObservabilityExporter = null, wave13RedirectAllowlist = ['http://127.0.0.1:49152/callback'] } = {}) {
+  constructor({ dataDir, workspaceRoot = null, egressHosts = [], skillRoots = [], forgeOsRoots = [], clock = () => Date.now(), eventSink = () => {}, jobHandlers = {}, usagePricing = {}, maxUsageCostUsd = Infinity, nativePtyBackend = null, wave12ObservabilityExporter = null, wave13RedirectAllowlist = ['http://127.0.0.1:49152/callback'] } = {}) {
     if (!dataDir) throw new TypeError('dataDir is required');
     this.dataDir = path.resolve(dataDir);
     this.clock = clock;
     this.workspaceRoot = path.resolve(workspaceRoot ?? dataDir);
     this.eventSink = eventSink;
     this.skills = new NolaneSkillRegistry({ roots: skillRoots });
+    this.forgeOsSkills = new ForgeOsSkillCatalog({ roots: forgeOsRoots });
     this.subagents = new NolaneSubagentManager({ clock });
     this.gateways = new NolaneGatewayRegistry();
     this.plugins = new NolanePluginHost({ allowedCapabilities: ['message:send', 'event:read'] });
@@ -338,8 +340,40 @@ export class NolaneNativeOrchestrationService {
   recallExperience(input) { return this.stateLearning.recall(input); }
   gradeSkill(input) { return this.stateLearning.gradeSkill(input); }
   rollbackSkill(input) { return this.stateLearning.rollbackSkill(input); }
-  async listSkills() { return this.skills.discover(); }
-  loadSkill(id, options) { return this.skills.load(id, options); }
+  async listSkills({ source = null, catalog = null, query = null, limit = null } = {}) {
+    const nativeSkills = await this.skills.discover();
+    const forgeOsSkills = await this.forgeOsSkills.discover();
+    let skills = [...nativeSkills, ...forgeOsSkills];
+    if (source) skills = skills.filter((skill) => skill.source === String(source));
+    if (catalog) skills = skills.filter((skill) => skill.catalog === String(catalog));
+    if (query) {
+      const needle = String(query).trim().toLowerCase();
+      if (needle) skills = skills.filter((skill) => [skill.id, skill.sourceId, skill.title, skill.description, skill.pack, skill.domain, ...(skill.capabilityIds ?? [])].filter(Boolean).join(' ').toLowerCase().includes(needle));
+    }
+    const sourceRank = (skill) => skill.source === 'forge-os' ? (skill.catalog === 'v2' ? 1 : 2) : 0;
+    skills.sort((a, b) => sourceRank(a) - sourceRank(b) || String(a.id).localeCompare(String(b.id)));
+    return limit == null ? skills : skills.slice(0, Math.max(0, Number(limit) || 0));
+  }
+  async skillCatalog({ source = null, catalog = null, query = null, limit = null } = {}) {
+    const skills = await this.listSkills({ source, catalog, query, limit });
+    const bySource = Object.create(null);
+    const byCatalog = Object.create(null);
+    for (const skill of skills) {
+      const sourceKey = String(skill.source ?? 'unknown');
+      const catalogKey = String(skill.catalog ?? 'uncategorized');
+      bySource[sourceKey] = (bySource[sourceKey] ?? 0) + 1;
+      byCatalog[catalogKey] = (byCatalog[catalogKey] ?? 0) + 1;
+    }
+    return Object.freeze({
+      schema: 'nolane.agent.skill-hub-catalog.v1',
+      readOnly: true,
+      source: 'nolane+forge-os',
+      filters: Object.freeze({ source, catalog, query, limit }),
+      counts: Object.freeze({ total: skills.length, bySource: Object.freeze(bySource), byCatalog: Object.freeze(byCatalog) }),
+      skills: Object.freeze(skills),
+    });
+  }
+  loadSkill(id, options) { return String(id).startsWith('forgeos:') ? this.forgeOsSkills.load(id, options) : this.skills.load(id, options); }
   spawnSubagent(input) { return this.subagents.spawn(input); }
   completeSubagent(id, input) { return this.subagents.complete(id, input); }
   cancelMission(missionId, input) { return this.subagents.cancelMission(missionId, input); }

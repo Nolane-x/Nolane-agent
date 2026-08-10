@@ -8,9 +8,9 @@ import { DesignContextService } from '../src/design/design-context-service.mjs';
 
 async function fixture(t, options = {}) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-design-context-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const service = new DesignContextService({ file: path.join(root, 'design.sqlite'), artifactRoot: path.join(root, 'artifacts'), ...options });
   t.after(() => service.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   return { root, service };
 }
 

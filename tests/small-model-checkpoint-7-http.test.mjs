@@ -1,26 +1,29 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { createHttpServer } from '../src/server/http-server.mjs';
 import { ProviderRegistry } from '../src/providers/provider-registry.mjs';
 import { StudioStore } from '../src/storage/studio-store.mjs';
 import { SmallModelFoundationService } from '../src/small-model/foundation-service.mjs';
 
 const auth = (options = {}) => ({ ...options, headers: { authorization: 'Bearer nolane-token', 'content-type': 'application/json', ...(options.headers ?? {}) } });
-const projectRoot = path.resolve(new URL('..', import.meta.url).pathname);
+const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const repositoryTrajectoryDir = path.join(projectRoot, 'datasets', 'trajectories', 'repository-v1');
 const multiRuntimeDir = path.join(projectRoot, 'datasets', 'trajectories', 'multi-runtime-v1');
+const GO_AVAILABLE = spawnSync(process.env.GO_BINARY || 'go', ['version'], { stdio: 'ignore', windowsHide: true }).status === 0;
 
-test('authenticated checkpoint 7 HTTP workflow remains pending until explicit transfer-governed promotion', async (t) => {
+test('authenticated checkpoint 7 HTTP workflow remains pending until explicit transfer-governed promotion', { skip: !GO_AVAILABLE ? 'Go runtime is an external checkpoint-7 gate and is unavailable on this host' : undefined }, async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-checkpoint-7-http-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(path.join(root, 'index.html'), '<!doctype html>');
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
   const foundation = new SmallModelFoundationService();
   const service = await createHttpServer({ config: { host: '127.0.0.1', port: 0, authToken: 'nolane-token' }, store, providers: new ProviderRegistry(), missionRunner: {}, smallModelFoundation: foundation, uiRoot: root });
   t.after(() => service.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
 
   const statusUrl = `${service.url}/api/small-model/foundation/model/checkpoint-7/status`;
   assert.equal((await fetch(statusUrl)).status, 401);

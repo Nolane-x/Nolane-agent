@@ -32,7 +32,7 @@ test('ToolBroker supports paged reads and bounded parallel multi-file reads', as
 test('ToolBroker deletes, renames, creates directories, removes empty directories, and preserves mode on write', async (t) => {
   const { root, broker } = await fixture(t);
   await broker.execute({ tool: 'fs.write', input: { path: 'src/a.txt', content: 'changed\n' } });
-  assert.equal((await stat(path.join(root, 'src', 'a.txt'))).mode & 0o777, 0o750);
+  if (process.platform !== 'win32') assert.equal((await stat(path.join(root, 'src', 'a.txt'))).mode & 0o777, 0o750);
   await broker.execute({ tool: 'fs.mkdir', input: { path: 'generated/nested' } });
   await broker.execute({ tool: 'fs.rename', input: { from: 'src/b.txt', to: 'generated/nested/b.txt' } });
   assert.equal(await readFile(path.join(root, 'generated/nested/b.txt'), 'utf8'), 'bee\n');

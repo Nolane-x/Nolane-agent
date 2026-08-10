@@ -14,9 +14,9 @@ const hash = (value) => createHash('sha256').update(String(value)).digest('hex')
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-memory-os-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'Memory OS', workspaceRoot: root });
   const memoryService = new MemoryService({ store, memoryRoot: path.join(root, 'memory') });
   const sidecar = new ProjectMemorySidecar({ store, memoryService, clock: () => 1_000 });

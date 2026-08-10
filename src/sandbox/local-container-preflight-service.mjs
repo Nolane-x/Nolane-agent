@@ -3,12 +3,12 @@ import path from 'node:path';
 import { canonicalSha256 } from '../../vendor/forge-os/src/core/canonical-json.mjs';
 
 const SOCKET_PATTERNS = [
-  /(^|\/)var\/run\/docker\.sock$/i,
-  /(^|\/)run\/podman\/podman\.sock$/i,
+  /(^|[\\/])var[\\/]run[\\/]docker\.sock$/i,
+  /(^|[\\/])run[\\/]podman[\\/]podman\.sock$/i,
   /docker_engine/i,
-  /ssh[-_]?agent[^/]*\.sock$/i,
+  /(^|[\\/])ssh[-_]?agent[^\\/]*\.sock$/i,
 ];
-const CREDENTIAL_PATTERNS = [/(^|\/)\.ssh(?:\/|$)/i, /(^|\/)\.aws(?:\/|$)/i, /(^|\/)\.docker(?:\/|$)/i, /(^|\/)\.config\/gcloud(?:\/|$)/i];
+const CREDENTIAL_PATTERNS = [/(^|[\\/])\.ssh(?:[\\/]|$)/i, /(^|[\\/])\.aws(?:[\\/]|$)/i, /(^|[\\/])\.docker(?:[\\/]|$)/i, /(^|[\\/])\.config[\\/]gcloud(?:[\\/]|$)/i];
 const SENSITIVE_TARGETS = [/^\/etc(?:\/|$)/, /^\/root(?:\/|$)/, /^\/var\/run(?:\/|$)/, /^\/run(?:\/|$)/, /^C:\\Windows(?:\\|$)/i];
 
 function defaultSpawn(command, args, options) {

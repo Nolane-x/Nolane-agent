@@ -14,7 +14,6 @@ const exec = promisify(execFile);
 
 async function fixture(t, stageCommands) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-verification-pyramid-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await exec('git', ['init'], { cwd: root });
   await exec('git', ['config', 'user.email', 'forge@example.test'], { cwd: root });
   await exec('git', ['config', 'user.name', 'Forge Test'], { cwd: root });
@@ -24,6 +23,7 @@ async function fixture(t, stageCommands) {
   await exec('git', ['commit', '-m', 'baseline'], { cwd: root });
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const mission = store.createMission({ projectId: project.id, objective: 'Verify', status: 'running' });
   const task = store.createTask({

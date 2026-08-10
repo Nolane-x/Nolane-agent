@@ -13,9 +13,9 @@ import { DecisionPlane } from '../src/decision/decision-plane.mjs';
 
 async function fixture(t, metadata = {}) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-construction-loop-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'Construction', workspaceRoot: root });
   const task = store.createTask({ projectId: project.id, title: 'Build', objective: 'Build safely.', metadata });
   let calls = 0;

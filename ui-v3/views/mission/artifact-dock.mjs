@@ -1,5 +1,6 @@
 const TAB_ORDER = Object.freeze(['preview', 'plan', 'changes', 'tests', 'files', 'details']);
 const TAB_LABELS = Object.freeze({ preview: 'Preview', plan: 'Plan', changes: 'Changes', tests: 'Tests', files: 'Files', details: 'Details' });
+const TAB_LABELS_VI = Object.freeze({ preview: 'Xem trước', plan: 'Kế hoạch', changes: 'Thay đổi', tests: 'Kiểm thử', files: 'Tệp', details: 'Chi tiết' });
 const VALID_PREVIEW_STATUS = new Set(['starting', 'loading', 'ready', 'error', 'stopped']);
 const SHA256 = /^[a-f0-9]{64}$/i;
 let artifactIdentity = 0;
@@ -61,12 +62,13 @@ export function createPreviewArtifactModel({ artifactId, maxSnapshots = 20, maxA
   });
 }
 
-export function renderArtifactDock(snapshot) {
+export function renderArtifactDock(snapshot, { language = 'en' } = {}) {
   if (!snapshot?.open) return '';
+  const labels = language === 'vi' ? TAB_LABELS_VI : TAB_LABELS;
   const tabId = (id) => `artifact-tab-${escapeHtml(id)}`;
   const panelId = (id) => `artifact-panel-${escapeHtml(id)}`;
-  const tabs = snapshot.tabs.map((tab) => `<button type="button" id="${tabId(tab.id)}" role="tab" aria-selected="${tab.id === snapshot.activeTab}" aria-controls="${panelId(tab.id)}" tabindex="${tab.id === snapshot.activeTab ? '0' : '-1'}" data-artifact-tab="${escapeHtml(tab.id)}">${escapeHtml(tab.label)}</button>`).join('');
+  const tabs = snapshot.tabs.map((tab) => `<button type="button" id="${tabId(tab.id)}" role="tab" aria-selected="${tab.id === snapshot.activeTab}" aria-controls="${panelId(tab.id)}" tabindex="${tab.id === snapshot.activeTab ? '0' : '-1'}" data-artifact-tab="${escapeHtml(tab.id)}">${escapeHtml(labels[tab.id] ?? tab.label)}</button>`).join('');
   const active = snapshot.artifacts.filter((item) => item.type === snapshot.activeTab);
-  const content = snapshot.activeTab ? `<div id="${panelId(snapshot.activeTab)}" role="tabpanel" aria-labelledby="${tabId(snapshot.activeTab)}" tabindex="0">${active.map((item) => `<article data-artifact-id="${escapeHtml(item.id)}"><h2>${escapeHtml(item.title ?? TAB_LABELS[item.type])}</h2></article>`).join('')}</div>` : '';
-  return `<aside class="artifact-dock${snapshot.maximized ? ' artifact-dock--maximized' : ''}" aria-label="Mission artifacts"><div class="artifact-dock__tabs" role="tablist">${tabs}</div><div class="artifact-dock__content">${content}</div></aside>`;
+  const content = snapshot.activeTab ? `<div id="${panelId(snapshot.activeTab)}" role="tabpanel" aria-labelledby="${tabId(snapshot.activeTab)}" tabindex="0">${active.map((item) => `<article data-artifact-id="${escapeHtml(item.id)}"><h2>${escapeHtml(item.title ?? labels[item.type])}</h2></article>`).join('')}</div>` : '';
+  return `<aside class="artifact-dock${snapshot.maximized ? ' artifact-dock--maximized' : ''}" aria-label="${language === 'vi' ? 'Artifact của nhiệm vụ' : 'Mission artifacts'}"><div class="artifact-dock__tabs" role="tablist">${tabs}</div><div class="artifact-dock__content">${content}</div></aside>`;
 }

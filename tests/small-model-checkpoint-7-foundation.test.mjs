@@ -1,13 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { SmallModelFoundationService } from '../src/small-model/foundation-service.mjs';
 
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const repositoryTrajectoryDir = path.join(root, 'datasets', 'trajectories', 'repository-v1');
 const multiRuntimeDir = path.join(root, 'datasets', 'trajectories', 'multi-runtime-v1');
+const GO_AVAILABLE = spawnSync(process.env.GO_BINARY || 'go', ['version'], { stdio: 'ignore', windowsHide: true }).status === 0;
 
-test('foundation separates checkpoint 7 mission collection evidence preparation and transfer-governed promotion', async () => {
+test('foundation separates checkpoint 7 mission collection evidence preparation and transfer-governed promotion', { skip: !GO_AVAILABLE ? 'Go runtime is an external checkpoint-7 gate and is unavailable on this host' : undefined }, async () => {
   const service = new SmallModelFoundationService();
   assert.equal(service.checkpoint7Status().ready, false);
   const collected = await service.collectCheckpoint7Missions({ root, trainingRepositoryIds: ['nolane-root', 'go-launcher', 'python-sdk'] });
@@ -33,7 +36,7 @@ test('foundation separates checkpoint 7 mission collection evidence preparation 
   assert.equal(service.status().claims.generalCodingIntelligence, false);
 });
 
-test('checkpoint 7 decision support requires v3 artifacts and blocks regression process steps', async () => {
+test('checkpoint 7 decision support requires v3 artifacts and blocks regression process steps', { skip: !GO_AVAILABLE ? 'Go runtime is an external checkpoint-7 gate and is unavailable on this host' : undefined }, async () => {
   const service = new SmallModelFoundationService();
   assert.throws(() => service.runCheckpoint7DecisionSupport({}), /transfer-governed|active/i);
   const collected = await service.collectCheckpoint7Missions({ root, trainingRepositoryIds: [] });

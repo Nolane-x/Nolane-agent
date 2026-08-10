@@ -12,8 +12,8 @@ import { ToolBroker } from '../src/execution/tool-broker.mjs';
 
 test('AgentLoop injects bounded repository-ranked slices into Forge ContextPack and records omissions', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-context-intel-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const task = store.createTask({ projectId: project.id, title: 'Fix router', objective: 'Fix provider routing', metadata: { changedPaths: ['src/router.mjs'] } });
   const calls = [];
@@ -57,8 +57,8 @@ test('AgentLoop injects bounded repository-ranked slices into Forge ContextPack 
 
 test('AgentLoop injects immutable dependency handoffs so reviewers see builder intent and receipts', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-handoff-context-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const mission = store.createMission({ projectId: project.id, objective: 'Build and review', status: 'running' });
   const builder = store.createTask({ id: 'builder', projectId: project.id, missionId: mission.id, title: 'Build', objective: 'Implement', status: 'done', role: 'builder', metadata: { handoff: { schema: 'forge.task.handoff.v1', taskId: 'builder', output: 'Changed router safely.', receiptSha256s: ['a'.repeat(64)], handoffSha256: 'b'.repeat(64) } } });
@@ -81,8 +81,8 @@ test('AgentLoop injects immutable dependency handoffs so reviewers see builder i
 
 test('AgentLoop adds only approved active project memory to the governed ContextPack', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-active-memory-context-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const task = store.createTask({ projectId: project.id, title: 'Patch', objective: 'Apply a safe patch' });
   const memories = [{ id: 'memory:m1', text: '[approved-project-memory]\nUse hash preconditions.', sha256: 'a'.repeat(64), priority: 900 }];
@@ -101,8 +101,8 @@ test('AgentLoop adds only approved active project memory to the governed Context
 
 test('AgentLoop injects only matching project instruction records as untrusted references', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-instruction-context-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const task = store.createTask({ projectId: project.id, title: 'Patch TS', objective: 'Patch TypeScript', metadata: { changedPaths: ['src/app.ts'] } });
   const instructionDiscovery = {

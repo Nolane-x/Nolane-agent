@@ -9,11 +9,20 @@ function range(value) {
 }
 
 function relativePath(uri, root) {
+  const rootValue = String(root ?? '');
   try {
     const absolute = fileURLToPath(uri);
-    const relative = path.relative(path.resolve(root), absolute).replaceAll('\\', '/');
+    const relative = path.relative(path.resolve(rootValue), absolute).replaceAll('\\', '/');
     return relative.startsWith('../') || path.isAbsolute(relative) ? absolute.replaceAll('\\', '/') : relative;
-  } catch { return String(uri); }
+  } catch {
+    try {
+      const parsed = new URL(String(uri));
+      if (parsed.protocol !== 'file:') return String(uri);
+      const pathname = decodeURIComponent(parsed.pathname);
+      const relative = path.posix.relative(path.posix.resolve(rootValue.replaceAll('\\', '/')), pathname);
+      return relative.startsWith('../') || path.posix.isAbsolute(relative) ? pathname : relative;
+    } catch { return String(uri); }
+  }
 }
 
 function normalizeLocation(location, root) {

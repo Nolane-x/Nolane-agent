@@ -22,6 +22,7 @@ export function createOptionalEnterpriseCloudModuleDescriptor({ dataDir, environ
     essential: false,
     profiles: ['lite', 'balanced', 'performance'],
     async activate() {
+      const sandboxPolicies = parseSandboxPolicies(environment);
       const [
         { EnterpriseService },
         { SqliteEnterpriseStore },
@@ -88,7 +89,7 @@ export function createOptionalEnterpriseCloudModuleDescriptor({ dataDir, environ
         networkPolicyProvider: environment.FORGE_STUDIO_KUBERNETES_NETWORK_POLICY ?? 'cilium',
       });
       const cloudSandboxStore = new SqliteCloudSandboxStore(path.join(root, 'cloud-sandboxes.db'));
-      const cloudSandboxService = new CloudSandboxService({ driver: cloudSandboxDriver, policies: parseSandboxPolicies(environment), storage: cloudSandboxStore, audit: eventSink });
+      const cloudSandboxService = new CloudSandboxService({ driver: cloudSandboxDriver, policies: sandboxPolicies, storage: cloudSandboxStore, audit: eventSink });
 
       let oidcHttp = null;
       if (environment.FORGE_STUDIO_OIDC_PROVIDERS_JSON) {

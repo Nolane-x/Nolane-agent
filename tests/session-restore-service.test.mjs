@@ -28,7 +28,7 @@ test('session restore state is atomic, versioned, receipted and preserves unknow
   await writeFile(file, `${JSON.stringify(persisted, null, 2)}\n`, { mode: 0o600 });
   const second = await service.updateRestore({ activeRoute: '/projects' });
   assert.equal(second.futureState.keep, true);
-  assert.equal((await stat(file)).mode & 0o777, 0o600);
+  if (process.platform !== 'win32') assert.equal((await stat(file)).mode & 0o777, 0o600);
 });
 
 test('composer drafts restore bounded text, selection, model intent and safe attachment references', async (t) => {

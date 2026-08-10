@@ -1,11 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { CHECKPOINT_7_HELDOUT_PACKS } from '../src/small-model/checkpoint-7-heldout-pack.mjs';
 import { BestCandidateLedger } from '../src/small-model/best-candidate-ledger.mjs';
 import { MissionTrajectoryEngine } from '../src/small-model/mission-trajectory-engine.mjs';
 
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const GO_AVAILABLE = spawnSync(process.env.GO_BINARY || 'go', ['version'], {
+  stdio: 'ignore',
+  windowsHide: true,
+}).status === 0;
+const GO_SKIP = GO_AVAILABLE ? undefined : 'Go executable is unavailable on this host';
 
 test('best candidate ledger never replaces a verified candidate with a regression', () => {
   const ledger = new BestCandidateLedger({ missionId: 'm1' });
@@ -17,7 +24,7 @@ test('best candidate ledger never replaces a verified candidate with a regressio
   assert.equal(ledger.snapshot().regressionsRejected, 1);
 });
 
-test('mission trajectory executes baseline mutation failure repair recovery and preserves source', async () => {
+test('mission trajectory executes baseline mutation failure repair recovery and preserves source', { skip: GO_SKIP }, async () => {
   const engine = new MissionTrajectoryEngine({ trainingRepositoryIds: ['nolane-root', 'go-launcher', 'python-sdk'] });
   for (const pack of CHECKPOINT_7_HELDOUT_PACKS) {
     const result = await engine.run({ root, pack });

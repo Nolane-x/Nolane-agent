@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { CHECKPOINT_8_AST_PACKS } from '../src/small-model/checkpoint-8-ast-pack.mjs';
@@ -8,7 +9,7 @@ import { AstSkillCompiler } from '../src/small-model/ast-skill-compiler.mjs';
 import { AstSkillTransferLab } from '../src/small-model/ast-skill-transfer-lab.mjs';
 import { canonicalSha256 } from '../src/small-model/shared.mjs';
 
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sha = (value) => createHash('sha256').update(value).digest('hex');
 const rehash = (value) => { const { receiptSha256: _old, ...base } = value; return { ...base, receiptSha256: canonicalSha256(base) }; };
 

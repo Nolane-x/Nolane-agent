@@ -10,8 +10,9 @@ import { MissionRunner } from '../src/orchestration/mission-runner.mjs';
 import { InterruptManager } from '../src/orchestration/interrupts.mjs';
 
 async function fixture(t, agentLoop = null) {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-mission-')); t.after(() => rm(root, { recursive: true, force: true }));
-  const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-mission-'));
+  const store = new StudioStore(path.join(root, 'studio.db'));
+  t.after(async () => { store.close(); await rm(root, { recursive: true, force: true }); });
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const scheduler = new TaskScheduler({ store });
   const loop = agentLoop ?? { async run(task) { return { runId: `run-${task.id}`, state: 'awaiting-verification', output: 'candidate', receipts: [] }; } };

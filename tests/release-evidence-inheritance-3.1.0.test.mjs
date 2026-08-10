@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
 import { canonicalSha256 } from '../vendor/forge-os/src/core/canonical-json.mjs';
 
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 async function read(relativePath) {
   return readFile(path.join(root, relativePath), 'utf8');

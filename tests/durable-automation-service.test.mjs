@@ -8,9 +8,9 @@ import { DurableAutomationService } from '../src/automations/durable-automation-
 
 async function fixture(t, options = {}) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-automation-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const service = new DurableAutomationService({ file: path.join(root, 'automations.sqlite'), ...options });
   t.after(() => service.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   return { root, service };
 }
 

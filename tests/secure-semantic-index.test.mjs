@@ -22,7 +22,6 @@ class MeaningEmbeddingProvider {
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-semantic-index-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await mkdir(path.join(root, 'src'), { recursive: true });
   await writeFile(path.join(root, 'src', 'auth.mjs'), `import { verifyToken } from './token.mjs';\nexport function createSession(credentials) {\n  return verifyToken(credentials);\n}\n`);
   await writeFile(path.join(root, 'src', 'token.mjs'), `export function verifyToken(value) {\n  return Boolean(value);\n}\n`);
@@ -30,6 +29,7 @@ async function fixture(t) {
   await writeFile(path.join(root, '.env'), 'SECRET=never-index-this');
   const store = new StudioStore(path.join(root, '.forge-test.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ id: 'project_semantic', name: 'Semantic', workspaceRoot: root });
   return { root, store, project };
 }
@@ -85,9 +85,8 @@ test('secure snapshot reuse requires local content proofs and never leaks unprov
   assert.match(snapshot.similarityHash, /^[a-f0-9]{16}$/);
 
   const otherRoot = await mkdtemp(path.join(os.tmpdir(), 'forge-semantic-target-'));
-  t.after(() => rm(otherRoot, { recursive: true, force: true }));
   const otherStore = new StudioStore(path.join(otherRoot, 'target.db'));
-  t.after(() => otherStore.close());
+  t.after(async () => { otherStore.close(); await rm(otherRoot, { recursive: true, force: true }); });
   const otherProject = otherStore.createProject({ id: 'project_target', name: 'Target', workspaceRoot: otherRoot });
   const target = new SecureSemanticIndex({ store: otherStore, embeddingProvider: new MeaningEmbeddingProvider() });
 
@@ -126,11 +125,12 @@ test('quantized cache is keyed by provider model digest and invalidates on model
 
 test('semantic search narrows candidates before on-demand embedding and reports provider state', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-semantic-candidates-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
+  let store = null;
+  t.after(async () => { store?.close(); await rm(root, { recursive: true, force: true }); });
   await mkdir(path.join(root, 'src'), { recursive: true });
   for (let index = 0; index < 24; index += 1) await writeFile(path.join(root, 'src', `file-${index}.mjs`), `export function helper${index}() { return "generic ${index}"; }\n`);
   await writeFile(path.join(root, 'src', 'session.mjs'), 'export function validateSessionExpiration(token) { return token.expiresAt > Date.now(); }\n');
-  const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
+  store = new StudioStore(path.join(root, 'studio.db'));
   const project = store.createProject({ id: 'candidate_project', name: 'Candidate', workspaceRoot: root });
   let embeddedTexts = 0;
   const provider = { id: 'neural-test', kind: 'neural', degraded: false, dimensions: 3, modelSha256: 'c'.repeat(64), async embed(texts) { embeddedTexts += texts.length; return texts.map((text) => /session|expiration/i.test(text) ? [1, 0, 0] : [0, 1, 0]); } };
@@ -147,9 +147,10 @@ test('semantic search narrows candidates before on-demand embedding and reports 
 
 test('chunk merkle reuse preserves unchanged function vectors and snapshot reuse is branch-aware', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-chunk-merkle-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
+  let store = null;
+  t.after(async () => { store?.close(); await rm(root, { recursive: true, force: true }); });
   await writeFile(path.join(root, 'module.mjs'), 'export function alpha() { return 1; }\nexport function beta() { return 2; }\n');
-  const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
+  store = new StudioStore(path.join(root, 'studio.db'));
   const project = store.createProject({ id: 'chunk_project', name: 'Chunk', workspaceRoot: root });
   let embedded = 0;
   const provider = { id: 'neural-chunk', kind: 'neural', degraded: false, dimensions: 3, modelSha256: 'd'.repeat(64), async embed(texts) { embedded += texts.length; return texts.map((text) => /alpha/.test(text) ? [1, 0, 0] : [0, 1, 0]); } };
@@ -168,8 +169,8 @@ test('chunk merkle reuse preserves unchanged function vectors and snapshot reuse
   const snapshot = index.exportSnapshot(project.id);
   assert.equal(snapshot.provenance.branch, 'feature/a');
   const otherRoot = await mkdtemp(path.join(os.tmpdir(), 'forge-chunk-target-'));
-  t.after(() => rm(otherRoot, { recursive: true, force: true }));
-  const targetStore = new StudioStore(path.join(otherRoot, 'target.db')); t.after(() => targetStore.close());
+  const targetStore = new StudioStore(path.join(otherRoot, 'target.db'));
+  t.after(async () => { targetStore.close(); await rm(otherRoot, { recursive: true, force: true }); });
   const targetProject = targetStore.createProject({ id: 'chunk_target', name: 'Target', workspaceRoot: otherRoot });
   const target = new SecureSemanticIndex({ store: targetStore, embeddingProvider: provider, toolSchemaRevision: 'tools-v2' });
   const proofs = Object.fromEntries(snapshot.files.map((file) => [file.path, file.sha256]));

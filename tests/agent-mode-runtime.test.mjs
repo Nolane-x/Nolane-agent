@@ -13,9 +13,9 @@ import { StudioStore } from '../src/storage/studio-store.mjs';
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-agent-mode-runtime-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'Modes', workspaceRoot: root });
   return { root, store, project };
 }

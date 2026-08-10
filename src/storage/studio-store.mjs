@@ -291,7 +291,12 @@ export class StudioStore {
     return Object.freeze({ source: this.file, target });
   }
 
-  close() { this.db.close(); }
+  close() {
+    if (!this.db) return;
+    const db = this.db;
+    this.db = null;
+    db.close();
+  }
 
   transaction(fn) {
     this.db.exec('BEGIN IMMEDIATE');

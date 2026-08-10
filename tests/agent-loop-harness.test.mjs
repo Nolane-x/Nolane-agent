@@ -16,11 +16,11 @@ import { StudioStore } from '../src/storage/studio-store.mjs';
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-loop-harness-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
   const failureStore = new HarnessFailureStore({ file: path.join(root, 'harness-failures.db') });
   t.after(() => failureStore.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'Harness', workspaceRoot: root });
   const task = store.createTask({ projectId: project.id, title: 'Recover', objective: 'Recover from a provider rate limit.', role: 'executor', metadata: { taskKind: 'bugfix' } });
   const requests = [];

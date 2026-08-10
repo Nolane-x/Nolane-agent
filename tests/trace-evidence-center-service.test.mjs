@@ -11,9 +11,9 @@ import { TraceEvidenceCenterService } from '../src/operations/trace-evidence-cen
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-trace-evidence-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'Trace Project', workspaceRoot: root });
   const other = store.createProject({ name: 'Other Project', workspaceRoot: path.join(root, 'other') });
   const mission = store.createMission({ projectId: project.id, objective: 'Build trace center' });

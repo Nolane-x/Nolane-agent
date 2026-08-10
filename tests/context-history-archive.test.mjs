@@ -10,10 +10,10 @@ import { ContextHistoryArchive, TerminalHistoryRecorder } from '../src/agent/con
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-context-history-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const contextStore = new DynamicContextStore({ root: path.join(root, 'artifacts'), previewBytes: 128, maxArtifactBytes: 5_000_000 });
   const archive = new ContextHistoryArchive({ file: path.join(root, 'history.db'), contextStore, clock: () => '2026-07-29T00:00:00.000Z' });
   t.after(() => archive.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   return { root, contextStore, archive };
 }
 
@@ -90,7 +90,6 @@ test('conversation compaction keeps original searchable artifacts and stores a s
 
 test('history index survives restart, enforces project scope, and terminal recorder archives output on exit', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-context-history-restart-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const contextStore = new DynamicContextStore({ root: path.join(root, 'artifacts') });
   const file = path.join(root, 'history.db');
   const first = new ContextHistoryArchive({ file, contextStore });
@@ -107,6 +106,7 @@ test('history index survives restart, enforces project scope, and terminal recor
 
   const second = new ContextHistoryArchive({ file, contextStore });
   t.after(() => second.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const records = second.list({ projectId: 'p1', sessionId: 'term-live', kind: 'terminal' });
   assert.equal(records.length, 1);
   await assert.rejects(() => second.get(records[0].id, { projectId: 'p2' }), /scope/i);

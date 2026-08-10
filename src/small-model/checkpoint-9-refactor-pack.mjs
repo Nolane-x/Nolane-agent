@@ -4,10 +4,10 @@ import { lstat, readFile, realpath } from 'node:fs/promises';
 import { canonicalSha256, deepFreeze } from './shared.mjs';
 
 const HASHES = Object.freeze({
-  'src/api.mjs': '1341f9728ea3d020047256f72df580aacea656b3ec15517425eba62fd9b3ec70',
-  'src/direct.mjs': 'c58caffd03b026bb23e7d5256c5de3eeb9fda4b43296697ed81a6cab55b0057c',
-  'src/alias.mjs': '8fe247261e2e0e3a2dd625971bd4cddc7d1737ce1196f95ef1c48cfaaefe669c',
-  'test/refactor.test.mjs': '4b32c09eaca7f66c09abd848ea2cae5d6b1e615a22752c337bfab3ad89daebfc',
+  'src/api.mjs': '8494e5dc3094deef6d9be238603f90d469354fc1576febc019712088fdcb7a67',
+  'src/direct.mjs': '81aa089ec296d5493526f79a21d73a85fc43dad00ea8a44f3f1c897870b48f86',
+  'src/alias.mjs': '76dec1299b52dd947ebc748cc5b4ccc2dd6495c712da7434187b44b40830b4db',
+  'test/refactor.test.mjs': 'c8e2c4898f559a412bee2d2d96f60d1328fad1f2dc97d57877168bf44bf9dce5',
 });
 
 const pack = (repositoryId, rootPath, role) => deepFreeze({

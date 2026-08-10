@@ -10,9 +10,10 @@ import { StudioStore } from '../src/storage/studio-store.mjs';
 import { ToolBroker } from '../src/execution/tool-broker.mjs';
 
 test('AgentLoop injects a governed evidence packet before the first model call', async (t) => {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-evidence-loop-')); t.after(() => rm(root, { recursive: true, force: true }));
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-evidence-loop-'));
   await writeFile(path.join(root, 'README.md'), 'hello');
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const task = store.createTask({ projectId: project.id, title: 'Inspect', objective: 'Inspect README.', role: 'executor', metadata: { completionCriteria: ['Report content'], hypothesis: 'README contains hello', recentFailures: ['none'] } });
   const order = []; let capturedReference;

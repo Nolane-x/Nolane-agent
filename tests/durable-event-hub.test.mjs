@@ -13,10 +13,10 @@ const withTimeout = (promise, ms = 1000) => Promise.race([promise, new Promise((
 
 test('store publishes only committed sequenced events through the durable hub', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-event-hub-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const hub = new DurableEventHub();
   const store = new StudioStore(path.join(root, 'studio.db'), { eventHub: hub });
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const received = [];
   const unsubscribe = hub.subscribe((event) => received.push(event));
   t.after(unsubscribe);
@@ -28,12 +28,12 @@ test('store publishes only committed sequenced events through the durable hub', 
 
 test('SSE receives new committed events without 250 ms database polling', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-event-sse-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(path.join(root, 'index.html'), '<!doctype html>');
   const hub = new DurableEventHub();
   const store = new StudioStore(path.join(root, 'studio.db'), { eventHub: hub });
   const service = await createHttpServer({ config: { host: '127.0.0.1', port: 0, authToken: 'token', performance: {} }, store, eventHub: hub, uiRoot: root });
   t.after(async () => { await service.close(); store.close(); });
+  t.after(() => rm(root, { recursive: true, force: true }));
   const controller = new AbortController();
   t.after(() => controller.abort());
   const response = await fetch(`${service.url}/events`, { headers: { authorization: 'Bearer token' }, signal: controller.signal });

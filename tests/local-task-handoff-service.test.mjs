@@ -16,8 +16,6 @@ const exec = promisify(execFile);
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-local-handoff-repo-'));
   const data = await mkdtemp(path.join(os.tmpdir(), 'forge-local-handoff-data-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
-  t.after(() => rm(data, { recursive: true, force: true }));
   await exec('git', ['init'], { cwd: root });
   await exec('git', ['config', 'user.email', 'forge@example.test'], { cwd: root });
   await exec('git', ['config', 'user.name', 'Forge Test'], { cwd: root });
@@ -27,7 +25,11 @@ async function fixture(t) {
   await exec('git', ['commit', '-m', 'baseline'], { cwd: root });
 
   const store = new StudioStore(path.join(data, 'studio.db'));
-  t.after(() => store.close());
+  t.after(async () => {
+    store.close();
+    await rm(root, { recursive: true, force: true });
+    await rm(data, { recursive: true, force: true });
+  });
   const project = store.createProject({ name: 'Local project', workspaceRoot: root });
   const mission = store.createMission({ projectId: project.id, objective: 'Implement locally', status: 'running' });
   const otherMission = store.createMission({ projectId: project.id, objective: 'Other', status: 'running' });

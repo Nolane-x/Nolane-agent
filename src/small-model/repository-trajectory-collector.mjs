@@ -11,6 +11,7 @@ const SHA256 = /^[a-f0-9]{64}$/;
 function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
 }
+function canonicalText(value) { return String(value).replace(/\r\n?/g, '\n'); }
 
 function scanPublic(value, cursor = '$') {
   if (!value || typeof value !== 'object') return;
@@ -228,8 +229,9 @@ export async function writeRepositoryTrajectoryDataset({ outputDir, collection }
   await fs.mkdir(outputDir, { recursive: true });
   const orderedEpisodes = [...collection.episodes].sort((a, b) => a.id.localeCompare(b.id));
   const episodesText = orderedEpisodes.map((entry) => canonicalStringify(entry)).join('\n') + (orderedEpisodes.length ? '\n' : '');
-  const episodesSha256 = sha256(episodesText);
-  await fs.writeFile(path.join(outputDir, 'episodes.jsonl'), episodesText);
+  const canonicalEpisodesText = canonicalText(episodesText);
+  const episodesSha256 = sha256(canonicalEpisodesText);
+  await fs.writeFile(path.join(outputDir, 'episodes.jsonl'), canonicalEpisodesText);
   const base = {
     schema: 'nolane.small-model.repository-trajectory-dataset.v1',
     episodeCount: orderedEpisodes.length,
@@ -249,9 +251,10 @@ export async function verifyRepositoryTrajectoryDataset({ outputDir } = {}) {
   if (!outputDir) throw new TypeError('Repository trajectory outputDir is required');
   const episodesText = await fs.readFile(path.join(outputDir, 'episodes.jsonl'), 'utf8');
   const receipt = JSON.parse(await fs.readFile(path.join(outputDir, 'receipt.json'), 'utf8'));
-  const actualEpisodesSha256 = sha256(episodesText);
+  const canonicalEpisodesText = canonicalText(episodesText);
+  const actualEpisodesSha256 = sha256(canonicalEpisodesText);
   if (!SHA256.test(receipt.episodesSha256) || actualEpisodesSha256 !== receipt.episodesSha256) throw new Error('Repository trajectory dataset hash mismatch');
-  const lines = episodesText.split(/\r?\n/).filter(Boolean);
+  const lines = canonicalEpisodesText.split('\n').filter(Boolean);
   const episodes = lines.map((line) => JSON.parse(line));
   if (episodes.length !== receipt.episodeCount) throw new Error('Repository trajectory dataset episode count mismatch');
   for (const episode of episodes) {

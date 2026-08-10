@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createArtifactDockModel, buildArtifactDockTabs, createPreviewArtifactModel } from '../ui-v3/views/mission/artifact-dock.mjs';
+import { createArtifactDockModel, buildArtifactDockTabs, createPreviewArtifactModel, renderArtifactDock } from '../ui-v3/views/mission/artifact-dock.mjs';
 
 test('Artifact Dock exposes only context-backed tabs in product priority order', () => {
   const tabs = buildArtifactDockTabs([
@@ -34,4 +34,13 @@ test('preview artifact records bounded before-after snapshots and annotations', 
   assert.equal(value.snapshots.length, 2);
   assert.equal(value.annotations[0].selector, '#save');
   assert.throws(() => preview.recordSnapshot({ phase: 'after', sha256: 'bad' }), /sha256/i);
+});
+
+test('Artifact Dock localizes tab labels and accessible chrome', () => {
+  const model = createArtifactDockModel({ missionId: 'm1' });
+  model.update([{ id: 'p1', type: 'preview', title: 'Preview' }]);
+  const html = renderArtifactDock(model.snapshot(), { language: 'vi' });
+  assert.match(html, /Xem trước/);
+  assert.match(html, /Artifact của nhiệm vụ/);
+  assert.doesNotMatch(html, /Mission artifacts/);
 });

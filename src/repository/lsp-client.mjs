@@ -40,6 +40,13 @@ export class LspClient {
     this.process = child;
     child.stdout.on('data', (chunk) => this.#onData(chunk));
     child.stderr.on('data', (chunk) => { this.stderr = `${this.stderr}${chunk.toString('utf8')}`.slice(-32_768); });
+    // A shutdown/dispose can race with an in-flight JSON-RPC write. Node
+    // otherwise reports the resulting Windows EPIPE as an uncaught stream
+    // error after the test/request has already completed.
+    child.stdin.on('error', (error) => {
+      if (this.disposed) return;
+      this.#failAll(Object.assign(new Error(`LSP_WRITE_ERROR: ${error.message}`), { code: 'LSP_WRITE_ERROR' }));
+    });
     child.on('error', (error) => this.#failAll(Object.assign(new Error(`LSP_PROCESS_ERROR: ${error.message}`), { code: 'LSP_PROCESS_ERROR' })));
     child.on('exit', (code, signal) => {
       this.process = null;

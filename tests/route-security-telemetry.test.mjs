@@ -8,7 +8,6 @@ import { RouteSecurityTelemetry } from '../src/security/route-security-telemetry
 
 test('route security telemetry records auth, authorization, and handler stages without request secrets', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-route-telemetry-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await mkdir(path.join(root, 'ui'));
   await writeFile(path.join(root, 'ui', 'index.html'), '<!doctype html>');
   const events = [];
@@ -21,7 +20,10 @@ test('route security telemetry records auth, authorization, and handler stages w
     routeSecurityTelemetry: telemetry,
     uiRoot: path.join(root, 'ui'),
   });
-  t.after(() => http.close());
+  t.after(async () => {
+    await http.close();
+    await rm(root, { recursive: true, force: true });
+  });
 
   const denied = await fetch(`${http.url}/api/workroom/file?projectId=p&file=README.md&token=query-secret`, { headers: { authorization: 'Bearer wrong-secret' } });
   assert.equal(denied.status, 401);

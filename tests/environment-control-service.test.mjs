@@ -19,13 +19,13 @@ class FakeDriver {
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-env-control-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const driver = new FakeDriver();
   const supervisor = new EnvironmentSupervisor({
     file: path.join(root, 'environment.db'), root: path.join(root, 'runtime'), processDriver: driver,
     healthProbe: async () => ({ reachable: true, status: 200, latencyMs: 1 }), sleep: async () => {},
   });
   t.after(() => supervisor.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const ledger = new CapabilityGrantLedger();
   const events = [];
   const service = new EnvironmentControlService({ supervisor, capabilityLedger: ledger, projectResolver: (id) => ['p1', 'p2'].includes(id) ? { id, workspaceRoot: root } : null, eventSink: (event) => events.push(event) });

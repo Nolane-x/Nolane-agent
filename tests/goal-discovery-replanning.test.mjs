@@ -17,8 +17,9 @@ const plan = { summary: 'Inspect and review.', tasks: [
 ] };
 
 test('discoveries from a running goal-linked task automatically patch the live mission plan', async (t) => {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-live-replan-')); t.after(() => rm(root, { recursive: true, force: true }));
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-live-replan-'));
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const goals = new GoalService({ store });
   const goal = goals.create({ projectId: project.id, title: 'Ship', objective: 'Ship.', metadata: { goalAutoApplyPlanPatches: true } });

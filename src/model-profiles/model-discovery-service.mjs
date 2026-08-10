@@ -19,6 +19,27 @@ function headersFor(providerFamily, apiKey) {
   return { Accept: 'application/json', Authorization: `Bearer ${apiKey}` };
 }
 
+function familyFor({ providerFamily = null, providerId = null, kind = null } = {}) {
+  if (providerFamily) return String(providerFamily);
+  const byKind = {
+    'openai-responses': 'openai-api',
+    'anthropic-messages': 'anthropic-api',
+    'gemini-generate-content': 'gemini-api',
+    'openai-compatible': String(providerId ?? 'openai-compatible'),
+  };
+  return byKind[String(kind)] ?? String(providerId ?? 'openai-compatible');
+}
+
+function endpoint(baseUrl, suffix) {
+  const base = new URL(baseUrl);
+  const suffixUrl = new URL(suffix, 'http://discovery.invalid');
+  const basePath = base.pathname.replace(/\/+$/, '');
+  const suffixPath = suffixUrl.pathname;
+  const knownPrefix = ['/v1beta', '/v1'].find((prefix) => suffixPath.startsWith(`${prefix}/`) && basePath.endsWith(prefix));
+  base.pathname = `${basePath}${knownPrefix ? suffixPath.slice(knownPrefix.length) : suffixPath}`;
+  return base.toString();
+}
+
 export class ModelDiscoveryService {
   #fetch;
   #clock;
@@ -49,22 +70,23 @@ export class ModelDiscoveryService {
     }
   }
 
-  async discover({ providerFamily, baseUrl, apiKey = null }) {
+  async discover({ providerFamily = null, providerId = null, kind = null, baseUrl, apiKey = null, headers = {} }) {
+    const resolvedFamily = familyFor({ providerFamily, providerId, kind });
     const observedAt = this.#clock();
     const normalizedBase = cleanBaseUrl(baseUrl);
-    const headers = headersFor(providerFamily, apiKey);
+    const resolvedHeaders = { ...headersFor(resolvedFamily, apiKey), ...headers };
     let models;
-    if (providerFamily === 'anthropic-api') models = await this.#anthropic(normalizedBase, headers, observedAt);
-    else if (providerFamily === 'google-api' || providerFamily === 'gemini-api') models = await this.#gemini(normalizedBase, apiKey, observedAt);
-    else if (providerFamily === 'ollama') models = await this.#ollama(normalizedBase, observedAt);
-    else if (providerFamily === 'lm-studio') models = await this.#lmStudio(normalizedBase, observedAt);
-    else models = await this.#openAiCompatible(normalizedBase, headers, providerFamily, observedAt);
-    const payload = { providerFamily, baseUrl: normalizedBase, observedAt, models };
+    if (resolvedFamily === 'anthropic-api') models = await this.#anthropic(normalizedBase, resolvedHeaders, observedAt);
+    else if (resolvedFamily === 'google-api' || resolvedFamily === 'gemini-api') models = await this.#gemini(normalizedBase, apiKey, resolvedHeaders, observedAt);
+    else if (resolvedFamily === 'ollama') models = await this.#ollama(normalizedBase, observedAt);
+    else if (resolvedFamily === 'lm-studio') models = await this.#lmStudio(normalizedBase, observedAt);
+    else models = await this.#openAiCompatible(normalizedBase, resolvedHeaders, resolvedFamily, observedAt);
+    const payload = { providerFamily: resolvedFamily, providerId: providerId ? String(providerId) : null, kind: kind ? String(kind) : null, baseUrl: normalizedBase, observedAt, models };
     return deepFreeze({ ...payload, receiptSha256: sha256Receipt(payload) });
   }
 
   async #openAiCompatible(baseUrl, headers, providerFamily, observedAt) {
-    const payload = await this.#json(`${baseUrl}/v1/models`, { headers });
+    const payload = await this.#json(endpoint(baseUrl, '/v1/models'), { headers });
     return (payload.data ?? []).filter((model) => model?.id).map((model) => ({
       id: this.#canonicalizeProviderId(providerFamily, model.id),
       providerFamily,
@@ -78,7 +100,7 @@ export class ModelDiscoveryService {
     const models = [];
     let afterId = null;
     for (let page = 0; page < this.#maxPages; page += 1) {
-      const url = new URL(`${baseUrl}/v1/models`);
+      const url = new URL(endpoint(baseUrl, '/v1/models'));
       if (afterId) url.searchParams.set('after_id', afterId);
       const payload = await this.#json(url.toString(), { headers });
       for (const model of payload.data ?? []) {
@@ -96,14 +118,14 @@ export class ModelDiscoveryService {
     return models;
   }
 
-  async #gemini(baseUrl, apiKey, observedAt) {
+  async #gemini(baseUrl, apiKey, headers, observedAt) {
     const models = [];
     let pageToken = null;
     for (let page = 0; page < this.#maxPages; page += 1) {
-      const url = new URL(`${baseUrl}/v1beta/models`);
+      const url = new URL(endpoint(baseUrl, '/v1beta/models'));
       if (apiKey) url.searchParams.set('key', apiKey);
       if (pageToken) url.searchParams.set('pageToken', pageToken);
-      const payload = await this.#json(url.toString(), { headers: { Accept: 'application/json' } });
+      const payload = await this.#json(url.toString(), { headers: { Accept: 'application/json', ...headers } });
       for (const model of payload.models ?? []) {
         const providerId = String(model.name ?? '').replace(/^models\//, '');
         if (!providerId) continue;
@@ -127,7 +149,7 @@ export class ModelDiscoveryService {
   }
 
   async #ollama(baseUrl, observedAt) {
-    const payload = await this.#json(`${baseUrl}/api/tags`, { headers: { Accept: 'application/json' } });
+    const payload = await this.#json(endpoint(baseUrl, '/api/tags'), { headers: { Accept: 'application/json' } });
     return (payload.models ?? []).filter((model) => model?.name).map((model) => ({
       id: `ollama/${String(model.name).toLowerCase()}`,
       providerFamily: 'ollama', providerModelId: model.name,
@@ -146,8 +168,8 @@ export class ModelDiscoveryService {
 
   async #lmStudio(baseUrl, observedAt) {
     let payload;
-    try { payload = await this.#json(`${baseUrl}/api/v1/models`, { headers: { Accept: 'application/json' } }); }
-    catch { payload = await this.#json(`${baseUrl}/v1/models`, { headers: { Accept: 'application/json' } }); }
+    try { payload = await this.#json(endpoint(baseUrl, '/api/v1/models'), { headers: { Accept: 'application/json' } }); }
+    catch { payload = await this.#json(endpoint(baseUrl, '/v1/models'), { headers: { Accept: 'application/json' } }); }
     return (payload.data ?? payload.models ?? []).filter((model) => model?.id).map((model) => ({
       id: `lm-studio/${String(model.id).toLowerCase()}`,
       providerFamily: 'lm-studio', providerModelId: model.id,

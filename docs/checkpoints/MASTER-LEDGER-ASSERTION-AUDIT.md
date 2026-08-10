@@ -9,6 +9,6 @@
 - Missing negative assertions: 1
 - Over-broad test files: 10
 - Certifiable: **false**
-- Receipt: `ee777e2a9312d7f4bed7d4d3bbccba877c6aa20777a0f80a601bd2eab78bbc26`
+- Receipt: `3ef1bef9d9da32b127d1c3d6da0b3133591a8ebc5d705edee1df4083f98ae756`
 
 This audit does not mutate canonical requirement status. It records assertion-level truth and blockers.

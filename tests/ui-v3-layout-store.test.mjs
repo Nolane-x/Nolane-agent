@@ -15,3 +15,12 @@ test('layout store persists sizes and recovers from corrupt storage', () => {
   assert.equal(store.snapshot().sidebarWidth, 288);
   assert.equal(clampLayoutValue('bottomHeight', 5), 160);
 });
+
+test('layout store applies sidebar collapsed state to the document root', () => {
+  const storage = { getItem: () => null, setItem() {}, removeItem() {} };
+  const root = { dataset: {}, style: { setProperty() {} } };
+  const store = createLayoutStore(storage);
+  store.update({ sidebarCollapsed: true });
+  store.apply(root);
+  assert.equal(root.dataset.sidebarCollapsed, 'true');
+});

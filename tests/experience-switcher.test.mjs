@@ -30,6 +30,13 @@ test('experience switcher renders one direct option for every progressive level'
   assert.match(html, /Does not change agent permissions/);
 });
 
+test('experience popup uses a dedicated opaque stacking surface', async () => {
+  const css = await (await import('node:fs/promises')).readFile('ui-v3/styles/components/experience-switcher.css', 'utf8');
+  assert.match(css, /\.experience-switcher__menu[^\{]*\{[^}]*isolation:isolate/);
+  assert.match(css, /\.experience-switcher__menu[^\{]*\{[^}]*background:var\(--surface-overlay\)/);
+  assert.match(css, /\.app-topbar[^\{]*\{[^}]*position:relative/);
+});
+
 test('view-state bridge preserves draft metadata and maps routes to representable destinations', () => {
   const bridge = createViewStateBridge();
   bridge.capture(fakeRoot(), { experience: 'expert', path: '/control-plane/runtime' });

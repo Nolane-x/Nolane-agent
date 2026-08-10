@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createWorkroomModel } from '../ui-v3/views/workroom/workroom-view.mjs';
+import { createWorkroomModel, renderWorkroomView } from '../ui-v3/views/workroom/workroom-view.mjs';
 import { createFileTreeModel } from '../ui-v3/views/workroom/file-tree.mjs';
 import { createEditorHost } from '../ui-v3/views/workroom/editor-host.mjs';
 import { createTerminalHost } from '../ui-v3/views/workroom/terminal-host.mjs';
@@ -13,6 +13,36 @@ test('Workroom preserves mission route continuity and panel state', () => {
   assert.equal(value.panels.files.open, false);
   assert.equal(value.panels.agent.size, 420);
   assert.equal(value.activeFile, 'src/a.mjs');
+});
+
+test('Workroom renders a real project tree and editable file surface in both locales', () => {
+  const model = createWorkroomModel({ projectId: 'p1', language: 'en' });
+  model.setTree([{ name: 'src', path: 'src', type: 'directory' }, { name: 'main.mjs', path: 'src/main.mjs', type: 'file', bytes: 21 }]);
+  model.setFile({ path: 'src/main.mjs', content: 'export const ok = true;', bytes: 23, sha256: 'a'.repeat(64) });
+  model.setDraftContent('export const ok = false;');
+  const english = renderWorkroomView(model.snapshot(), { language: 'en' });
+  assert.match(english, /data-workroom-directory="src"/);
+  assert.match(english, /data-workroom-file="src\/main\.mjs"/);
+  assert.match(english, /data-workroom-editor/);
+  assert.match(english, />Save<\/button>/);
+  const vietnamese = renderWorkroomView(model.snapshot(), { language: 'vi' });
+  assert.match(vietnamese, />Tệp<\/strong>/);
+  assert.match(vietnamese, />Lưu<\/button>/);
+  assert.doesNotMatch(vietnamese, /Back to mission|Filter files|No file open|Save<\/button>/);
+});
+
+test('Workroom diff and preview tabs are bounded and use the selected draft', () => {
+  const model = createWorkroomModel({ projectId: 'p1' });
+  model.setFile({ path: 'README.md', content: 'old', bytes: 3, sha256: 'b'.repeat(64) });
+  model.setDraftContent('new');
+  model.setDiff({ path: 'README.md', original: 'old', modified: 'new', changed: true });
+  model.setTab('changes');
+  const diff = renderWorkroomView(model.snapshot());
+  assert.match(diff, /Original/);
+  assert.match(diff, /Draft/);
+  assert.match(diff, /new/);
+  model.setTab('preview');
+  assert.match(renderWorkroomView(model.snapshot()), /<div class="workroom-preview">[\s\S]*new/);
 });
 
 test('file tree windows large repositories and preserves keyed nodes', () => {

@@ -9,14 +9,16 @@ import { WorkspaceTrustService } from '../src/security/workspace-trust-service.m
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-workspace-trust-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const workspaceRoot = path.join(root, 'workspace');
   await mkdir(path.join(workspaceRoot, '.git'), { recursive: true });
   const projects = new Map([['p1', { id: 'p1', workspaceRoot }]]);
   const file = path.join(root, 'trust.db');
   const storage = new SqliteWorkspaceTrustStore(file);
   const service = new WorkspaceTrustService({ storage, projectResolver: (id) => projects.get(String(id)) });
-  t.after(() => storage.close());
+  t.after(async () => {
+    storage.close();
+    await rm(root, { recursive: true, force: true });
+  });
   return { root, workspaceRoot, file, projects, storage, service };
 }
 
@@ -40,6 +42,7 @@ test('workspace trust defaults to deny and persists an authenticated identity-bo
   const reopened = new WorkspaceTrustService({ storage: reopenedStore, projectResolver: (id) => f.projects.get(String(id)) });
   assert.equal((await reopened.status('p1')).state, 'trusted');
   assert.equal((await reopened.audit({ projectId: 'p1' })).length, 1);
+  reopenedStore.close();
 });
 
 test('workspace replacement invalidates trust and revoke takes effect immediately', async (t) => {

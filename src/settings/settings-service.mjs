@@ -15,7 +15,7 @@ function rejectSecrets(value, prefix = '') {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return;
   for (const [key, child] of Object.entries(value)) {
     const full = prefix ? `${prefix}.${key}` : key;
-    if (SECRET_KEY.test(key)) throw new Error(`Secret setting ${full} must use the credential vault`);
+    if (key !== 'redactSecrets' && SECRET_KEY.test(key)) throw new Error(`Secret setting ${full} must use the credential vault`);
     rejectSecrets(child, full);
   }
 }

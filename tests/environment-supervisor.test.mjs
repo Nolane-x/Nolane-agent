@@ -25,7 +25,6 @@ class FakeProcessDriver {
 
 async function fixture(t, options = {}) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-env-supervisor-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const driver = options.driver ?? new FakeProcessDriver();
   const health = options.health ?? (async () => ({ reachable: true, status: 200, latencyMs: 4 }));
   const bootstrapCalls = [];
@@ -39,6 +38,7 @@ async function fixture(t, options = {}) {
     clock: (() => { let tick = 0; return () => new Date(Date.UTC(2026, 6, 29, 0, 0, tick++)).toISOString(); })(),
   });
   t.after(() => supervisor.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   return { root, driver, supervisor, bootstrapCalls };
 }
 
@@ -111,7 +111,6 @@ test('bootstrap cache is content-addressed and reruns only when manifest inputs 
 
 test('supervisor recovers durable process ownership after application restart without respawning a healthy process', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-env-recover-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const driver = new FakeProcessDriver();
   const file = path.join(root, 'environment.db');
   const options = { file, root: path.join(root, 'runtime'), processDriver: driver, healthProbe: async () => ({ reachable: true, status: 200 }), sleep: async () => {} };
@@ -122,6 +121,7 @@ test('supervisor recovers durable process ownership after application restart wi
 
   const second = new EnvironmentSupervisor(options);
   t.after(() => second.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const recovered = await second.recover('web');
   assert.equal(recovered.state, 'healthy');
   assert.equal(recovered.pid, started.pid);

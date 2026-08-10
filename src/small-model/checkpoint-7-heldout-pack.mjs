@@ -5,12 +5,13 @@ import { canonicalSha256, deepFreeze } from './shared.mjs';
 
 const SHA256 = /^[a-f0-9]{64}$/;
 const RUNTIMES = new Set(['node', 'go', 'python']);
-const EXECUTABLES = Object.freeze({ node: new Set([process.execPath, 'node']), go: new Set(['go']), python: new Set(['python3', 'python']) });
+const PYTHON_COMMAND = process.env.NOLANE_AGENT_PYTHON || process.env.FORGE_PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
+const EXECUTABLES = Object.freeze({ node: new Set([process.execPath, 'node']), go: new Set(['go']), python: new Set(['python3', 'python', PYTHON_COMMAND]) });
 
 export const CHECKPOINT_7_HELDOUT_PACKS = deepFreeze([
   {
     repositoryId: 'heldout-node-normalizer', runtime: 'node', rootPath: 'fixtures/checkpoint-7-heldout/node-normalizer',
-    sourcePath: 'src/normalize.mjs', testPath: 'test/normalize.test.mjs', sourceSha256: '4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40', testSha256: '696a4459fd673a490bb1aade47717ffb11dae13869e2675f30147e09e91dc8ca',
+    sourcePath: 'src/normalize.mjs', testPath: 'test/normalize.test.mjs', sourceSha256: '0f8130156afc685a8b6a6d4b331dbfc50dfb78a3c35a645e4aa6a751133f5c9c', testSha256: 'eb1d90c673a0c70f3949ee5f5f1c8ca9e927c83413150268af00258a880ed44d',
     command: { argv: [process.execPath, '--test', 'test/normalize.test.mjs'], timeoutMs: 30_000 },
     mutation: { path: 'src/normalize.mjs', from: 'return normalized.toLowerCase();', to: 'return normalized;' },
     repair: { path: 'src/normalize.mjs', from: 'return normalized;', to: 'return normalized.toLowerCase();' },
@@ -18,7 +19,7 @@ export const CHECKPOINT_7_HELDOUT_PACKS = deepFreeze([
   },
   {
     repositoryId: 'heldout-go-normalizer', runtime: 'go', rootPath: 'fixtures/checkpoint-7-heldout/go-normalizer',
-    sourcePath: 'normalize.go', testPath: 'normalize_test.go', sourceSha256: 'be39fdfbdc6c6bf2d92f9874b90ebcf6af0694af11594c5f293100a12d453235', testSha256: '7a761a7bd0125ac37b098197af7fee81413d1e6e43c7cb58a24bdd7b56e6d7f3',
+    sourcePath: 'normalize.go', testPath: 'normalize_test.go', sourceSha256: 'dd99ce63a5a03a106746becc78cc5c01f0799b3444622413c9f81363254c5426', testSha256: '36b098055f6b5d12d4e1ddd32c9a0e8ac9ce4800e86ed0cbf7039622ef55b015',
     command: { argv: ['go', 'test', './...'], timeoutMs: 30_000 },
     mutation: { path: 'normalize.go', from: 'return strings.ToLower(normalized)', to: 'return normalized' },
     repair: { path: 'normalize.go', from: 'return normalized', to: 'return strings.ToLower(normalized)' },
@@ -26,8 +27,8 @@ export const CHECKPOINT_7_HELDOUT_PACKS = deepFreeze([
   },
   {
     repositoryId: 'heldout-python-normalizer', runtime: 'python', rootPath: 'fixtures/checkpoint-7-heldout/python-normalizer',
-    sourcePath: 'normalize.py', testPath: 'test_normalize.py', sourceSha256: '1ecca0e11e947ee33dda0edda321ae679990b7e21481e730871dab8530ea6fab', testSha256: 'ee86a34bedd444cca3f1ae658b99924a283b70909d886462a51f64ff35f830c6',
-    command: { argv: ['python3', '-m', 'unittest', 'test_normalize.py'], timeoutMs: 30_000 },
+    sourcePath: 'normalize.py', testPath: 'test_normalize.py', sourceSha256: '4f6960448d7861283fe030c33fee6482a1554484e4a252a79c6ea9c97c5d91a7', testSha256: '3398997b7f413f9b8169b37d1dcad792167ba663ac5a76f5a8373d729d7141cc',
+    command: { argv: [PYTHON_COMMAND, '-m', 'unittest', 'test_normalize.py'], timeoutMs: 30_000 },
     mutation: { path: 'normalize.py', from: 'return normalized.lower()', to: 'return normalized' },
     repair: { path: 'normalize.py', from: 'return normalized', to: 'return normalized.lower()' },
     expected: { baselineExitCode: 0, mutationExitCode: 1, recoveryExitCode: 0 }, taskId: 'normalize-case-python',
@@ -38,7 +39,7 @@ export const CHECKPOINT_7_HELDOUT_PACKS = deepFreeze([
 
 export const CHECKPOINT_7_SKILL_TRANSFER_PACK = deepFreeze({
   repositoryId: 'heldout-node-normalizer-transfer', runtime: 'node', rootPath: 'fixtures/checkpoint-7-heldout/node-normalizer-transfer',
-  sourcePath: 'src/normalize.mjs', testPath: 'test/normalize.test.mjs', sourceSha256: '4887825d3eeacdc27cc7fcc78e4de4058449f0746726c145e165489c266e8f40', testSha256: '17f32501d4fa936bf5ae35f70a5db4b9f8dcc680f3dac11d3ace6d2994676013',
+  sourcePath: 'src/normalize.mjs', testPath: 'test/normalize.test.mjs', sourceSha256: '0f8130156afc685a8b6a6d4b331dbfc50dfb78a3c35a645e4aa6a751133f5c9c', testSha256: '56b819107401852fa2911a27fcff0b28035b088f6fc1e0ac265fafc0a6db7d2a',
   command: { argv: [process.execPath, '--test', 'test/normalize.test.mjs'], timeoutMs: 30_000 },
   mutation: { path: 'src/normalize.mjs', from: 'return normalized.toLowerCase();', to: 'return normalized;' },
   repair: { path: 'src/normalize.mjs', from: 'return normalized;', to: 'return normalized.toLowerCase();' },

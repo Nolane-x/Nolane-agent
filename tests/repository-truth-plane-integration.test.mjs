@@ -17,7 +17,6 @@ const sha = (value) => createHash('sha256').update(value).digest('hex');
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-truth-plane-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await mkdir(path.join(root, 'src', 'api'), { recursive: true });
   await mkdir(path.join(root, 'tests'), { recursive: true });
   await mkdir(path.join(root, 'config'), { recursive: true });
@@ -35,6 +34,7 @@ async function fixture(t) {
   await writeFile(path.join(root, 'config', 'app.json'), '{"sessionTtl":120}\n');
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ id: 'truth_project', name: 'Truth', workspaceRoot: root });
   await new RepositoryIndex({ store }).index(project);
   await new SecureSemanticIndex({ store }).index(project, { deferEmbeddings: true });

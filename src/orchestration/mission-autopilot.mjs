@@ -19,7 +19,7 @@ export class MissionAutopilot {
     this.selfFixFactory = typeof selfFixFactory === 'function' ? selfFixFactory : null;
   }
 
-  async run({ missionId, providerId = 'auto', workerId = 'autopilot', maxTasks, signal = null, budgets = undefined } = {}) {
+  async run({ missionId, providerId = 'auto', modelId = undefined, workerId = 'autopilot', maxTasks, signal = null, budgets = undefined } = {}) {
     const limit = boundedTasks(maxTasks);
     let completedTasks = 0;
     const reports = [];
@@ -30,7 +30,7 @@ export class MissionAutopilot {
       if (mission.status === 'completed') return Object.freeze({ missionId: mission.id, status: 'completed', completedTasks, reports: Object.freeze(reports) });
       if (mission.status !== 'running') throw new Error(`Mission is ${mission.status}`);
 
-      const execution = await this.missionRunner.runNext({ missionId: mission.id, workerId, providerId, signal, budgets });
+      const execution = await this.missionRunner.runNext({ missionId: mission.id, workerId, providerId, modelId, signal, budgets });
       if (!execution) throw new Error('Autopilot made no progress: no ready task is available');
       assertActive(signal);
       let report = await this.verificationRunner.runTask(execution.task.id, { signal });

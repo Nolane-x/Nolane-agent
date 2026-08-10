@@ -13,9 +13,9 @@ import { StudioStore } from '../src/storage/studio-store.mjs';
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-escalation-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const task = store.createTask({ projectId: project.id, title: 'Debug', objective: 'Fix validateSession.', metadata: { initialContextBudgetTokens: 100 } });
   const contextCalls = [];

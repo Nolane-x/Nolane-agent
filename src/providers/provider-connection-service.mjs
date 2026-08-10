@@ -131,7 +131,7 @@ export class ProviderConnectionService {
       if (handled.has(provider.id) || this.registry.detection(provider.id)) continue;
       try {
         const detected = await (provider.detect?.() ?? { ...provider.publicView(), available: true });
-        this.registry.setDetection(provider.id, { ...provider.publicView(), ...detected, authenticated: false, healthy: false, error: detected.available === false ? (detected.error ?? 'not-installed') : 'authentication-status-unavailable' });
+        this.registry.setDetection(provider.id, { ...provider.publicView(), ...detected, authenticated: false, healthy: false, error: detected.error ?? (detected.available === false ? 'not-installed' : 'authentication-status-unavailable') });
       } catch (error) {
         this.registry.setDetection(provider.id, { ...provider.publicView(), available: false, authenticated: false, healthy: false, error: safeError(error) });
       }
@@ -146,7 +146,23 @@ export class ProviderConnectionService {
       if (!detected.available) return this.registry.setDetection(provider.id, { ...provider.publicView(), ...detected, authenticated: false, healthy: false });
       const state = accountState(await this.codexAppServer.accountRead({ refreshToken: false }));
       const detection = this.registry.setDetection(provider.id, { ...provider.publicView(), ...detected, ...state, healthy: state.authenticated, error: state.authenticated ? null : 'login-required' });
-      if (this.registry.list().some((item) => item.id === 'codex')) this.registry.setDetection('codex', { ...this.registry.get('codex').publicView(), ...detection, id: 'codex' });
+      // Codex CLI and Codex App Server share the official account, but they do
+      // not share a provider profile. Keep the CLI's own kind/capabilities so
+      // the router cannot accidentally require App Server-only capabilities.
+      if (this.registry.list().some((item) => item.id === 'codex')) {
+        const cli = this.registry.get('codex').publicView();
+        this.registry.setDetection('codex', {
+          ...cli,
+          available: detection.available,
+          authenticated: state.authenticated,
+          healthy: state.authenticated,
+          version: detection.version ?? null,
+          authMode: state.authMode,
+          planType: state.planType,
+          error: state.authenticated ? null : 'login-required',
+          id: 'codex',
+        });
+      }
       return detection;
     } catch (error) { return this.registry.setDetection(provider.id, { ...provider.publicView(), available: true, authenticated: false, healthy: false, error: safeError(error) }); }
   }
@@ -176,8 +192,15 @@ export class ProviderConnectionService {
 
 
   async discoverModels(id) {
+    const cleanId = providerId(id);
+    const registered = this.registry.get(cleanId);
+    if (registered?.kind === 'cli' && typeof registered.discoverModels === 'function') {
+      const result = await registered.discoverModels();
+      if (this.modelProfiles?.mergeDiscovery) this.modelProfiles.mergeDiscovery(cleanId, result.models);
+      return Object.freeze({ ...result, profiles: this.modelProfiles?.publicView?.({ providerId: cleanId }) ?? null });
+    }
     if (!this.modelDiscovery || !this.modelProfiles) throw Object.assign(new Error('Model discovery is not configured'), { statusCode: 503, code: 'model_discovery_unavailable' });
-    const cleanId = providerId(id); const record = this.store.getProviderConfig(cleanId);
+    const record = this.store.getProviderConfig(cleanId);
     if (!record || !API_KINDS.has(record.kind)) throw Object.assign(new Error(`Provider ${cleanId} does not support model discovery`), { statusCode: 400, code: 'model_discovery_unsupported' });
     const key = record.config?.vaultRef ? await this.credentialVault.resolve(record.config.vaultRef) : null;
     const headers = { ...(record.config?.headers ?? {}) };
@@ -215,7 +238,19 @@ export class ProviderConnectionService {
     const view = this.registry.publicView().find((item) => item.id === id);
     if (!view) throw new Error(`Unknown provider: ${id}`);
     const record = this.store.getProviderConfig(id);
-    return Object.freeze({ ...view, configured: Boolean(record) || view.credentialOwner === 'official-cli', config: record ? { model: record.config.model, baseUrl: record.config.baseUrl, lastTestStatus: record.config.lastTestStatus ?? null, lastTestedAt: record.config.lastTestedAt ?? null } : null, ...extra });
+    const codexAccount = id === 'codex' || id === 'codex-app-server';
+    const adapter = this.cliAuthAdapters[id] ?? null;
+    const loginModes = codexAccount ? ['chatgpt', 'chatgptDeviceCode'] : Object.keys(adapter?.loginArgs ?? {});
+    const logoutSupported = codexAccount || Array.isArray(adapter?.logoutArgs);
+    return Object.freeze({
+      ...view,
+      configured: Boolean(record) || view.credentialOwner === 'official-cli',
+      loginSupported: loginModes.length > 0,
+      loginModes: Object.freeze(loginModes),
+      logoutSupported,
+      config: record ? { model: record.config.model, baseUrl: record.config.baseUrl, lastTestStatus: record.config.lastTestStatus ?? null, lastTestedAt: record.config.lastTestedAt ?? null } : null,
+      ...extra,
+    });
   }
 
   list() {

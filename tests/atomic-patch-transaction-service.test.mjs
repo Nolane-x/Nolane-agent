@@ -25,7 +25,10 @@ async function fixture(t) {
   const service = new AtomicPatchTransactionService({
     workspaceRoot: root,
     allowedCommands: [process.execPath],
-    formatterTimeoutMs: 2_000,
+    // Windows CI/low-memory hosts can take several seconds to spawn Node for
+    // the formatter; keep the timeout bounded without turning this fixture
+    // into a timing race under the full isolated suite.
+    formatterTimeoutMs: 10_000,
   });
   return { root, service, a, b };
 }
@@ -59,7 +62,7 @@ test('applies multiple patches all-or-rollback and emits minimal diffs with metr
   assert.equal(applied.status, 'committed');
   assert.equal(await readFile(path.join(f.root, 'src', 'a.js'), 'utf8'), nextA);
   assert.equal(await readFile(path.join(f.root, 'src', 'b.js'), 'utf8'), nextB);
-  assert.equal((await stat(path.join(f.root, 'src', 'a.js'))).mode & 0o777, 0o640);
+  if (process.platform !== 'win32') assert.equal((await stat(path.join(f.root, 'src', 'a.js'))).mode & 0o777, 0o640);
 });
 
 test('rejects stale hashes, duplicate files, file and changed-line budgets before writing', async (t) => {

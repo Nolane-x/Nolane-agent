@@ -21,6 +21,32 @@ test('discovers OpenAI-compatible models and preserves provider IDs', async () =
   assert.equal(JSON.stringify(result).includes('secret'), false);
 });
 
+test('accepts provider connection metadata without duplicating versioned base paths', async () => {
+  const fetch = async (url, options) => {
+    assert.equal(url, 'http://127.0.0.1:1234/v1/models');
+    assert.equal(options.headers['x-provider-header'], 'present');
+    return response({ data: [{ id: 'local-model' }] });
+  };
+  const service = new ModelDiscoveryService({ fetch });
+  const result = await service.discover({ providerId: 'local-models', kind: 'openai-compatible', baseUrl: 'http://127.0.0.1:1234/v1', headers: { 'x-provider-header': 'present' } });
+  assert.equal(result.providerFamily, 'local-models');
+  assert.equal(result.models[0].providerModelId, 'local-model');
+});
+
+test('maps Anthropic provider kind and preserves caller auth headers', async () => {
+  const fetch = async (url, options) => {
+    assert.equal(url, 'https://api.anthropic.test/v1/models');
+    assert.equal(options.headers['x-api-key'], 'secret');
+    assert.equal(options.headers['anthropic-version'], '2023-06-01');
+    return response({ data: [{ id: 'claude-sonnet-4-7' }], has_more: false });
+  };
+  const service = new ModelDiscoveryService({ fetch });
+  const result = await service.discover({ providerId: 'anthropic-api', kind: 'anthropic-messages', baseUrl: 'https://api.anthropic.test/v1', apiKey: 'secret' });
+  assert.equal(result.providerFamily, 'anthropic-api');
+  assert.equal(result.models[0].id, 'anthropic/claude-sonnet-4-7');
+  assert.equal(JSON.stringify(result).includes('secret'), false);
+});
+
 test('paginates Anthropic and Gemini discovery', async () => {
   const calls = [];
   const fetch = async (url) => {

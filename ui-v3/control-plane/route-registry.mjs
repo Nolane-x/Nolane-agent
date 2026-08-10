@@ -26,19 +26,19 @@ export const CONTROL_PLANE_ROUTES = Object.freeze(approvedRoutes);
 export async function loadControlPlaneDomain(domain) { const loader = CONTROL_PLANE_ROUTES[domain]; if (!loader) throw new Error(`Unknown Control Plane domain: ${domain}`); if (!cache.has(domain)) cache.set(domain, Promise.resolve().then(loader)); return cache.get(domain); }
 export function clearControlPlaneRouteCache() { cache.clear(); }
 
-export function renderControlPlaneDomain(domain, module) {
-  if (domain === 'capabilities') return module.renderCapabilitiesView(module.buildCapabilitiesViewModel());
-  if (domain === 'agent-kernel') return module.renderAgentKernelView(module.buildAgentKernelView());
-  if (domain === 'overview') return module.renderOverviewView(module.buildOverviewView());
-  if (domain === 'operations') return module.renderOperationsView(module.buildOperationsView());
-  if (domain === 'runtime') { const model = module.createRuntimeView(); return module.renderRuntimeView(model.snapshot()); }
-  if (domain === 'context-memory') return module.renderContextMemoryView(module.buildContextMemoryView());
-  if (domain === 'evidence') return module.renderEvidenceView(module.buildEvidenceView());
-  if (domain === 'intelligence') return module.renderIntelligenceView(module.buildIntelligenceView());
-  if (domain === 'trust-security') return module.renderTrustSecurityView(module.buildTrustSecurityView());
-  if (domain === 'governance') return module.renderGovernanceView(module.buildGovernanceView());
-  if (domain === 'extensions') return module.renderExtensionsView(module.buildExtensionsView());
-  if (domain === 'autonomy') return module.renderAutonomyView(module.buildAutonomyView());
-  if (domain === 'release') return module.renderReleaseView(module.buildReleaseView());
-  return module.renderPlatformView(module.buildPlatformView(), domain);
+export function renderControlPlaneDomain(domain, module, { language = 'en' } = {}) {
+  if (domain === 'capabilities') return module.renderCapabilitiesView(module.buildCapabilitiesViewModel({ language }));
+  if (domain === 'agent-kernel') return module.renderAgentKernelView(module.buildAgentKernelView(), { language });
+  if (domain === 'overview') return module.renderOverviewView(module.buildOverviewView(), { language });
+  if (domain === 'operations') return module.renderOperationsView(module.buildOperationsView(), { language });
+  if (domain === 'runtime') { const model = module.createRuntimeView(); return module.renderRuntimeView(model.snapshot(), { language }); }
+  if (domain === 'context-memory') return module.renderContextMemoryView(module.buildContextMemoryView(), { language });
+  if (domain === 'evidence') return module.renderEvidenceView(module.buildEvidenceView(), { language });
+  if (domain === 'intelligence') return module.renderIntelligenceView(module.buildIntelligenceView(), { language });
+  if (domain === 'trust-security') return module.renderTrustSecurityView(module.buildTrustSecurityView(), { language });
+  if (domain === 'governance') return module.renderGovernanceView(module.buildGovernanceView(), { language });
+  if (domain === 'extensions') return module.renderExtensionsView(module.buildExtensionsView(), { language });
+  if (domain === 'autonomy') return module.renderAutonomyView(module.buildAutonomyView(), { language });
+  if (domain === 'release') return module.renderReleaseView(module.buildReleaseView(), { language });
+  return module.renderPlatformView(module.buildPlatformView(), domain, { language });
 }

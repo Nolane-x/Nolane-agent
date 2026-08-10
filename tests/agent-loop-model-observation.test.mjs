@@ -19,8 +19,8 @@ function forge() {
 
 test('AgentLoop automatically records successful and failed provider observations without exposing prompts', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-model-observation-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'store.db')); t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const task = store.createTask({ projectId: project.id, title: 'T', objective: 'Observe provider execution.' });
   const providers = new ProviderRegistry();

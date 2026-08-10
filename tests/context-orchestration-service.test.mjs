@@ -9,13 +9,13 @@ import { ContextOrchestrationService } from '../src/context/context-orchestratio
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-context-orchestration-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const service = new ContextOrchestrationService({
     file: path.join(root, 'orchestration.db'),
     kernel: new ContextOrchestrationKernel({ clock: () => Date.parse('2026-07-29T09:00:00.000Z'), budgets: { planner: 200 } }),
     clock: () => '2026-07-29T09:00:00.000Z',
   });
   t.after(() => service.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   return { service };
 }
 

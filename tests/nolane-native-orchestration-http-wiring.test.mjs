@@ -11,12 +11,13 @@ const auth = (options = {}) => ({ ...options, headers: { authorization: 'Bearer 
 
 test('canonical orchestration API delegates only typed bounded operations', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-orchestration-http-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(path.join(root, 'index.html'), '<!doctype html>');
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
   const calls = [];
+  let listOptions;
   const nativeOrchestration = {
-    listSkills: async () => [{ id: 'repair' }],
+    listSkills: async (options) => (listOptions = options, [{ id: 'repair' }]),
+    skillCatalog: async (options) => (listOptions = options, { schema: 'nolane.agent.skill-hub-catalog.v1', readOnly: true, skills: [{ id: 'forgeos:v2:repair' }], counts: { total: 1 } }),
     loadSkill: async (id, body) => (calls.push(['load', id, body]), { id, receiptSha256: 'a'.repeat(64) }),
     spawnSubagent: (body) => (calls.push(['spawn', body]), { agentId: body.agentId, status: 'running' }),
     completeSubagent: (id, body) => (calls.push(['complete', id, body]), { handoffSha256: 'b'.repeat(64) }),
@@ -26,8 +27,15 @@ test('canonical orchestration API delegates only typed bounded operations', asyn
   };
   const server = await createHttpServer({ config: { host: '127.0.0.1', port: 0, authToken: 'token' }, store, providers: new ProviderRegistry(), missionRunner: {}, nativeOrchestration, uiRoot: root });
   t.after(() => server.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   assert.equal((await fetch(`${server.url}/api/nolane/orchestration/skills`)).status, 401);
-  assert.equal((await (await fetch(`${server.url}/api/nolane/orchestration/skills`, auth())).json())[0].id, 'repair');
+  assert.equal((await (await fetch(`${server.url}/api/nolane/orchestration/skills?source=forge-os&catalog=v2&q=inspect&limit=7`, auth())).json())[0].id, 'repair');
+  assert.deepEqual(listOptions, { source: 'forge-os', catalog: 'v2', query: 'inspect', limit: 7 });
+  const hub = await (await fetch(`${server.url}/api/skills/catalog?source=forge-os&catalog=v2&q=inspect&limit=7`, auth())).json();
+  assert.equal(hub.schema, 'nolane.agent.skill-hub-catalog.v1');
+  assert.equal(hub.readOnly, true);
+  assert.equal(hub.skills[0].id, 'forgeos:v2:repair');
+  assert.deepEqual(listOptions, { source: 'forge-os', catalog: 'v2', query: 'inspect', limit: 7 });
   assert.equal((await fetch(`${server.url}/api/nolane/orchestration/subagents`, auth({ method: 'POST', body: JSON.stringify({ agentId: 'a1' }) }))).status, 201);
   assert.equal((await fetch(`${server.url}/api/nolane/orchestration/messages`, auth({ method: 'POST', body: JSON.stringify({ channel: 'local', text: 'hello' }) }))).status, 201);
   assert.equal(calls[0][0], 'spawn');
@@ -38,5 +46,6 @@ test('application opens and passes Nolane native orchestration service', async (
   assert.match(source, /NolaneNativeOrchestrationService/);
   assert.match(source, /const nativeOrchestration = new NolaneNativeOrchestrationService\(/);
   assert.match(source, /await nativeOrchestration\.open\(\)/);
+  assert.match(source, /forgeOsRoots: \[config\.forgeOsRoot\]/);
   assert.match(source, /nativeOrchestration,/);
 });

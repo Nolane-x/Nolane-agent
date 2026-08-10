@@ -18,7 +18,10 @@ async function fixture(t) {
     workspaceRoot: root,
     allowedCommands: [process.execPath],
     allowedEnv: ['FORGE_TEST_VISIBLE'],
-    timeoutMs: 500,
+    // Keep the ordinary process budget tolerant of Windows process-spawn
+    // contention in the bounded integration pool; the explicit 50ms timeout
+    // test below still exercises the kill path.
+    timeoutMs: 5_000,
     maxOutputBytes: 2_048,
   });
   return { root, broker };

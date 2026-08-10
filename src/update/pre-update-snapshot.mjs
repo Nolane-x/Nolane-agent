@@ -63,7 +63,8 @@ export class PreUpdateSnapshotService {
       ensureInside(root, destination);
       await mkdir(path.dirname(destination), { recursive: true, mode: 0o700 });
       await copyFile(source, destination);
-      entries.push(Object.freeze({ dataClass, sourceRelative: relative, snapshotRelative: relative, bytes: info.size, sha256: await sha256File(destination) }));
+      const canonicalRelative = String(relative).replaceAll('\\', '/');
+      entries.push(Object.freeze({ dataClass, sourceRelative: canonicalRelative, snapshotRelative: canonicalRelative, bytes: info.size, sha256: await sha256File(destination) }));
     };
 
     const copyTree = async (sourceRoot, relativeRoot, dataClass) => {

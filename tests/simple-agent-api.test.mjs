@@ -14,9 +14,9 @@ function auth(init = {}) {
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-simple-agent-api-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'App', workspaceRoot: root });
   const calls = [];
   const snapshot = (missionId) => ({
@@ -97,9 +97,9 @@ test('outcome-first run API exposes pause, resume, stop, retry, recent runs, and
 
 test('provider connection API exposes readiness, configure, login, test, logout, and delete without returning secrets', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-http-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const calls = [];
   const providerConnections = {
     list() { calls.push(['list']); return [{ id: 'codex-app-server', label: 'Codex', authenticated: false }]; },
@@ -137,9 +137,9 @@ test('provider connection API exposes readiness, configure, login, test, logout,
 
 test('agent run API preserves provider_setup_required as an actionable 409', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-preflight-http-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'App', workspaceRoot: root });
   const runCoordinator = {
     createRun() { throw Object.assign(new Error('Kết nối AI trước khi bắt đầu.'), { statusCode: 409, code: 'provider_setup_required', readiness: { ready: false, readyProviders: [] } }); },

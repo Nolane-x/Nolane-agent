@@ -11,7 +11,6 @@ import { StudioStore } from '../src/storage/studio-store.mjs';
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-digital-twin-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await mkdir(path.join(root, 'src'), { recursive: true });
   await mkdir(path.join(root, 'tests'), { recursive: true });
   await mkdir(path.join(root, 'config'), { recursive: true });
@@ -19,7 +18,8 @@ async function fixture(t) {
   await writeFile(path.join(root, 'tests', 'auth.test.mjs'), "import { validateSession } from '../src/auth.mjs';\nassert.equal(validateSession('x'), true);\n");
   await writeFile(path.join(root, 'config', 'app.json'), '{"sessionTtl":60}\n');
   await writeFile(path.join(root, 'package.json'), JSON.stringify({ name: 'twin-fixture', scripts: { build: 'node build.mjs', test: 'node --test' }, dependencies: { zod: '^4.0.0' } }));
-  const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
+  const store = new StudioStore(path.join(root, 'studio.db'));
+  t.after(async () => { store.close(); await rm(root, { recursive: true, force: true }); });
   const project = store.createProject({ id: 'twin_project', name: 'Twin', workspaceRoot: root });
   await new RepositoryIndex({ store }).index(project);
   await new SecureSemanticIndex({ store }).index(project, { deferEmbeddings: true, branchContext: { branch: 'feature/twin', headSha: 'a'.repeat(40), dirtyHash: 'clean' } });

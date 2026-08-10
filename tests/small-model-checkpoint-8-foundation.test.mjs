@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { SmallModelFoundationService } from '../src/small-model/foundation-service.mjs';
 
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 test('foundation prepares and promotes checkpoint 8 solver portfolio separately', async () => {
   const service = new SmallModelFoundationService();

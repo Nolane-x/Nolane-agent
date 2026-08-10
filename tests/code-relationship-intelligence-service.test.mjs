@@ -14,7 +14,6 @@ const execFileAsync = promisify(execFile);
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-code-relationships-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await mkdir(path.join(root, 'src'), { recursive: true });
   await mkdir(path.join(root, 'docs'), { recursive: true });
   await writeFile(path.join(root, 'src', 'base.ts'), `export class BaseService {}\nexport interface Auditable {}\nexport class Duplicate {}\n`);
@@ -34,6 +33,7 @@ async function fixture(t) {
 
   const store = new StudioStore(path.join(root, '.forge-test.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ id: 'project_relationships', name: 'Relationships', workspaceRoot: root });
   const graph = new CodebaseKnowledgeGraphService({ store, maxFiles: 100 });
   const service = new CodeRelationshipIntelligenceService({ store, codebaseKnowledge: graph, now: () => '2026-07-29T00:00:00.000Z' });

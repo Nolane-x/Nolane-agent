@@ -13,7 +13,6 @@ import { StudioStore } from '../src/storage/studio-store.mjs';
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-semantic-dependency-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await mkdir(path.join(root, 'src'), { recursive: true });
   await mkdir(path.join(root, 'tests'), { recursive: true });
   await writeFile(path.join(root, 'src', 'auth.mjs'), `export function authenticateSession(credentials) {\n  return Boolean(credentials?.token);\n}\n`);
@@ -25,6 +24,7 @@ async function fixture(t) {
 
   const store = new StudioStore(path.join(root, '.forge-test.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ id: 'project_semdep', name: 'Semantic Dependency', workspaceRoot: root });
   const graph = new CodebaseKnowledgeGraphService({ store });
   const repository = new AdaptiveRepositoryIntelligence({

@@ -32,8 +32,8 @@ test('TaskGraph rejects cycles and path ownership conflicts, then orders indepen
 
 test('TaskScheduler leases ready tasks and rejects stale fencing tokens', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-scheduler-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const mission = store.createMission({ projectId: project.id, objective: 'Build' });
   const first = store.createTask({ id: 'task_first', projectId: project.id, missionId: mission.id, title: 'First', objective: 'First', status: 'ready', allowedPaths: ['src/**'] });

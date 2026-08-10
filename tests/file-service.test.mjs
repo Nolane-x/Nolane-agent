@@ -10,7 +10,6 @@ import { FileService } from '../src/workroom/file-service.mjs';
 
 async function setup(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-file-service-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await mkdir(path.join(root, 'src')); await mkdir(path.join(root, 'empty'));
   await writeFile(path.join(root, 'src', 'app.js'), 'export const value = 1;\n');
   await writeFile(path.join(root, 'binary.bin'), Buffer.from([0, 1, 2, 3]));
@@ -19,8 +18,12 @@ async function setup(t) {
   t.after(() => rm(outside, { recursive: true, force: true }));
   await writeFile(path.join(outside, 'escape.txt'), 'escape');
   await symlink(outside, path.join(root, 'linked'));
-  const store = new StudioStore(path.join(root, '.studio.db')); t.after(() => store.close());
+  const store = new StudioStore(path.join(root, '.studio.db'));
   const project = store.createProject({ name: 'test', workspaceRoot: root });
+  t.after(async () => {
+    store.close();
+    await rm(root, { recursive: true, force: true });
+  });
   const service = new FileService({
     store,
     maxFileBytes: 128,

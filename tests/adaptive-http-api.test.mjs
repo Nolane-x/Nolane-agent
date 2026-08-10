@@ -12,9 +12,8 @@ const auth = (options = {}) => ({ ...options, headers: { authorization: 'Bearer 
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-adaptive-http-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(path.join(root, 'index.html'), '<!doctype html>');
-  const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
+  const store = new StudioStore(path.join(root, 'studio.db'));
   const calls = [];
   const adaptiveIntelligence = {
     async status() { return { version: '1.0.0', capabilities: ['secure-semantic-index'] }; },
@@ -34,7 +33,11 @@ async function fixture(t) {
     config: { host: '127.0.0.1', port: 0, authToken: 'test-token' }, store, providers,
     missionRunner: {}, adaptiveIntelligence, uiRoot: root,
   });
-  t.after(() => service.close());
+  t.after(async () => {
+    await service.close();
+    await store.close();
+    await rm(root, { recursive: true, force: true });
+  });
   return { ...service, calls };
 }
 
@@ -62,20 +65,23 @@ test('adaptive intelligence API exposes authenticated semantic, tool, context, m
 });
 
 test('adaptive API is unavailable when the application service is not configured', async (t) => {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-adaptive-http-off-')); t.after(() => rm(root, { recursive: true, force: true }));
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-adaptive-http-off-'));
   await writeFile(path.join(root, 'index.html'), '<!doctype html>');
-  const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
-  const service = await createHttpServer({ config: { host: '127.0.0.1', port: 0, authToken: 'test-token' }, store, providers: new ProviderRegistry(), missionRunner: {}, uiRoot: root }); t.after(() => service.close());
+  const store = new StudioStore(path.join(root, 'studio.db'));
+  const service = await createHttpServer({ config: { host: '127.0.0.1', port: 0, authToken: 'test-token' }, store, providers: new ProviderRegistry(), missionRunner: {}, uiRoot: root });
+  t.after(async () => {
+    await service.close();
+    await store.close();
+    await rm(root, { recursive: true, force: true });
+  });
   const response = await fetch(`${service.url}/api/adaptive/status`, auth());
   assert.equal(response.status, 503);
 });
 
 test('legacy repository search awaits adaptive results and preserves the array response contract', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-adaptive-legacy-search-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(path.join(root, 'index.html'), '<!doctype html>');
   const store = new StudioStore(path.join(root, 'studio.db'));
-  t.after(() => store.close());
   const repositoryIndex = {
     async search(projectId, query, options) {
       assert.equal(projectId, 'p1');
@@ -92,7 +98,11 @@ test('legacy repository search awaits adaptive results and preserves the array r
     repositoryIndex,
     uiRoot: root,
   });
-  t.after(() => service.close());
+  t.after(async () => {
+    await service.close();
+    await store.close();
+    await rm(root, { recursive: true, force: true });
+  });
   const response = await fetch(`${service.url}/api/repository/search?projectId=p1&q=login&limit=5`, auth());
   assert.equal(response.status, 200);
   assert.deepEqual(await response.json(), [{ path: 'src/auth.mjs', score: 0.9 }]);

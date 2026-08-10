@@ -14,9 +14,8 @@ const exec = promisify(execFile);
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-task-workspace-'));
   const data = await mkdtemp(path.join(os.tmpdir(), 'forge-task-worktrees-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
-  t.after(() => rm(data, { recursive: true, force: true }));
   await exec('git', ['init'], { cwd: root });
+  await exec('git', ['config', 'core.autocrlf', 'false'], { cwd: root });
   await exec('git', ['config', 'user.email', 'forge@example.test'], { cwd: root });
   await exec('git', ['config', 'user.name', 'Forge Test'], { cwd: root });
   await mkdir(path.join(root, 'src'));
@@ -26,6 +25,8 @@ async function fixture(t) {
 
   const store = new StudioStore(path.join(data, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(data, { recursive: true, force: true }));
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const mission = store.createMission({ projectId: project.id, objective: 'Build', status: 'running' });
   const scout = store.createTask({ id: 'scout', projectId: project.id, missionId: mission.id, title: 'Scout', objective: 'Inspect', role: 'scout', status: 'ready', allowedPaths: ['**'] });

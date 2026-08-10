@@ -27,12 +27,12 @@ async function decisionInput(scenarioGroup) {
 
 test('authenticated checkpoint 6 HTTP workflow separates train promotion inference and decision support', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-checkpoint-6-http-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(path.join(root, 'index.html'), '<!doctype html>');
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
   const foundation = new SmallModelFoundationService();
   const service = await createHttpServer({ config: { host: '127.0.0.1', port: 0, authToken: 'nolane-token' }, store, providers: new ProviderRegistry(), missionRunner: {}, smallModelFoundation: foundation, uiRoot: root });
   t.after(() => service.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
 
   const statusUrl = `${service.url}/api/small-model/foundation/model/checkpoint-6/status`;
   assert.equal((await fetch(statusUrl)).status, 401);

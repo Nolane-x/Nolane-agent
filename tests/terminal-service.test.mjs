@@ -12,9 +12,11 @@ const fixture = path.resolve('tests/fixtures/fake-pty-host.mjs');
 async function setup(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-terminal-'));
   await mkdir(path.join(root, 'nested'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const client = new PtyHostClient({ command: process.execPath, args: [fixture], requestTimeoutMs: 2_000, maxFrameBytes: 64 * 1024 });
-  t.after(() => client.close());
+  t.after(async () => {
+    await client.close();
+    await rm(root, { recursive: true, force: true });
+  });
   await client.start();
   const service = new TerminalService({ client, workspaceRoot: root, allowedShells: [process.execPath], maxSessions: 2 });
   return { root, client, service };
@@ -60,7 +62,9 @@ test('PTY startup timeout is independent from ordinary request timeout during pr
     command: process.execPath,
     args: ['-e', script],
     requestTimeoutMs: 50,
-    startupTimeoutMs: 500,
+    // Give the intentionally delayed host enough room to emit its malformed
+    // frame when this file runs beside packaging/integration processes.
+    startupTimeoutMs: 5_000,
     maxFrameBytes: 512,
   });
   t.after(() => client.close());

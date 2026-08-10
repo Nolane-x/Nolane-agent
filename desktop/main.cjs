@@ -31,6 +31,34 @@ let restartHistory = [];
 function appRoot() { return app.getAppPath(); }
 function preloadPath() { return path.join(appRoot(), 'desktop', 'preload.cjs'); }
 
+function desktopLanguage() {
+  const configured = String(process.env.NOLANE_AGENT_LOCALE ?? '').trim().toLowerCase();
+  if (configured) return configured.startsWith('vi') ? 'vi' : 'en';
+  return String(app.getLocale?.() ?? '').toLowerCase().startsWith('vi') ? 'vi' : 'en';
+}
+
+function desktopCopy(key) {
+  const vi = {
+    chooseProject: 'Chọn thư mục dự án cho Nolane Agent',
+    renderStopped: (reason) => `Giao diện bị dừng (${reason}). Nolane Agent đang khởi động lại cửa sổ.`,
+    runtimeRecoveryTitle: 'Nolane Agent đang khôi phục runtime',
+    runtimeRecoveryHint: 'Mission và checkpoint đã được lưu. Ứng dụng sẽ tự thử lại; không cần giao việc lại từ đầu.',
+    runtimeUnexpectedExit: (code) => `Agent runtime kết thúc ngoài dự kiến với mã ${code}.`,
+    runtimeCheckpoint: 'Đang mở lại agent runtime từ checkpoint gần nhất…',
+    runtimeStarting: 'Đang khởi động agent runtime…',
+  };
+  const en = {
+    chooseProject: 'Choose a project folder for Nolane Agent',
+    renderStopped: (reason) => `The interface stopped (${reason}). Nolane Agent is restarting the window.`,
+    runtimeRecoveryTitle: 'Nolane Agent is recovering the runtime',
+    runtimeRecoveryHint: 'Your mission and checkpoint were saved. The app will retry automatically; you do not need to start over.',
+    runtimeUnexpectedExit: (code) => `The agent runtime exited unexpectedly with code ${code}.`,
+    runtimeCheckpoint: 'Reopening the agent runtime from the latest checkpoint…',
+    runtimeStarting: 'Starting the agent runtime…',
+  };
+  return (desktopLanguage() === 'vi' ? vi : en)[key];
+}
+
 function safeSender(event) {
   const url = event?.senderFrame?.url ?? event?.sender?.getURL?.() ?? '';
   return Boolean(runtimeOrigin && isAllowedRuntimeUrl(url, runtimeOrigin));
@@ -39,7 +67,7 @@ function safeSender(event) {
 function installIpc() {
   const selectDirectory = async (event) => {
     if (!safeSender(event)) throw new Error('Untrusted IPC sender');
-    const result = await dialog.showOpenDialog(mainWindow, { properties: ['openDirectory', 'createDirectory'], title: 'Chọn thư mục dự án cho Nolane Agent' });
+    const result = await dialog.showOpenDialog(mainWindow, { properties: ['openDirectory', 'createDirectory'], title: desktopCopy('chooseProject') });
     return result.canceled ? null : (result.filePaths[0] ?? null);
   };
   ipcMain.handle('nolane:select-directory', selectDirectory);
@@ -122,7 +150,7 @@ function createWindow() {
     return { action: 'deny' };
   });
   win.webContents.on('render-process-gone', (_event, details) => {
-    if (!quitting) showRuntimeFailure(`Giao diện bị dừng (${details.reason}). Nolane Agent đang khởi động lại cửa sổ.`);
+    if (!quitting) showRuntimeFailure(desktopCopy('renderStopped')(details.reason));
   });
   win.on('closed', () => { if (mainWindow === win) mainWindow = null; });
   return win;
@@ -130,7 +158,7 @@ function createWindow() {
 
 function errorDocument(message) {
   const safe = String(message).replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
-  return `data:text/html;charset=utf-8,${encodeURIComponent(`<!doctype html><html><meta charset="utf-8"><style>body{margin:0;background:#1e1e1e;color:#ddd;font:14px system-ui;display:grid;place-items:center;height:100vh}.card{max-width:560px;padding:28px;border:1px solid #3c3c42;border-radius:16px;background:#242428}h1{font-size:20px;color:#fff}p{line-height:1.6;color:#aaa}</style><div class="card"><h1>Nolane Agent đang khôi phục runtime</h1><p>${safe}</p><p>Mission và checkpoint đã được lưu. Ứng dụng sẽ tự thử lại; không cần giao việc lại từ đầu.</p></div></html>`)}`;
+  return `data:text/html;charset=utf-8,${encodeURIComponent(`<!doctype html><html><meta charset="utf-8"><style>body{margin:0;background:#1e1e1e;color:#ddd;font:14px system-ui;display:grid;place-items:center;height:100vh}.card{max-width:560px;padding:28px;border:1px solid #3c3c42;border-radius:16px;background:#242428}h1{font-size:20px;color:#fff}p{line-height:1.6;color:#aaa}</style><div class="card"><h1>${desktopCopy('runtimeRecoveryTitle')}</h1><p>${safe}</p><p>${desktopCopy('runtimeRecoveryHint')}</p></div></html>`)}`;
 }
 
 function showRuntimeFailure(message) {
@@ -162,7 +190,7 @@ async function startRuntimeAndLoad({ recovering = false } = {}) {
       runtimeFile,
       modulePath: path.join(root, 'src', 'app.mjs'),
       cwd: root,
-      startupTimeoutMs: 20_000,
+      startupTimeoutMs: Number(process.env.NOLANE_AGENT_STARTUP_TIMEOUT_MS) || 45_000,
       maxRestarts: 2,
       env: {
         ...process.env,
@@ -183,12 +211,12 @@ async function startRuntimeAndLoad({ recovering = false } = {}) {
       },
       onUnexpectedExit: ({ code }) => {
         if (quitting) return;
-        showRuntimeFailure(`Agent runtime kết thúc ngoài dự kiến với mã ${code}.`);
+        showRuntimeFailure(desktopCopy('runtimeUnexpectedExit')(code));
         if (boundedRestartAllowed()) setTimeout(() => startRuntimeAndLoad({ recovering: true }).catch((error) => showRuntimeFailure(error.message)), 700);
       },
     });
   }
-  if (recovering) showRuntimeFailure('Đang mở lại agent runtime từ checkpoint gần nhất…');
+  if (recovering) showRuntimeFailure(desktopCopy('runtimeCheckpoint'));
   const runtime = await supervisor.start();
   runtimeOrigin = new URL(runtime.url).origin;
   runtimeToken = runtime.token;
@@ -220,7 +248,7 @@ app.whenReady().then(async () => {
   });
   installIpc();
   mainWindow = createWindow();
-  showRuntimeFailure('Đang khởi động agent runtime…');
+  showRuntimeFailure(desktopCopy('runtimeStarting'));
   try { await startRuntimeAndLoad(); } catch (error) { showRuntimeFailure(error?.message ?? error); }
 });
 

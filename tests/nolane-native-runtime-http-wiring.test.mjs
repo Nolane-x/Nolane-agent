@@ -11,10 +11,10 @@ const auth = (options = {}) => ({ ...options, headers: { authorization: 'Bearer 
 
 test('canonical Nolane runtime API exposes authenticated preflight and lifecycle controls', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-native-http-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(path.join(root, 'index.html'), '<!doctype html>');
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const calls = [];
   const nativeRuntime = {
     preflight() { calls.push('preflight'); return { ready: true, protocol: 'nolane-agent-runtime/1' }; },

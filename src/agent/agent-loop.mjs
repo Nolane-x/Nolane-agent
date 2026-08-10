@@ -244,7 +244,7 @@ export class AgentLoop {
 
   #event(type, payload, refs) { return this.store.appendEvent(createEvent(type, payload, refs)); }
 
-  async run(task, { providerId, signal = null, budgets = {}, retryDelaysMs = [250, 1_000], tools = CORE_TOOL_SCHEMAS, model = 'gpt-5.6' } = {}) {
+  async run(task, { providerId, signal = null, budgets = {}, retryDelaysMs = [250, 1_000], tools = CORE_TOOL_SCHEMAS, model = undefined } = {}) {
     const budget = new RunBudget({ ...budgets, signal });
     budget.assertActive();
     const providerOptions = {
@@ -568,13 +568,14 @@ ${JSON.stringify(dependency.metadata.handoff).slice(0, 12_000)}`,
         evidenceReferences.push(reference);
         this.#event('agent.evidence-context.selected', { id: reference.id, sha256: reference.sha256, metadata: reference.metadata ?? {} }, refs);
       }
+      const contextModel = model ?? provider.model ?? 'gpt-5.6';
       const contextPack = await this.forge.buildContextPack({
         query: task.objective,
         task: task.objective,
         domains: task.metadata?.domains ?? ['ai-agent-engineering'],
         taskClass: task.metadata?.taskClass ?? 'implementation',
         tools: ['filesystem', 'shell', 'git', 'node', 'planning', ...(mcpToolNames.size ? ['mcp'] : []), ...(browserToolNames.size ? ['browser'] : []), ...(goalToolNames.size ? ['goal-management'] : []), ...(forgeToolNames.size ? ['forgeos'] : []), ...(operatingPlaneToolNames.size ? ['agent-operating-plane'] : []), ...(adaptiveIntelligenceToolNames.size ? ['adaptive-intelligence'] : [])],
-        model,
+        model: contextModel,
         code: [...screenItems(task.metadata?.code, 'repository', 'task-code'), ...repositoryCode],
         memory: [...screenItems(task.metadata?.memory, 'memory', 'task-memory'), ...activeMemory],
         references: [...screenItems(task.metadata?.references, 'reference', 'task-reference'), ...hookReferences, ...instructionReferences, ...instructionPolicyReferences, ...pluginReferences, ...dependencyReferences, ...evidenceReferences],
@@ -600,7 +601,7 @@ ${JSON.stringify(dependency.metadata.handoff).slice(0, 12_000)}`,
           await runHook('BeforeModel', { turn, providerId: provider.id, messageCount: composed.messages.length, harnessProfileId: composed.profileId, harnessRevision: composed.profileRevision });
           const requestStartedAt = performance.now();
           try {
-            response = await provider.complete({ messages: composed.messages, tools: composed.tools, signal, leaseContext: { missionId: task.missionId, taskId: task.id, role: task.role ?? 'executor', harnessProfileId: composed.profileId, harnessRevision: composed.profileRevision } });
+            response = await provider.complete({ messages: composed.messages, tools: composed.tools, ...(model ? { model } : {}), signal, leaseContext: { missionId: task.missionId, taskId: task.id, role: task.role ?? 'executor', harnessProfileId: composed.profileId, harnessRevision: composed.profileRevision } });
             this.router?.recordSuccess(provider.id);
             try {
               const usage = response?.usage ?? {};

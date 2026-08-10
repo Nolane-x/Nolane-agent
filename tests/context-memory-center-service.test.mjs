@@ -16,13 +16,13 @@ const sha = (value) => createHash('sha256').update(value).digest('hex');
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-context-memory-center-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
   const project = store.createProject({ name: 'Context Project', workspaceRoot: root });
   const contextStore = new DynamicContextStore({ root: path.join(root, 'artifacts'), previewBytes: 96 });
   const history = new ContextHistoryArchive({ file: path.join(root, 'history.db'), contextStore, clock: () => '2026-07-29T00:00:00.000Z' });
   t.after(() => history.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const memory = new MemoryService({ store, memoryRoot: path.join(root, 'memory') });
   const sidecar = new ProjectMemorySidecar({ store, memoryService: memory, clock: () => Date.parse('2026-07-29T00:00:00.000Z') });
   const source = 'export const buildCommand = "npm test";\n';

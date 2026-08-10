@@ -15,7 +15,7 @@ test('field ledger is durable, credential-safe, and resolves source precedence',
   const resolved = store.resolveFact('acme/m', 'context.maxOutputTokens');
   assert.equal(resolved.status, 'fresh');
   assert.equal(resolved.selected.value, 16_000);
-  assert.equal((await stat(file)).mode & 0o777, 0o600);
+  if (process.platform !== 'win32') assert.equal((await stat(file)).mode & 0o777, 0o600);
   assert.doesNotMatch(await readFile(file, 'utf8'), /must-not-persist/);
   const reopened = new ModelTruthStore({ file, now: () => Date.parse('2026-08-04T01:00:00.000Z') });
   assert.equal(reopened.resolveFact('acme/m', 'context.maxOutputTokens').selected.value, 16_000);

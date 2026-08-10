@@ -12,13 +12,13 @@ const auth = (options = {}) => ({ ...options, headers: { authorization: 'Bearer 
 const episode = { id:'ep-http', kind:'tool-policy', state:{taskType:'repair'}, action:{type:'test',parameters:{}}, expectedEffect:{criterionDelta:1}, actualEffect:{criterionDelta:1,changed:true}, verifier:{valid:true,rewardHacking:false}, cost:{tokens:1,rssMbSeconds:1} };
 
 test('small-model foundation HTTP API is authenticated and exposes real receipts without trained-model claims', async (t) => {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-small-http-')); t.after(() => rm(root,{recursive:true,force:true}));
+  const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-small-http-'));
   await writeFile(path.join(root,'index.html'),'<!doctype html>');
   const store = new StudioStore(path.join(root,'studio.db')); t.after(()=>store.close());
   const foundation = new SmallModelFoundationService();
   foundation.verifiers.register({ id:'deterministic', soundnessScope:['contract'], readOnly:true, independent:true, evaluate:()=>({pass:true,criterionDelta:1}) });
   const service = await createHttpServer({ config:{host:'127.0.0.1',port:0,authToken:'nolane-token'}, store, providers:new ProviderRegistry(), missionRunner:{}, smallModelFoundation:foundation, uiRoot:root });
-  t.after(()=>service.close());
+  t.after(()=>service.close()); t.after(() => rm(root,{recursive:true,force:true}));
   assert.equal((await fetch(`${service.url}/api/small-model/foundation/status`)).status,401);
   const status = await (await fetch(`${service.url}/api/small-model/foundation/status`,auth())).json();
   assert.equal(status.foundationReady,true); assert.equal(status.trainedModel,false); assert.equal(status.claims.frontierParity,false);
@@ -42,12 +42,12 @@ test('application wires the foundation service into the authenticated HTTP serve
 });
 
 test('authenticated HTTP API trains and governs bounded specialist artifacts', async (t) => {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-small-model-http-')); t.after(() => rm(root,{recursive:true,force:true}));
+  const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-small-model-http-'));
   await writeFile(path.join(root,'index.html'),'<!doctype html>');
   const store = new StudioStore(path.join(root,'studio.db')); t.after(()=>store.close());
   const foundation = new SmallModelFoundationService();
   const service = await createHttpServer({ config:{host:'127.0.0.1',port:0,authToken:'nolane-token'}, store, providers:new ProviderRegistry(), missionRunner:{}, smallModelFoundation:foundation, uiRoot:root });
-  t.after(()=>service.close());
+  t.after(()=>service.close()); t.after(() => rm(root,{recursive:true,force:true}));
   const trainingExamples = Array.from({ length: 12 }, (_, index) => [
     { state: { phase: 'discovery', hasCandidate: false, variant: index }, action: { type: 'search' } },
     { state: { phase: 'verification', patchReady: true, variant: index }, action: { type: 'test' } },
@@ -73,12 +73,12 @@ test('authenticated HTTP API trains and governs bounded specialist artifacts', a
 });
 
 test('authenticated HTTP API bootstraps the four-specialist suite and serves fail-closed decision support', async (t) => {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-specialist-suite-http-')); t.after(() => rm(root,{recursive:true,force:true}));
+  const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-specialist-suite-http-'));
   await writeFile(path.join(root,'index.html'),'<!doctype html>');
   const store = new StudioStore(path.join(root,'studio.db')); t.after(()=>store.close());
   const foundation = new SmallModelFoundationService();
   const service = await createHttpServer({ config:{host:'127.0.0.1',port:0,authToken:'nolane-token'}, store, providers:new ProviderRegistry(), missionRunner:{}, smallModelFoundation:foundation, uiRoot:root });
-  t.after(()=>service.close());
+  t.after(()=>service.close()); t.after(() => rm(root,{recursive:true,force:true}));
 
   const before = await (await fetch(`${service.url}/api/small-model/foundation/model/suite-status`, auth())).json();
   assert.equal(before.ready, false);

@@ -15,6 +15,7 @@ const RUNTIME_EXECUTABLE = Object.freeze({
 const HIDDEN = /(?:chain.?of.?thought|hidden.?reasoning|reasoning.?trace|private.?scratchpad)/i;
 
 function sha256(value) { return createHash('sha256').update(value).digest('hex'); }
+function canonicalText(value) { return String(value).replace(/\r\n?/g, '\n'); }
 function scanPublic(value, cursor = '$') {
   if (!value || typeof value !== 'object') return;
   for (const [key, child] of Object.entries(value)) {
@@ -205,8 +206,8 @@ export async function writeMutationRecoveryDataset({ outputDir, result } = {}) {
   await mkdir(outputDir, { recursive: true });
   const episodes = [...result.episodes].sort((a, b) => a.id.localeCompare(b.id));
   const scenarios = [...result.scenarios].sort((a, b) => a.id.localeCompare(b.id));
-  const episodeText = episodes.map((entry) => canonicalStringify(entry)).join('\n') + (episodes.length ? '\n' : '');
-  const scenarioText = `${JSON.stringify(scenarios, null, 2)}\n`;
+  const episodeText = canonicalText(episodes.map((entry) => canonicalStringify(entry)).join('\n') + (episodes.length ? '\n' : ''));
+  const scenarioText = canonicalText(`${JSON.stringify(scenarios, null, 2)}\n`);
   await writeFile(path.join(outputDir, 'recovery-episodes.jsonl'), episodeText);
   await writeFile(path.join(outputDir, 'recovery-scenarios.json'), scenarioText);
   const base = {
@@ -231,15 +232,17 @@ export async function verifyMutationRecoveryDataset({ outputDir } = {}) {
   ]);
   const receipt = JSON.parse(receiptText); const { receiptSha256, ...base } = receipt;
   if (canonicalSha256(base) !== receiptSha256) throw new Error('Mutation recovery receipt hash mismatch');
-  if (sha256(episodeText) !== receipt.recoveryEpisodesSha256 || sha256(scenarioText) !== receipt.recoveryScenariosSha256) throw new Error('Mutation recovery dataset hash mismatch');
-  const lines = episodeText.split(/\r?\n/).filter(Boolean);
+  const canonicalEpisodeText = canonicalText(episodeText);
+  const canonicalScenarioText = canonicalText(scenarioText);
+  if (sha256(canonicalEpisodeText) !== receipt.recoveryEpisodesSha256 || sha256(canonicalScenarioText) !== receipt.recoveryScenariosSha256) throw new Error('Mutation recovery dataset hash mismatch');
+  const lines = canonicalEpisodeText.split('\n').filter(Boolean);
   if (lines.length !== receipt.episodeCount) throw new Error('Mutation recovery episode count mismatch');
   const episodes = lines.map((line, index) => {
     const value = JSON.parse(line); const { receiptSha256: episodeHash, ...episodeBase } = value;
     if (canonicalSha256(episodeBase) !== episodeHash) throw new Error(`Mutation recovery episode ${index} hash mismatch`);
     return deepFreeze(value);
   });
-  const scenarios = JSON.parse(scenarioText);
+  const scenarios = JSON.parse(canonicalScenarioText);
   if (!Array.isArray(scenarios) || scenarios.length !== receipt.scenarioCount) throw new Error('Mutation recovery scenario count mismatch');
   if (episodes.filter((entry) => entry.state.recoveryPhase === 'mutation-failure').length !== receipt.mutationFailures) throw new Error('Mutation failure count mismatch');
   if (episodes.filter((entry) => entry.state.recoveryPhase === 'recovery-pass').length !== receipt.recoveryPasses) throw new Error('Recovery pass count mismatch');

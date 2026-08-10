@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { createHttpServer } from '../src/server/http-server.mjs';
 import { ProviderRegistry } from '../src/providers/provider-registry.mjs';
 import { StudioStore } from '../src/storage/studio-store.mjs';
@@ -18,7 +19,7 @@ const auth = (options = {}) => ({
     ...(options.headers ?? {}),
   },
 });
-const projectRoot = path.resolve(new URL('..', import.meta.url).pathname);
+const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 async function loadTypeScriptFiles() {
   const pack = await loadCheckpoint10TypeScriptPack({ root: projectRoot, id: 'transfer-c' });
@@ -37,10 +38,10 @@ async function loadContractFiles() {
 
 test('authenticated checkpoint 10 workflow remains pending until explicit promotion and executes only bounded migrations', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-checkpoint-10-http-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(path.join(root, 'index.html'), '<!doctype html>');
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const service = await createHttpServer({
     config: { host: '127.0.0.1', port: 0, authToken: 'nolane-token' },
     store,

@@ -52,12 +52,19 @@ export async function buildVsCodeExtension({ rootDir = process.cwd() } = {}) {
     await rm(path.join(project, 'extension', 'dist'), { recursive: true, force: true });
     await mkdir(path.join(project, 'extension', 'dist'), { recursive: true });
     const compiler = process.env.FORGE_TYPESCRIPT_COMPILER || 'tsc';
-    await execFileAsync(compiler, ['--project', config, '--pretty', 'false'], {
-      cwd: rootDir,
-      timeout: 60_000,
-      windowsHide: true,
-      maxBuffer: 2 * 1024 * 1024,
-    });
+    const compilerArgs = ['--project', config, '--pretty', 'false'];
+    const command = process.platform === 'win32' && /\.mjs$/i.test(compiler) ? process.execPath : compiler;
+    const args = command === compiler ? compilerArgs : [compiler, ...compilerArgs];
+    const compilerOptions = { cwd: rootDir, timeout: 60_000, windowsHide: true, maxBuffer: 2 * 1024 * 1024 };
+    try {
+      await execFileAsync(command, args, compilerOptions);
+    } catch (error) {
+      const fallback = path.resolve(rootDir, 'scripts', 'typescript-compiler.mjs');
+      if (compiler === 'tsc' && error?.code === 'ENOENT') {
+        await access(fallback);
+        await execFileAsync(process.execPath, [fallback, config], compilerOptions);
+      } else throw error;
+    }
     const outputs = [
       path.join(project, 'extension', 'dist', 'client.js'),
       path.join(project, 'extension', 'dist', 'extension.js'),

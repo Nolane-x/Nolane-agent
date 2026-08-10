@@ -13,10 +13,10 @@ import { ToolBroker } from '../src/execution/tool-broker.mjs';
 
 async function fixture(t, responses) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-loop-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(path.join(root, 'README.md'), 'hello');
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const task = store.createTask({ projectId: project.id, title: 'Inspect', objective: 'Inspect README and report.' });
   const calls = [];
@@ -91,9 +91,9 @@ test('AgentLoop stops on cancellation and budget exhaustion', async (t) => {
 
 test('AgentLoop auto-routes and falls back after a transient provider circuit opens', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-loop-router-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const task = store.createTask({ projectId: project.id, title: 'Build', objective: 'Build safely.' });
   const forge = {

@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { INTENT_PRESETS, createMissionRequest } from '../ui-v3/core/intent-presets.mjs';
-import { buildHomeViewModel, renderHomeView } from '../ui-v3/views/home/home-view.mjs';
+import { buildHomeViewModel, createHomeController, modelDeploymentKey, renderHomeView } from '../ui-v3/views/home/home-view.mjs';
 
 test('four intent presets map to enforceable backend boundaries', () => {
   assert.deepEqual(Object.keys(INTENT_PRESETS), ['ask', 'plan', 'build', 'verify']);
@@ -28,20 +29,125 @@ test('repository suggestions render only when backed by evidence', () => {
   assert.deepEqual(visible.suggestions.map((item) => item.title), ['Fix 3 tests']);
 });
 
-test('home composer submits registered provider IDs rather than profile keys', () => {
+test('home composer preserves a distinct deployment key for every provider model', () => {
   const models = [
-    ['codex/cli-selected', 'codex'],
-    ['claude/default', 'claude'],
-    ['gemini/default', 'gemini'],
-    ['opencode/default', 'opencode'],
-    ['codex-app-server/default', 'codex-app-server'],
-  ].map(([key, providerId]) => ({ key, providerId, displayName: key }));
+    { key: 'codex/cli-selected', providerId: 'codex', modelId: 'cli-selected', displayName: 'Codex selected' },
+    { key: 'claude/claude-sonnet', providerId: 'claude', modelId: 'claude-sonnet', displayName: 'Claude Sonnet' },
+    { key: 'gemini/gemini-2.5-pro', providerId: 'gemini', modelId: 'gemini-2.5-pro', displayName: 'Gemini Pro' },
+    { key: 'opencode/default', providerId: 'opencode', modelId: 'default', displayName: 'OpenCode' },
+    { key: 'codex-app-server/gpt-5.6-sol', providerId: 'codex-app-server', modelId: 'gpt-5.6-sol', displayName: 'GPT-5.6 Sol' },
+  ];
   const html = renderHomeView(buildHomeViewModel({ models }));
-  const modelSelect = html.match(/<select name="modelChoice"[^>]*>(.*?)<\/select>/)?.[1] ?? '';
-  const values = [...modelSelect.matchAll(/<option value="([^"]+)"/g)].map(([, value]) => value);
+  const modelMenu = html.match(/data-composer-picker="modelChoice"[\s\S]*?<div id="composer-modelChoice-menu"[\s\S]*?<\/div>/)?.[0] ?? '';
+  const values = [...modelMenu.matchAll(/data-composer-picker-option[^>]*data-picker-value="([^"]+)"/g)].map(([, value]) => value);
 
   assert.ok(values.includes('auto'));
-  assert.deepEqual(values.slice(1), ['codex', 'claude', 'gemini', 'opencode', 'codex-app-server']);
-  assert.ok(!values.includes('codex/cli-selected'));
-  assert.match(html, />codex\/cli-selected · codex<\/option>/);
+  assert.deepEqual(values.slice(1), models.map(modelDeploymentKey));
+  assert.equal(new Set(values).size, values.length);
+  assert.match(html, /<strong>Codex selected<\/strong><small>codex · cli-selected<\/small>/);
+  assert.match(html, /<strong>GPT-5\.6 Sol<\/strong><small>codex-app-server · gpt-5\.6-sol<\/small>/);
+  assert.doesNotMatch(html, /<select\b/);
+});
+
+test('home composer sends provider and model separately for the selected deployment', async () => {
+  const calls = [];
+  const api = {
+    async get(path) {
+      if (path === '/api/projects') return [{ id: 'p1', name: 'Project' }];
+      if (path === '/api/model-profiles') return [{ key: 'codex-app-server/gpt-5.6-sol', providerId: 'codex-app-server', modelId: 'gpt-5.6-sol', displayName: 'GPT-5.6 Sol' }];
+      if (path === '/api/provider-connections') return [{ id: 'codex-app-server', state: 'ready' }];
+      return [];
+    },
+    async post(path, body) { calls.push([path, body]); return { id: 'mission-1', objective: body.objective }; },
+  };
+  const controller = createHomeController({ api });
+  await controller.load();
+  await controller.submit({ objective: 'Plan this', projectId: 'p1', modelChoice: 'codex-app-server/gpt-5.6-sol' });
+  assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Plan this', planningProviderId: 'codex-app-server', planningModelId: 'gpt-5.6-sol', deploymentKey: 'codex-app-server/gpt-5.6-sol', mcpAllowedTools: [] }]]);
+});
+
+test('Vietnamese home renders composer labels without leftover English copy', () => {
+  const html = renderHomeView(buildHomeViewModel({ language: 'vi', providers: [{ state: 'ready' }] }));
+  assert.match(html, /aria-label="Dự án"/);
+  assert.match(html, /Không có dự án khả dụng/);
+  assert.match(html, /1 provider sẵn sàng/);
+  assert.match(html, /Mục tiêu nhiệm vụ/);
+  assert.match(html, /data-picker-label="Hỏi"/);
+  assert.doesNotMatch(html, /No project available|1 provider ready|Mission objective|>Ask<\/option>/);
+});
+
+test('English home keeps composer menus free of Vietnamese copy', () => {
+  const html = renderHomeView(buildHomeViewModel({
+    language: 'en',
+    menu: { type: 'command', query: '' },
+    providers: [{ state: 'ready' }],
+  }));
+  assert.match(html, /aria-label="Commands"/);
+  assert.match(html, /Run a command/);
+  assert.match(html, /Ask without changing files/);
+  assert.doesNotMatch(html, /Thêm ngữ cảnh|Chạy một lệnh|Không có mục phù hợp|Hỏi mà không đổi tệp/);
+});
+
+test('Vietnamese composer command menu translates local commands and empty state', () => {
+  const menu = renderHomeView(buildHomeViewModel({ language: 'vi', menu: { type: 'command', query: 'missing' } }));
+  assert.match(menu, /aria-label="Lệnh"/);
+  assert.match(menu, /Chạy một lệnh/);
+  assert.match(menu, /Không có mục phù hợp/);
+  const commands = renderHomeView(buildHomeViewModel({ language: 'vi', menu: { type: 'command', query: 'hỏi' } }));
+  assert.match(commands, /Hỏi mà không đổi tệp/);
+  assert.doesNotMatch(commands, /Ask without changing files|Run a command|No matching items/);
+});
+
+test('home counts only authenticated healthy providers as ready', () => {
+  const html = renderHomeView(buildHomeViewModel({ providers: [
+    { id: 'healthy', available: true, authenticated: true, healthy: true },
+    { id: 'missing-auth', available: true, authenticated: false, healthy: false },
+    { id: 'legacy-ready', state: 'ready' },
+  ] }));
+  assert.match(html, /2 providers ready/);
+});
+
+test('composer context menu exposes ForgeOS skills and keeps provenance visible', () => {
+  const html = renderHomeView(buildHomeViewModel({
+    menu: { type: 'context', query: '' },
+    skills: [{ id: 'forgeos:v2:browser', name: 'Browser control', source: 'ForgeOS v2', maturity: 'candidate' }],
+  }));
+  assert.match(html, /Browser control/);
+  assert.match(html, /ForgeOS v2 · candidate/);
+  assert.match(html, /data-menu-kind="skill"/);
+});
+
+test('composer project creation event is wired to the desktop picker', async () => {
+  const source = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
+  assert.match(source, /addEventListener\('nolane:project-create-requested',\s*requestProjectCreation\)/);
+});
+
+test('composer surfaces planning-input failures instead of a generic internal error', async () => {
+  const api = {
+    async get(path) {
+      if (path === '/api/projects') return [{ id: 'p1', name: 'Project' }];
+      if (path === '/api/provider-connections') return [{ id: 'codex', state: 'ready' }];
+      return [];
+    },
+    async post() { throw Object.assign(new Error('Planning requires additional user input'), { payload: { code: 'PLANNING_INPUT_REQUIRED' } }); },
+  };
+  const controller = createHomeController({ api, language: 'vi' });
+  await controller.load();
+  await assert.rejects(() => controller.submit({ objective: 'xin chào', projectId: 'p1' }), /Planning requires additional user input/);
+  assert.equal(controller.snapshot().error, 'Mục tiêu cần rõ kết quả mong muốn, hành vi bị ảnh hưởng và điều kiện thành công.');
+});
+
+test('composer explains a temporary runtime admission block', async () => {
+  const api = {
+    async get(path) {
+      if (path === '/api/projects') return [{ id: 'p1', name: 'Project' }];
+      if (path === '/api/provider-connections') return [{ id: 'codex', state: 'ready' }];
+      return [];
+    },
+    async post() { throw Object.assign(new Error('Runtime is temporarily conserving resources. Try again shortly.'), { payload: { code: 'RUNTIME_ADMISSION_BLOCKED' } }); },
+  };
+  const controller = createHomeController({ api, language: 'vi' });
+  await controller.load();
+  await assert.rejects(() => controller.submit({ objective: 'Plan this safely', projectId: 'p1' }), /Runtime is temporarily conserving resources/);
+  assert.equal(controller.snapshot().error, 'Runtime đang giảm tải để bảo vệ bộ nhớ. Hãy chờ một lát rồi thử lại.');
 });

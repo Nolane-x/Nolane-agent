@@ -11,13 +11,28 @@ function visible(catalog, experience, query) {
 function normalizeProviders(payload) { return Array.isArray(payload) ? payload : Array.isArray(payload?.providers) ? payload.providers : []; }
 function normalizeModels(payload) { return payload && typeof payload === 'object' && Array.isArray(payload.models) ? payload : { models: [] }; }
 function errorEntry(error) { return { message: String(error?.message ?? error ?? 'Unknown error'), status: error?.status ?? null, details: error?.payload?.details ?? null }; }
+function bounded(value, limit) { const text = String(value ?? '').trim(); return text ? text.slice(0, limit) : null; }
+function trustedAuthUrl(value) {
+  try { const url = new URL(String(value ?? '')); return url.protocol === 'https:' ? url.toString() : null; }
+  catch { return null; }
+}
+function providerLoginReceipt(providerId, type, result = {}) {
+  return Object.freeze({
+    providerId: String(providerId),
+    type: String(type),
+    loginId: bounded(result.loginId, 200),
+    authUrl: trustedAuthUrl(result.authUrl ?? result.verificationUrl),
+    userCode: bounded(result.userCode ?? result.deviceCode, 80),
+    launched: result.launched === true,
+  });
+}
 
 export function createSettingsController({ api, projectId = null } = {}) {
   if (!api) throw new TypeError('api is required');
   let state = {
     status: 'idle', catalog: null, value: {}, draft: {}, provenance: {}, warnings: [], errors: [], query: '',
     activeCategory: 'general', experience: 'everyday', saving: false, dirty: false, layer: 'user', models: { models: [] },
-    providers: [], action: null, statusMessage: 'Settings are ready.', modelComparison: { selected: [], result: null }, modelDossiers: {},
+    providers: [], providerLogin: null, action: null, statusMessage: 'Settings are ready.', modelComparison: { selected: [], result: null }, modelDossiers: {},
   };
   const snapshot = () => Object.freeze({ ...structuredClone(state), visibleCategories: visible(state.catalog, state.experience, state.query) });
   const mergeProfiles = (payload) => {
@@ -99,6 +114,58 @@ export function createSettingsController({ api, projectId = null } = {}) {
       } catch (error) { state = { ...state, action: null, errors: [errorEntry(error)], statusMessage: `Dossier failed for ${id}.` }; }
       return snapshot();
     },
+    async startProviderLogin(providerId, type) {
+      const id = String(providerId ?? '').trim();
+      const loginType = String(type ?? '').trim();
+      state.action = `provider-login:${id}`; state.statusMessage = `Opening account login for ${id}…`;
+      try {
+        const result = await api.post(`/api/provider-connections/${encodeURIComponent(id)}/login`, { type: loginType });
+        state = { ...state, action: null, providerLogin: providerLoginReceipt(id, loginType, result), errors: [], statusMessage: `Continue sign-in for ${id} in the browser.` };
+      } catch (error) { state = { ...state, action: null, providerLogin: null, errors: [errorEntry(error)], statusMessage: `Provider sign-in failed for ${id}.` }; }
+      return snapshot();
+    },
+    async refreshProviders() {
+      state.action = 'refresh-providers'; state.statusMessage = 'Refreshing provider accounts…';
+      try {
+        await api.post('/api/provider-connections/refresh', {});
+        const providers = await api.get('/api/provider-connections');
+        state = { ...state, action: null, providers: normalizeProviders(providers), errors: [], statusMessage: 'Provider account status refreshed.' };
+      } catch (error) { state = { ...state, action: null, errors: [errorEntry(error)], statusMessage: 'Provider account refresh failed.' }; }
+      return snapshot();
+    },
+    async logoutProvider(providerId) {
+      const id = String(providerId ?? '').trim();
+      state.action = `provider-logout:${id}`; state.statusMessage = `Signing out of ${id}…`;
+      try {
+        await api.post(`/api/provider-connections/${encodeURIComponent(id)}/logout`, {});
+        const providers = await api.get('/api/provider-connections').catch(() => state.providers);
+        state = { ...state, action: null, providers: normalizeProviders(providers), providerLogin: null, errors: [], statusMessage: `Signed out of ${id}.` };
+      } catch (error) { state = { ...state, action: null, errors: [errorEntry(error)], statusMessage: `Provider sign-out failed for ${id}.` }; }
+      return snapshot();
+    },
+    async configureProvider({ id, kind, model, baseUrl = '', apiKey = '' } = {}) {
+      const providerId = String(id ?? '').trim() || String(kind ?? 'provider');
+      state.action = `configure:${providerId}`; state.statusMessage = `Configuring provider ${providerId}…`;
+      try {
+        const payload = {
+          id: String(id ?? '').trim(),
+          kind: String(kind ?? '').trim(),
+          model: String(model ?? '').trim(),
+          ...(String(baseUrl ?? '').trim() ? { baseUrl: String(baseUrl).trim() } : {}),
+          ...(String(apiKey ?? '') ? { apiKey: String(apiKey) } : {}),
+          testConnection: true,
+        };
+        await api.post('/api/provider-connections/configure', payload);
+        const [providers, models] = await Promise.all([
+          api.get('/api/provider-connections').catch(() => state.providers),
+          api.get('/api/model-profiles').catch(() => state.models),
+        ]);
+        state = { ...state, action: null, providers: normalizeProviders(providers), models: normalizeModels(models), errors: [], statusMessage: `Provider ${providerId} configured.` };
+      } catch (error) {
+        state = { ...state, action: null, errors: [errorEntry(error)], statusMessage: `Provider ${providerId} was not configured.` };
+      }
+      return snapshot();
+    },
     async discoverModels(providerId) {
       state.action = `discover:${providerId}`; state.statusMessage = `Discovering models for ${providerId}…`;
       try {
@@ -108,6 +175,20 @@ export function createSettingsController({ api, projectId = null } = {}) {
         if (latest) state.models = normalizeModels(latest);
         state = { ...state, action: null, errors: [], statusMessage: `Model discovery completed for ${providerId}.` };
       } catch (error) { state = { ...state, action: null, errors: [errorEntry(error)], statusMessage: `Model discovery failed for ${providerId}.` }; }
+      return snapshot();
+    },
+    async addModel(providerId, modelId, displayName = '') {
+      const cleanProvider = String(providerId ?? '').trim();
+      const cleanModel = String(modelId ?? '').trim();
+      state.action = `add-model:${cleanProvider}/${cleanModel}`;
+      state.statusMessage = `Adding model ${cleanModel}…`;
+      try {
+        const result = await api.post('/api/model-profiles', { providerId: cleanProvider, modelId: cleanModel, ...(String(displayName ?? '').trim() ? { displayName: String(displayName).trim() } : {}) });
+        mergeProfiles(result);
+        const latest = await api.get('/api/model-profiles').catch(() => null);
+        if (latest) state.models = normalizeModels(latest);
+        state = { ...state, action: null, errors: [], statusMessage: `Model ${cleanModel} added to ${cleanProvider}.` };
+      } catch (error) { state = { ...state, action: null, errors: [errorEntry(error)], statusMessage: `Model ${cleanModel || 'entry'} was not added.` }; }
       return snapshot();
     },
     async probeModel(providerId, modelId, probes = ['text','tools','structuredOutput','streaming']) {

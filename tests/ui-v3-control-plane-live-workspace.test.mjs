@@ -29,7 +29,7 @@ test('live Control Plane domains expose bounded, redacted backend state', async 
     '/api/model-profiles': { profiles: [{ id: 'model-a', name: 'Model A', capability: 'tools' }] },
     '/api/mcp/tools': { tools: [{ id: 'tool-a', name: 'Repository search' }] },
     '/api/plugins': { plugins: [] },
-    '/api/nolane/orchestration/skills': { skills: [{ id: 'skill-a', name: 'UI review' }] },
+    '/api/skills/catalog': { schema: 'nolane.agent.skill-hub-catalog.v1', skills: [{ id: 'skill-a', name: 'UI review' }] },
   });
 
   const workspace = await loadLiveDomainWorkspace({
@@ -62,6 +62,13 @@ test('scope-dependent adapters fail closed instead of calling malformed routes',
   assert.match(renderLiveDomainWorkspace(workspace), /Select a project or mission/);
 });
 
+test('runtime domain exposes a discoverable dedicated browser workspace', async () => {
+  const workspace = await loadLiveDomainWorkspace({ api: createApi(), domain: 'runtime', projectId: 'project-a', missionId: 'mission-a', language: 'en' });
+  const html = renderLiveDomainWorkspace(workspace);
+  assert.match(html, /href="#\/control-plane\/runtime\/browser"/);
+  assert.match(html, /Open browser workspace/);
+});
+
 test('Control Plane live workspace supports every generic expert domain', () => {
   for (const domain of ['overview','operations','runtime','context-memory','evidence','intelligence','trust-security','governance','extensions','autonomy','labs','release']) {
     assert.equal(hasLiveDomainWorkspace(domain), true, domain);
@@ -73,7 +80,7 @@ test('Control Plane live workspace supports every generic expert domain', () => 
 test('application route loads and refreshes live Control Plane workspaces', async () => {
   const source = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
   assert.match(source, /live-domain-workspace\.mjs/);
-  assert.match(source, /loadLiveDomainWorkspace\(\{api,domain:active\.domain,projectId,missionId,language:cachedPreferences\.language\}\)/);
+  assert.match(source, /loadLiveDomainWorkspace\(\{api,domain:active\.domain,projectId,missionId,language:cachedPreferences\.language,skillQuery,skillCatalog\}\)/);
   assert.match(source, /data-control-action="refresh"/);
   assert.match(source, /cache: 'path'/);
 });

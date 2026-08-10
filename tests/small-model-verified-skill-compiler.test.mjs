@@ -1,12 +1,13 @@
 import test, { before } from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { CHECKPOINT_7_HELDOUT_PACKS, CHECKPOINT_7_SKILL_TRANSFER_PACK } from '../src/small-model/checkpoint-7-heldout-pack.mjs';
 import { MissionTrajectoryEngine } from '../src/small-model/mission-trajectory-engine.mjs';
 import { VerifiedSkillCompiler } from '../src/small-model/verified-skill-compiler.mjs';
 import { SkillTransferLab } from '../src/small-model/skill-transfer-lab.mjs';
 
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 let missions;
 
 before(async () => {

@@ -9,8 +9,9 @@ import { GoalService } from '../src/goals/goal-service.mjs';
 import { GoalRunService } from '../src/goals/goal-run-service.mjs';
 
 async function fixture(t) {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-goal-run-')); t.after(() => rm(root, { recursive: true, force: true }));
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-goal-run-'));
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const calls = [];
   const runCoordinator = {

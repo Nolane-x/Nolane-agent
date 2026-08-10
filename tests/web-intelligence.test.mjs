@@ -38,8 +38,9 @@ test('extractHtml strips active boilerplate and preserves readable structure', (
 
 test('WebIntelligence respects robots, canonicalizes URLs, caches, and revalidates with ETag', async (t) => {
   const server = await fixtureServer(t);
-  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-web-')); t.after(() => rm(root, { recursive: true, force: true }));
-  const cache = new HttpCache(path.join(root, 'web.db')); t.after(() => cache.close());
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-web-'));
+  const cache = new HttpCache(path.join(root, 'web.db'));
+  t.after(async () => { cache.close(); await rm(root, { recursive: true, force: true }); });
   const web = new WebIntelligence({ cache, userAgent: 'ForgeStudioBot/0.1' });
   await assert.rejects(() => web.fetch(`${server.base}/blocked`), /robots/i);
   const first = await web.fetch(`${server.base}/page?utm_source=x&b=2&a=1#frag`);
@@ -53,8 +54,9 @@ test('WebIntelligence respects robots, canonicalizes URLs, caches, and revalidat
 
 test('research deduplicates sources, favors domain diversity, and emits bounded citations/evidence', async (t) => {
   const server = await fixtureServer(t);
-  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-research-')); t.after(() => rm(root, { recursive: true, force: true }));
-  const cache = new HttpCache(path.join(root, 'web.db')); t.after(() => cache.close());
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-research-'));
+  const cache = new HttpCache(path.join(root, 'web.db'));
+  t.after(async () => { cache.close(); await rm(root, { recursive: true, force: true }); });
   const searchProvider = {
     id: 'fixture-search',
     async search() {

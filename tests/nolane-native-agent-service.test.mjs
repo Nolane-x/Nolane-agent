@@ -16,13 +16,12 @@ function providerSource(providers) {
 
 test('native agent service uses provider fallback, governed file effect, verified criterion and durable session trace', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-agent-service-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const workspace = path.join(root, 'workspace');
   await writeFile(path.join(root, 'placeholder'), 'x');
   await import('node:fs/promises').then(({ mkdir }) => mkdir(workspace, { recursive: true }));
   await writeFile(path.join(workspace, 'note.txt'), 'before');
   const store = new StudioStore(path.join(root, 'studio.db'));
-  t.after(() => store.close());
+  t.after(async () => { store.close(); await rm(root, { recursive: true, force: true }); });
   store.createProject({ id: 'p1', name: 'Project', workspaceRoot: workspace });
   const sessions = new NolaneSessionStore({ root: path.join(root, 'sessions') });
   await sessions.open();
@@ -92,11 +91,10 @@ test('native agent service uses provider fallback, governed file effect, verifie
 
 test('native agent service fails closed for traversal and unapproved shell execution', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-agent-guard-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const workspace = path.join(root, 'workspace');
   await import('node:fs/promises').then(({ mkdir }) => mkdir(workspace, { recursive: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
-  t.after(() => store.close());
+  t.after(async () => { store.close(); await rm(root, { recursive: true, force: true }); });
   store.createProject({ id: 'p1', name: 'Project', workspaceRoot: workspace });
   const sessions = new NolaneSessionStore({ root: path.join(root, 'sessions') });
   await sessions.open();

@@ -63,12 +63,20 @@ async function executeHook(hook, input, { projectRoot, maxOutputBytes, maxErrorB
     let stdoutBytes = 0;
     let stderrBytes = 0;
     let settled = false;
+    let pendingError = null;
+    let killTimer = null;
     const finishError = (error) => {
-      if (settled) return;
-      settled = true;
+      if (settled || pendingError) return;
+      pendingError = error;
       clearTimeout(timer);
-      child.kill('SIGKILL');
-      reject(error);
+      try { child.kill('SIGKILL'); } catch { /* close/error below still settles the promise */ }
+      // On Windows, killing a child is asynchronous. Wait for its close event
+      // before rejecting so callers can safely remove the hook workspace.
+      killTimer = setTimeout(() => {
+        if (settled) return;
+        settled = true;
+        reject(pendingError);
+      }, 2_000);
     };
     const timer = setTimeout(() => finishError(Object.assign(new Error(`HOOK_TIMEOUT: Hook ${hook.id} exceeded ${hook.timeoutMs}ms`), { code: 'HOOK_TIMEOUT' })), hook.timeoutMs);
     child.on('error', (error) => finishError(Object.assign(new Error(`HOOK_EXEC_FAILED: ${error.message}`), { code: 'HOOK_EXEC_FAILED' })));
@@ -87,6 +95,8 @@ async function executeHook(hook, input, { projectRoot, maxOutputBytes, maxErrorB
       if (settled) return;
       settled = true;
       clearTimeout(timer);
+      if (killTimer) clearTimeout(killTimer);
+      if (pendingError) return reject(pendingError);
       const out = Buffer.concat(stdout).toString('utf8');
       const err = Buffer.concat(stderr).toString('utf8');
       if (code !== 0) return reject(Object.assign(new Error(`HOOK_EXIT_NONZERO: Hook ${hook.id} exited ${code ?? signal}: ${err.slice(0, 1000)}`), { code: 'HOOK_EXIT_NONZERO' }));

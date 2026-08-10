@@ -1,13 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { SmallModelFoundationService } from '../src/small-model/foundation-service.mjs';
 import { canonicalSha256 } from '../src/small-model/shared.mjs';
 import { verifyForensicRecoveryCheckpoint7 } from '../src/forensics/recovery-checkpoint-7.mjs';
+import { execFileSync } from 'node:child_process';
 
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const repositoryTrajectoryDir = path.join(root, 'datasets/trajectories/repository-v1');
 const multiRuntimeDir = path.join(root, 'datasets/trajectories/multi-runtime-v1');
+const goAvailable = (() => { try { execFileSync('go', ['version'], { stdio: 'ignore' }); return true; } catch { return false; } })();
 
 const claims = {
   completeParityClaimAllowed: false,
@@ -18,7 +21,7 @@ const claims = {
   allOriginalGoalsComplete: false,
 };
 
-const inputPromise = (async () => {
+const inputPromise = goAvailable ? (async () => {
   const service = new SmallModelFoundationService();
   const missionCollection = await service.collectCheckpoint7Missions({ root, trainingRepositoryIds: ['nolane-root'] });
   const preparation = await service.prepareCheckpoint7Evidence({ collectionReceiptSha256: missionCollection.receiptSha256, repositoryTrajectoryDir, multiRuntimeDir, writeOutputs: false });
@@ -40,11 +43,11 @@ const inputPromise = (async () => {
     unsafeDecisionReceipt,
     claims,
   };
-})();
+})() : Promise.resolve(null);
 
 const clone = (value) => structuredClone(value);
 
-test('checkpoint 7 verifies held-out missions process reward transferable skill promotion v3 and fail-closed decisions', async () => {
+test('checkpoint 7 verifies held-out missions process reward transferable skill promotion v3 and fail-closed decisions', { skip: !goAvailable }, async () => {
   const result = verifyForensicRecoveryCheckpoint7(await inputPromise);
   assert.equal(result.status, 'pass');
   assert.equal(result.missions.primary, 3);
@@ -56,7 +59,7 @@ test('checkpoint 7 verifies held-out missions process reward transferable skill 
   assert.match(result.receiptSha256, /^[a-f0-9]{64}$/);
 });
 
-test('checkpoint 7 rejects incomplete missions legacy promotion regression decisions and unlocked claims', async () => {
+test('checkpoint 7 rejects incomplete missions legacy promotion regression decisions and unlocked claims', { skip: !goAvailable }, async () => {
   const source = await inputPromise;
   const mission = clone(source); mission.missionCollection.primaryMissions[0].bestCandidatePreserved = false;
   assert.throws(() => verifyForensicRecoveryCheckpoint7(mission), /best candidate|mission/i);

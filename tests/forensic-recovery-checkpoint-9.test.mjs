@@ -1,13 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { buildCheckpoint9MissionPortfolio } from '../src/small-model/checkpoint-9-mission-portfolio.mjs';
 import { buildCheckpoint9EvidenceBundle } from '../src/small-model/checkpoint-9-evidence-bundle.mjs';
 import { SmallModelFoundationService } from '../src/small-model/foundation-service.mjs';
 import { verifyForensicRecoveryCheckpoint9 } from '../src/forensics/recovery-checkpoint-9.mjs';
 import { canonicalSha256 } from '../src/small-model/shared.mjs';
 
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const rehash = (value) => { const { receiptSha256: _old, ...base } = value; return { ...base, receiptSha256: canonicalSha256(base) }; };
 
 async function fixture() {

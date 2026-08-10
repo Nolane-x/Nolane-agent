@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { buildCheckpoint8MissionPortfolio } from '../src/small-model/checkpoint-8-mission-portfolio.mjs';
 import { buildCheckpoint8EvidenceBundle } from '../src/small-model/checkpoint-8-evidence-bundle.mjs';
 import { canonicalSha256 } from '../src/small-model/shared.mjs';
 
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 test('Checkpoint 8 portfolio contains five ordered syntax and constraint missions with preserved candidates', async () => {
   const portfolio = await buildCheckpoint8MissionPortfolio({ root });

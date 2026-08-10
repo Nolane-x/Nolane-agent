@@ -14,12 +14,12 @@ const auth = (options = {}) => ({ ...options, headers: { authorization: 'Bearer 
 
 test('workspace trust API is authenticated, identity-bound, audited, and gates agent runs', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-workspace-trust-http-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(path.join(root, 'index.html'), '<!doctype html>');
   const workspaceRoot = path.join(root, 'repo'); await mkdir(path.join(workspaceRoot, '.git'), { recursive: true });
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
   const project = store.createProject({ name: 'Repo', workspaceRoot });
   const trustStore = new SqliteWorkspaceTrustStore(path.join(root, 'trust.db')); t.after(() => trustStore.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const workspaceTrust = new WorkspaceTrustService({ storage: trustStore, projectResolver: (id) => store.getProject(id) });
   const runCalls = [];
   const environmentCalls = [];

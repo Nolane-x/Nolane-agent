@@ -77,27 +77,29 @@ test('staged portable application starts with the complete Nolane Agent Core run
     cwd: path.join(destination, 'app'), stdio: ['ignore', 'ignore', 'pipe'],
     env: { ...process.env, NOLANE_AGENT_HOST: '127.0.0.1', NOLANE_AGENT_PORT: '0', NOLANE_AGENT_DATA_DIR: path.join(root, 'data'), NOLANE_AGENT_WORKSPACE: root, NOLANE_AGENT_RUNTIME_FILE: runtimeFile },
   });
-  t.after(() => { if (child.exitCode === null) child.kill('SIGTERM'); });
+  let exited = false;
+  child.once('exit', () => { exited = true; });
+  t.after(() => { if (!exited) child.kill('SIGTERM'); });
   let stderr = ''; child.stderr.on('data', (chunk) => { stderr += chunk; });
-  const deadline = Date.now() + 10_000; let runtime; let healthStatus = null;
+  const deadline = Date.now() + 45_000; let runtime; let healthStatus = null;
   while (Date.now() < deadline) {
     try {
       runtime = JSON.parse(await readFile(runtimeFile, 'utf8'));
       healthStatus = (await fetch(`${runtime.url}/health`, { signal: AbortSignal.timeout(500) })).status;
       if (healthStatus === 200) break;
     } catch {}
-    if (child.exitCode !== null) break;
+    if (exited) break;
     await new Promise((resolve) => setTimeout(resolve, 50));
   }
-  assert.ok(runtime, `staged app failed to publish runtime metadata: ${stderr}`);
+  assert.ok(runtime, `staged app failed to publish runtime metadata within 45000ms (exit=${exited ? 'exited' : 'running'}): ${stderr}`);
   assert.equal(healthStatus, 200, `staged app health check failed: ${stderr}`);
-  const waitForExit = (timeoutMs) => child.exitCode !== null
+  const waitForExit = (timeoutMs) => exited
     ? Promise.resolve(true)
     : Promise.race([
         new Promise((resolve) => child.once('exit', () => resolve(true))),
         new Promise((resolve) => setTimeout(() => resolve(false), timeoutMs)),
       ]);
-  if (child.exitCode === null) child.kill('SIGTERM');
-  if (!await waitForExit(2_000) && child.exitCode === null) child.kill('SIGKILL');
-  assert.equal(await waitForExit(2_000), true, 'staged app process did not terminate');
+  if (!exited) child.kill('SIGTERM');
+  if (!await waitForExit(10_000) && !exited) child.kill('SIGKILL');
+  assert.equal(await waitForExit(10_000), true, 'staged app process did not terminate');
 });

@@ -14,7 +14,6 @@ const execFileAsync = promisify(execFile);
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-codebase-knowledge-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await mkdir(path.join(root, 'src'), { recursive: true });
   await mkdir(path.join(root, 'tests'), { recursive: true });
   await mkdir(path.join(root, 'db'), { recursive: true });
@@ -32,13 +31,15 @@ async function fixture(t) {
   await writeFile(path.join(root, 'src', 'api.mjs'), `import { login } from './auth.mjs';\nexport function registerApi(app) {\n  app.post('/api/login', (req) => login(req.token));\n  app.get('/api/health', () => ({ ok: true }));\n  app.delete('/api/session', () => true);\n}\n`);
   await execFileAsync('git', ['add', 'src/api.mjs'], { cwd: root });
   await execFileAsync('git', ['commit', '-m', 'add session endpoint'], { cwd: root, env: { ...process.env, GIT_AUTHOR_DATE: '2026-07-01T00:00:00Z', GIT_COMMITTER_DATE: '2026-07-01T00:00:00Z' } });
-  const store = new StudioStore(path.join(root, '.forge-test.db')); t.after(() => store.close());
+  const store = new StudioStore(path.join(root, '.forge-test.db'));
   const project = store.createProject({ name: 'Knowledge', workspaceRoot: root });
-  return { root, store, project };
+  const cleanup = async () => { store.close(); await rm(root, { recursive: true, force: true }); };
+  return { root, store, project, cleanup };
 }
 
 test('indexes routes, API endpoints, database models, references, calls, tests, and Git history with direct evidence', async (t) => {
-  const { store, project } = await fixture(t);
+  const { store, project, cleanup } = await fixture(t);
+  t.after(cleanup);
   const service = new CodebaseKnowledgeGraphService({ store, maxFiles: 100 });
   const result = await service.index(project);
   assert.equal(result.indexed > 0, true);
@@ -61,7 +62,8 @@ test('indexes routes, API endpoints, database models, references, calls, tests, 
 });
 
 test('supports bounded regex, incremental reuse, and ranking by dependency distance, Git recency, and test relation', async (t) => {
-  const { root, store, project } = await fixture(t);
+  const { root, store, project, cleanup } = await fixture(t);
+  t.after(cleanup);
   const service = new CodebaseKnowledgeGraphService({ store, maxFiles: 100 });
   const first = await service.index(project);
   const second = await service.index(project);
@@ -84,12 +86,12 @@ test('supports bounded regex, incremental reuse, and ranking by dependency dista
 });
 
 test('portable watcher refreshes changed repositories once and stops cleanly', async (t) => {
-  const { root, store, project } = await fixture(t);
+  const { root, store, project, cleanup } = await fixture(t);
   const service = new CodebaseKnowledgeGraphService({ store, maxFiles: 100 });
   await service.index(project);
   const events = [];
   const watcher = new CodebaseKnowledgeWatcher({ service, intervalMs: 30, debounceMs: 20, onIndexed: (event) => events.push(event) });
-  t.after(() => watcher.close());
+  t.after(async () => { await watcher.close(); await cleanup(); });
   await watcher.start(project);
   await writeFile(path.join(root, 'src', 'new-route.mjs'), `export function attach(app) { app.get('/api/new', () => true); }\n`);
   const deadline = Date.now() + 3_000;

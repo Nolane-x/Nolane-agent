@@ -72,7 +72,7 @@ export class MissionPlanner {
     if (!Number.isInteger(this.maxAttempts) || this.maxAttempts < 1 || this.maxAttempts > 3) throw new TypeError('maxAttempts must be between 1 and 3');
   }
 
-  async plan({ projectId, objective, providerId = 'auto', signal = null, changedPaths = [] } = {}) {
+  async plan({ projectId, objective, providerId = 'auto', modelId = null, signal = null, changedPaths = [] } = {}) {
     const preflight = this.evidenceGovernance ? await this.evidenceGovernance.preflight({ projectId, objective, changedPaths }) : null;
     if (preflight?.status === 'needs-input') throw new PlanningInputRequiredError({ inputRequest: preflight.inputRequest, preflightReceiptSha256: preflight.receiptSha256 });
     const provider = this.router.select({ providerId, requiredCapabilities: ['coding', 'structured-output', 'governed-actions'] });
@@ -86,6 +86,7 @@ export class MissionPlanner {
           { role: 'user', content: instruction },
         ],
         tools: [],
+        ...(modelId ? { model: String(modelId) } : {}),
         signal,
       });
       prior = String(completion.text ?? '');
@@ -95,7 +96,7 @@ export class MissionPlanner {
         return Object.freeze({
           ...plan,
           ...(planningEvidence ? { tasks: planningEvidence.tasks, planningEvidence } : {}),
-          metadata: Object.freeze({ projectId: String(projectId ?? ''), providerId: provider.id, attempts: attempt, ...(planningEvidence ? { planningEvidenceReceiptSha256: planningEvidence.receiptSha256 } : {}) }),
+          metadata: Object.freeze({ projectId: String(projectId ?? ''), providerId: provider.id, modelId: modelId ? String(modelId) : (completion.model ?? null), attempts: attempt, ...(planningEvidence ? { planningEvidenceReceiptSha256: planningEvidence.receiptSha256 } : {}) }),
         });
       } catch (error) { lastError = error; }
     }

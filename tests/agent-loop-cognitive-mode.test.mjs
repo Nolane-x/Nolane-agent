@@ -12,9 +12,9 @@ import { DecisionPlane } from '../src/decision/decision-plane.mjs';
 
 async function makeFixture(t, { cognitive = false, failOnce = false } = {}) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cognitive-loop-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'Cognition', workspaceRoot: root });
   const metadata = cognitive ? {
     cognitiveMode: true,

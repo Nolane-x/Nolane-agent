@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { redactSecrets } from '../security/redaction.mjs';
 
@@ -19,6 +19,7 @@ function safeFilename(value, fallback) {
   if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,180}\.(?:png|jpe?g|pdf)$/i.test(name) || name.includes('..')) throw new TypeError('browser artifact filename is invalid');
   return name;
 }
+function artifactMime(filename) { const extension = path.extname(filename).toLowerCase(); return extension === '.jpg' || extension === '.jpeg' ? 'image/jpeg' : extension === '.pdf' ? 'application/pdf' : 'image/png'; }
 function outputView(result, maxOutputBytes) {
   const text = String(result.stdout ?? result.stderr ?? '');
   const bytes = Buffer.from(text, 'utf8');
@@ -93,6 +94,15 @@ export class BrowserAgentService {
       const result = await this.driver.run({ sessionName: context.sessionName, args: ['screenshot', ...(target ? [safeTarget(target)] : []), `--filename=${artifactPath}`], cwd: context.project.workspaceRoot, timeoutMs: this.timeoutMs, signal, maxOutputBytes: this.maxOutputBytes });
       if (result.exitCode !== 0) throw new Error(`Browser screenshot failed (${result.exitCode})`);
       return Object.freeze({ available: true, sessionName: context.sessionName, ...outputView(result, this.maxOutputBytes), artifactPath });
+    });
+  }
+  async artifact({ projectId, filename = 'page.png', leaseContext = null, signal = null } = {}) {
+    return this.#withLease(projectId, { leaseContext, signal, action: 'artifact' }, async () => {
+      const context = await this.#context(projectId); const name = safeFilename(filename, 'page.png'); const artifactPath = path.join(context.artifacts, name); const info = await stat(artifactPath);
+      if (!info.isFile()) throw new Error('Browser artifact is not a file');
+      if (info.size > 8 * 1024 * 1024) throw new Error('Browser artifact exceeds the 8 MB UI bound');
+      const bytes = await readFile(artifactPath); const digest = createHash('sha256').update(bytes).digest('hex');
+      return Object.freeze({ available: true, sessionName: context.sessionName, filename: name, mimeType: artifactMime(name), bytes: bytes.length, contentBase64: bytes.toString('base64'), sha256: digest, untrusted: true });
     });
   }
 

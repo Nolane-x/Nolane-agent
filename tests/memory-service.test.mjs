@@ -9,9 +9,9 @@ import { MemoryService } from '../src/memory/memory-service.mjs';
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-memory-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   return { root, store, project, service: new MemoryService({ store, memoryRoot: path.join(root, 'memory') }) };
 }

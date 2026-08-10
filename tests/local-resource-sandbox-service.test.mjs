@@ -87,7 +87,7 @@ test('watchdog requires consecutive violations before terminating the attached p
   assert.match(violated.receiptSha256, /^[a-f0-9]{64}$/);
 });
 
-test('service selects cgroup v2, attaches PID, and cleans the group on close', async (t) => {
+test('service selects cgroup v2, attaches PID, and cleans the group on close', { skip: process.platform !== 'linux' ? 'cgroup v2 is Linux-only' : false }, async (t) => {
   const cgroup = {
     created: [], attached: [], removed: [],
     async available() { return true; },

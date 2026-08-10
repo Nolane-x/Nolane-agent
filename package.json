@@ -24,6 +24,7 @@
     "test:go": "cd launcher && go test ./... && cd ../native/pty && go test ./... && cd ../credential && go test ./...",
     "benchmark:finalize": "node scripts/finalize-benchmark-report.mjs",
     "audit:features": "node scripts/audit-feature-checklist.mjs docs/source-feature-checklist-vn.txt docs",
+    "audit:external-gates": "node scripts/collect-external-gate-evidence.mjs",
     "release:matrix": "node scripts/full-release-matrix.mjs",
     "verify:version": "node scripts/verify-version-coherence.mjs .",
     "build:ui-v3": "node scripts/build-ui-v3.mjs",
@@ -95,7 +96,8 @@
     "verify:checkpoint-14-execution-story": "node scripts/verify-checkpoint-14-execution-story.mjs --write",
     "test:checkpoint-14-time-travel": "node --test tests/time-travel-service.test.mjs tests/time-travel-http-api.test.mjs tests/ui-v3-time-travel.test.mjs tests/ui-v3-progressive-activity.test.mjs tests/checkpoint-14-time-travel-verifier.test.mjs",
     "verify:checkpoint-14-time-travel": "node scripts/verify-checkpoint-14-time-travel.mjs --write",
-    "audit:runtime-purity": "node scripts/verify-nolane-runtime-purity.mjs ."
+    "audit:runtime-purity": "node scripts/verify-nolane-runtime-purity.mjs .",
+    "verify:forgeos-upstream": "node scripts/verify-forgeos-upstream.mjs"
   },
   "license": "MIT",
   "main": "desktop/main.cjs",

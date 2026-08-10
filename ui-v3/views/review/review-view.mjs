@@ -26,6 +26,8 @@ export function createReviewModel({ missionId } = {}) {
   });
 }
 
-export function renderReviewView(snapshot) {
-  return `<section class="review-shell" data-mission-id="${escapeHtml(snapshot.missionId)}"><nav class="change-navigator" aria-label="Changed files">${snapshot.files.map((file) => `<button type="button" data-file-id="${escapeHtml(file.id)}">${escapeHtml(file.path)}</button>`).join('')}</nav><main class="diff-viewport">${snapshot.hunks.map((hunk) => `<article data-hunk-id="${escapeHtml(hunk.id)}" data-decision="${escapeHtml(hunk.decision)}">Hunk ${escapeHtml(hunk.id)}</article>`).join('')}</main></section>`;
+export function renderReviewView(snapshot, { language = 'en' } = {}) {
+  const vi = language === 'vi';
+  const navigation = vi ? `<nav class="change-navigator" aria-label="Tệp đã thay đổi">` : `<nav class="change-navigator" aria-label="Changed files">`;
+  return `<section class="review-shell" data-mission-id="${escapeHtml(snapshot.missionId)}">${navigation}${snapshot.files.map((file) => `<button type="button" data-file-id="${escapeHtml(file.id)}">${escapeHtml(file.path)}</button>`).join('')}</nav><main class="diff-viewport">${snapshot.hunks.map((hunk) => `<article data-hunk-id="${escapeHtml(hunk.id)}" data-decision="${escapeHtml(hunk.decision)}">${vi ? 'Đoạn thay đổi' : 'Hunk'} ${escapeHtml(hunk.id)}</article>`).join('')}</main></section>`;
 }

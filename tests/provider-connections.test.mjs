@@ -8,9 +8,9 @@ import { StudioStore } from '../src/storage/studio-store.mjs';
 
 test('StudioStore persists secret-free provider definitions and supports replacement', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-store-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
 
   const first = store.upsertProvider({
     id: 'openai-main',
@@ -43,14 +43,15 @@ import { ProviderRegistry } from '../src/providers/provider-registry.mjs';
 import { ProviderConnectionService } from '../src/providers/provider-connection-service.mjs';
 import { CredentialVault, MemoryCredentialBackend } from '../src/security/credential-vault.mjs';
 import { CliAuthAdapter } from '../src/providers/cli-auth-adapter.mjs';
+import { CliProvider } from '../src/providers/cli-provider.mjs';
 
 test('ProviderConnectionService stores API keys only in the vault, restores providers, and reports readiness', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-service-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
   const vault = new CredentialVault({ backend: new MemoryCredentialBackend() });
   t.after(() => vault.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const fetchImpl = async (url, init) => {
     assert.equal(url, 'https://api.openai.com/v1/responses');
     assert.equal(init.headers.authorization, 'Bearer sk-provider-test');
@@ -79,7 +80,6 @@ test('ProviderConnectionService stores API keys only in the vault, restores prov
 
 test('ProviderConnectionService exposes Codex login and fixed-command Claude auth status without reading OAuth tokens', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-auth-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
   const registry = new ProviderRegistry();
@@ -103,10 +103,16 @@ test('ProviderConnectionService exposes Codex login and fixed-command Claude aut
     launcher: async ({ args }) => { calls.push(['claude-launch', args]); return { launched: true }; },
   });
   const service = new ProviderConnectionService({ store, registry, credentialVault: new CredentialVault({ backend: new MemoryCredentialBackend() }), codexAppServer: codex, cliAuthAdapters: { claude: adapter } });
+  t.after(() => rm(root, { recursive: true, force: true }));
   await service.refreshAll();
   assert.equal(registry.detection('codex-app-server').authenticated, true);
   assert.equal(registry.detection('claude').authenticated, true);
   assert.equal(registry.publicView().some((item) => JSON.stringify(item).includes('OAuth')), false);
+  const connections = service.list();
+  assert.deepEqual(connections.find((item) => item.id === 'codex-app-server').loginModes, ['chatgpt', 'chatgptDeviceCode']);
+  assert.equal(connections.find((item) => item.id === 'codex-app-server').logoutSupported, true);
+  assert.deepEqual(connections.find((item) => item.id === 'claude').loginModes, ['claudeai']);
+  assert.equal(connections.find((item) => item.id === 'claude').logoutSupported, true);
 
   const login = await service.startLogin('codex-app-server', { type: 'chatgpt' });
   assert.equal(login.authUrl, 'https://auth.example.test');
@@ -116,13 +122,47 @@ test('ProviderConnectionService exposes Codex login and fixed-command Claude aut
   assert.deepEqual(calls.find((item) => item[0] === 'claude-launch')[1], ['auth', 'login', '--claudeai']);
 });
 
+test('ProviderConnectionService keeps shared Codex account detection isolated per harness', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-codex-shared-'));
+  const store = new StudioStore(path.join(root, 'studio.db'));
+  t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const registry = new ProviderRegistry();
+  registry.register({ id: 'codex', publicView: () => ({ id: 'codex', kind: 'cli', capabilities: ['coding', 'structured-output', 'governed-actions'] }) });
+  registry.register({ id: 'codex-app-server', publicView: () => ({ id: 'codex-app-server', kind: 'codex-app-server', capabilities: ['coding', 'structured-events', 'threads', 'governed-actions'] }) });
+  const codexAppServer = {
+    async detect() { return { id: 'codex-app-server', kind: 'codex-app-server', capabilities: ['coding', 'structured-events', 'threads', 'governed-actions'], available: true, version: 'test' }; },
+    async accountRead() { return { account: { type: 'chatgpt', planType: 'plus' } }; },
+  };
+  const service = new ProviderConnectionService({ store, registry, credentialVault: new CredentialVault({ backend: new MemoryCredentialBackend() }), codexAppServer });
+  await service.refreshAll({ apiProviders: false });
+  const cliDetection = registry.detection('codex');
+  assert.deepEqual(cliDetection.capabilities, ['coding', 'structured-output', 'governed-actions']);
+  assert.equal(cliDetection.kind, 'cli');
+  assert.deepEqual(registry.detection('codex-app-server').capabilities, ['coding', 'structured-events', 'threads', 'governed-actions']);
+});
+
+test('ProviderConnectionService preserves an installed CLI configuration diagnostic', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-cli-diagnostic-'));
+  const store = new StudioStore(path.join(root, 'studio.db'));
+  const vault = new CredentialVault({ backend: new MemoryCredentialBackend() });
+  t.after(() => store.close());
+  t.after(() => vault.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const registry = new ProviderRegistry();
+  registry.register({ id: 'gemini', kind: 'cli', publicView: () => ({ id: 'gemini', kind: 'cli', label: 'Gemini CLI' }), detect: async () => ({ available: true, version: 'test', error: 'configuration-error' }) });
+  const service = new ProviderConnectionService({ store, registry, credentialVault: vault });
+  await service.refreshAll({ apiProviders: false });
+  assert.equal(registry.detection('gemini').error, 'configuration-error');
+});
+
 test('ProviderConnectionService permits a keyless loopback OpenAI-compatible endpoint', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-local-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
   const vault = new CredentialVault({ backend: new MemoryCredentialBackend() });
   t.after(() => vault.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const registry = new ProviderRegistry();
   const fetchImpl = async (url, init) => {
     assert.equal(url, 'http://127.0.0.1:11434/v1/chat/completions');
@@ -147,11 +187,11 @@ test('ProviderConnectionService permits a keyless loopback OpenAI-compatible end
 
 test('ProviderConnectionService discovers and probes configured models without exposing credentials', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-models-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
   const vault = new CredentialVault({ backend: new MemoryCredentialBackend() });
   t.after(() => vault.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const registry = new ProviderRegistry();
   const calls = [];
   const modelProfiles = {
@@ -171,4 +211,26 @@ test('ProviderConnectionService discovers and probes configured models without e
   const probed = await service.probeModel('local-models', { modelId: 'model-a', probes: ['text'] });
   assert.equal(probed.capabilities.text, true);
   assert.ok(calls.some((item) => item[0] === 'recordProbe' && item[1] === 'local-models/model-a'));
+});
+
+test('ProviderConnectionService discovers models from an installed CLI and merges a secret-free catalog', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-cli-models-'));
+  const store = new StudioStore(path.join(root, 'studio.db'));
+  t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const vault = new CredentialVault({ backend: new MemoryCredentialBackend() });
+  t.after(() => vault.close());
+  const registry = new ProviderRegistry();
+  registry.register(new CliProvider({ id: 'opencode', label: 'OpenCode', executable: process.execPath, modelCatalog: ['openai/gpt-test', 'anthropic/claude-test'] }));
+  const calls = [];
+  const service = new ProviderConnectionService({
+    store, registry, credentialVault: vault,
+    modelProfiles: { mergeDiscovery(providerId, models) { calls.push({ providerId, models }); }, publicView: () => ({ models: [] }) },
+  });
+
+  const result = await service.discoverModels('opencode');
+  assert.equal(result.status, 'compatibility');
+  assert.deepEqual(result.models.map((item) => item.id), ['openai/gpt-test', 'anthropic/claude-test']);
+  assert.equal(calls[0].providerId, 'opencode');
+  assert.equal(JSON.stringify(result).includes('secret'), false);
 });

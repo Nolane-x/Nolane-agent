@@ -43,9 +43,13 @@ export async function buildPortable({ sourceRoot = path.resolve('.'), destinatio
   const forgeRoot = path.join(source, 'vendor', 'forge-os');
   const forgeTarget = path.join(target, 'app', 'vendor', 'forge-os');
   await mkdir(forgeTarget, { recursive: true });
-  for (const relative of ['src', 'capabilities-v2', 'providers', 'skills-v2', 'skills', 'config/skill-flow.mjs', 'package.json', 'LICENSE']) {
+  for (const relative of ['src', 'capabilities-v2', 'providers', 'skills-v2', 'skills', 'config/skill-flow.mjs', 'package.json', 'project-manifest.json', 'LICENSE']) {
     const from = path.join(forgeRoot, relative);
     try { await stat(from); await copyPath(from, path.join(forgeTarget, relative)); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+  }
+  for (const relative of ['vendor/forge-os-upstream.json', 'vendor/forge-os.manifest.json']) {
+    const from = path.join(source, relative);
+    try { await stat(from); await copyPath(from, path.join(target, 'app', relative)); } catch (error) { if (error.code !== 'ENOENT') throw error; }
   }
   for (const relative of ['package.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md']) {
     const from = path.join(source, relative);

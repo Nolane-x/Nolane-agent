@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { SmallModelFoundationService } from '../src/small-model/foundation-service.mjs';
 import { canonicalSha256 } from '../src/small-model/shared.mjs';
 import { verifyForensicRecoveryCheckpoint8 } from '../src/forensics/recovery-checkpoint-8.mjs';
 
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const claims = {
   completeParityClaimAllowed: false,
   comparativeSuperiorityClaimAllowed: false,

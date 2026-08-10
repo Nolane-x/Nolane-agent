@@ -21,6 +21,7 @@ test('Electron staging creates a portable app with resources/app and excludes us
   assert.equal((await stat(path.join(destination, 'resources', 'app', 'src', 'app.mjs'))).isFile(), true);
   assert.equal((await stat(path.join(destination, 'resources', 'app', 'ui', 'index.html'))).isFile(), true);
   assert.equal((await stat(path.join(destination, 'resources', 'app', 'vendor', 'forge-os', 'src'))).isDirectory(), true);
+  assert.equal((await stat(path.join(destination, 'resources', 'app', 'third_party', 'typescript', 'lib', 'typescript.js'))).isFile(), true);
   await assert.rejects(stat(path.join(destination, 'resources', 'app', 'tests')));
   await assert.rejects(stat(path.join(destination, 'resources', 'app', 'data')));
   await assert.rejects(stat(path.join(destination, 'resources', 'default_app.asar')));
@@ -41,4 +42,13 @@ test('Electron first-run installer pins version, SHA-256, HTTPS sources, and ato
   assert.match(script, /Expand-Archive/);
   assert.match(script, /Move-Item/);
   assert.doesNotMatch(script, /http:\/\//);
+});
+
+test('Electron recovery and project-picker copy follows the configured locale', async () => {
+  const source = await readFile('desktop/main.cjs', 'utf8');
+  assert.match(source, /NOLANE_AGENT_LOCALE/);
+  assert.match(source, /desktopLanguage/);
+  assert.match(source, /runtimeRecoveryTitle/);
+  assert.match(source, /chooseProject/);
+  assert.doesNotMatch(source, /<h1>Nolane Agent đang khôi phục runtime<\/h1>/);
 });

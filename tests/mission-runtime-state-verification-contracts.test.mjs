@@ -8,8 +8,8 @@ import { MissionRunner } from '../src/orchestration/mission-runner.mjs';
 
 async function fixture(t, { agentError = null } = {}) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-mission-contract-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
-  const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
+  const store = new StudioStore(path.join(root, 'studio.db'));
+  t.after(async () => { store.close(); await rm(root, { recursive: true, force: true }); });
   const project = store.createProject({ name: 'Project', workspaceRoot: root });
   const scheduler = { claim({ missionId, workerId }) { const task = store.listTasks({ missionId }).find((item) => item.status === 'ready'); if (!task) return null; const leased = store.updateTask(task.id, { status: 'running', leaseOwner: workerId, fencingToken: 1 }); return { task: leased, fencingToken: 1 }; } };
   const agentLoop = { async run(task) { if (agentError) throw agentError; return { runId: `run-${task.id}`, providerId: 'local', output: 'candidate', receipts: [{ receiptSha256: 'b'.repeat(64), status: 'pass' }] }; } };

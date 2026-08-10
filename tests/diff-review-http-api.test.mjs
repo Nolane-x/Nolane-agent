@@ -12,7 +12,6 @@ const auth = (options = {}) => ({ ...options, headers: { authorization: 'Bearer 
 
 test('diff review API is authenticated and forwards actor-bound decisions', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-diff-review-http-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(path.join(root, 'index.html'), '<!doctype html>');
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
   const calls = [];
@@ -22,6 +21,7 @@ test('diff review API is authenticated and forwards actor-bound decisions', asyn
   };
   const service = await createHttpServer({ config: { host: '127.0.0.1', port: 0, authToken: 'review-token' }, store, providers: new ProviderRegistry(), missionRunner: {}, diffReview, uiRoot: root });
   t.after(() => service.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
 
   assert.equal((await fetch(`${service.url}/api/agent/runs/m1/diff-review`)).status, 401);
   const snapshot = await (await fetch(`${service.url}/api/agent/runs/m1/diff-review`, auth())).json();

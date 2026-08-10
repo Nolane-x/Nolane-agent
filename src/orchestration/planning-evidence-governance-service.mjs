@@ -1,5 +1,6 @@
 import { canonicalSha256 } from '../../vendor/forge-os/src/core/canonical-json.mjs';
 import { createEvent } from '../protocol/events.mjs';
+import { enumerateRepositoryFiles } from '../repository/repository-file-enumerator.mjs';
 
 const VAGUE = /\b(?:todo|tbd|fix it|do it|somehow|something|whatever|unspecified|later|etc\.?|gì đó|chưa rõ|để sau)\b/i;
 const TEST_PATH = /(?:^|\/)(?:test|tests|spec|specs)(?:\/|$)|\.(?:test|spec)\.[^/]+$/i;
@@ -103,20 +104,47 @@ function summarize(evidence) {
 }
 
 export class PlanningEvidenceGovernanceService {
-  constructor({ store, repositoryIndex, maxSteps = 12, maxEvidencePerKind = 8 } = {}) {
+  constructor({ store, repositoryIndex, maxSteps = 12, maxEvidencePerKind = 8, maxSynchronousFiles = 256, enumerationTimeoutMs = 1_500 } = {}) {
     if (!store?.getProject || !store?.appendEvent) throw new TypeError('PlanningEvidenceGovernanceService store is required');
     if (!repositoryIndex?.index || !repositoryIndex?.search) throw new TypeError('PlanningEvidenceGovernanceService repositoryIndex is required');
     this.store = store;
     this.repositoryIndex = repositoryIndex;
     this.maxSteps = boundedInteger(maxSteps, 12, 1, 32, 'maxSteps');
     this.maxEvidencePerKind = boundedInteger(maxEvidencePerKind, 8, 1, 32, 'maxEvidencePerKind');
+    this.maxSynchronousFiles = boundedInteger(maxSynchronousFiles, 256, 1, 10_000, 'maxSynchronousFiles');
+    this.enumerationTimeoutMs = boundedInteger(enumerationTimeoutMs, 1_500, 100, 60_000, 'enumerationTimeoutMs');
   }
 
   async preflight({ projectId, objective, changedPaths = [] } = {}) {
     const project = this.store.getProject(required(projectId, 'projectId'));
     if (!project) throw new Error(`Unknown project: ${projectId}`);
     const cleanObjective = required(objective, 'objective');
-    await this.repositoryIndex.index(project);
+    let indexRefresh = { mode: 'synchronous', scheduled: false, limited: false, maxSynchronousFiles: this.maxSynchronousFiles };
+    let enumeration;
+    try {
+      enumeration = await enumerateRepositoryFiles(project.workspaceRoot, { maxFiles: this.maxSynchronousFiles + 1, gitTimeoutMs: this.enumerationTimeoutMs });
+    } catch (error) {
+      enumeration = { limited: true, warnings: ['enumeration-failed'] };
+      try {
+        this.store.appendEvent(createEvent('planning.repository-refresh.enumeration-failed', { error: String(error?.message ?? error).slice(0, 500) }, { projectId: project.id }));
+      } catch {}
+    }
+    if (enumeration.limited) {
+      try {
+        const refresh = this.repositoryIndex.index(project, { priority: 'background', deferEmbeddings: true });
+        void Promise.resolve(refresh).catch((error) => {
+          try {
+            this.store.appendEvent(createEvent('planning.repository-refresh.failed', { error: String(error?.message ?? error).slice(0, 500) }, { projectId: project.id }));
+          } catch {}
+        });
+        indexRefresh = { ...indexRefresh, mode: 'background', scheduled: true, limited: true, warnings: enumeration.warnings ?? [] };
+      } catch (error) {
+        indexRefresh = { ...indexRefresh, mode: 'background', scheduled: false, limited: true, warnings: [...(enumeration.warnings ?? []), 'refresh-schedule-failed'], error: String(error?.message ?? error).slice(0, 500) };
+      }
+    } else {
+      await this.repositoryIndex.index(project);
+      indexRefresh = { ...indexRefresh, mode: 'synchronous', scheduled: false, limited: false, warnings: enumeration.warnings ?? [] };
+    }
     const searchResult = await this.repositoryIndex.search(project.id, cleanObjective, { limit: 200, changedPaths });
     const ranked = Array.isArray(searchResult) ? searchResult : Array.isArray(searchResult?.items) ? searchResult.items : [];
     const rankedByPath = new Map(ranked.map((item) => [normalizePath(item.path), item]));
@@ -148,6 +176,7 @@ export class PlanningEvidenceGovernanceService {
       scope,
       evidence,
       summary,
+      indexRefresh: Object.freeze({ ...indexRefresh }),
     };
     return Object.freeze({ ...base, receiptSha256: canonicalSha256(base) });
   }

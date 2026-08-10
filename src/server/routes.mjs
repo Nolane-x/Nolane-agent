@@ -1,5 +1,6 @@
 import path from 'node:path';
 import { AUTONOMY_PROFILES } from '../security/autonomy-policy.mjs';
+import { BROWSER_WRITE_ACTIONS } from '../security/browser-permission-service.mjs';
 
 function json(res, status, value, headers = {}) {
   const body = JSON.stringify(value);
@@ -942,6 +943,34 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
       return false;
     }
 
+    if (pathname === '/api/skills/catalog' && method === 'GET') {
+      if (!nativeOrchestration) throw Object.assign(new Error('Nolane skill hub is not configured'), { statusCode: 503 });
+      const options = {
+        source: url.searchParams.get('source'),
+        catalog: url.searchParams.get('catalog'),
+        query: url.searchParams.get('q'),
+        limit: url.searchParams.has('limit') ? Number(url.searchParams.get('limit')) : null,
+      };
+      if (typeof nativeOrchestration.skillCatalog === 'function') return json(res, 200, await nativeOrchestration.skillCatalog(options));
+      const skills = await nativeOrchestration.listSkills(options);
+      return json(res, 200, { schema: 'nolane.agent.skill-hub-catalog.v1', readOnly: true, source: 'nolane+forge-os', filters: options, counts: { total: skills.length }, skills });
+    }
+    const skillHubDetail = pathname.match(/^\/api\/skills\/catalog\/([^/]+)$/);
+    if (skillHubDetail && method === 'GET') {
+      if (!nativeOrchestration) throw Object.assign(new Error('Nolane skill hub is not configured'), { statusCode: 503 });
+      const id = decodeURIComponent(skillHubDetail[1]);
+      const catalog = typeof nativeOrchestration.skillCatalog === 'function'
+        ? await nativeOrchestration.skillCatalog({ limit: null })
+        : { skills: await nativeOrchestration.listSkills({ limit: null }) };
+      const skill = catalog.skills.find((entry) => String(entry.id) === id);
+      if (!skill) throw Object.assign(new Error(`Unknown skill: ${id}`), { statusCode: 404, code: 'SKILL_NOT_FOUND' });
+      return json(res, 200, { schema: 'nolane.agent.skill-hub-skill.v1', readOnly: true, skill });
+    }
+    const skillHubLoad = pathname.match(/^\/api\/skills\/catalog\/([^/]+)\/load$/);
+    if (skillHubLoad && method === 'POST') {
+      if (!nativeOrchestration) throw Object.assign(new Error('Nolane skill hub is not configured'), { statusCode: 503 });
+      return json(res, 200, await nativeOrchestration.loadSkill(decodeURIComponent(skillHubLoad[1]), await readJson(req)));
+    }
     if (pathname === '/api/nolane/orchestration/status') {
       if (!nativeOrchestration) throw Object.assign(new Error('Nolane native orchestration service is not configured'), { statusCode: 503 });
       if (method === 'GET') return json(res, 200, nativeOrchestration.status());
@@ -949,7 +978,12 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
     }
     if (pathname === '/api/nolane/orchestration/skills') {
       if (!nativeOrchestration) throw Object.assign(new Error('Nolane native orchestration service is not configured'), { statusCode: 503 });
-      if (method === 'GET') return json(res, 200, await nativeOrchestration.listSkills());
+      if (method === 'GET') return json(res, 200, await nativeOrchestration.listSkills({
+        source: url.searchParams.get('source'),
+        catalog: url.searchParams.get('catalog'),
+        query: url.searchParams.get('q'),
+        limit: url.searchParams.has('limit') ? Number(url.searchParams.get('limit')) : null,
+      }));
       return false;
     }
     const orchestrationSkill = pathname.match(/^\/api\/nolane\/orchestration\/skills\/([^/]+)\/load$/);
@@ -1458,8 +1492,16 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
     if (browserAction && (method === 'POST' || (method === 'GET' && ['detect', 'status'].includes(browserAction[1])))) {
       if (!browserService) throw Object.assign(new Error('Browser service is not configured'), { statusCode: 503 });
       const actionName = browserAction[1];
-      if (!['detect', 'open', 'goto', 'snapshot', 'find', 'click', 'fill', 'type', 'press', 'tabs', 'screenshot', 'close', 'status'].includes(actionName) || typeof browserService[actionName] !== 'function') return false;
+      if (!['detect', 'open', 'goto', 'snapshot', 'find', 'click', 'fill', 'type', 'press', 'tabs', 'screenshot', 'artifact', 'close', 'status'].includes(actionName) || typeof browserService[actionName] !== 'function') return false;
       const input = method === 'POST' ? await readJson(req) : Object.fromEntries(url.searchParams.entries());
+      if (BROWSER_WRITE_ACTIONS.includes(actionName)) {
+        if (!browserPermissionService?.inspect) throw Object.assign(new Error('Browser permission service is not configured'), { statusCode: 503, code: 'BROWSER_PERMISSION_UNAVAILABLE' });
+        const goalId = String(input.goalId ?? '').trim();
+        if (!goalId) throw Object.assign(new TypeError('goalId is required for browser write actions'), { statusCode: 400, code: 'BROWSER_GOAL_REQUIRED' });
+        const permission = browserPermissionService.inspect({ goalId });
+        if (permission.projectId && String(permission.projectId) !== String(input.projectId ?? '')) throw Object.assign(new Error('Browser goal is not scoped to the requested project'), { statusCode: 403, code: 'BROWSER_PROJECT_SCOPE_DENIED' });
+        if (!Array.isArray(permission.allowedActions) || !permission.allowedActions.map(String).includes(actionName)) throw Object.assign(new Error(`Browser action is not allowlisted for goal ${goalId}: ${actionName}`), { statusCode: 403, code: 'BROWSER_ACTION_NOT_ALLOWED' });
+      }
       return json(res, 200, await browserService[actionName](input));
     }
     if (method === 'GET' && pathname === '/api/plugins') {
@@ -1568,6 +1610,24 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
     if (method === 'GET' && pathname === '/api/model-profiles') {
       if (!modelProfiles?.publicView) throw Object.assign(new Error('Model profile registry is not configured'), { statusCode: 503 });
       return json(res, 200, modelProfiles.publicView({ providerId: url.searchParams.get('providerId') || null, query: url.searchParams.get('query') || '' }));
+    }
+    if (method === 'POST' && pathname === '/api/model-profiles') {
+      if (!modelProfiles?.upsert || !modelProfiles?.publicView) throw Object.assign(new Error('Model profile registry is not configured'), { statusCode: 503 });
+      const body = await readJson(req, 128 * 1024);
+      const providerId = String(body.providerId ?? '').trim();
+      const modelId = String(body.modelId ?? body.id ?? '').trim();
+      if (!providerId) throw Object.assign(new TypeError('providerId is required'), { statusCode: 400, code: 'provider_id_required' });
+      if (!modelId || modelId.length > 256 || /[\u0000-\u001f\u007f]/.test(modelId)) throw Object.assign(new TypeError('modelId is invalid'), { statusCode: 400, code: 'model_id_invalid' });
+      const provider = providers?.publicView?.().find((item) => String(item.id) === providerId);
+      if (!provider) throw Object.assign(new Error(`Unknown provider: ${providerId}`), { statusCode: 404, code: 'provider_not_found' });
+      const profile = modelProfiles.upsert({
+        providerId,
+        modelId,
+        displayName: String(body.displayName ?? modelId).trim().slice(0, 256) || modelId,
+        metadata: { providerKind: provider.kind ?? null, configured: provider.configured === true, source: 'user' },
+        local: provider.kind === 'cli' ? { runtime: 'official-cli' } : undefined,
+      }, { source: 'userOverrides' });
+      return json(res, 201, { profile, profiles: modelProfiles.publicView({ providerId }) });
     }
     if (method === 'POST' && pathname === '/api/model-profiles/discover') {
       if (!providerConnections?.discoverModels) throw Object.assign(new Error('Model discovery is not configured'), { statusCode: 503 });
@@ -1811,6 +1871,10 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
     if (method === 'GET' && pathname === '/api/forgeos/status') {
       if (!forgeBridge) throw Object.assign(new Error('ForgeOS bridge is not configured'), { statusCode: 503 });
       return json(res, 200, await forgeBridge.runtimeStatus());
+    }
+    if (method === 'GET' && pathname === '/api/forgeos/upstream') {
+      if (!forgeBridge?.upstreamStatus) throw Object.assign(new Error('ForgeOS upstream verifier is not configured'), { statusCode: 503, code: 'FORGEOS_UPSTREAM_UNAVAILABLE' });
+      return json(res, 200, await forgeBridge.upstreamStatus());
     }
     if (method === 'GET' && pathname === '/api/forgeos/lanes') {
       if (!forgeBridge) throw Object.assign(new Error('ForgeOS bridge is not configured'), { statusCode: 503 });
@@ -2069,13 +2133,20 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
     }
     if (method === 'POST' && pathname === '/api/missions/plan') {
       const body = await readJson(req);
+      const projectId = String(body.projectId ?? '').trim();
+      const objective = String(body.objective ?? '').trim();
+      if (!projectId) throw Object.assign(new TypeError('Choose a project before sending a mission.'), { statusCode: 400, code: 'PROJECT_REQUIRED' });
+      if (typeof store?.getProject === 'function' && !store.getProject(projectId)) throw Object.assign(new Error('The selected project is no longer available. Choose another project.'), { statusCode: 404, code: 'PROJECT_NOT_FOUND' });
+      if (!objective) throw Object.assign(new TypeError('Enter a mission objective before sending.'), { statusCode: 400, code: 'OBJECTIVE_REQUIRED' });
       const requestedMcpTools = Array.isArray(body.mcpAllowedTools)
         ? [...new Set(body.mcpAllowedTools.map((item) => String(item).trim()).filter(Boolean))].slice(0, 128)
         : [];
+      const planningProviderId = String(body.planningProviderId ?? 'auto').trim() || 'auto';
+      const planningModelId = String(body.planningModelId ?? body.deployment?.modelId ?? '').trim() || null;
       const basePlanner = body.plan
         ? async () => body.plan
         : plannerService
-          ? async (input) => plannerService.plan({ ...input, providerId: body.planningProviderId ?? 'auto' })
+          ? async (input) => plannerService.plan({ ...input, providerId: planningProviderId, ...(planningModelId ? { modelId: planningModelId } : {}) })
           : async (input) => defaultPlanner(input);
       const planner = async (input) => {
         const plan = await basePlanner(input);
@@ -2088,7 +2159,12 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
           })),
         };
       };
-      const result = await missionRunner.plan({ projectId: body.projectId, objective: body.objective, planner });
+      const result = await missionRunner.plan({
+        projectId,
+        objective,
+        planner,
+        planningMetadata: { planningProviderId, ...(planningModelId ? { planningModelId } : {}) },
+      });
       return json(res, 201, result);
     }
     const interruptTask = pathname.match(/^\/api\/tasks\/([^/]+)\/interrupt$/);
@@ -2123,6 +2199,7 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
       return json(res, 200, await autopilot.run({
         missionId: decodeURIComponent(runToCompletion[1]),
         providerId: body.providerId ?? 'auto',
+        modelId: body.modelId ?? body.deployment?.modelId,
         workerId: body.workerId ?? 'autopilot',
         maxTasks: body.maxTasks,
         budgets: body.budgets,
@@ -2131,7 +2208,7 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
     const action = pathname.match(/^\/api\/missions\/([^/]+)\/(run-next|stop|resume)$/);
     if (method === 'POST' && action) {
       const missionId = decodeURIComponent(action[1]); const body = await readJson(req);
-      if (action[2] === 'run-next') return json(res, 200, await missionRunner.runNext({ missionId, workerId: body.workerId ?? 'local-worker', providerId: body.providerId, budgets: body.budgets }));
+      if (action[2] === 'run-next') return json(res, 200, await missionRunner.runNext({ missionId, workerId: body.workerId ?? 'local-worker', providerId: body.providerId, modelId: body.modelId ?? body.deployment?.modelId, budgets: body.budgets }));
       if (action[2] === 'stop') return json(res, 200, missionRunner.stop(missionId, body.reason));
       return json(res, 200, missionRunner.resume(missionId));
     }

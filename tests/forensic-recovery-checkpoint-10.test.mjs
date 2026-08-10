@@ -2,13 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
 import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 import { SmallModelFoundationService } from '../src/small-model/foundation-service.mjs';
 import { loadCheckpoint10TypeScriptPack } from '../src/small-model/checkpoint-10-typescript-pack.mjs';
 import { CHECKPOINT_10_CONTRACT_MANIFEST } from '../src/small-model/checkpoint-10-mission-portfolio.mjs';
 import { verifyForensicRecoveryCheckpoint10 } from '../src/forensics/recovery-checkpoint-10.mjs';
 import { canonicalSha256 } from '../src/small-model/shared.mjs';
 
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const rehash = (value) => { const { receiptSha256: _old, ...base } = value; return { ...base, receiptSha256: canonicalSha256(base) }; };
 async function typeScriptFiles() { const pack = await loadCheckpoint10TypeScriptPack({ root, id: 'transfer-c' }); return Promise.all(pack.sourceFiles.map(async (e) => ({ path: e.path, source: await readFile(path.join(root, pack.rootPath, e.path), 'utf8') }))); }
 async function contractFiles() { return Promise.all(Object.values(CHECKPOINT_10_CONTRACT_MANIFEST.targets).map(async (p) => ({ path: p, source: await readFile(path.join(root, 'fixtures/checkpoint-10-contract', p), 'utf8') }))); }

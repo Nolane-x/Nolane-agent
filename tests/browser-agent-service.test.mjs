@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -76,4 +76,25 @@ test('BrowserAgentService rejects unsafe URLs, traversal artifacts, oversized in
   const ready = new BrowserAgentService({ driver: fakeDriver(), browserRoot: path.join(root, 'browser2'), getProject: () => project });
   await assert.rejects(() => ready.fill({ projectId: 'p', target: 'e1', text: 'x'.repeat(100_001) }), /too long/i);
   await assert.rejects(() => ready.screenshot({ projectId: 'p', filename: '../escape.png' }), /filename/i);
+});
+
+test('BrowserAgentService serves only bounded project-scoped screenshot artifacts', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-browser-artifact-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const project = { id: 'artifact-project', workspaceRoot: root };
+  const driver = {
+    async detect() { return { available: true, command: 'playwright-cli', prefixArgs: [], version: '0.1.16' }; },
+    async run(input) {
+      if (input.args[0] === 'screenshot') await writeFile(input.args.find((item) => item.startsWith('--filename='))?.slice('--filename='.length), Buffer.from('fake-png'));
+      return { exitCode: 0, stdout: '', stderr: '', durationMs: 1 };
+    },
+  };
+  const service = new BrowserAgentService({ driver, browserRoot: path.join(root, 'browser'), getProject: (id) => id === project.id ? project : null });
+  await service.screenshot({ projectId: project.id, filename: 'workspace.png' });
+  const artifact = await service.artifact({ projectId: project.id, filename: 'workspace.png' });
+  assert.equal(artifact.mimeType, 'image/png');
+  assert.equal(artifact.bytes, 8);
+  assert.equal(artifact.contentBase64, Buffer.from('fake-png').toString('base64'));
+  assert.match(artifact.sha256, /^[a-f0-9]{64}$/);
+  await assert.rejects(() => service.artifact({ projectId: project.id, filename: '../workspace.png' }), /filename/i);
 });

@@ -5,7 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { canonicalSha256 } from '../../vendor/forge-os/src/core/canonical-json.mjs';
 import { WorkspacePolicy } from '../security/path-policy.mjs';
 
-const GENERATED = /(?:^|\/)(?:dist|build|generated|gen|vendor|node_modules)(?:\/|$)|(?:\.generated\.|\.g\.)/i;
+const GENERATED = /(?:^|[\\/])(?:dist|build|generated|gen|vendor|node_modules)(?:[\\/]|$)|(?:\.generated\.|\.g\.)/i;
 
 function maskCode(source) {
   const chars = [...source];

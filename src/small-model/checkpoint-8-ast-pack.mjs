@@ -4,8 +4,8 @@ import { createHash } from 'node:crypto';
 import { canonicalSha256, deepFreeze } from './shared.mjs';
 
 const SHA256 = /^[a-f0-9]{64}$/;
-const SOURCE_SHA = '80ccd958c76d52ab8b365e9b942d0020cc5bb528e3a4a8b40bf8255544c80d86';
-const TEST_SHA = '21c2a51d1c8999761deecaf94e213368754b905939f95b3a4a7fe0366aa0ac3d';
+const SOURCE_SHA = '06090324c15aba630f6b859f1d30b69f1425092ea712758bf9cec9bea37718ee';
+const TEST_SHA = 'dea6a81d7840c2a2dd02ef11012021af008f1a850a3aac01dba88d44be07e360';
 
 const pack = (repositoryId, rootPath, role) => deepFreeze({
   schema: 'nolane.small-model.checkpoint-8-ast-pack.v1',

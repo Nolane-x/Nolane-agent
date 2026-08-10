@@ -428,9 +428,16 @@ await providerConnections.load();
 for (const connection of providerConnections.list()) {
   const modelId = connection.config?.model ?? (connection.kind === 'cli' || connection.kind === 'codex-app-server' ? 'cli-selected' : null);
   if (!modelId) continue;
+  const capabilityKeys = new Map([
+    ['structured-output', 'structuredOutput'], ['subscription-auth', 'subscriptionAuth'], ['long-context', 'longContext'],
+    ['governed-actions', 'governedActions'], ['structured-events', 'structuredEvents'], ['tool-calling', 'tools'],
+  ]);
+  const capabilityPatch = Object.fromEntries((connection.capabilities ?? []).map((item) => {
+    const raw = String(item); return [capabilityKeys.get(raw) ?? raw.replace(/-([a-z])/g, (_match, letter) => letter.toUpperCase()), true];
+  }));
   modelProfiles.upsert({
     providerId: connection.id, modelId, displayName: connection.config?.model ?? `${connection.label ?? connection.id} selected model`,
-    family: connection.harnessFamily ?? null, capabilities: Object.fromEntries((connection.capabilities ?? []).map((item) => [String(item).replaceAll('-', ''), true])),
+    family: connection.harnessFamily ?? null, capabilities: capabilityPatch,
     local: { runtime: connection.kind === 'cli' ? 'official-cli' : undefined }, metadata: { providerKind: connection.kind, configured: connection.configured === true },
   });
 }
@@ -453,6 +460,7 @@ if (nolaneEnvironment.get('OPENAI_BASE_URL') && nolaneEnvironment.get('OPENAI_MO
 const nativeOrchestration = new NolaneNativeOrchestrationService({
   dataDir: path.join(config.dataDir, 'nolane-native-orchestration'),
   skillRoots: [path.join(config.dataDir, 'nolane-skills')],
+  forgeOsRoots: [config.forgeOsRoot],
   eventSink: (event) => store.appendEvent(createEvent(event.type, event)),
 });
 await nativeOrchestration.open();

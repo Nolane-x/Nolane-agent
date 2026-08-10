@@ -11,7 +11,7 @@ import { ProviderRegistry } from '../src/providers/provider-registry.mjs';
 import { createEvent } from '../src/protocol/events.mjs';
 
 async function fixture(t) {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-http-')); t.after(() => rm(root, { recursive: true, force: true }));
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-http-'));
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
   const providers = new ProviderRegistry();
   providers.register({ id: 'fake', publicView: () => ({ id: 'fake', kind: 'test' }), detect: async () => ({ id: 'fake', kind: 'test', available: true }) });
@@ -39,8 +39,8 @@ async function fixture(t) {
   const mcpRegistry = { publicView: () => [{ id: 'docs', state: 'idle' }], async listTools() { calls.push(['mcpTools']); return [{ name: 'docs__search', description: 'Search docs', inputSchema: { type: 'object' } }]; } };
   const evalRunner = { async runSuite(suite, options) { calls.push(['eval', suite.id, options.providerIds[0]]); return { suiteId: suite.id, reportSha256: 'e'.repeat(64), providers: { fake: { passRate: 1 } }, cases: [] }; } };
   const verificationRunner = { async runTask(taskId) { calls.push(['autoVerify', taskId]); return { taskId, status: 'pass', evidence: [{ kind: 'diff-check', status: 'pass', commit: 'abc', artifactSha256: 'a'.repeat(64), receiptSha256: 'b'.repeat(64) }] }; } };
-  const autopilot = { async run(input) { calls.push(['autopilot', input.missionId, input.providerId, input.maxTasks]); return { missionId: input.missionId, status: 'completed', completedTasks: 3, reports: [] }; } };
-  const plannerService = { async plan(input) { calls.push(['intelligentPlan', input.providerId]); return { summary: 'AI plan', tasks: [{ id: 'review', title: 'Review', objective: input.objective, role: 'reviewer', dependencies: [], allowedPaths: ['**'], deniedPaths: ['.env'] }] }; } };
+  const autopilot = { async run(input) { calls.push(['autopilot', input.missionId, input.providerId, input.modelId ?? null, input.maxTasks]); return { missionId: input.missionId, status: 'completed', completedTasks: 3, reports: [] }; } };
+  const plannerService = { async plan(input) { calls.push(['intelligentPlan', input.providerId, input.modelId ?? null]); return { summary: 'AI plan', tasks: [{ id: 'review', title: 'Review', objective: input.objective, role: 'reviewer', dependencies: [], allowedPaths: ['**'], deniedPaths: ['.env'] }] }; } };
   const gitInspector = {
     async snapshot(input) {
       const projectId = String(input.projectId ?? '').trim();
@@ -51,14 +51,19 @@ async function fixture(t) {
     },
   };
   const browserPermissionService = {
+    allowedActions: ['open', 'snapshot'],
     inspect({ goalId } = {}) {
       const id = String(goalId ?? '').trim();
       if (!id) throw Object.assign(new TypeError('goalId is required'), { statusCode: 400, code: 'GOAL_ID_REQUIRED' });
       if (id !== 'goal-1') throw Object.assign(new Error(`Unknown goal: ${id}`), { statusCode: 404, code: 'GOAL_NOT_FOUND' });
       calls.push(['browserPermissionInspect', id]);
-      return { goalId: id, allowedActions: ['open', 'snapshot'] };
+      return { goalId: id, allowedActions: [...browserPermissionService.allowedActions] };
     },
   };
+  const browserService = {};
+  for (const action of ['detect', 'open', 'goto', 'snapshot', 'find', 'click', 'fill', 'type', 'press', 'tabs', 'screenshot', 'artifact', 'close', 'status']) {
+    browserService[action] = async (input = {}) => { calls.push(['browser', action, input]); return { action, input, untrusted: true }; };
+  }
   const terminalManager = new EventEmitter();
   terminalManager.create = async (input) => { calls.push(['terminalCreate', input.projectId]); setTimeout(() => terminalManager.emit('output', { sessionId: 'term-1', data: 'ready\r\n', cursor: 7 }), 0); return { id: 'term-1', state: 'running', cols: input.cols, rows: input.rows }; };
   terminalManager.input = async (sessionId, data) => { calls.push(['terminalInput', sessionId, data]); return { ok: true }; };
@@ -97,6 +102,7 @@ async function fixture(t) {
   const runtimeStatus = { async snapshot() { calls.push(['runtimeStatus']); return { version: '0.6.0', allowedShells: ['/bin/sh'], resources: { state: 'normal' } }; } };
   const forgeBridge = {
     runtimeStatus() { calls.push(['forgeStatus']); return { version: '0.6.1', techniques: 128, universalLanes: 12 }; },
+    upstreamStatus() { calls.push(['forgeUpstream']); return { schema: 'nolane.forgeos.upstream-verification.v1', status: 'blocked', claims: { localManifestVerified: true, remoteFreshnessVerified: false, externallyCertified: false }, blockers: ['dirty snapshot'] }; },
     listUniversalLanes() { calls.push(['forgeLanes']); return [{ id: 'software-engineering', title: 'Software engineering' }, { id: 'physical-ai', title: 'Physical AI' }]; },
     async probeRemoteSandbox() { calls.push(['forgeSandbox']); return { available: false, mode: 'not-configured' }; },
   };
@@ -112,10 +118,11 @@ async function fixture(t) {
   await mkdir(path.join(root, 'xterm'), { recursive: true }); await writeFile(path.join(root, 'xterm', 'probe.mjs'), 'export const probe = true;');
   const service = await createHttpServer({
     config: { host: '127.0.0.1', port: 0, authToken: 'test-token' }, store, providers, missionRunner, runCoordinator, projectService, webIntelligence,
-    repositoryIndex, router, mcpRegistry, evalRunner, verificationRunner, plannerService, memoryService, gitInspector, browserPermissionService, autopilot, terminalManager, fileService, credentialVault, uiAssets, updateService, updatePreparation, instructionDiscovery, runtimeStatus, forgeBridge, uiRoot: path.resolve('ui'), uiAssetsRoot: root,
+    repositoryIndex, router, mcpRegistry, evalRunner, verificationRunner, plannerService, memoryService, gitInspector, browserService, browserPermissionService, autopilot, terminalManager, fileService, credentialVault, uiAssets, updateService, updatePreparation, instructionDiscovery, runtimeStatus, forgeBridge, uiRoot: path.resolve('ui'), uiAssetsRoot: root,
   });
   t.after(() => service.close());
-  return { ...service, store, calls, root };
+  t.after(() => rm(root, { recursive: true, force: true }));
+  return { ...service, store, calls, root, browserPermissionService };
 }
 
 function auth(init = {}) { return { ...init, headers: { authorization: 'Bearer test-token', 'content-type': 'application/json', ...(init.headers ?? {}) } }; }
@@ -141,6 +148,12 @@ test('project, task, provider, and mission endpoints execute real handlers', asy
   assert.equal(project.name, 'Demo');
   const projects = await (await fetch(`${f.url}/api/projects`, auth())).json();
   assert.equal(projects.length, 1);
+  const missingProject = await fetch(`${f.url}/api/missions/plan`, auth({ method: 'POST', body: JSON.stringify({ projectId: 'missing', objective: 'Build it' }) }));
+  assert.equal(missingProject.status, 404);
+  assert.deepEqual(await missingProject.json(), { error: 'The selected project is no longer available. Choose another project.', code: 'PROJECT_NOT_FOUND' });
+  const missingSelection = await fetch(`${f.url}/api/missions/plan`, auth({ method: 'POST', body: JSON.stringify({ objective: 'Build it' }) }));
+  assert.equal(missingSelection.status, 400);
+  assert.deepEqual(await missingSelection.json(), { error: 'Choose a project before sending a mission.', code: 'PROJECT_REQUIRED' });
   const providers = await (await fetch(`${f.url}/api/providers/detect`, auth())).json();
   assert.equal(providers[0].available, true);
   const missionResponse = await fetch(`${f.url}/api/missions/plan`, auth({ method: 'POST', body: JSON.stringify({ projectId: project.id, objective: 'Build it' }) }));
@@ -215,12 +228,12 @@ test('automatic verification endpoint runs checks and passes generated evidence 
 test('mission planning uses the intelligent planner with explicit provider routing', async (t) => {
   const f = await fixture(t);
   const project = await (await fetch(`${f.url}/api/projects`, auth({ method: 'POST', body: JSON.stringify({ name: 'Plan', workspaceRoot: f.root }) }))).json();
-  const response = await fetch(`${f.url}/api/missions/plan`, auth({ method: 'POST', body: JSON.stringify({ projectId: project.id, objective: 'Refactor router', planningProviderId: 'fake', mcpAllowedTools: ['docs__search'] }) }));
+  const response = await fetch(`${f.url}/api/missions/plan`, auth({ method: 'POST', body: JSON.stringify({ projectId: project.id, objective: 'Refactor router', planningProviderId: 'fake', planningModelId: 'fake-model-v2', mcpAllowedTools: ['docs__search'] }) }));
   assert.equal(response.status, 201);
   const mission = await response.json();
   assert.equal(mission.tasks[0].role, 'reviewer');
   assert.deepEqual(mission.tasks[0].metadata.mcpAllowedTools, ['docs__search']);
-  assert.deepEqual(f.calls.filter((item) => item[0] === 'intelligentPlan')[0], ['intelligentPlan', 'fake']);
+  assert.deepEqual(f.calls.filter((item) => item[0] === 'intelligentPlan')[0], ['intelligentPlan', 'fake', 'fake-model-v2']);
 });
 
 
@@ -276,6 +289,23 @@ test('parameterized GET routes return explicit client errors instead of internal
   assert.equal((await permission.json()).goalId, 'goal-1');
 });
 
+test('browser write routes require a goal permission and reject unallowlisted actions', async (t) => {
+  const f = await fixture(t);
+  const missingGoal = await fetch(`${f.url}/api/browser/click`, auth({ method: 'POST', body: JSON.stringify({ projectId: 'project-1', target: 'button' }) }));
+  assert.equal(missingGoal.status, 400);
+  assert.equal((await missingGoal.json()).code, 'BROWSER_GOAL_REQUIRED');
+
+  const denied = await fetch(`${f.url}/api/browser/click`, auth({ method: 'POST', body: JSON.stringify({ projectId: 'project-1', goalId: 'goal-1', target: 'button' }) }));
+  assert.equal(denied.status, 403);
+  assert.equal((await denied.json()).code, 'BROWSER_ACTION_NOT_ALLOWED');
+  assert.equal(f.calls.some((item) => item[0] === 'browser' && item[1] === 'click'), false);
+
+  f.browserPermissionService.allowedActions.push('click');
+  const allowed = await fetch(`${f.url}/api/browser/click`, auth({ method: 'POST', body: JSON.stringify({ projectId: 'project-1', goalId: 'goal-1', target: 'button' }) }));
+  assert.equal(allowed.status, 200);
+  assert.equal(f.calls.some((item) => item[0] === 'browser' && item[1] === 'click'), true);
+});
+
 test('mission autopilot endpoint runs the bounded DAG through automatic verification', async (t) => {
   const f = await fixture(t);
   const project = await (await fetch(`${f.url}/api/projects`, auth({ method: 'POST', body: JSON.stringify({ name: 'Auto', workspaceRoot: f.root }) }))).json();
@@ -284,7 +314,7 @@ test('mission autopilot endpoint runs the bounded DAG through automatic verifica
   assert.equal(response.status, 200);
   const result = await response.json();
   assert.equal(result.status, 'completed');
-  assert.deepEqual(f.calls.at(-1), ['autopilot', mission.id, 'fake', 8]);
+  assert.deepEqual(f.calls.at(-1), ['autopilot', mission.id, 'fake', null, 8]);
 });
 
 
@@ -375,13 +405,16 @@ test('ForgeOS diagnostic endpoints expose read-only runtime, lanes, and sandbox 
   const statusResponse = await fetch(`${f.url}/api/forgeos/status`, auth());
   assert.equal(statusResponse.status, 200);
   assert.deepEqual(await statusResponse.json(), { version: '0.6.1', techniques: 128, universalLanes: 12 });
+  const upstreamResponse = await fetch(`${f.url}/api/forgeos/upstream`, auth());
+  assert.equal(upstreamResponse.status, 200);
+  assert.equal((await upstreamResponse.json()).claims.remoteFreshnessVerified, false);
   const lanesResponse = await fetch(`${f.url}/api/forgeos/lanes`, auth());
   assert.equal(lanesResponse.status, 200);
   assert.equal((await lanesResponse.json()).length, 2);
   const sandboxResponse = await fetch(`${f.url}/api/forgeos/sandbox`, auth());
   assert.equal(sandboxResponse.status, 200);
   assert.deepEqual(await sandboxResponse.json(), { available: false, mode: 'not-configured' });
-  assert.deepEqual(f.calls.slice(-3).map((item) => item[0]), ['forgeStatus', 'forgeLanes', 'forgeSandbox']);
+  assert.deepEqual(f.calls.slice(-4).map((item) => item[0]), ['forgeStatus', 'forgeUpstream', 'forgeLanes', 'forgeSandbox']);
   const forbidden = await fetch(`${f.url}/api/forgeos/sandbox/run`, auth({ method: 'POST', body: '{}' }));
   assert.equal(forbidden.status, 404);
 });

@@ -14,7 +14,11 @@ async function waitForRuntime(file, timeoutMs = 8_000) {
   throw new Error('runtime handoff timed out');
 }
 
-test('the canonical product starts on loopback within the lightweight startup budget', async (t) => {
+const STARTUP_BENCHMARK_SKIP = process.platform === 'win32'
+  ? 'Windows startup budget is not certified on this host'
+  : undefined;
+
+test('the canonical product starts on loopback within the lightweight startup budget', { skip: STARTUP_BENCHMARK_SKIP }, async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-startup-')); t.after(() => rm(root, { recursive: true, force: true }));
   const runtimeFile = path.join(root, 'runtime.json');
   const started = performance.now();

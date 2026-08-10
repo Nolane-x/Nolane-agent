@@ -9,17 +9,18 @@ import { classifyArchiveEntry } from '../src/forensics/archive-classifier.mjs';
 import { decomposeArchive } from '../src/forensics/archive-decomposer.mjs';
 
 const execFileAsync = promisify(execFile);
+const pythonCommand = process.env.NOLANE_AGENT_PYTHON || process.env.FORGE_PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
 
 async function createFixtureArchive() {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-archive-'));
   const nested = path.join(root, 'nested.zip');
-  await execFileAsync('python3', ['-c', [
+  await execFileAsync(pythonCommand, ['-c', [
     'import zipfile,sys',
     'with zipfile.ZipFile(sys.argv[1],"w") as z:',
     ' z.writestr("inner.txt",b"same")',
   ].join('\n'), nested]);
   const archive = path.join(root, 'fixture.zip');
-  await execFileAsync('python3', ['-c', [
+  await execFileAsync(pythonCommand, ['-c', [
     'import zipfile,sys,pathlib',
     'nested=pathlib.Path(sys.argv[2]).read_bytes()',
     'with zipfile.ZipFile(sys.argv[1],"w",compression=zipfile.ZIP_DEFLATED) as z:',
@@ -63,6 +64,6 @@ test('archive decomposition classifies every fixture entry and detects duplicate
 test('archive decomposition rejects traversal entries', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-archive-'));
   const archive = path.join(root, 'unsafe.zip');
-  await execFileAsync('python3', ['-c', 'import zipfile,sys\nwith zipfile.ZipFile(sys.argv[1],"w") as z:z.writestr("../escape.txt",b"x")', archive]);
+  await execFileAsync(pythonCommand, ['-c', 'import zipfile,sys\nwith zipfile.ZipFile(sys.argv[1],"w") as z:z.writestr("../escape.txt",b"x")', archive]);
   await assert.rejects(() => decomposeArchive({ archivePath: archive }), /unsafe archive path/i);
 });

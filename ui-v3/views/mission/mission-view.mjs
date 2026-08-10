@@ -71,8 +71,9 @@ export function createMissionViewModel({ missionId, header = {} } = {}) {
   });
 }
 
-export function renderMissionView(snapshot) {
+export function renderMissionView(snapshot, { language = 'en' } = {}) {
+  const vi = language === 'vi';
   const progress = buildMissionProgress(snapshot.header.progress ?? { phase: snapshot.header.phase });
-  const status = progress.kind === 'measured' ? `${progress.completed}/${progress.total} steps` : progress.phase;
-  return `<section class="mission-view" data-mission-id="${snapshot.missionId}"><header><h1>${snapshot.header.title ?? 'Mission'}</h1><p>${snapshot.header.status} · ${status}</p></header><div class="mission-activity" data-follow-mode="${snapshot.followMode}">${snapshot.activities.map((item) => `<article data-activity-id="${item.id}"><strong>${item.summary ?? item.type}</strong></article>`).join('')}</div></section>`;
+  const status = progress.kind === 'measured' ? `${progress.completed}/${progress.total} ${vi ? 'bước' : 'steps'}` : progress.phase;
+  return `<section class="mission-view" data-mission-id="${snapshot.missionId}"><header><h1>${snapshot.header.title ?? (vi ? 'Nhiệm vụ' : 'Mission')}</h1><p>${snapshot.header.status} · ${status}</p></header><div class="mission-activity" data-follow-mode="${snapshot.followMode}">${snapshot.activities.map((item) => `<article data-activity-id="${item.id}"><strong>${item.summary ?? item.type}</strong></article>`).join('')}</div></section>`;
 }

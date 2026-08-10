@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { readFile } from 'node:fs/promises';
 import { canonicalSha256 } from '../src/small-model/shared.mjs';
 import { MultiFileRefactorEngine } from '../src/small-model/multi-file-refactor-engine.mjs';
@@ -8,7 +9,7 @@ import { CHECKPOINT_9_REFACTOR_PACKS } from '../src/small-model/checkpoint-9-ref
 import { Checkpoint9RefactorLab } from '../src/small-model/checkpoint-9-refactor-lab.mjs';
 import { MultiFileRefactorSkillCompiler } from '../src/small-model/multi-file-refactor-skill-compiler.mjs';
 
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sourceFiles = [
   { path: 'src/api.mjs', source: `export function legacyName(value) { return value + 1; }\nconst obj = { legacyName: 1 };\nexport const label = 'legacyName';\nexport function inspect(){ return obj.legacyName; }\n` },
   { path: 'src/direct.mjs', source: `import { legacyName } from './api.mjs';\nexport const result = legacyName(2);\n` },

@@ -24,7 +24,7 @@ function hook(id, script, overrides = {}) {
     events: ['BeforeTool'],
     command: process.execPath,
     args: [script],
-    timeoutMs: 1_000,
+    timeoutMs: 5_000,
     failureMode: 'closed',
     matcher: { toolNames: ['process.run'] },
     ...overrides,

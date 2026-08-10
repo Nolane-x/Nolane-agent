@@ -58,17 +58,18 @@ export class MissionRunner {
     });
   }
 
-  async plan({ missionId = null, projectId, objective, planner }) {
+  async plan({ missionId = null, projectId, objective, planner, planningMetadata = {} }) {
     if (typeof planner !== 'function') throw new TypeError('planner function is required');
     const validated = validatePlan(await planner({ projectId, objective }));
+    const selectedPlanningMetadata = planningMetadata && typeof planningMetadata === 'object' ? structuredClone(planningMetadata) : {};
     let mission;
     if (missionId) {
       const current = this.store.getMission(missionId);
       if (!current) throw new Error(`Unknown mission: ${missionId}`);
       if (current.projectId !== projectId) throw new Error('Mission does not belong to project');
-      mission = this.store.updateMission(missionId, { objective, status: 'running', metadata: { ...current.metadata, summary: validated.summary, plannedAt: new Date().toISOString() } });
+      mission = this.store.updateMission(missionId, { objective, status: 'running', metadata: { ...current.metadata, ...selectedPlanningMetadata, summary: validated.summary, plannedAt: new Date().toISOString() } });
     } else {
-      mission = this.store.createMission({ projectId, objective, status: 'running', metadata: { summary: validated.summary } });
+      mission = this.store.createMission({ projectId, objective, status: 'running', metadata: { ...selectedPlanningMetadata, summary: validated.summary } });
     }
     const idMap = new Map(validated.tasks.map((task) => [task.id, `${mission.id}_${task.id.replace(/[^A-Za-z0-9._-]+/g, '-')}`]));
     const byId = new Map(validated.tasks.map((task) => [task.id, task]));
@@ -102,7 +103,7 @@ export class MissionRunner {
     return Object.freeze({ ...mission, tasks: Object.freeze(created) });
   }
 
-  async runNext({ missionId, workerId, providerId, signal = null, budgets = undefined }) {
+  async runNext({ missionId, workerId, providerId, modelId = undefined, signal = null, budgets = undefined }) {
     const mission = this.store.getMission(missionId);
     if (!mission) throw new Error(`Unknown mission: ${missionId}`);
     if (mission.status !== 'running') throw new Error(`Mission is ${mission.status}`);
@@ -121,7 +122,8 @@ export class MissionRunner {
     const combined = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal;
     this.#event('mission.task.started', { workerId, fencingToken: activeLease.fencingToken, role: preparedTask.role, executionWorkspace: preparedTask.metadata?.executionWorkspace ?? null }, { projectId: preparedTask.projectId, missionId, taskId: preparedTask.id });
     try {
-      const result = await this.agentLoop.run(preparedTask, { providerId, signal: combined, budgets: { ...(preparedTask.metadata?.resourceLimits ?? {}), ...(budgets ?? {}) } });
+      const selectedModelId = modelId ?? mission.metadata?.planningModelId ?? undefined;
+      const result = await this.agentLoop.run(preparedTask, { providerId, ...(selectedModelId ? { model: selectedModelId } : {}), signal: combined, budgets: { ...(preparedTask.metadata?.resourceLimits ?? {}), ...(budgets ?? {}) } });
       const handoffBase = {
         schema: 'forge.task.handoff.v1',
         taskId: preparedTask.id,

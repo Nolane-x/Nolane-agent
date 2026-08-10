@@ -10,9 +10,9 @@ import { AdaptiveReplanner } from '../src/goals/adaptive-replanner.mjs';
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-replan-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const goals = new GoalService({ store });
   const goal = goals.create({ projectId: project.id, title: 'Optimize', objective: 'Reduce token usage.', assumptions: [{ id: 'a1', statement: 'Indexing is the bottleneck.' }] });

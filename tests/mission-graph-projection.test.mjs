@@ -12,9 +12,9 @@ import { createEvent } from '../src/protocol/events.mjs';
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-graph-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const goals = new GoalService({ store });
   const goal = goals.create({ projectId: project.id, title: 'Ship Goal OS', objective: 'Ship a verified Goal OS.' });

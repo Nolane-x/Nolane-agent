@@ -4,7 +4,8 @@ import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+import { fileURLToPath } from 'node:url';
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const watched = [
   'docs/checkpoints/NOLANE-FORENSIC-RECOVERY-CHECKPOINT-10.json',
   'docs/checkpoints/NOLANE-FORENSIC-RECOVERY-CHECKPOINT-10.md',

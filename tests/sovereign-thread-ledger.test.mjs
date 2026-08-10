@@ -7,10 +7,12 @@ import { SovereignThreadLedger } from '../src/kernel/thread-ledger.mjs';
 
 test('sovereign thread ledger fences concurrent writers and resumes from checkpoints with a new epoch', async (t) => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'nolane-kernel-ledger-'));
-  t.after(() => rm(dir, { recursive: true, force: true }));
   let now = Date.parse('2026-08-03T00:00:00Z');
   const ledger = new SovereignThreadLedger({ file: path.join(dir, 'ledger.db'), clock: () => now++ });
-  t.after(() => ledger.close());
+  t.after(async () => {
+    ledger.close();
+    await rm(dir, { recursive: true, force: true });
+  });
   const thread = ledger.createThread({ id: 'thread-a', projectId: 'project-a', principalId: 'user-a', objective: 'Refactor the agent kernel', labels: ['core'] });
   assert.equal(thread.revision, 1);
   assert.equal(thread.state, 'running');

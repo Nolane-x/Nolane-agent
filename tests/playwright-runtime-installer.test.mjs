@@ -12,7 +12,7 @@ test('installs pinned Playwright CLI and Chromium atomically and returns a manag
   const calls = [];
   const runProcess = async ({ executable, args, env }) => {
     calls.push({ executable, args: [...args], env: { ...env } });
-    if (executable === 'npm') {
+    if (executable === 'npm' || executable === 'npm.cmd') {
       const prefix = args[args.indexOf('--prefix') + 1];
       const packageRoot = path.join(prefix, 'node_modules', '@playwright', 'cli');
       await mkdir(packageRoot, { recursive: true });
@@ -35,7 +35,7 @@ test('installs pinned Playwright CLI and Chromium atomically and returns a manag
   assert.equal(installed.version, '0.1.17');
   assert.equal(installed.command.executable, process.execPath);
   assert.match(installed.command.prefixArgs[0], /node_modules[\\/]@playwright[\\/]cli[\\/]cli\.js$/);
-  assert.equal(calls[0].executable, 'npm');
+  assert.equal(calls[0].executable, process.platform === 'win32' ? 'npm.cmd' : 'npm');
   assert.ok(calls[0].args.includes('@playwright/cli@0.1.17'));
   assert.equal(calls[1].env.PLAYWRIGHT_BROWSERS_PATH.includes('staging'), true);
   const status = await installer.status();
@@ -48,7 +48,7 @@ test('failed browser installation leaves current runtime untouched and removes s
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-playwright-runtime-fail-'));
   t.after(() => rm(root, { recursive: true, force: true }));
   const runProcess = async ({ executable, args }) => {
-    if (executable === 'npm') {
+    if (executable === 'npm' || executable === 'npm.cmd') {
       const prefix = args[args.indexOf('--prefix') + 1];
       const packageRoot = path.join(prefix, 'node_modules', '@playwright', 'cli');
       await mkdir(packageRoot, { recursive: true });

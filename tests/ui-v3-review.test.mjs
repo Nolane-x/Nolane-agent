@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createReviewModel, buildReviewSummary } from '../ui-v3/views/review/review-view.mjs';
+import { createReviewModel, buildReviewSummary, renderReviewView } from '../ui-v3/views/review/review-view.mjs';
 import { createRollbackPlan, selectShipAction } from '../ui-v3/views/review/ship-actions.mjs';
 
 test('review model virtualizes large hunk sets and preserves hunk decisions', () => {
@@ -35,4 +35,11 @@ test('ship action and rollback are fail-closed', () => {
   assert.equal(plan.preserveConversation, true);
   assert.equal(plan.preserveTerminalHistory, true);
   assert.throws(() => createRollbackPlan({ checkpointId: 'cp1', files: [] }), /checkpointSha256/i);
+});
+
+test('review surface localizes changed-file chrome', () => {
+  const html = renderReviewView({ missionId: 'm1', files: [{ id: 'f1', path: 'src/a.mjs' }], hunks: [{ id: 'h1', decision: 'pending' }] }, { language: 'vi' });
+  assert.match(html, /Tệp đã thay đổi/);
+  assert.match(html, /Đoạn thay đổi h1/);
+  assert.doesNotMatch(html, /Changed files/);
 });

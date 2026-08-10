@@ -34,3 +34,21 @@ test('fresh product defaults begin in Everyday instead of a legacy experience al
   const appSource = fs.readFileSync(new URL('../src/app.mjs', import.meta.url), 'utf8');
   assert.match(appSource, /experience:\s*\{\s*level:\s*'everyday'\s*\}/);
 });
+
+test('onboarding resolves English and System language through the shared locale policy', () => {
+  const english = renderOnboardingView({ status: 'ready', required: true, step: 0, answers: { language: 'en' } });
+  assert.match(english, /Set up Nolane/);
+  assert.match(english, />Vietnamese</);
+  assert.doesNotMatch(english, /Tiếng Việt/);
+  assert.doesNotMatch(english, /Thiết lập Nolane/);
+
+  const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+  Object.defineProperty(globalThis, 'navigator', { configurable: true, value: { language: 'vi-VN' } });
+  try {
+    const system = renderOnboardingView({ status: 'ready', required: true, step: 0, answers: { language: 'system' } });
+    assert.match(system, /Thiết lập Nolane/);
+  } finally {
+    if (descriptor) Object.defineProperty(globalThis, 'navigator', descriptor);
+    else delete globalThis.navigator;
+  }
+});

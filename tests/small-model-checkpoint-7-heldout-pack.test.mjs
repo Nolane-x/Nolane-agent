@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { CHECKPOINT_7_HELDOUT_PACKS, verifyHeldOutPack } from '../src/small-model/checkpoint-7-heldout-pack.mjs';
 
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const clone = (value) => structuredClone(value);
 
 test('checkpoint 7 held-out packs verify three runtime-disjoint repository manifests', async () => {

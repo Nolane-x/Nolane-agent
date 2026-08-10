@@ -28,7 +28,12 @@ async function copyNolaneClosure(sourceRoot, appTarget) {
   await mkdir(path.join(appTarget, 'src', 'release'), { recursive: true });
   await copy(path.join(sourceRoot, 'src', 'release', 'dependency-preflight-service.mjs'), path.join(appTarget, 'src', 'release', 'dependency-preflight-service.mjs'));
   for (const relative of ['ui', 'desktop']) await copy(path.join(sourceRoot, relative), path.join(appTarget, relative));
-  await copy(path.join(sourceRoot, 'config', 'product-identity.json'), path.join(appTarget, 'config', 'product-identity.json'));
+  // Repository intelligence loads the checked-in TypeScript compiler at runtime;
+  // keep this explicit third-party closure in the desktop package.
+  await copy(path.join(sourceRoot, 'third_party', 'typescript'), path.join(appTarget, 'third_party', 'typescript'));
+  // Runtime boot reads the immutable model-family catalog and release identity
+  // alongside product identity; ship the complete non-secret config surface.
+  await copy(path.join(sourceRoot, 'config'), path.join(appTarget, 'config'));
   if (await exists(path.join(sourceRoot, 'ui-dist'))) await copy(path.join(sourceRoot, 'ui-dist'), path.join(appTarget, 'ui-dist'));
   for (const relative of ['LICENSE', 'THIRD_PARTY_NOTICES.md']) if (await exists(path.join(sourceRoot, relative))) await copy(path.join(sourceRoot, relative), path.join(appTarget, relative));
   const forgeRoot = path.join(sourceRoot, 'vendor', 'forge-os');

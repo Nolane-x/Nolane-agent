@@ -1,3 +1,4 @@
+import { t } from '../../core/i18n.mjs';
 export function createRuntimeView({ poll = () => {}, browserSessions = [] } = {}) {
   let active = false; let ticks = 0;
   const sessions = new Map(browserSessions.map((item) => [String(item.id), { ...item, id: String(item.id), suspended: true }]));
@@ -9,4 +10,4 @@ export function createRuntimeView({ poll = () => {}, browserSessions = [] } = {}
     snapshot() { return Object.freeze({ active, ticks, browserSessions: Object.freeze([...sessions.values()].map((item) => Object.freeze({ ...item }))) }); },
   });
 }
-export function renderRuntimeView(value) { return `<section><h1>Runtime</h1><p>${value.active ? 'Active' : 'Suspended'} · ${value.browserSessions.length} browser sessions</p></section>`; }
+export function renderRuntimeView(value, { language = 'en' } = {}) { return `<section><h1>${t('control.domain.runtime', language)}</h1><p>${value.active ? t('control.runtimeActive', language) : t('control.runtimeSuspended', language)} · ${value.browserSessions.length} ${t('control.browserSessions', language)}</p></section>`; }

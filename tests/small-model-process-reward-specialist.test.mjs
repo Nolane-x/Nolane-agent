@@ -1,8 +1,10 @@
 import test, { before } from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import os from 'node:os';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
 import { CHECKPOINT_7_HELDOUT_PACKS } from '../src/small-model/checkpoint-7-heldout-pack.mjs';
 import { MissionTrajectoryEngine } from '../src/small-model/mission-trajectory-engine.mjs';
 import { scoreProcessStep } from '../src/small-model/process-reward-kernel.mjs';
@@ -14,16 +16,19 @@ import {
 } from '../src/small-model/process-reward-specialist.mjs';
 import { loadModelArtifact } from '../src/small-model/model-artifact.mjs';
 
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 let missions;
+const GO_AVAILABLE = spawnSync(process.env.GO_BINARY || 'go', ['version'], { stdio: 'ignore', windowsHide: true }).status === 0;
+const GO_SKIP = GO_AVAILABLE ? false : 'Go executable is unavailable on this host';
 
 before(async () => {
+  if (!GO_AVAILABLE) return;
   const engine = new MissionTrajectoryEngine({ trainingRepositoryIds: ['nolane-root'] });
   missions = [];
   for (const pack of CHECKPOINT_7_HELDOUT_PACKS) missions.push(await engine.run({ root, pack }));
 });
 
-test('process reward scores verified progress neutral work and regression without hidden reasoning', () => {
+test('process reward scores verified progress neutral work and regression without hidden reasoning', { skip: GO_SKIP }, () => {
   const progress = scoreProcessStep(missions[0].steps.find((step) => step.phase === 'recovery-test'));
   const neutral = scoreProcessStep(missions[0].steps.find((step) => step.phase === 'mutate'));
   const regression = scoreProcessStep(missions[0].steps.find((step) => step.phase === 'mutation-test'));
@@ -37,7 +42,7 @@ test('process reward scores verified progress neutral work and regression withou
   assert.throws(() => scoreProcessStep({ ...missions[0].steps[0], verifier: { valid: true, rewardHacking: true } }), /reward hacking/i);
 });
 
-test('process reward dataset splits by repository and preserves every label in train validation and held-out', () => {
+test('process reward dataset splits by repository and preserves every label in train validation and held-out', { skip: GO_SKIP }, () => {
   const dataset = buildProcessRewardDataset(missions);
   const split = buildProcessRewardSplit(dataset);
   assert.equal(dataset.examples.length, 21);
@@ -48,7 +53,7 @@ test('process reward dataset splits by repository and preserves every label in t
   for (const items of [split.train, split.validation, split.heldOut]) assert.deepEqual([...new Set(items.map((item) => item.label))].sort(), dataset.labels);
 });
 
-test('process reward specialist trains from mission steps passes held-out ablation and rejects tampering', async () => {
+test('process reward specialist trains from mission steps passes held-out ablation and rejects tampering', { skip: GO_SKIP }, async () => {
   const outputRoot = await mkdtemp(path.join(os.tmpdir(), 'nolane-cp7-process-'));
   try {
     const trained = await trainProcessRewardSpecialist({ missions, outputRoot, writeOutputs: true });

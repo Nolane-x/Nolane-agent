@@ -14,7 +14,7 @@ function validateRuntime(value) {
 }
 
 class RuntimeSupervisor {
-  constructor({ processFactory, runtimeFile, modulePath, cwd = undefined, env = {}, startupTimeoutMs = 15_000, pollMs = 40, maxRestarts = 2, onUnexpectedExit = null } = {}) {
+  constructor({ processFactory, runtimeFile, modulePath, cwd = undefined, env = {}, startupTimeoutMs = 45_000, pollMs = 40, maxRestarts = 2, onUnexpectedExit = null } = {}) {
     if (typeof processFactory !== 'function') throw new TypeError('processFactory is required');
     if (!runtimeFile || !modulePath) throw new TypeError('runtimeFile and modulePath are required');
     this.processFactory = processFactory;

@@ -8,9 +8,9 @@ import { StudioStore } from '../src/storage/studio-store.mjs';
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-studio-conversation-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'App', workspaceRoot: root });
   const mission = store.createMission({ projectId: project.id, objective: 'Build a polished login flow', status: 'running' });
   return { root, store, project, mission };

@@ -18,12 +18,15 @@ async function git(cwd, args) {
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-integration-root-'));
   const data = await mkdtemp(path.join(os.tmpdir(), 'forge-integration-data-'));
+  let store;
   t.after(async () => {
+    store?.close();
     await git(root, ['worktree', 'prune']).catch(() => {});
     await rm(root, { recursive: true, force: true });
     await rm(data, { recursive: true, force: true });
   });
   await git(root, ['init']);
+  await git(root, ['config', 'core.autocrlf', 'false']);
   await git(root, ['config', 'user.email', 'forge@example.test']);
   await git(root, ['config', 'user.name', 'Forge Test']);
   await mkdir(path.join(root, 'src'));
@@ -44,8 +47,7 @@ async function fixture(t) {
   await git(bPath, ['add', '.']);
   await git(bPath, ['commit', '-m', 'builder b']);
 
-  const store = new StudioStore(path.join(data, 'studio.db'));
-  t.after(() => store.close());
+  store = new StudioStore(path.join(data, 'studio.db'));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const mission = store.createMission({ projectId: project.id, objective: 'Integrate builders', status: 'running' });
   const scout = store.createTask({ id: 'scout', projectId: project.id, missionId: mission.id, title: 'Scout', objective: 'Inspect', role: 'scout', status: 'done', allowedPaths: ['docs/**'] });

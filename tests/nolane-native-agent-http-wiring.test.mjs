@@ -11,10 +11,10 @@ const auth = (options = {}) => ({ ...options, headers: { authorization: 'Bearer 
 
 test('canonical Nolane agent run API is authenticated and delegates to native service', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-agent-http-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(path.join(root, 'index.html'), '<!doctype html>');
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const calls = [];
   const nativeAgent = { async run(input) { calls.push(input); return { status: 'completed', receipt: { sha256: 'a'.repeat(64) } }; } };
   const server = await createHttpServer({ config: { host: '127.0.0.1', port: 0, authToken: 'nolane-token' }, store, providers: new ProviderRegistry(), missionRunner: {}, nativeAgent, uiRoot: root });

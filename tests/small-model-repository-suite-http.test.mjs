@@ -24,12 +24,12 @@ async function decisionInput(group) {
 
 test('authenticated HTTP API bootstraps repository specialists and serves fail-closed decisions', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-repository-suite-http-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(path.join(root, 'index.html'), '<!doctype html>');
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
   const foundation = new SmallModelFoundationService();
   const service = await createHttpServer({ config:{host:'127.0.0.1',port:0,authToken:'nolane-token'}, store, providers:new ProviderRegistry(), missionRunner:{}, smallModelFoundation:foundation, uiRoot:root });
   t.after(() => service.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
 
   assert.equal((await fetch(`${service.url}/api/small-model/foundation/model/repository-suite-status`)).status, 401);
   const before = await (await fetch(`${service.url}/api/small-model/foundation/model/repository-suite-status`, auth())).json();

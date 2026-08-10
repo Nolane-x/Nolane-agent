@@ -12,7 +12,6 @@ const auth = (options = {}) => ({ ...options, headers: { authorization: 'Bearer 
 
 test('environment HTTP API exposes authenticated read operations and capability-governed lifecycle actions', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-env-http-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(path.join(root, 'index.html'), '<!doctype html>');
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
   const calls = [];
@@ -28,6 +27,7 @@ test('environment HTTP API exposes authenticated read operations and capability-
   };
   const service = await createHttpServer({ config: { host: '127.0.0.1', port: 0, authToken: 'env-token' }, store, providers: new ProviderRegistry(), missionRunner: {}, environmentControl, uiRoot: root });
   t.after(() => service.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
 
   assert.equal((await (await fetch(`${service.url}/api/environments?projectId=p1`, auth())).json())[0].id, 'web');
   assert.equal((await (await fetch(`${service.url}/api/environments/web`, auth())).json()).state, 'healthy');

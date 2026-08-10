@@ -7,6 +7,7 @@ import { classifyArchiveEntry } from './archive-classifier.mjs';
 
 const execFileAsync = promisify(execFile);
 const SHA256_PATTERN = /^[a-f0-9]{64}$/;
+const pythonCommand = () => process.env.NOLANE_AGENT_PYTHON || process.env.FORGE_PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
 
 function freeze(value) {
   if (value && typeof value === 'object' && Object.isFrozen(value)) return value;
@@ -75,7 +76,7 @@ export async function decomposeArchive({ archivePath, expectedSha256 = null } = 
   const archiveSha256 = createHash('sha256').update(archiveBytes).digest('hex');
   if (expectedSha256 && expectedSha256 !== archiveSha256) throw new Error(`Archive SHA-256 mismatch: expected ${expectedSha256} actual ${archiveSha256}`);
   const archiveType = archiveTypeFor(absolutePath);
-  const { stdout } = await execFileAsync('python3', ['-c', PYTHON_INSPECTOR, absolutePath, archiveType], { maxBuffer: 256 * 1024 * 1024 });
+  const { stdout } = await execFileAsync(pythonCommand(), ['-c', PYTHON_INSPECTOR, absolutePath, archiveType], { maxBuffer: 256 * 1024 * 1024 });
   const rawEntries = JSON.parse(stdout);
   const entries = rawEntries.map((raw) => {
     const safePath = assertSafeEntryPath(raw.path);

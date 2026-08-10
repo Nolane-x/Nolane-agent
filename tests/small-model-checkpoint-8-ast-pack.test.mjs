@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import { CHECKPOINT_8_AST_PACKS, verifyCheckpoint8AstPack } from '../src/small-model/checkpoint-8-ast-pack.mjs';
 
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 test('Checkpoint 8 AST packs are project-disjoint, hash-bound, and use argv commands', async () => {
   assert.equal(CHECKPOINT_8_AST_PACKS.length, 3);

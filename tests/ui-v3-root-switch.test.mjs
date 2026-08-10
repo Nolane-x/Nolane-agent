@@ -47,6 +47,7 @@ test('production root serves a receipt-bound home module that submits registered
   const html = servedHome.renderHomeView(servedHome.buildHomeViewModel({
     models: [{ key: 'codex/cli-selected', providerId: 'codex', displayName: 'Codex CLI' }],
   }));
-  assert.match(html, /<option value="codex">Codex CLI · codex<\/option>/);
-  assert.doesNotMatch(html, /<option value="codex\/cli-selected"/);
+  assert.match(html, /<strong>Codex CLI<\/strong><small>codex · cli-selected<\/small>/);
+  assert.match(html, /data-picker-value="codex\/cli-selected"/);
+  assert.doesNotMatch(html, /<select\b/);
 });

@@ -30,6 +30,16 @@ test('MissionPlanner asks an eligible planning provider for a bounded structured
   assert.match(calls[1].messages[1].content, /Add task isolation/);
 });
 
+test('MissionPlanner forwards the selected model without collapsing it to the provider', async () => {
+  let request;
+  const provider = { id: 'codex-app-server', async complete(input) { request = input; return { model: 'gpt-5.6-sol', text: JSON.stringify(validPlan) }; } };
+  const planner = new MissionPlanner({ router: { select: ({ providerId }) => { assert.equal(providerId, 'codex-app-server'); return provider; } } });
+  const result = await planner.plan({ projectId: 'p', objective: 'Use the selected model', providerId: 'codex-app-server', modelId: 'gpt-5.6-sol' });
+  assert.equal(request.model, 'gpt-5.6-sol');
+  assert.equal(result.metadata.providerId, 'codex-app-server');
+  assert.equal(result.metadata.modelId, 'gpt-5.6-sol');
+});
+
 test('MissionPlanner performs one repair turn when the first response is invalid JSON', async () => {
   let attempts = 0;
   const provider = { id: 'planner', async complete() { attempts += 1; return { text: attempts === 1 ? 'not json' : JSON.stringify(validPlan) }; } };

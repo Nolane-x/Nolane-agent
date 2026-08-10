@@ -12,10 +12,10 @@ const auth = (options = {}) => ({ ...options, headers: { authorization: 'Bearer 
 
 test('canonical Nolane session API persists, searches and compresses session history', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-session-http-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(path.join(root, 'index.html'), '<!doctype html>');
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const sessionStore = new NolaneSessionStore({ root: path.join(root, 'sessions') });
   await sessionStore.open();
   const service = await createHttpServer({ config: { host: '127.0.0.1', port: 0, authToken: 'nolane-token' }, store, providers: new ProviderRegistry(), missionRunner: {}, sessionStore, uiRoot: root });

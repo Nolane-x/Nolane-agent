@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { buildCheckpoint9MissionPortfolio } from '../src/small-model/checkpoint-9-mission-portfolio.mjs';
 import { buildCheckpoint9EvidenceBundle } from '../src/small-model/checkpoint-9-evidence-bundle.mjs';
 import { VerifiedSkillRegistry } from '../src/small-model/verified-skill-registry.mjs';
 
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 test('promotion v5 requires held-out transfer, property proofs, process, cost, safety, and approval', async () => {
   const portfolio = await buildCheckpoint9MissionPortfolio({ root });

@@ -48,10 +48,10 @@ test('SmallModelFoundationService exposes alpha.5 benchmark, symbolic, distillat
 
 test('authenticated HTTP routes expose bounded alpha.5 operations and native capability status', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-alpha5-http-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
   await writeFile(path.join(root, 'index.html'), '<!doctype html>');
   const store = new StudioStore(path.join(root, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
   const foundation = new SmallModelFoundationService();
   const nativeCapabilities = await createNolaneNativeCapabilityPack({ memoryFile: path.join(root, 'memory.json'), allowHosts: ['docs.example.test'], fetchImpl: async () => new Response('docs') });
   t.after(() => nativeCapabilities.close());

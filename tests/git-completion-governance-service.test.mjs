@@ -19,8 +19,6 @@ async function git(root, args) { return exec('git', args, { cwd: root }); }
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-git-completion-'));
   const data = await mkdtemp(path.join(os.tmpdir(), 'forge-git-completion-data-'));
-  t.after(() => rm(root, { recursive: true, force: true }));
-  t.after(() => rm(data, { recursive: true, force: true }));
   await git(root, ['init', '-b', 'main']);
   await git(root, ['config', 'user.email', 'forge@example.test']);
   await git(root, ['config', 'user.name', 'Forge Test']);
@@ -33,6 +31,8 @@ async function fixture(t) {
 
   const store = new StudioStore(path.join(data, 'studio.db'));
   t.after(() => store.close());
+  t.after(() => rm(data, { recursive: true, force: true }));
+  t.after(() => rm(root, { recursive: true, force: true }));
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const mission = store.createMission({ projectId: project.id, objective: 'Complete governed Git changes', status: 'running' });
   let task = store.createTask({
@@ -134,11 +134,11 @@ test('idempotency returns the original receipt and rejects key reuse with a diff
 async function collisionFixture(t, { conflicting = true, reviewed = true } = {}) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-git-collision-'));
   const data = await mkdtemp(path.join(os.tmpdir(), 'forge-git-collision-data-'));
-  t.after(async () => {
+  const cleanup = async () => {
     await git(root, ['worktree', 'prune']).catch(() => {});
     await rm(root, { recursive: true, force: true });
     await rm(data, { recursive: true, force: true });
-  });
+  };
   await git(root, ['init', '-b', 'main']);
   await git(root, ['config', 'user.email', 'forge@example.test']);
   await git(root, ['config', 'user.name', 'Forge Test']);
@@ -166,6 +166,7 @@ async function collisionFixture(t, { conflicting = true, reviewed = true } = {})
 
   const store = new StudioStore(path.join(data, 'studio.db'));
   t.after(() => store.close());
+  t.after(cleanup);
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   let mission = store.createMission({ projectId: project.id, objective: 'Integrate agent worktrees', status: 'running' });
   const a = store.createTask({ id: 'a', projectId: project.id, missionId: mission.id, title: 'A', objective: 'Change A', role: 'builder', status: 'done', allowedPaths: ['src/**'], metadata: { executionWorkspace: aPath, worktree: { path: aPath, branch: 'forge/a', baseRef: 'main' } } });
