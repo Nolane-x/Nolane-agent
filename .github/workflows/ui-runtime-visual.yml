@@ -1,0 +1,89 @@
+name: UI runtime visual evidence
+
+on:
+  push:
+    branches:
+      - codex/external-gate-evidence
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-runtime-visual-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  chromium-source-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NOLANE_AGENT_HOST: 127.0.0.1
+      NOLANE_AGENT_PORT: 4173
+      NOLANE_AGENT_TOKEN: nolane-ui-runtime-evidence-token
+      NOLANE_AGENT_DATA_DIR: ${{ runner.temp }}/nolane-ui-runtime-data
+      NOLANE_UI_RUNTIME_URL: http://127.0.0.1:4173
+      NOLANE_UI_VISUAL_OUTPUT: ${{ runner.temp }}/nolane-ui-runtime-visual
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install locked source dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build and verify the committed UI distribution
+        run: |
+          npm run build:ui-v3
+          git diff --exit-code -- ui-dist
+
+      - name: Install Chromium for the runtime visual gate
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.58.2
+          npx playwright install --with-deps chromium
+
+      - name: Start an authenticated source runtime
+        shell: bash
+        run: |
+          node src/app.mjs > "$RUNNER_TEMP/nolane-ui-runtime.log" 2>&1 &
+          echo "NOLANE_UI_RUNTIME_PID=$!" >> "$GITHUB_ENV"
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent --show-error "$NOLANE_UI_RUNTIME_URL/health?token=$NOLANE_AGENT_TOKEN" > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/nolane-ui-runtime.log"
+          exit 1
+
+      - name: Capture onboarding, workspace, settings, studio, and control-plane states
+        shell: bash
+        run: |
+          NOLANE_UI_VISUAL_STATES=onboarding node scripts/capture-ui-runtime-visual.mjs
+          curl --fail --silent --show-error --request POST \
+            --header 'content-type: application/json' \
+            --data '{}' \
+            "$NOLANE_UI_RUNTIME_URL/api/onboarding/recommended?token=$NOLANE_AGENT_TOKEN" > /dev/null
+          NOLANE_UI_VISUAL_STATES=home,projects,settings,workroom,control-plane node scripts/capture-ui-runtime-visual.mjs
+
+      - name: Upload runtime visual receipt
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: ui-runtime-visual
+          path: ${{ runner.temp }}/nolane-ui-runtime-visual
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Stop source runtime
+        if: always()
+        shell: bash
+        run: |
+          if [ -n "${NOLANE_UI_RUNTIME_PID:-}" ]; then
+            kill "$NOLANE_UI_RUNTIME_PID" || true
+          fi
