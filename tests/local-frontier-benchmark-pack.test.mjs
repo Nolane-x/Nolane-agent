@@ -59,6 +59,13 @@ test('private held-out suite encrypts the oracle and executor projection cannot 
   assert.throws(() => pack.openPrivateSuite(sealed, { key, role: 'executor' }), /verifier/i);
 });
 
+test('private held-out suite rejects a truncated AES-GCM authentication tag before decryption', () => {
+  const pack = new ReproducibleBenchmarkPack();
+  const sealed = pack.sealPrivateSuite({ id: 'frontier-private', version: 1, tasks: tasks(), key, iv: Buffer.alloc(12, 9) });
+  const truncated = { ...sealed, authTag: Buffer.from(sealed.authTag, 'base64').subarray(0, 15).toString('base64') };
+  assert.throws(() => pack.openPrivateSuite(truncated, { key, role: 'verifier' }), /authentication tag must be exactly 16 bytes/i);
+});
+
 test('benchmark execution receipt binds suite task environment permissions budgets and result evidence', () => {
   const pack = new ReproducibleBenchmarkPack();
   const suite = pack.createPublicSuite({ id: 'frontier-public', version: 1, tasks: tasks() });
