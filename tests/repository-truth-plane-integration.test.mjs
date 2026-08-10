@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, realpath, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
@@ -14,6 +14,7 @@ import { SecureSemanticIndex } from '../src/repository/secure-semantic-index.mjs
 import { StudioStore } from '../src/storage/studio-store.mjs';
 
 const sha = (value) => createHash('sha256').update(value).digest('hex');
+const canonicalPath = async (value) => (await realpath(value)).replaceAll('\\', '/');
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-truth-plane-'));
@@ -49,7 +50,7 @@ test('RepositoryWorkspaceStateAdapter reads real branch, worktree, uncommitted c
   });
   assert.equal(state.available, true);
   assert.equal(state.branch, 'feature/truth');
-  assert.equal(state.worktree, root.replaceAll('\\', '/'));
+  assert.equal(state.worktree, await canonicalPath(root));
   assert.match(state.headSha, /^[a-f0-9]{40}$/);
   assert.match(state.dirtyHash, /^[a-f0-9]{64}$/);
   assert.ok(state.uncommittedChanges.some((item) => item.path === 'config/app.json'));
@@ -72,7 +73,7 @@ test('RepositoryDigitalTwinService v2 builds cited truth maps from real indexed 
   assert.equal(twin.schema, 'forge.repository-digital-twin.v2');
   assert.equal(twin.legacySchema, 'forge.repository-digital-twin.v1');
   assert.equal(twin.branch.branch, 'feature/truth');
-  assert.equal(twin.branch.worktree, root.replaceAll('\\', '/'));
+  assert.equal(twin.branch.worktree, await canonicalPath(root));
   assert.ok(twin.branch.uncommittedChanges.some((item) => item.path === 'config/app.json'));
   assert.equal(twin.truthContext.editorOverlayCount, 1);
   assert.ok(twin.architecture.nodes.some((node) => node.kind === 'public-api'));
