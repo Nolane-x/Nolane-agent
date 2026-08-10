@@ -86,6 +86,12 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y podman
 
+      - name: Run real Podman sandbox gate
+        if: matrix.slug == 'linux'
+        env:
+          NOLANE_RUNTIME_PODMAN_GATE: '1'
+        run: node --test tests/podman-runtime-evidence.test.mjs
+
       - name: Build the Windows native gate helpers
         if: runner.os == 'Windows'
         shell: pwsh

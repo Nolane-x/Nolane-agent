@@ -34,7 +34,7 @@
 - [ ] **Step 1: Write the failing workflow assertion**
 
 ```js
-assert.match(workflow, /name:\s*Run real Podman sandbox gate[\s\S]*if:\s*matrix\.slug == 'linux'[\s\S]*NOLANE_RUNTIME_PODMAN_GATE=1 node --test tests\/podman-runtime-evidence\.test\.mjs/);
+assert.match(workflow, /name:\s*Run real Podman sandbox gate[\s\S]*if:\s*matrix\.slug == 'linux'[\s\S]*NOLANE_RUNTIME_PODMAN_GATE:\s*'1'[\s\S]*node --test tests\/podman-runtime-evidence\.test\.mjs/);
 assert.doesNotMatch(workflow, /electron-builder|build:electron|smoke:packaged|release:matrix/);
 ```
 

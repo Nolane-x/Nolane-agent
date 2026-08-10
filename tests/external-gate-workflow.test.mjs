@@ -25,6 +25,7 @@ test('external gate workflow uses least privilege and real Windows Linux macOS r
     assert.match(workflow, new RegExp(modulePath.replace('/', '\\/')));
   }
   assert.match(workflow, /npm run audit:external-gates/);
+  assert.match(workflow, /name:\s*Run real Podman sandbox gate[\s\S]*if:\s*matrix\.slug == 'linux'[\s\S]*NOLANE_RUNTIME_PODMAN_GATE:\s*'1'[\s\S]*node --test tests\/podman-runtime-evidence\.test\.mjs/);
   assert.match(workflow, /NolaneCredential/);
   assert.match(workflow, /NOLANE_GITHUB_ISSUE_LINKED/);
   assert.match(workflow, /if: github\.event_name == 'pull_request'/);
