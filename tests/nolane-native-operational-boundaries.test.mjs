@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, writeFile, symlink, readFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, writeFile, symlink, readFile, realpath } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { NolaneOperationalBoundaryService } from '../src/nolane-native/operational-boundary-service.mjs';
@@ -34,7 +34,7 @@ test('NolaneOperationalBoundaryService resolves paths inside the workspace and r
   await writeFile(path.join(outside, 'secret.txt'), 'secret');
   await symlink(outside, path.join(root, 'escape'));
   const service = new NolaneOperationalBoundaryService();
-  assert.equal(await service.resolveWorkspacePath({ workspaceRoot: root, relativePath: 'src/a.txt' }), path.join(root, 'src', 'a.txt'));
+  assert.equal(await service.resolveWorkspacePath({ workspaceRoot: root, relativePath: 'src/a.txt' }), await realpath(path.join(root, 'src', 'a.txt')));
   await assert.rejects(() => service.resolveWorkspacePath({ workspaceRoot: root, relativePath: '../outside' }), /outside workspace/i);
   await assert.rejects(() => service.resolveWorkspacePath({ workspaceRoot: root, relativePath: 'escape/secret.txt' }), /outside workspace/i);
 });
