@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, realpath, rm, symlink, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -51,7 +51,7 @@ test('WorkspacePolicy rejects traversal and symlink escape for reads and writes'
   await assert.rejects(() => policy.resolveRead('../outside.txt'), /escapes workspace/i);
   await assert.rejects(() => policy.resolveRead('escape/secret.txt'), /symlink/i);
   await assert.rejects(() => policy.resolveWrite('escape/new.txt'), /symlink/i);
-  assert.equal(await policy.resolveRead('src/a.txt'), path.join(root, 'src', 'a.txt'));
+  assert.equal(await policy.resolveRead('src/a.txt'), path.join(await realpath(root), 'src', 'a.txt'));
 });
 
 test('WorkspacePolicy keeps real paths relative when the workspace root is an alias', async (t) => {
