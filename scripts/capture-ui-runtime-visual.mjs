@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import AxeBuilder from '@axe-core/playwright';
 import { chromium } from 'playwright';
 
 const DEFAULT_VIEWPORT = Object.freeze({ width: 1440, height: 1000 });
@@ -102,6 +103,15 @@ async function assertProjectPickerKeyboard(page) {
   if (!triggerFocused) throw new Error('project picker did not return focus to its trigger after Escape');
 }
 
+async function assertAccessibility(page, state) {
+  const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
+  const blocking = result.violations.filter((violation) => ['serious', 'critical'].includes(String(violation.impact)));
+  if (blocking.length) {
+    const summary = blocking.map((violation) => `${violation.id} (${violation.impact})`).join(', ');
+    throw new Error(`${state.id} reported serious or critical accessibility violations: ${summary}`);
+  }
+}
+
 export async function captureUiRuntimeVisual({ baseUrl, token, outputDirectory, states = STATES } = {}) {
   const root = required(baseUrl, 'baseUrl');
   const credential = required(token, 'token');
@@ -122,6 +132,7 @@ export async function captureUiRuntimeVisual({ baseUrl, token, outputDirectory, 
       if (state.id === 'settings') await assertSettingsScrollPreserved(page);
       if (state.id === 'home') await assertProjectPickerKeyboard(page);
       await assertResponsiveLayout(page, state);
+      if (state.id !== 'home-nocturne') await assertAccessibility(page, state);
       if (pageErrors.length) throw new Error(`${state.id} emitted page errors: ${pageErrors.join(' | ')}`);
       const filename = `${state.id}.png`;
       const file = path.join(output, filename);

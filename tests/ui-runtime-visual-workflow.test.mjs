@@ -16,6 +16,7 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(workflow, /node-version:\s*'24'/);
   assert.match(workflow, /npm run build:ui-v3/);
   assert.match(workflow, /git diff --exit-code -- ui-dist/);
+  assert.match(workflow, /@axe-core\/playwright@4\.12\.1/);
   assert.match(workflow, /NOLANE_AGENT_TOKEN/);
   assert.match(workflow, /node src\/app\.mjs/);
   assert.match(workflow, /\/health\?token=/);
@@ -42,6 +43,8 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(capturer, /assertProjectPickerKeyboard/);
   assert.match(capturer, /project picker did not move focus to search after ArrowDown/);
   assert.match(capturer, /project picker did not return focus to its trigger after Escape/);
+  assert.match(capturer, /AxeBuilder/);
+  assert.match(capturer, /reported serious or critical accessibility violations/);
   assert.match(capturer, /viewport: Object\.freeze\(\{ width: 640, height: 900 \}\)/);
   assert.match(workflow, /NOLANE_UI_VISUAL_STATES=home,home-compact,projects,settings,workroom,control-plane/);
   assert.doesNotMatch(capturer, /token\s*:\s*(credential|token)/);
