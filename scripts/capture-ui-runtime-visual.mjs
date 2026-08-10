@@ -8,6 +8,7 @@ import { chromium } from 'playwright';
 const STATES = Object.freeze([
   Object.freeze({ id: 'onboarding', route: '/onboarding', selector: '.onboarding-shell' }),
   Object.freeze({ id: 'home', route: '/', selector: '.home-view' }),
+  Object.freeze({ id: 'home-nocturne', route: '/', selector: '.home-view' }),
   Object.freeze({ id: 'projects', route: '/projects', selector: '.projects-page' }),
   Object.freeze({ id: 'settings', route: '/settings', selector: '#workspace' }),
   Object.freeze({ id: 'workroom', route: '/workroom', selector: '.workroom-view' }),

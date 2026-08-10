@@ -72,6 +72,11 @@ jobs:
             --data '{}' \
             "$NOLANE_UI_RUNTIME_URL/api/onboarding/recommended?token=$NOLANE_AGENT_TOKEN" > /dev/null
           NOLANE_UI_VISUAL_STATES=home,projects,settings,workroom,control-plane node scripts/capture-ui-runtime-visual.mjs
+          curl --fail --silent --show-error --request PUT \
+            --header 'content-type: application/json' \
+            --data '{"layer":"user","patch":{"appearance":{"theme":"nocturne","accent":"emerald"}}}' \
+            "$NOLANE_UI_RUNTIME_URL/api/settings?token=$NOLANE_AGENT_TOKEN" > /dev/null
+          NOLANE_UI_VISUAL_STATES=home-nocturne node scripts/capture-ui-runtime-visual.mjs
 
       - name: Upload runtime visual receipt
         if: always()

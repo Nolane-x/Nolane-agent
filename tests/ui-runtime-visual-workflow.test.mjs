@@ -21,9 +21,11 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.doesNotMatch(workflow, /^ {4}env:\n(?: {6}[^\n]+\n)* {6}NOLANE_(?:AGENT_DATA_DIR|UI_VISUAL_OUTPUT):\s*\$\{\{\s*runner\.temp/m);
   assert.doesNotMatch(workflow, /electron-builder|build:electron|smoke:packaged|release:matrix/);
 
-  for (const state of ['onboarding', 'home', 'projects', 'settings', 'workroom', 'control-plane']) {
+  for (const state of ['onboarding', 'home', 'home-nocturne', 'projects', 'settings', 'workroom', 'control-plane']) {
     assert.match(capturer, new RegExp(`id: '${state}'`));
   }
+  assert.match(workflow, /appearance"\s*:\s*\{\s*"theme"\s*:\s*"nocturne"/);
+  assert.match(workflow, /NOLANE_UI_VISUAL_STATES=home-nocturne/);
   assert.match(capturer, /chromium\.launch/);
   assert.match(capturer, /page\.goto/);
   assert.match(capturer, /page\.screenshot/);
