@@ -40,6 +40,9 @@ test('runtime-critical labels use the legible secondary text token', async () =>
   assert.match(settings, /\.settings-center \.experience-switch--four small\{[^}]*color:var\(--text-secondary\)/);
   assert.match(settings, /\.settings-center \.settings-nav footer button\{[^}]*color:var\(--text-secondary\)/);
   assert.match(settings, /\.settings-center \.setting-copy small\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(settings, /\.settings-center \.settings-section__eyebrow\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(settings, /\.settings-center \.theme-gallery small\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(settings, /\.settings-center \.accent-picker>span\{[^}]*color:var\(--text-secondary\)/);
 });
 
 test('project view toggle buttons have localized accessible names', () => {
