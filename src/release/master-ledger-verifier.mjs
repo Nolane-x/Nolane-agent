@@ -1,9 +1,7 @@
-import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { validateMasterLedger } from '../requirements/master-ledger.mjs';
-
-const sha256 = (value) => createHash('sha256').update(value).digest('hex');
+import { evidenceFileSha256 } from './evidence-file-hash.mjs';
 
 export async function verifyMasterAcceptanceLedger({ rootDirectory = process.cwd(), ledgerPath = 'requirements/master-acceptance-ledger.json' } = {}) {
   const root = path.resolve(rootDirectory);
@@ -16,7 +14,7 @@ export async function verifyMasterAcceptanceLedger({ rootDirectory = process.cwd
       const absolute = path.resolve(root, relativePath);
       const relative = path.relative(root, absolute);
       if (relative.startsWith('..') || path.isAbsolute(relative)) throw new Error(`Master ledger evidence escapes root: ${relativePath}`);
-      const actual = sha256(await readFile(absolute));
+      const actual = evidenceFileSha256(await readFile(absolute));
       if (actual !== expected) throw new Error(`Master ledger evidence is stale: ${relativePath}`);
       checkedEvidence += 1;
     }

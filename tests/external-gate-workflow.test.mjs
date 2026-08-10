@@ -11,6 +11,9 @@ test('external gate workflow uses least privilege and real Windows Linux macOS r
   assert.match(workflow, /fail-fast:\s*false/);
   assert.match(workflow, /timeout-minutes:/);
   assert.match(workflow, /node-version:\s*'24'/);
+  for (const modulePath of ['launcher/go.mod', 'native/pty/go.mod', 'native/credential/go.mod', 'native/job-object/go.mod']) {
+    assert.match(workflow, new RegExp(modulePath.replace('/', '\\/')));
+  }
   assert.match(workflow, /npm run audit:external-gates/);
   assert.match(workflow, /NolaneCredential/);
   assert.doesNotMatch(workflow, /electron-builder|build:electron|smoke:packaged|release:matrix/);

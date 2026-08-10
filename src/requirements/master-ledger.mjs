@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { migrateMasterLedgerEvidence } from '../forensics/evidence-path-migrations.mjs';
+import { evidenceFileSha256 } from '../release/evidence-file-hash.mjs';
 
 const STATUS_ORDER = Object.freeze({
   verified: 0,
@@ -296,7 +297,7 @@ export async function hydrateMasterLedgerEvidence(ledger, { rootDirectory = proc
     const absolute = path.resolve(rootDirectory, relativePath);
     try {
       await access(absolute);
-      hashes[relativePath] = sha256(await readFile(absolute));
+      hashes[relativePath] = evidenceFileSha256(await readFile(absolute));
     } catch {
       // Historical aliases may point at files that were superseded. Missing paths stay visible but are not fresh evidence.
     }

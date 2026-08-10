@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { evidenceFileSha256 } from '../release/evidence-file-hash.mjs';
 
 const VALID_STATUSES = new Set(['verified', 'external_gate', 'implemented_not_wired', 'not_implemented']);
 const sha256 = (value) => crypto.createHash('sha256').update(value).digest('hex');
@@ -66,7 +67,7 @@ async function hashFile(rootDirectory, relativePath, label) {
   const relative = path.relative(rootDirectory, absolute);
   if (relative.startsWith('..') || path.isAbsolute(relative)) throw new Error(`${label} escapes root: ${relativePath}`);
   try { await access(absolute); } catch { throw new Error(`${label} missing: ${relativePath}`); }
-  return { path: relativePath, sha256: sha256(await readFile(absolute)) };
+  return { path: relativePath, sha256: evidenceFileSha256(await readFile(absolute)) };
 }
 
 async function verifyWiring(rootDirectory, wiring, contractId) {
