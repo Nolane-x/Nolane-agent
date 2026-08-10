@@ -4,6 +4,9 @@ on:
   push:
     branches: [main, master, "release/**", "feature/**"]
   pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'checkpoints/**'
 
 permissions:
   contents: read

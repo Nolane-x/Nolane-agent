@@ -2,6 +2,18 @@ name: External gate evidence
 
 on:
   pull_request:
+    paths:
+      - 'src/**'
+      - 'native/**'
+      - 'launcher/**'
+      - 'config/**'
+      - 'vendor/forge-os/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'go.work'
+      - '.github/workflows/external-gates.yml'
   workflow_dispatch:
 
 permissions:

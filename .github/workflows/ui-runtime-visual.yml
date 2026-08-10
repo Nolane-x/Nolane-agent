@@ -2,6 +2,16 @@ name: UI runtime visual evidence
 
 on:
   pull_request:
+    paths:
+      - 'ui-v3/**'
+      - 'ui-dist/**'
+      - 'src/**'
+      - 'scripts/build-ui-v3.mjs'
+      - 'scripts/capture-ui-runtime-visual.mjs'
+      - 'tests/ui-runtime-visual-workflow.test.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/ui-runtime-visual.yml'
   workflow_dispatch:
 
 permissions:

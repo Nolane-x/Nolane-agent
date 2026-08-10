@@ -6,6 +6,9 @@ test('external gate workflow uses least privilege and real Windows Linux macOS r
   const workflow = await readFile('.github/workflows/external-gates.yml', 'utf8');
   assert.match(workflow, /permissions:\s*\n\s+contents:\s*read/);
   assert.match(workflow, /pull_request:/);
+  assert.match(workflow, /pull_request:\s*\n\s+paths:/);
+  assert.match(workflow, /- 'native\/\*\*'/);
+  assert.match(workflow, /- 'scripts\/\*\*'/);
   assert.doesNotMatch(workflow, /push:\s*\n\s+branches:\s*\n\s+- codex\/external-gate-evidence/);
   assert.match(workflow, /ubuntu-latest/);
   assert.match(workflow, /windows-latest/);

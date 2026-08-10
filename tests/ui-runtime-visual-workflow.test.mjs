@@ -8,6 +8,9 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
 
   assert.match(workflow, /permissions:\s*\n\s+contents:\s*read/);
   assert.match(workflow, /pull_request:/);
+  assert.match(workflow, /pull_request:\s*\n\s+paths:/);
+  assert.match(workflow, /- 'ui-v3\/\*\*'/);
+  assert.match(workflow, /- 'scripts\/capture-ui-runtime-visual\.mjs'/);
   assert.doesNotMatch(workflow, /push:\s*\n\s+branches:\s*\n\s+- codex\/external-gate-evidence/);
   assert.match(workflow, /ubuntu-latest/);
   assert.match(workflow, /node-version:\s*'24'/);
