@@ -1,3 +1,0 @@
-import { t } from '../../core/i18n.27adae4c58df.mjs';
-export function buildOverviewView({ health = 'unknown', activeMissions = 0, pendingApprovals = 0, evidenceGaps = 0, indexFreshness = 'unknown' } = {}) { return Object.freeze({ health, activeMissions, pendingApprovals, evidenceGaps, indexFreshness }); }
-export function renderOverviewView(value, { language = 'en' } = {}) { return `<section><h1>${t('control.systemOverview', language)}</h1><p>${value.health} · ${value.activeMissions} ${t('control.activeMissions', language)} · ${value.pendingApprovals} ${t('control.approvals', language)}</p></section>`; }
