@@ -43,7 +43,7 @@ async function copyNolaneClosure(sourceRoot, appTarget) {
     if (await exists(from)) await copy(from, path.join(forgeTarget, relative));
   }
   const nativeTarget = path.join(appTarget, 'native');
-  for (const [targetName, legacyName] of [['NolanePty.exe', 'ForgePty.exe'], ['NolaneCredential.exe', 'ForgeCredential.exe']]) {
+  for (const [targetName, legacyName] of [['NolanePty.exe', 'ForgePty.exe'], ['NolaneCredential.exe', 'ForgeCredential.exe'], ['ForgeJobObject.exe', 'ForgeJobObject.exe']]) {
     const candidates = [
       path.join(sourceRoot, '.cache', targetName),
       path.join(sourceRoot, 'native', targetName),

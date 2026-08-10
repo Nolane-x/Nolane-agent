@@ -202,6 +202,7 @@ async function startRuntimeAndLoad({ recovering = false } = {}) {
         NOLANE_AGENT_POST_UPDATE: postUpdateLaunch ? 'true' : 'false',
         NOLANE_AGENT_PTY_HOST: path.join(root, 'native', process.platform === 'win32' ? 'NolanePty.exe' : 'NolanePty'),
         NOLANE_AGENT_CREDENTIAL_HELPER: path.join(root, 'native', process.platform === 'win32' ? 'NolaneCredential.exe' : 'NolaneCredential'),
+        NOLANE_AGENT_JOB_OBJECT_HELPER: path.join(root, 'native', process.platform === 'win32' ? 'ForgeJobObject.exe' : 'ForgeJobObject'),
       },
       processFactory: ({ modulePath, cwd, env }) => {
         const child = utilityProcess.fork(modulePath, [], { cwd, env, stdio: 'pipe', serviceName: 'Nolane Agent Runtime' });

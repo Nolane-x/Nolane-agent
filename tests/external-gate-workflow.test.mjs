@@ -10,6 +10,7 @@ test('external gate workflow uses least privilege and real Windows Linux macOS r
   assert.match(workflow, /macos-latest/);
   assert.match(workflow, /fail-fast:\s*false/);
   assert.match(workflow, /timeout-minutes:/);
+  assert.match(workflow, /node-version:\s*'24'/);
   assert.match(workflow, /npm run audit:external-gates/);
   assert.match(workflow, /NolaneCredential/);
   assert.doesNotMatch(workflow, /electron-builder|build:electron|smoke:packaged|release:matrix/);

@@ -5,7 +5,7 @@
   "type": "module",
   "private": true,
   "engines": {
-    "node": ">=22.12"
+    "node": ">=22.13"
   },
   "scripts": {
     "start": "node src/app.mjs",
@@ -21,7 +21,7 @@
     "eval": "node scripts/run-evals.mjs",
     "benchmark:self": "node scripts/run-benchmarks.mjs --output release/benchmark-self-smoke",
     "build:vscode": "node scripts/build-vscode-extension.mjs && node scripts/validate-vscode-extension.mjs",
-    "test:go": "cd launcher && go test ./... && cd ../native/pty && go test ./... && cd ../credential && go test ./...",
+    "test:go": "cd launcher && go test ./... && cd ../native/pty && go test ./... && cd ../credential && go test ./... && cd ../job-object && go test ./...",
     "benchmark:finalize": "node scripts/finalize-benchmark-report.mjs",
     "audit:features": "node scripts/audit-feature-checklist.mjs docs/source-feature-checklist-vn.txt docs",
     "audit:external-gates": "node scripts/collect-external-gate-evidence.mjs",
