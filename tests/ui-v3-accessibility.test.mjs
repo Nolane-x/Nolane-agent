@@ -29,4 +29,5 @@ test('runtime-critical labels use the legible secondary text token', async () =>
   assert.match(home, /\.home-subtitle\{[^}]*color:var\(--text-secondary\)/);
   assert.match(home, /\.home-section>header>a\{[^}]*color:var\(--text-secondary\)/);
   assert.match(home, /\.capability-card small\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(home, /\.empty-state p\{[^}]*color:var\(--text-secondary\)/);
 });
