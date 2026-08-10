@@ -1,3 +1,4 @@
 # Forensic fixture manifests pin raw SHA-256 values. Preserve their checked-in
 # bytes on every runner instead of allowing core.autocrlf to rewrite evidence.
 fixtures/** -text
+vendor/forge-os/** -text
