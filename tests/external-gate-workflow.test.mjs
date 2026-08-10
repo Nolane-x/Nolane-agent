@@ -17,6 +17,8 @@ test('external gate workflow uses least privilege and real Windows Linux macOS r
   assert.match(workflow, /npm run audit:external-gates/);
   assert.match(workflow, /NolaneCredential/);
   assert.match(workflow, /NOLANE_GITHUB_ISSUE_LINKED/);
-  assert.match(workflow, /contains\(github\.event\.pull_request\.body \|\| '', 'Closes #'\)/);
+  assert.match(workflow, /if: github\.event_name == 'pull_request'/);
+  assert.match(workflow, /Get-Content -Raw -LiteralPath \$env:GITHUB_EVENT_PATH \| ConvertFrom-Json/);
+  assert.match(workflow, /-match '\(\?im\)\^\\s\*closes\\s\+#\\d\+\\b'/);
   assert.doesNotMatch(workflow, /electron-builder|build:electron|smoke:packaged|release:matrix/);
 });
