@@ -15,13 +15,16 @@ test('settings center has landmarks labels live status and keyboard-friendly con
 });
 
 test('runtime-critical labels use the legible secondary text token', async () => {
-  const [shell, experience, onboarding] = await Promise.all([
+  const [shell, experience, onboarding, home] = await Promise.all([
     readFile('ui-v3/styles/layout/app-shell.css', 'utf8'),
     readFile('ui-v3/styles/components/experience-switcher.css', 'utf8'),
     readFile('ui-v3/styles/pages/onboarding.css', 'utf8'),
+    readFile('ui-v3/styles/pages/home.css', 'utf8'),
   ]);
   assert.match(shell, /\.app-topbar__title\{[^}]*color:var\(--text-secondary\)/);
   assert.match(experience, /\.app-topbar__actions>\.experience-switcher>\.experience-pill\{[^}]*color:var\(--text-secondary\)/);
   assert.match(onboarding, /\.onboarding-choice small\{[^}]*color:var\(--text-secondary\)/);
   assert.match(onboarding, /\.onboarding-actions button\.primary,\.onboarding-complete button\.primary\{[^}]*color:var\(--nolane-ink\)/);
+  assert.match(home, /\.home-intro__copy>\.eyebrow,\.home-section>header .eyebrow\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(home, /\.home-subtitle\{[^}]*color:var\(--text-secondary\)/);
 });
