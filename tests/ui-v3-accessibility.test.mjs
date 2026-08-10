@@ -16,7 +16,7 @@ test('settings center has landmarks labels live status and keyboard-friendly con
 });
 
 test('runtime-critical labels use the legible secondary text token', async () => {
-  const [shell, experience, onboarding, home, surfaces, settings, workroom] = await Promise.all([
+  const [shell, experience, onboarding, home, surfaces, settings, workroom, controlPlane] = await Promise.all([
     readFile('ui-v3/styles/layout/app-shell.css', 'utf8'),
     readFile('ui-v3/styles/components/experience-switcher.css', 'utf8'),
     readFile('ui-v3/styles/pages/onboarding.css', 'utf8'),
@@ -24,6 +24,7 @@ test('runtime-critical labels use the legible secondary text token', async () =>
     readFile('ui-v3/styles/pages/surfaces.css', 'utf8'),
     readFile('ui-v3/styles/pages/settings.css', 'utf8'),
     readFile('ui-v3/styles/pages/workroom.css', 'utf8'),
+    readFile('ui-v3/styles/pages/control-plane.css', 'utf8'),
   ]);
   assert.match(shell, /\.app-topbar__title\{[^}]*color:var\(--text-secondary\)/);
   assert.match(experience, /\.app-topbar__actions>\.experience-switcher>\.experience-pill\{[^}]*color:var\(--text-secondary\)/);
@@ -55,6 +56,9 @@ test('runtime-critical labels use the legible secondary text token', async () =>
   assert.match(workroom, /\.workroom-agent__body p\{[^}]*color:var\(--text-secondary\)/);
   assert.match(workroom, /\.workroom-statusbar span\{[^}]*color:var\(--text-secondary\)/);
   assert.match(workroom, /\.workroom-statusbar span:first-child\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(controlPlane, /\.control-plane-shell>header>span\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(controlPlane, /\.control-plane-shell>nav a\[aria-current="false"\]\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(controlPlane, /\.control-plane-shell>nav a\[aria-current="page"\]\[data-control-plane-domain\]\{[^}]*color:var\(--text-primary\)/);
 });
 
 test('project view toggle buttons have localized accessible names', () => {
