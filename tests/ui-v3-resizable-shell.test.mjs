@@ -7,6 +7,7 @@ test('shell renders keyboard accessible resize separators and two-level switch',
   const html = renderAppShell({ content: '<p>x</p>', experienceLevel: 'research' });
   assert.match(html, /role="separator"/);
   assert.match(html, /aria-orientation="vertical"/);
+  assert.match(html, /resize-handle--sidebar[^>]*aria-valuenow="288"/);
   assert.match(html, /data-resize-region="sidebar"/);
   assert.match(html, /data-experience-level="research"/);
   assert.equal(calculateResize({ region: 'sidebar', start: 288, delta: 50 }), 338);

@@ -1,4 +1,4 @@
-import { clampLayoutValue } from './layout-store.mjs';
+import { clampLayoutValue } from './layout-store.441ab71c0799.mjs';
 const REGION_KEY = Object.freeze({ sidebar: 'sidebarWidth', dock: 'dockWidth', bottom: 'bottomHeight' });
 export function calculateResize({ region, start, delta }) { const key = REGION_KEY[region]; if (!key) throw new TypeError(`Unknown resize region: ${region}`); return clampLayoutValue(key, Number(start) + Number(delta)); }
 export function createResizableRegionController({ root = document, layoutStore, step = 16 } = {}) {

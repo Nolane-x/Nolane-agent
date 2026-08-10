@@ -1,5 +1,5 @@
-import { icon } from '../../core/icon.mjs';
-import { normalizeLanguage } from '../../core/i18n.mjs';
+import { icon } from '../../core/icon.c68f8ee14f69.mjs';
+import { normalizeLanguage } from '../../core/i18n.2308bfe03baa.mjs';
 
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 const choice = ({ path, value, current, label, detail = '', iconName = 'spark' }) => `<button type="button" class="onboarding-choice" data-onboarding-path="${esc(path)}" data-onboarding-value="${esc(value)}" aria-pressed="${current === value}"><span class="onboarding-choice__icon">${icon(iconName,{size:17})}</span><span><strong>${esc(label)}</strong>${detail ? `<small>${esc(detail)}</small>` : ''}</span><span class="onboarding-choice__check">${current === value ? icon('check',{size:15}) : ''}</span></button>`;

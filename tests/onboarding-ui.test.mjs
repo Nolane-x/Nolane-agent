@@ -11,6 +11,8 @@ test('onboarding has four compact screens and never asks cloud versus local mode
   for (let step=0;step<4;step+=1) {
     const html=renderOnboardingView({status:'ready',required:true,step,answers:{language:'en',primaryUse:'software',explanationDepth:'detailed',responseStyle:'reviewer',askBeforeAmbiguousChanges:true,experience:'studio',theme:'system',accent:'violet',density:'comfortable',motion:'system',memoryMode:'approved',notifications:{desktop:true,taskCompletion:true,approvals:true,errors:true},telemetry:false}});
     assert.match(html,new RegExp(`data-state="current"`));
+    assert.match(html, new RegExp(`onboarding-progress" role="progressbar"[^>]*aria-valuemin="1"[^>]*aria-valuemax="4"[^>]*aria-valuenow="${step + 1}"`));
+    assert.match(html, /<span aria-hidden="true" data-state=/);
   }
   assert.doesNotMatch(source,/cloud\s*(?:or|vs\.?|versus|\/)[\s-]*local|local\s*(?:or|vs\.?|versus|\/)[\s-]*cloud/i);
   assert.doesNotMatch(source,/api key|provider setup/i);
