@@ -123,7 +123,8 @@ export async function captureUiRuntimeVisual({ baseUrl, token, outputDirectory, 
   try {
     for (const state of states) {
       const viewport = state.viewport ?? DEFAULT_VIEWPORT;
-      const page = await browser.newPage({ viewport, deviceScaleFactor: 1 });
+      const context = await browser.newContext({ viewport, deviceScaleFactor: 1 });
+      const page = await context.newPage();
       const pageErrors = [];
       page.on('pageerror', (error) => pageErrors.push(String(error?.message ?? error)));
       await page.goto(stateUrl(root, credential, state.route), { waitUntil: 'domcontentloaded', timeout: 30_000 });
@@ -139,7 +140,7 @@ export async function captureUiRuntimeVisual({ baseUrl, token, outputDirectory, 
       await page.screenshot({ path: file, fullPage: true, animations: 'disabled' });
       const body = await readFile(file);
       captures.push(Object.freeze({ id: state.id, route: state.route, viewport: Object.freeze({ ...viewport, deviceScaleFactor: 1 }), file: filename, bytes: body.length, sha256: sha256(body) }));
-      await page.close();
+      await context.close();
     }
   } finally {
     await browser.close();

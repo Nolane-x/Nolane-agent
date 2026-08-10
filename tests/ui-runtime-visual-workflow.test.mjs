@@ -33,6 +33,9 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(workflow, /appearance"\s*:\s*\{\s*"theme"\s*:\s*"nocturne"/);
   assert.match(workflow, /NOLANE_UI_VISUAL_STATES=home-nocturne/);
   assert.match(capturer, /chromium\.launch/);
+  assert.match(capturer, /browser\.newContext\(\{ viewport, deviceScaleFactor: 1 \}\)/);
+  assert.match(capturer, /context\.newPage\(\)/);
+  assert.doesNotMatch(capturer, /browser\.newPage\(/);
   assert.match(capturer, /page\.goto/);
   assert.match(capturer, /page\.screenshot/);
   assert.match(capturer, /sha256/);
