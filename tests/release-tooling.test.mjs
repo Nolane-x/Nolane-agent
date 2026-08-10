@@ -11,6 +11,12 @@ import { VERSION } from '../src/version.mjs';
 
 const execFileAsync = promisify(execFile);
 
+test('VS Code extension uses a TypeScript 7-compatible Node16 module pair', async () => {
+  const config = JSON.parse(await readFile('extensions/vscode/tsconfig.json', 'utf8'));
+  assert.equal(config.compilerOptions.module, 'Node16');
+  assert.equal(config.compilerOptions.moduleResolution, 'Node16');
+});
+
 test('VS Code extension rebuilds from tracked TypeScript source in a clean tree', async () => {
   await rm('extensions/vscode/extension/dist', { recursive: true, force: true });
   await execFileAsync(process.execPath, ['scripts/build-vscode-extension.mjs'], { timeout: 60_000, windowsHide: true });

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, realpath, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -31,7 +31,7 @@ test('TreeSitterRuntimeService detects a pinned CLI and parses only project-boun
   assert.match(result.receiptSha256, /^[a-f0-9]{64}$/);
   const parseCall = calls.find((call) => call.args[0] === 'parse');
   assert.deepEqual(parseCall.args.slice(0, 4), ['parse', '--json', '--quiet', '--']);
-  assert.equal(parseCall.options.cwd, root);
+  assert.equal(parseCall.options.cwd, await realpath(root));
 });
 
 test('TreeSitterRuntimeService rejects traversal, symlink escape, unsupported files, and unavailable runtime', async () => {
