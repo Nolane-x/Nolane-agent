@@ -89,6 +89,30 @@ test('Browser workspace close action is explicit and scoped to the selected proj
   assert.equal(controller.snapshot().sessionOpen, false);
 });
 
+test('Browser workspace starts a visible project session and keeps sensitive URL parameters out of the UI', async () => {
+  const api = createApi({
+    '/api/browser/runtime': { available: true, installed: true },
+    '/api/browser/detect': { available: true, driver: 'playwright-cli' },
+    '/api/browser/status?projectId=project-a': { available: true, sessions: [{ name: 'tab-1', url: 'https://example.test', title: 'Example' }] },
+    '/api/browser/tabs': { available: true, tabs: [{ id: 'tab-1', url: 'https://example.test', title: 'Example' }] },
+    '/api/permissions/browser?goalId=mission-a': { allowedActions: ['open', 'goto', 'screenshot'], denied: [] },
+    '/api/browser/open': { available: true, sessionName: 'forge-project-a', headed: true, persistent: true },
+  });
+  const controller = createBrowserWorkspaceController({ api, projectId: 'project-a', missionId: 'mission-a' });
+  await controller.load();
+  controller.setUrl('https://example.test/work?token=must-never-render&view=overview');
+  await controller.open();
+
+  const openCall = api.calls.find((call) => call.path === '/api/browser/open');
+  assert.deepEqual(openCall.body, { projectId: 'project-a', url: 'https://example.test/work?view=overview', headed: true, persistent: true });
+  const html = renderBrowserWorkspace(controller.snapshot());
+  assert.match(html, /Open browser/);
+  assert.match(html, /Go to URL/);
+  assert.match(html, /Sign in directly in the visible browser window/);
+  assert.doesNotMatch(html, /must-never-render|token=/i);
+  assert.doesNotMatch(html, /type="password"|cookie/i);
+});
+
 test('Browser workspace escapes project, tab, and error content before rendering', async () => {
   const projectId = '<project>'; const api = createApi({
     '/api/browser/runtime': { ready: true },
