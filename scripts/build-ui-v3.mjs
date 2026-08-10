@@ -7,6 +7,8 @@ import { fileURLToPath } from 'node:url';
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 const posix = (value) => value.replaceAll('\\', '/');
 const canonicalText = (value) => value.replaceAll('\r\n', '\n');
+const isTextLike = (relative) => /\.(?:mjs|css|html|svg|json)$/.test(relative);
+const canonicalSource = (relative, source) => isTextLike(relative) ? Buffer.from(canonicalText(source.toString('utf8'))) : source;
 
 async function filesUnder(root, current = root) {
   const entries = await readdir(current, { withFileTypes: true });
@@ -60,15 +62,14 @@ export async function buildUiV3({ sourceRoot = path.resolve('ui-v3'), outputRoot
   const relatives = await filesUnder(source);
   if (!relatives.includes('index.html') || !relatives.includes('app.mjs')) throw new Error('UI v3 requires index.html and app.mjs');
   const sources = new Map();
-  for (const relative of relatives) sources.set(relative, await readFile(path.join(source, relative)));
+  for (const relative of relatives) sources.set(relative, canonicalSource(relative, await readFile(path.join(source, relative))));
   const sourceGraphDigest = sha256(relatives.map((relative) => `${relative}:${sha256(sources.get(relative))}`).join('\n'));
   const mapping = new Map(relatives.map((relative) => [relative, outputName(relative, sources.get(relative), sourceGraphDigest)]));
   await rm(output, { recursive: true, force: true }); await mkdir(output, { recursive: true });
   const files = {};
   for (const relative of relatives) {
     const raw = sources.get(relative);
-    const textLike = /\.(?:mjs|css|html|svg|json)$/.test(relative);
-    const content = textLike ? Buffer.from(canonicalText(rewrite(relative, raw.toString('utf8'), mapping))) : raw;
+    const content = isTextLike(relative) ? Buffer.from(canonicalText(rewrite(relative, raw.toString('utf8'), mapping))) : raw;
     const targetRelative = mapping.get(relative); const target = path.join(output, targetRelative);
     await mkdir(path.dirname(target), { recursive: true }); await writeFile(target, content);
     files[targetRelative] = Object.freeze({ path: targetRelative, bytes: content.length, sha256: sha256(content), source: relative });
