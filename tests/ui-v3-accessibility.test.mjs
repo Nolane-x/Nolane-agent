@@ -16,12 +16,13 @@ test('settings center has landmarks labels live status and keyboard-friendly con
 });
 
 test('runtime-critical labels use the legible secondary text token', async () => {
-  const [shell, experience, onboarding, home, surfaces] = await Promise.all([
+  const [shell, experience, onboarding, home, surfaces, settings] = await Promise.all([
     readFile('ui-v3/styles/layout/app-shell.css', 'utf8'),
     readFile('ui-v3/styles/components/experience-switcher.css', 'utf8'),
     readFile('ui-v3/styles/pages/onboarding.css', 'utf8'),
     readFile('ui-v3/styles/pages/home.css', 'utf8'),
     readFile('ui-v3/styles/pages/surfaces.css', 'utf8'),
+    readFile('ui-v3/styles/pages/settings.css', 'utf8'),
   ]);
   assert.match(shell, /\.app-topbar__title\{[^}]*color:var\(--text-secondary\)/);
   assert.match(experience, /\.app-topbar__actions>\.experience-switcher>\.experience-pill\{[^}]*color:var\(--text-secondary\)/);
@@ -35,6 +36,10 @@ test('runtime-critical labels use the legible secondary text token', async () =>
   assert.match(surfaces, /\.surface-page__header \.eyebrow\{[^}]*color:var\(--text-secondary\)/);
   assert.match(surfaces, /\.surface-page__header p:last-child\{[^}]*color:var\(--text-secondary\)/);
   assert.match(surfaces, /\.surface-primary\{[^}]*color:var\(--nolane-ink\)/);
+  assert.match(settings, /\.settings-nav \.settings-brand small\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(settings, /\.settings-center \.experience-switch--four small\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(settings, /\.settings-center \.settings-nav footer button\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(settings, /\.settings-center \.setting-copy small\{[^}]*color:var\(--text-secondary\)/);
 });
 
 test('project view toggle buttons have localized accessible names', () => {
