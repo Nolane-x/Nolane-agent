@@ -59,6 +59,10 @@ test('runtime-critical labels use the legible secondary text token', async () =>
   assert.match(controlPlane, /\.control-plane-shell>header>span\{[^}]*color:var\(--text-secondary\)/);
   assert.match(controlPlane, /\.control-plane-shell>nav a\[aria-current="false"\]\{[^}]*color:var\(--text-secondary\)/);
   assert.match(controlPlane, /\.control-plane-shell>nav a\[aria-current="page"\]\[data-control-plane-domain\]\{[^}]*color:var\(--text-primary\)/);
+  assert.match(controlPlane, /\.cp-adapter-card code,\.cp-route-panel code\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(controlPlane, /\.cp-adapter-count span\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(controlPlane, /\.cp-adapter-metrics dt\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(controlPlane, /\.cp-empty\{[^}]*color:var\(--text-secondary\)/);
 });
 
 test('project view toggle buttons have localized accessible names', () => {
