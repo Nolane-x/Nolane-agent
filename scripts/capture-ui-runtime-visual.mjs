@@ -85,6 +85,23 @@ async function assertResponsiveLayout(page, state) {
   }
 }
 
+async function assertProjectPickerKeyboard(page) {
+  const picker = page.locator('[data-project-picker="home-project-picker"]');
+  const trigger = picker.locator('[data-project-picker-toggle]');
+  const menu = picker.locator('[data-project-picker-menu]');
+  const search = picker.locator('[data-project-search]');
+  await trigger.focus();
+  await page.keyboard.press('ArrowDown');
+  await menu.waitFor({ state: 'visible', timeout: 5_000 });
+  const searchFocused = await search.evaluate((node) => document.activeElement === node);
+  if (!searchFocused) throw new Error('project picker did not move focus to search after ArrowDown');
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(50);
+  if (!await menu.isHidden()) throw new Error('project picker did not close after Escape');
+  const triggerFocused = await trigger.evaluate((node) => document.activeElement === node);
+  if (!triggerFocused) throw new Error('project picker did not return focus to its trigger after Escape');
+}
+
 export async function captureUiRuntimeVisual({ baseUrl, token, outputDirectory, states = STATES } = {}) {
   const root = required(baseUrl, 'baseUrl');
   const credential = required(token, 'token');
@@ -103,6 +120,7 @@ export async function captureUiRuntimeVisual({ baseUrl, token, outputDirectory, 
       await page.locator(state.selector).waitFor({ state: 'visible', timeout: 30_000 });
       await page.waitForTimeout(400);
       if (state.id === 'settings') await assertSettingsScrollPreserved(page);
+      if (state.id === 'home') await assertProjectPickerKeyboard(page);
       await assertResponsiveLayout(page, state);
       if (pageErrors.length) throw new Error(`${state.id} emitted page errors: ${pageErrors.join(' | ')}`);
       const filename = `${state.id}.png`;

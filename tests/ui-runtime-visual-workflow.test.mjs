@@ -39,6 +39,9 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(capturer, /settings content did not preserve scroll position/);
   assert.match(capturer, /assertResponsiveLayout/);
   assert.match(capturer, /responsive layout overflows horizontally/);
+  assert.match(capturer, /assertProjectPickerKeyboard/);
+  assert.match(capturer, /project picker did not move focus to search after ArrowDown/);
+  assert.match(capturer, /project picker did not return focus to its trigger after Escape/);
   assert.match(capturer, /viewport: Object\.freeze\(\{ width: 640, height: 900 \}\)/);
   assert.match(workflow, /NOLANE_UI_VISUAL_STATES=home,home-compact,projects,settings,workroom,control-plane/);
   assert.doesNotMatch(capturer, /token\s*:\s*(credential|token)/);
