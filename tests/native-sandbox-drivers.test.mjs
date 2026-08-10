@@ -27,7 +27,7 @@ test('Podman driver is fail-closed and builds a bounded no-shell container contr
   assert.ok(args.includes('--pids-limit=64'));
   assert.ok(args.includes('--cpus=1.5'));
   assert.ok(args.includes('--memory=536870912'));
-  assert.ok(args.includes(`${workspace}:/workspace:rw,rprivate,nosuid,nodev`));
+  assert.ok(args.includes(`${result.workspaceRoot}:/workspace:rw,rprivate,nosuid,nodev`));
   assert.equal(args.at(-3), 'node:22-alpine');
   assert.deepEqual(args.slice(-2), ['node', '--version']);
   assert.equal(calls.some((call) => typeof call.command !== 'string' || call.command.includes(' ')), false);

@@ -1,7 +1,10 @@
 import { lstat, realpath } from 'node:fs/promises';
 import path from 'node:path';
 
-const within = (root, candidate) => candidate === root || candidate.startsWith(`${root}${path.sep}`);
+const within = (root, candidate) => {
+  const relative = path.relative(root, candidate);
+  return relative === '' || (relative !== '..' && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative));
+};
 
 function boundaryError(message, statusCode, code) { return Object.assign(new Error(message), { statusCode, code }); }
 
@@ -97,7 +100,8 @@ export class WorkspacePolicy {
 
   relative(absolutePath) {
     const candidate = path.resolve(absolutePath);
-    if (!within(this.root, candidate)) throw boundaryError('Path escapes workspace', 403, 'PATH_ESCAPE');
-    return (path.relative(this.root, candidate) || '.').replaceAll('\\', '/');
+    const base = [this.root, this.rootReal].filter(Boolean).find((root) => within(root, candidate));
+    if (!base) throw boundaryError('Path escapes workspace', 403, 'PATH_ESCAPE');
+    return (path.relative(base, candidate) || '.').replaceAll('\\', '/');
   }
 }

@@ -3,11 +3,13 @@ import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { EventEmitter } from 'node:events';
 
 import {
   EXTERNAL_GATE_CLASSES,
   collectExternalGateEvidence,
   probeCredentialHelper,
+  probeWindowsJobObjectLifecycle,
 } from '../src/release/external-gate-evidence.mjs';
 
 test('external gate inventory classifies all 56 checklist gates without promoting contracts to runtime proof', async (t) => {
@@ -97,4 +99,25 @@ test('credential helper proof performs a disposable round trip and reports no se
   assert.equal(result.backend, 'test-keychain');
   assert.equal(JSON.stringify(result).includes(String(stored)), false);
   assert.deepEqual(calls, ['start', 'set', 'resolve', 'delete', 'close']);
+});
+
+test('Windows Job Object proof creates, attaches, terminates, and observes disposable child cleanup', async () => {
+  const calls = [];
+  const child = Object.assign(new EventEmitter(), { pid: 4242, exitCode: null, signalCode: null, kill() { calls.push('kill'); } });
+  const result = await probeWindowsJobObjectLifecycle({
+    platform: 'win32',
+    helperPath: 'ForgeJobObject.exe',
+    childFactory: () => child,
+    driver: {
+      async capabilities() { calls.push('capabilities'); return { available: true, version: 'test' }; },
+      async create() { calls.push('create'); },
+      async attach({ pid }) { calls.push(`attach:${pid}`); },
+      async terminate() { calls.push('terminate'); child.exitCode = 1; child.emit('exit', 1, null); },
+    },
+  });
+
+  assert.equal(result.available, true);
+  assert.equal(result.lifecycle, true);
+  assert.equal(result.childTerminated, true);
+  assert.deepEqual(calls, ['capabilities', 'create', 'attach:4242', 'terminate']);
 });

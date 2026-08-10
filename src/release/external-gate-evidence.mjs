@@ -105,11 +105,65 @@ export async function probeCredentialHelper({
   }
 }
 
+export async function probeWindowsJobObjectLifecycle({
+  rootDirectory = process.cwd(),
+  platform = process.platform,
+  helperPath = process.env.NOLANE_JOB_OBJECT_HELPER || path.join(rootDirectory, 'native', 'job-object', 'forge-job-object.exe'),
+  driver = new WindowsJobObjectDriver({ helperPath }),
+  childFactory = spawn,
+  timeoutMs = 5_000,
+} = {}) {
+  if (platform !== 'win32') return Object.freeze({ available: false, lifecycle: false, reason: 'wrong-platform' });
+  const capability = await driver.capabilities();
+  if (!capability.available) return Object.freeze({ ...capability, lifecycle: false });
+
+  const id = `gate-${process.pid}-${randomBytes(6).toString('hex')}`;
+  let child = null;
+  let created = false;
+  let terminated = false;
+  let childTerminated = false;
+  let failure = null;
+  try {
+    await driver.create({ id, limits: { cpuPercent: 50, memoryBytes: 256 * 1024 * 1024, processCount: 4 } });
+    created = true;
+    child = childFactory(process.execPath, ['-e', 'setInterval(() => {}, 1000)'], { windowsHide: true, stdio: 'ignore' });
+    if (!Number.isInteger(child?.pid) || child.pid < 1) throw new Error('disposable child did not start');
+    const exit = new Promise((resolve, reject) => {
+      child.once('exit', (code, signal) => resolve({ code, signal }));
+      child.once('error', reject);
+    });
+    await driver.attach({ id, pid: child.pid });
+    await driver.terminate({ id });
+    terminated = true;
+    let timer;
+    try {
+      await Promise.race([
+        exit,
+        new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Job Object child termination timed out')), timeoutMs); timer.unref?.(); }),
+      ]);
+      childTerminated = true;
+    } finally {
+      clearTimeout(timer);
+    }
+  } catch (error) {
+    failure = bounded(error?.code || error?.message || 'lifecycle-failed');
+  } finally {
+    if (created && !terminated) {
+      try { await driver.terminate({ id }); terminated = true; } catch {}
+    }
+    if (child && child.exitCode === null && child.signalCode === null) {
+      try { child.kill(); } catch {}
+    }
+  }
+  if (failure) return Object.freeze({ ...capability, available: false, lifecycle: false, childTerminated, cleanup: terminated, reason: failure });
+  return Object.freeze({ ...capability, available: true, lifecycle: true, childTerminated, cleanup: terminated });
+}
+
 async function defaultRuntimeProbes(rootDirectory) {
   const [treeSitter, podman, windowsJobObjects, macOsSandbox, docker, wsl, osKeychain] = await Promise.all([
     new TreeSitterRuntimeService({ projectResolver: () => null }).capabilities(),
     new PodmanSandboxDriver().capabilities(),
-    new WindowsJobObjectDriver({ helperPath: process.env.NOLANE_JOB_OBJECT_HELPER || path.join(rootDirectory, 'native', 'job-object', 'forge-job-object.exe') }).capabilities(),
+    probeWindowsJobObjectLifecycle({ rootDirectory }),
     new MacOsSandboxDriver().capabilities(),
     commandProbe('docker', ['version', '--format', '{{.Server.Version}}']),
     process.platform === 'win32' ? commandProbe('wsl.exe', ['--status']) : Promise.resolve({ available: false, reason: 'wrong-platform' }),

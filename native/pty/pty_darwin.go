@@ -1,29 +1,35 @@
-//go:build linux
+//go:build darwin && cgo
 
 package main
+
+/*
+#cgo LDFLAGS: -lutil
+#include <errno.h>
+#include <sys/ioctl.h>
+#include <util.h>
+
+static int forge_openpty(int *master, int *slave, unsigned short rows, unsigned short cols) {
+	struct winsize size = { .ws_row = rows, .ws_col = cols, .ws_xpixel = 0, .ws_ypixel = 0 };
+	if (openpty(master, slave, NULL, NULL, &size) == 0) return 0;
+	return errno;
+}
+
+static int forge_resize(int fd, unsigned short rows, unsigned short cols) {
+	struct winsize size = { .ws_row = rows, .ws_col = cols, .ws_xpixel = 0, .ws_ypixel = 0 };
+	if (ioctl(fd, TIOCSWINSZ, &size) == 0) return 0;
+	return errno;
+}
+*/
+import "C"
 
 import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"syscall"
 	"time"
-	"unsafe"
 )
 
-const (
-	tiocgptn   = 0x80045430
-	tiocsptlck = 0x40045431
-	tiocswinsz = 0x5414
-)
-
-type winsize struct {
-	Row    uint16
-	Col    uint16
-	Xpixel uint16
-	Ypixel uint16
-}
 type unixPTY struct {
 	master   *os.File
 	cmd      *exec.Cmd
@@ -32,37 +38,17 @@ type unixPTY struct {
 	waitErr  error
 }
 
-func ioctl(fd uintptr, request uintptr, value unsafe.Pointer) error {
-	_, _, errno := syscall.Syscall(syscall.SYS_IOCTL, fd, request, uintptr(value))
-	if errno != 0 {
-		return errno
-	}
-	return nil
-}
-
 func startPTY(params createParams) (ptyProcess, error) {
-	master, err := os.OpenFile("/dev/ptmx", os.O_RDWR|syscall.O_CLOEXEC, 0)
-	if err != nil {
-		return nil, fmt.Errorf("open /dev/ptmx: %w", err)
+	var masterFD, slaveFD C.int
+	if errno := C.forge_openpty(&masterFD, &slaveFD, C.ushort(params.Rows), C.ushort(params.Cols)); errno != 0 {
+		return nil, fmt.Errorf("open PTY: %w", syscall.Errno(errno))
 	}
-	cleanup := func(e error) (ptyProcess, error) { _ = master.Close(); return nil, e }
-	unlock := int32(0)
-	if err := ioctl(master.Fd(), tiocsptlck, unsafe.Pointer(&unlock)); err != nil {
-		return cleanup(fmt.Errorf("unlock PTY: %w", err))
-	}
-	var number uint32
-	if err := ioctl(master.Fd(), tiocgptn, unsafe.Pointer(&number)); err != nil {
-		return cleanup(fmt.Errorf("get PTY number: %w", err))
-	}
-	slavePath := filepath.Join("/dev/pts", fmt.Sprint(number))
-	slave, err := os.OpenFile(slavePath, os.O_RDWR, 0)
-	if err != nil {
-		return cleanup(fmt.Errorf("open PTY slave: %w", err))
-	}
-	size := winsize{Row: uint16(params.Rows), Col: uint16(params.Cols)}
-	if err := ioctl(master.Fd(), tiocswinsz, unsafe.Pointer(&size)); err != nil {
+	master := os.NewFile(uintptr(masterFD), "pty-master")
+	slave := os.NewFile(uintptr(slaveFD), "pty-slave")
+	cleanup := func(e error) (ptyProcess, error) {
+		_ = master.Close()
 		_ = slave.Close()
-		return cleanup(fmt.Errorf("resize PTY: %w", err))
+		return nil, e
 	}
 	cmd := exec.Command(params.Shell, params.Args...)
 	cmd.Dir = params.Cwd
@@ -71,9 +57,8 @@ func startPTY(params createParams) (ptyProcess, error) {
 		cmd.Env = append(cmd.Env, key+"="+value)
 	}
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = slave, slave, slave
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true, Setctty: true, Ctty: 0, Pdeathsig: syscall.SIGKILL}
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true, Setctty: true, Ctty: 0}
 	if err := cmd.Start(); err != nil {
-		_ = slave.Close()
 		return cleanup(fmt.Errorf("start PTY process: %w", err))
 	}
 	_ = slave.Close()
@@ -91,8 +76,10 @@ func startPTY(params createParams) (ptyProcess, error) {
 func (p *unixPTY) Read(data []byte) (int, error)  { return p.master.Read(data) }
 func (p *unixPTY) Write(data []byte) (int, error) { return p.master.Write(data) }
 func (p *unixPTY) Resize(cols, rows int) error {
-	size := winsize{Row: uint16(rows), Col: uint16(cols)}
-	return ioctl(p.master.Fd(), tiocswinsz, unsafe.Pointer(&size))
+	if errno := C.forge_resize(C.int(p.master.Fd()), C.ushort(rows), C.ushort(cols)); errno != 0 {
+		return syscall.Errno(errno)
+	}
+	return nil
 }
 func (p *unixPTY) Terminate() error {
 	if p.cmd.Process == nil {

@@ -54,6 +54,19 @@ test('WorkspacePolicy rejects traversal and symlink escape for reads and writes'
   assert.equal(await policy.resolveRead('src/a.txt'), path.join(root, 'src', 'a.txt'));
 });
 
+test('WorkspacePolicy keeps real paths relative when the workspace root is an alias', async (t) => {
+  const actual = await mkdtemp(path.join(os.tmpdir(), 'forge-policy-real-'));
+  const alias = `${actual}-alias`;
+  t.after(() => rm(alias, { recursive: true, force: true }));
+  t.after(() => rm(actual, { recursive: true, force: true }));
+  await mkdir(path.join(actual, 'src'));
+  await writeFile(path.join(actual, 'src', 'a.txt'), 'alpha\n', 'utf8');
+  await symlink(actual, alias, process.platform === 'win32' ? 'junction' : 'dir');
+  const policy = new WorkspacePolicy(alias);
+  const resolved = await policy.resolveRead('src/a.txt');
+  assert.equal(policy.relative(resolved), 'src/a.txt');
+});
+
 test('ToolBroker reads and atomically writes with expected hashes and content-addressed receipts', async (t) => {
   const { root, broker } = await fixture(t);
   const read = await broker.execute({ tool: 'fs.read', input: { path: 'src/a.txt' } });
