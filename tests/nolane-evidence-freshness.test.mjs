@@ -4,6 +4,7 @@ import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { verifyNolaneEvidenceFreshness } from '../scripts/verify-nolane-evidence-freshness.mjs';
+import { evidenceFileSha256 } from '../src/release/evidence-file-hash.mjs';
 
 test('evidence freshness verifier accepts current registry and detects stale source or tests', async (t) => {
   const current = await verifyNolaneEvidenceFreshness({ projectRoot: process.cwd() });
@@ -17,13 +18,13 @@ test('evidence freshness verifier accepts current registry and detects stale sou
   await mkdir(path.join(root, 'requirements'), { recursive: true });
   await mkdir(path.join(root, 'src'), { recursive: true });
   await mkdir(path.join(root, 'tests'), { recursive: true });
-  await writeFile(path.join(root, 'src', 'feature.mjs'), 'export const value = 1;\n');
-  await writeFile(path.join(root, 'tests', 'feature.test.mjs'), 'test();\n');
+  await writeFile(path.join(root, 'src', 'feature.mjs'), 'export const value = 1;\r\n');
+  await writeFile(path.join(root, 'tests', 'feature.test.mjs'), 'test();\r\n');
   const crypto = await import('node:crypto');
   const sha = (value) => crypto.createHash('sha256').update(value).digest('hex');
   const entry = await readFile(path.join(root, 'src', 'feature.mjs'));
   const exactTest = await readFile(path.join(root, 'tests', 'feature.test.mjs'));
-  const evidence = { environment: 'node>=22.12', entrypointSha256: sha(entry), exactTestSha256: sha(exactTest) };
+  const evidence = { environment: 'node>=22.12', entrypointSha256: evidenceFileSha256(entry), exactTestSha256: evidenceFileSha256(exactTest) };
   const replayReceiptSha256 = sha(JSON.stringify({ id: 'NOL-X-001', ...evidence }));
   await writeFile(path.join(root, 'requirements', 'nolane-agent-v5-requirements.json'), JSON.stringify({
     schema: 'nolane.agent.requirements.v5',

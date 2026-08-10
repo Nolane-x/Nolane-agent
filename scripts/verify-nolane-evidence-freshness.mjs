@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { canonicalSha256 } from '../vendor/forge-os/src/core/canonical-json.mjs';
+import { evidenceFileSha256 } from '../src/release/evidence-file-hash.mjs';
 
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 
@@ -39,8 +40,8 @@ export async function verifyNolaneEvidenceFreshness({
     if (!entrypoint || !exactTest) continue;
     const actualEvidence = {
       environment: acceptance.evidence?.environment ?? 'node>=22.12',
-      entrypointSha256: sha256(entrypoint),
-      exactTestSha256: sha256(exactTest),
+      entrypointSha256: evidenceFileSha256(entrypoint),
+      exactTestSha256: evidenceFileSha256(exactTest),
     };
     if (actualEvidence.entrypointSha256 !== acceptance.evidence?.entrypointSha256) failures.push({ requirementId: requirement.id, code: 'ENTRYPOINT_SHA_MISMATCH', path: acceptance.entrypoint });
     if (actualEvidence.exactTestSha256 !== acceptance.evidence?.exactTestSha256) failures.push({ requirementId: requirement.id, code: 'EXACT_TEST_SHA_MISMATCH', path: acceptance.exactTest });

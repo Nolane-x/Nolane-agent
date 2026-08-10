@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { generateNolaneProgram } from '../scripts/generate-nolane-program.mjs';
 
 test('program generator creates a real requirement registry and a Nolane runtime purity receipt and immutable historical transformation evidence', async () => {
+  const featureAuditBefore = await readFile('docs/feature-audit-5.0.0-beta.6.json');
   const result = await generateNolaneProgram({ projectRoot: process.cwd() });
   assert.equal(result.product, 'Nolane Agent');
   assert.equal(result.requirements.total, 198);
@@ -15,6 +16,7 @@ test('program generator creates a real requirement registry and a Nolane runtime
   assert.equal(result.retirement.archiveFindings, 0);
   assert.ok(result.retirement.historicalLedgerEntries >= 7000);
   const registry = JSON.parse(await readFile('requirements/nolane-agent-v5-requirements.json', 'utf8'));
+  assert.deepEqual(await readFile('docs/feature-audit-5.0.0-beta.6.json'), featureAuditBefore);
   assert.equal(registry.requirements.some((item) => /requirement \d+$/.test(item.title)), false);
   assert.equal(registry.statusCounts.verified_source_test, 193);
   assert.equal(registry.statusCounts.external_gate, 5);

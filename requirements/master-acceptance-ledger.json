@@ -18,7 +18,7 @@
   },
   "product": "Nolane Agent",
   "productVersion": "5.0.0-beta.6",
-  "receiptSha256": "249b57e891765e6a107b18faafef6c82719eed76c67aeccc369f207dc6b52974",
+  "receiptSha256": "3aa57e7ce3667805586881a7dcae40aa654f5ccd82e0f8d6a8aaffe917dd6baf",
   "requirements": [
     {
       "acceptance": {
@@ -891,9 +891,9 @@
         ],
         "productionEntrypoint": "src/release/third-party-provenance.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "62b82359e95b1c766fc66a96d57a85b2957ba6849c7f80c1b296d6e317d1afa1",
+          "entrypointSha256": "2e88ab8e425d82977a4e20b8429252b2faed04f1e5429577ddaa3a19c52afd09",
           "environment": "node>=22.12",
-          "exactTestSha256": "1ffac81cc1b248d18ab01b24e4d2ca6ec5de93f78985db5f43177dbc169aaccf"
+          "exactTestSha256": "cc5b825957dd32c07e7dd7d077a8ece3fe0a22394054b3c3f5d134f8feb45fe5"
         },
         "testPaths": [
           "tests/third-party-provenance-contracts.test.mjs"
@@ -1352,9 +1352,9 @@
         ],
         "productionEntrypoint": "src/small-model/scientific-benchmark-harness.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "1c1863e1d8a326e7814eb522ff40d6c3e2ecc5cd6f2d3861b489ff9fd7595867",
+          "entrypointSha256": "c132dff0be8943bc0151d07083600d5b698458ab1416d51354fce814f04ad4d6",
           "environment": "node>=22.12",
-          "exactTestSha256": "7d1b96be5d237933ebf4fd8e4cefdc91afccdf3f407781fc0ab1a5d9e5baeef5"
+          "exactTestSha256": "24dc39274596ddce6211e95e66d5410cc941a11e21915b25474ad6484f0eac34"
         },
         "testPaths": [
           "tests/small-model-scientific-benchmark.test.mjs"
@@ -1464,9 +1464,9 @@
         ],
         "productionEntrypoint": "src/small-model/curriculum-factory.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "2e6dda5ebd3cfa1f2d22bd8a850239b4784eb5749d253a2876fd96a837bf2946",
+          "entrypointSha256": "ed1b152a2e137f53ec18a7db167033d11d60a48fb61e9944d64da3ca7a336132",
           "environment": "node>=22.12",
-          "exactTestSha256": "37665b426b48aad82be4b61d699bf5770e8d94d208daaac88f0b5409cc7da56c"
+          "exactTestSha256": "bf135cf80a920d86fe35f9ea4a74c98d3d880157a182b1bf9f6df18e411528fc"
         },
         "testPaths": [
           "tests/small-model-curriculum-factory.test.mjs"
@@ -2009,9 +2009,9 @@
         ],
         "productionEntrypoint": "scripts/validate-ui-tokens.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "d7f38f43e0e76146e9eaec205d02d01e10c0d2844b9343616a8a381a6874ac79",
+          "entrypointSha256": "e0531ead59cce1227251de29a3ec60bb2c810d3ec17491ff284e720cba222108",
           "environment": "node>=22.12",
-          "exactTestSha256": "49cfd1732bfea28022a967aa5e07f83db5f6c8771d84355cf42dd1c23130ce5b"
+          "exactTestSha256": "61505ac824f01855fe5cd556cfebcf48947702fc1c909bf89326f05c64cd138c"
         },
         "testPaths": [
           "tests/ui-v3-tokens.test.mjs"
@@ -4066,9 +4066,9 @@
         ],
         "productionEntrypoint": "src/small-model/plasticity-plane.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "eb5ffb961490cd241bed46f216ebf00e30ac59e6d6eff01d6c488a7701c77933",
+          "entrypointSha256": "39173cc288bb45c353305709a18fc1c43422083f5dd8425f3d85df60f2e277cd",
           "environment": "node>=22.12",
-          "exactTestSha256": "4eff5d967963e8e2228de1e5e495a65bb4fc6dad8a2fad20c3ebb6ee0f606fec"
+          "exactTestSha256": "cb0167c73ad979d2f08f6745a6e33ef7fa3dffe0d7e46055942c58b8b2bfeb23"
         },
         "testPaths": [
           "tests/small-model-plasticity-plane.test.mjs"
@@ -4406,9 +4406,9 @@
         ],
         "productionEntrypoint": "src/small-model/recursive-policy-sidecar.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "8a6c5a85837ace19f71fd8a4a5d029f0dd17badcd761a8f9e6462e7dca7d32b4",
+          "entrypointSha256": "8fe64aa0d091b37f31ec8e0fec874cbd39384b7944a548d2d05224564b81ebd6",
           "environment": "node>=22.12",
-          "exactTestSha256": "476b33ab6ff33115dc66249ca0f183fbb2617b8408a848fefb03144f3b2a4268"
+          "exactTestSha256": "d0778a3e457e9ee1b6ab7d772e0910aaf0ea758d965ead5af0d258b65b2a1a54"
         },
         "testPaths": [
           "tests/small-model-recursive-policy.test.mjs"
@@ -5475,9 +5475,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/session-store.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "42a4b1f799ecd3c499dd4473d85ae1142fdef7c83ae1a53c0a80e6dd6d8ce10d",
+          "entrypointSha256": "3b31c3526eefbb90cbd4f9fec157ab4c7c1fab23292fb5838d4c5064a653d123",
           "environment": "node>=22.12",
-          "exactTestSha256": "1b70b3bd0cbccbaa37d9e3209961776c11ec246105916c5db28b1138befd8fd9"
+          "exactTestSha256": "7f70be9aa84caa2ede4adaa356b8d1bae3629f6bf9c54ba78285ff045e614760"
         },
         "testPaths": [
           "tests/nolane-native-session-contracts.test.mjs"
@@ -5641,9 +5641,9 @@
         ],
         "productionEntrypoint": "src/small-model/adaptive-compute-governor.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "bf6a2683e3b3d62d094d3fda9fafd1c8b2905c544a4db877038aa0208ad3f6e6",
+          "entrypointSha256": "654b09942933f555ea04dfe8d627878aa8a3d276a86ae8e80628ac2fbf05f9a5",
           "environment": "node>=22.12",
-          "exactTestSha256": "9828fcfb4a115faed28acffc352d038a0b1b9c552b36cb05748673b60aca2085"
+          "exactTestSha256": "1e42b62278c2cfe295ecba6dc384486a7ef6d55e84e2d417de757e1874f9c2ba"
         },
         "testPaths": [
           "tests/small-model-adaptive-compute.test.mjs"
@@ -5928,9 +5928,9 @@
         ],
         "productionEntrypoint": "src/small-model/recursive-graph-solver-pack.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "6c110120c3ce35e6a73857b8863a9297973056444468cb13245cb912ddf884ec",
+          "entrypointSha256": "ba9fa39efcf2c2bdcad01b38504c5943d650eb635e4a76b7d7004ba0ff7d5e58",
           "environment": "node>=22.12",
-          "exactTestSha256": "476b33ab6ff33115dc66249ca0f183fbb2617b8408a848fefb03144f3b2a4268"
+          "exactTestSha256": "d0778a3e457e9ee1b6ab7d772e0910aaf0ea758d965ead5af0d258b65b2a1a54"
         },
         "testPaths": [
           "tests/small-model-recursive-policy.test.mjs"
@@ -6453,9 +6453,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/orchestration-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9",
+          "entrypointSha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374",
           "environment": "node>=22.12",
-          "exactTestSha256": "a459f90ce20e14171b24112d10ec164bc73e91c4f98080d738f6d23af074bc88"
+          "exactTestSha256": "c3502bb4ef58a79498bc6e736f0d36f7b9171a538529b525cc319ce7f6a4c140"
         },
         "testPaths": [
           "tests/nolane-native-orchestration-contracts.test.mjs"
@@ -6681,9 +6681,9 @@
         ],
         "productionEntrypoint": "src/superiority/deep/local-ui-certification-lab.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "b02a7dd7b37d899a5ed202a5b98ff3a11f0c294dfa2100169597454c0856c18f",
+          "entrypointSha256": "f157bf8c2c408f059380746f4161803eb708de21929cd52bbb6f11a130c03f96",
           "environment": "node>=22.12",
-          "exactTestSha256": "4717bc38728553cb4e8d70fef48260152eeae313adff799d8d25ef47b662260d"
+          "exactTestSha256": "72f3fbb86fe0094ed9dc2446edbb4685cf3dcb3fa5a6e94c0a0c62ae8c244b7a"
         },
         "testPaths": [
           "tests/deep-superiority-ui-dogfood.test.mjs"
@@ -6724,9 +6724,9 @@
         ],
         "productionEntrypoint": "src/small-model/curriculum-factory.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "2e6dda5ebd3cfa1f2d22bd8a850239b4784eb5749d253a2876fd96a837bf2946",
+          "entrypointSha256": "ed1b152a2e137f53ec18a7db167033d11d60a48fb61e9944d64da3ca7a336132",
           "environment": "node>=22.12",
-          "exactTestSha256": "37665b426b48aad82be4b61d699bf5770e8d94d208daaac88f0b5409cc7da56c"
+          "exactTestSha256": "bf135cf80a920d86fe35f9ea4a74c98d3d880157a182b1bf9f6df18e411528fc"
         },
         "testPaths": [
           "tests/small-model-curriculum-factory.test.mjs"
@@ -6977,9 +6977,9 @@
         ],
         "productionEntrypoint": "scripts/verify-nolane-evidence-quality.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "26f51e5f0ae7c2fee3c0e39e1cff74cd88ab83f7adc2082b8961b1c799af3bd0",
+          "entrypointSha256": "165105bf30d13218b2375c0b308e7b9106dace1b9997c294d3f18f5792ff63ff",
           "environment": "node>=22.12",
-          "exactTestSha256": "ba483374e00bca03842394eeb39883b15b5d46871357159968c6b9e21d5eb7dd"
+          "exactTestSha256": "cc66dcb7215e522a15390e7d3c0d507251de8f7dd54bfda075111858431b0d7e"
         },
         "testPaths": [
           "tests/nolane-evidence-quality.test.mjs"
@@ -7355,9 +7355,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/code-notebook-tools.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "1ffef157d3eed00e6a2e8dec7506c61dc36be03efc667cfbdfc94228aaf5e37f",
+          "entrypointSha256": "7641c61951254cb7360a05b4ea0d180f93435a14fb2f92fd4470f906bda8522c",
           "environment": "node>=22.12",
-          "exactTestSha256": "7bbb71ad0b3798a8ea09918653ece50a64659b2d423d211237ae1f896b495012"
+          "exactTestSha256": "20c9bcb9d559a9871ddbff02a1e57e9f2e0008ce13d905ae6c5561a8d6fb33f1"
         },
         "testPaths": [
           "tests/nolane-native-capability-pack.test.mjs"
@@ -7577,9 +7577,9 @@
         ],
         "productionEntrypoint": "src/release/release-naming.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "9936042d195b04dc49f867df05d9f299cf9e47f6bce1f3e89adc4b2a672402db",
+          "entrypointSha256": "1bf2d898d1576e7edbfd6fc693fb5ac83433000d360ffb86cba0ef0fd6b8169e",
           "environment": "node>=22.12",
-          "exactTestSha256": "4e3b6d1db36499f943e75634ffa819c35df1260a6128ec01afde2ab7fae617c4"
+          "exactTestSha256": "b8d6484b3202e9a77a701f1bccc903d000d4677fe9b5e303c82e66105de5eaac"
         },
         "testPaths": [
           "tests/nolane-release-naming.test.mjs"
@@ -7846,9 +7846,9 @@
         ],
         "productionEntrypoint": "src/small-model/specialist-model-fabric.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "13d8533541d3d6880adfc9308ef384fdd1fb7f88c634d69f2a305fea3ce73dac",
+          "entrypointSha256": "ff5fddfe1bff5fe0e62a41b7f5af292a3ede13fa607961fd317d87e406cf2869",
           "environment": "node>=22.12",
-          "exactTestSha256": "aaecd9be843af4bf66b23f94b58c6cd85041a656ef338c5120cd08f1d5559d6a"
+          "exactTestSha256": "d6ec57a10815894b3c71ad10407fd93a21155df40e966bff6eaa7e9efd43cb71"
         },
         "testPaths": [
           "tests/small-model-specialist-governance-contracts.test.mjs"
@@ -9209,9 +9209,9 @@
         ],
         "productionEntrypoint": "ui-v3/shell/session-sidebar.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "3819147c53008b2576b03774b4fa9fca0ff556c42f020b32b943c00af098dba8",
+          "entrypointSha256": "aa49eb2d302ffe1c41c1dd2cc1b0e89141931f4164ddb88d071bd6f693140fad",
           "environment": "node>=22.12",
-          "exactTestSha256": "b1aff901970f3abf79e57d879bc01d3e63503b06baa18f8712e7d50a7ec081d0"
+          "exactTestSha256": "deb4ae34497fb9e10657c7af0173b74d9a2bf618a753ad3223446fc039da9542"
         },
         "testPaths": [
           "tests/ui-v3-session-sidebar.test.mjs"
@@ -9317,9 +9317,9 @@
         ],
         "productionEntrypoint": "src/eval/eval-runner.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "d47ef73bf963a125fa5803fb844e64d7843d0a5338b6f512b248fa8df2e7748c",
+          "entrypointSha256": "aef4f3443c73ff6d2d547ec5dbcef81b7150cc27672433643804b93686a10253",
           "environment": "node>=22.12",
-          "exactTestSha256": "4b554ae95f014c2c4c5ce515e7daf3003ed0c9a75e7b9b0a048baf249ce370df"
+          "exactTestSha256": "155efdfbd590de140f8431a4308b0efae8bda396712063fff35406c9b47580f0"
         },
         "testPaths": [
           "tests/eval-lane-policy.test.mjs"
@@ -10191,9 +10191,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/operational-boundary-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "e4b5f4e2934c54b9c278be08851e1f48907df98a66528d9dcd57938b3e2b0a1b",
+          "entrypointSha256": "8d891fb385ba0ad5a27de02a016f3bf17aeda997ac140cd3212b6f7849961c46",
           "environment": "node>=22.12",
-          "exactTestSha256": "1ffac81cc1b248d18ab01b24e4d2ca6ec5de93f78985db5f43177dbc169aaccf"
+          "exactTestSha256": "cc5b825957dd32c07e7dd7d077a8ece3fe0a22394054b3c3f5d134f8feb45fe5"
         },
         "testPaths": [
           "tests/nolane-native-differential-contract.test.mjs"
@@ -10481,9 +10481,9 @@
         ],
         "productionEntrypoint": "src/small-model/symbolic-solver-compiler.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "6272d3aa5c3483f99a9480c5be0f7374f66ddf2a1ce7c356a9ac19913b31d8d2",
+          "entrypointSha256": "2e3ccbd95e002314955a54117faaf0d164005635ae3676b5b13e6674007e5976",
           "environment": "node>=22.12",
-          "exactTestSha256": "cbde8a902b8f0430dc718857a527c53736e0e30f67909c248b722cb05932e25a"
+          "exactTestSha256": "4b1b3063d646513503a7baf6d50450e097cae3612b7b7b48bd9d6a5a3b8c9044"
         },
         "testPaths": [
           "tests/small-model-symbolic-solver.test.mjs"
@@ -10589,7 +10589,7 @@
         "suppliedHashes": {
           "entrypointSha256": "d8c3e6cb88ce2db59cdfe69f7e7202aac64b54c8f4e4288c20cd71100e1d5fce",
           "environment": "node>=22.12",
-          "exactTestSha256": "cae0766590bc9a41cd9e6d872bddfc290eed0307b38aba00470b02b3b0b2db74"
+          "exactTestSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f"
         },
         "testPaths": [
           "tests/ui-v3-control-plane-domains.test.mjs"
@@ -11502,9 +11502,9 @@
         ],
         "productionEntrypoint": "src/small-model/multi-agent-policy-distiller.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "b0b2d4498996bcd5519f1a164377690278ebc2d4955e90433e276b15eee02b47",
+          "entrypointSha256": "f2fbea272e96a3e47ad3de676c199c05fd4a9c69dba05523eac27e2212c5a9aa",
           "environment": "node>=22.12",
-          "exactTestSha256": "b8589c4ee73096437bad383a065116752266d42eec90504ab5022f6c1aa15376"
+          "exactTestSha256": "6a1984fa7a6786359d53cf8456c86a9974cf8b9134257baf5fbcc87dbf26d340"
         },
         "testPaths": [
           "tests/small-model-specialist-alpha5.test.mjs"
@@ -11647,9 +11647,9 @@
         ],
         "productionEntrypoint": "src/security/route-security-telemetry.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "75d4845d77bed7be1abc1d4939989fda4c233f95d347909b2c15c5e5a076ff5a",
+          "entrypointSha256": "8951929ff62e7e5e07a403ed544e2302df2d66fab02c8c4a0288fc049e5d8c0c",
           "environment": "node>=22.12",
-          "exactTestSha256": "0af89c40cd156c8e5e91782203a7bccd355ee8c7917cb44ad250de8861300ecc"
+          "exactTestSha256": "05481142f25d1c2b192b897efe514f33c5751e805a42fa0b8c922a946fff7b18"
         },
         "testPaths": [
           "tests/route-security-telemetry.test.mjs"
@@ -11841,9 +11841,9 @@
         ],
         "productionEntrypoint": "src/small-model/symbolic-solver-compiler.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "6272d3aa5c3483f99a9480c5be0f7374f66ddf2a1ce7c356a9ac19913b31d8d2",
+          "entrypointSha256": "2e3ccbd95e002314955a54117faaf0d164005635ae3676b5b13e6674007e5976",
           "environment": "node>=22.12",
-          "exactTestSha256": "cbde8a902b8f0430dc718857a527c53736e0e30f67909c248b722cb05932e25a"
+          "exactTestSha256": "4b1b3063d646513503a7baf6d50450e097cae3612b7b7b48bd9d6a5a3b8c9044"
         },
         "testPaths": [
           "tests/small-model-symbolic-solver.test.mjs"
@@ -11884,9 +11884,9 @@
         ],
         "productionEntrypoint": "src/small-model/recursive-policy-sidecar.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "8a6c5a85837ace19f71fd8a4a5d029f0dd17badcd761a8f9e6462e7dca7d32b4",
+          "entrypointSha256": "8fe64aa0d091b37f31ec8e0fec874cbd39384b7944a548d2d05224564b81ebd6",
           "environment": "node>=22.12",
-          "exactTestSha256": "476b33ab6ff33115dc66249ca0f183fbb2617b8408a848fefb03144f3b2a4268"
+          "exactTestSha256": "d0778a3e457e9ee1b6ab7d772e0910aaf0ea758d965ead5af0d258b65b2a1a54"
         },
         "testPaths": [
           "tests/small-model-recursive-policy.test.mjs"
@@ -12997,9 +12997,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/web-browser-tools.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "d8168b53bd1f9db2f8baef3d7b323507fba97f84abf7f3f307c4c66d7ab53689",
+          "entrypointSha256": "e436d8642625c995cb4dc09078b0f1bb4798ba100665e2dd6cbdf87f03103255",
           "environment": "node>=22.12",
-          "exactTestSha256": "7bbb71ad0b3798a8ea09918653ece50a64659b2d423d211237ae1f896b495012"
+          "exactTestSha256": "20c9bcb9d559a9871ddbff02a1e57e9f2e0008ce13d905ae6c5561a8d6fb33f1"
         },
         "testPaths": [
           "tests/nolane-native-capability-pack.test.mjs"
@@ -13283,9 +13283,9 @@
         ],
         "productionEntrypoint": "src/release/non-claim-manifest.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "8653a53a113b69528388dbf7ffc809bf386f1dd9ac81f60c18cc3425548c61c0",
+          "entrypointSha256": "475015a29fcb46abc2528ba8221ddad2a4f29f1cef1a3c920e8b4ff1a2fdcbdd",
           "environment": "node>=22.12",
-          "exactTestSha256": "5f4578a29bfe7dea8bb550bae89eb9d554ea7046cdc715fa059b4e8e7858d416"
+          "exactTestSha256": "430351121b653866f1b137c3966ce6e2ae87c5ec13f0d264f4f2b09b715aec4f"
         },
         "testPaths": [
           "tests/release-non-claim-manifest.test.mjs"
@@ -13558,9 +13558,9 @@
         ],
         "productionEntrypoint": "src/small-model/plasticity-plane.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "eb5ffb961490cd241bed46f216ebf00e30ac59e6d6eff01d6c488a7701c77933",
+          "entrypointSha256": "39173cc288bb45c353305709a18fc1c43422083f5dd8425f3d85df60f2e277cd",
           "environment": "node>=22.12",
-          "exactTestSha256": "4eff5d967963e8e2228de1e5e495a65bb4fc6dad8a2fad20c3ebb6ee0f606fec"
+          "exactTestSha256": "cb0167c73ad979d2f08f6745a6e33ef7fa3dffe0d7e46055942c58b8b2bfeb23"
         },
         "testPaths": [
           "tests/small-model-plasticity-plane.test.mjs"
@@ -14038,9 +14038,9 @@
         ],
         "productionEntrypoint": "src/small-model/specialist-model-fabric.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "13d8533541d3d6880adfc9308ef384fdd1fb7f88c634d69f2a305fea3ce73dac",
+          "entrypointSha256": "ff5fddfe1bff5fe0e62a41b7f5af292a3ede13fa607961fd317d87e406cf2869",
           "environment": "node>=22.12",
-          "exactTestSha256": "aaecd9be843af4bf66b23f94b58c6cd85041a656ef338c5120cd08f1d5559d6a"
+          "exactTestSha256": "d6ec57a10815894b3c71ad10407fd93a21155df40e966bff6eaa7e9efd43cb71"
         },
         "testPaths": [
           "tests/small-model-specialist-governance-contracts.test.mjs"
@@ -15322,9 +15322,9 @@
         ],
         "productionEntrypoint": "src/small-model/model-state-serializer.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "54560ec571fd504fec5cfe60211eb85d76e3a769d4781fd9282a8069b9ef697b",
+          "entrypointSha256": "a7314d49de63b0cb876d47eecbe22dc943a810be4c43622d28074a3a657ebe7b",
           "environment": "node>=22.12",
-          "exactTestSha256": "aaecd9be843af4bf66b23f94b58c6cd85041a656ef338c5120cd08f1d5559d6a"
+          "exactTestSha256": "d6ec57a10815894b3c71ad10407fd93a21155df40e966bff6eaa7e9efd43cb71"
         },
         "testPaths": [
           "tests/small-model-specialist-governance-contracts.test.mjs"
@@ -15925,9 +15925,9 @@
         ],
         "productionEntrypoint": "ui-v3/views/review-queue/review-queue.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "9f8eeb0c2428fc2202628df2999c43f61194a9297c62ef6390a930a150e7a276",
+          "entrypointSha256": "53d65eb5e04ce9fa90e4beac6ed5707e50f20986c36250bd821bb501dfcd77ed",
           "environment": "node>=22.12",
-          "exactTestSha256": "22e4b0eb439fd933e46be790b1aaea432f77a514e6cf1a034a5b1f5568552721"
+          "exactTestSha256": "1068f7b52fa14efa57a0dab86e72db3ec24fb9e6b86b22a83123440a034646d6"
         },
         "testPaths": [
           "tests/ui-v3-secondary-views.test.mjs"
@@ -16177,9 +16177,9 @@
         ],
         "productionEntrypoint": "scripts/stage-update-payload.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "81f03d143a17b19e3fbfd71076377909ac1fd5d339c920d3a765e23fce04efb0",
+          "entrypointSha256": "4dc006f4af5886781b0d792233c8b98a38fa1f5e96e3bd65aef048430576ced9",
           "environment": "node>=22.12",
-          "exactTestSha256": "ea1371e085f0f83159b0fe8a70366208bfe292cd9d1735445e63d5e75c1cf15c"
+          "exactTestSha256": "6061169cf05b983c16c7ca4f613ab1ae1d9437d401582b7430ce8a2605fd9874"
         },
         "testPaths": [
           "tests/update-payload.test.mjs"
@@ -16398,9 +16398,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/tool-registry.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "113ece9bc7fa9fdebf0e486598ded82b32a79fee37a68928046ce62d5dc72868",
+          "entrypointSha256": "71914409c18be0c18dfe742c2b4a9bbaed7e17ed434e0e8219b305cb55406e28",
           "environment": "node>=22.12",
-          "exactTestSha256": "3c31f27020f721e9e5e5de6d8dd2c3d11b4de28fb165bf49fadba69a0e1ae9eb"
+          "exactTestSha256": "6f1b8faccbb00d108690967e1f4135c646a1191fc5e14409f880c45ad6ce1042"
         },
         "testPaths": [
           "tests/nolane-native-agent-service.test.mjs"
@@ -16693,9 +16693,9 @@
         ],
         "productionEntrypoint": "src/small-model/curriculum-factory.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "2e6dda5ebd3cfa1f2d22bd8a850239b4784eb5749d253a2876fd96a837bf2946",
+          "entrypointSha256": "ed1b152a2e137f53ec18a7db167033d11d60a48fb61e9944d64da3ca7a336132",
           "environment": "node>=22.12",
-          "exactTestSha256": "37665b426b48aad82be4b61d699bf5770e8d94d208daaac88f0b5409cc7da56c"
+          "exactTestSha256": "bf135cf80a920d86fe35f9ea4a74c98d3d880157a182b1bf9f6df18e411528fc"
         },
         "testPaths": [
           "tests/small-model-curriculum-factory.test.mjs"
@@ -16989,9 +16989,9 @@
         ],
         "productionEntrypoint": "src/config/nolane-data-migration.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "28a119880b58ebef1f5cab08da0112c342563be3d80f122e8c3c353aea268078",
+          "entrypointSha256": "4c449fc22fcc697bce8191b0f38e90fff5c4c14c36f3eacd7072deba13e2925e",
           "environment": "node>=22.12",
-          "exactTestSha256": "89c129d2fdd2a5a839af610341fbdf5fdfd73d6dd88c08f947e83b82ad1f8f06"
+          "exactTestSha256": "cc3ad24a6fc43fd4a6d734223a58d9260f858767db9d21726fa9433ccb71e10b"
         },
         "testPaths": [
           "tests/nolane-data-release-migration.test.mjs"
@@ -18975,9 +18975,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/terminal-ui.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "924a58138dbc61412240a35ba56d8930cbed09477ca4eafa21421814e1dec3bc",
+          "entrypointSha256": "d4ca3771eca5d9f705fde2bebcd12c07c2fed59010c721352dd3e18d5f2a3a3f",
           "environment": "node>=22.12",
-          "exactTestSha256": "7bbb71ad0b3798a8ea09918653ece50a64659b2d423d211237ae1f896b495012"
+          "exactTestSha256": "20c9bcb9d559a9871ddbff02a1e57e9f2e0008ce13d905ae6c5561a8d6fb33f1"
         },
         "testPaths": [
           "tests/nolane-native-capability-pack.test.mjs"
@@ -20650,9 +20650,9 @@
         ],
         "productionEntrypoint": "src/small-model/symbolic-solver-compiler.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "6272d3aa5c3483f99a9480c5be0f7374f66ddf2a1ce7c356a9ac19913b31d8d2",
+          "entrypointSha256": "2e3ccbd95e002314955a54117faaf0d164005635ae3676b5b13e6674007e5976",
           "environment": "node>=22.12",
-          "exactTestSha256": "cbde8a902b8f0430dc718857a527c53736e0e30f67909c248b722cb05932e25a"
+          "exactTestSha256": "4b1b3063d646513503a7baf6d50450e097cae3612b7b7b48bd9d6a5a3b8c9044"
         },
         "testPaths": [
           "tests/small-model-symbolic-solver.test.mjs"
@@ -20866,9 +20866,9 @@
         ],
         "productionEntrypoint": "src/small-model/specialist-model-fabric.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "13d8533541d3d6880adfc9308ef384fdd1fb7f88c634d69f2a305fea3ce73dac",
+          "entrypointSha256": "ff5fddfe1bff5fe0e62a41b7f5af292a3ede13fa607961fd317d87e406cf2869",
           "environment": "node>=22.12",
-          "exactTestSha256": "b8589c4ee73096437bad383a065116752266d42eec90504ab5022f6c1aa15376"
+          "exactTestSha256": "6a1984fa7a6786359d53cf8456c86a9974cf8b9134257baf5fbcc87dbf26d340"
         },
         "testPaths": [
           "tests/small-model-specialist-governance-contracts.test.mjs"
@@ -20977,9 +20977,9 @@
         ],
         "productionEntrypoint": "scripts/certify-published-source.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "7df122c146801b85480759126a7d2fff63f85f5c59c944b4f954f9b605e4ae80",
+          "entrypointSha256": "dae32727cbfb9b149a1bffa6e68fd465cb2d985066c076f339ed0d7df3c65b97",
           "environment": "node>=22.12",
-          "exactTestSha256": "e79c789cedfe1d9121839277cef6485237d67747d8210b0aa653b6b99f13c084"
+          "exactTestSha256": "b70978f64546c75179ac996df23de49e9a42ddd0e85f8f538b92caca739ea60d"
         },
         "testPaths": [
           "tests/clean-room-certification.test.mjs"
@@ -22957,9 +22957,9 @@
         ],
         "productionEntrypoint": "ui-v3/views/settings/settings-view.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "4143eebee86f0a09a89e3e13e13d92c50a5245c847e7e9c2be0e603db65037ec",
+          "entrypointSha256": "e217658df8d861e6020a6247117cf2a2400c9c982f286bcbafcd655c4fde8ae3",
           "environment": "node>=22.12",
-          "exactTestSha256": "22e4b0eb439fd933e46be790b1aaea432f77a514e6cf1a034a5b1f5568552721"
+          "exactTestSha256": "1068f7b52fa14efa57a0dab86e72db3ec24fb9e6b86b22a83123440a034646d6"
         },
         "testPaths": [
           "tests/ui-v3-secondary-views.test.mjs"
@@ -24433,9 +24433,9 @@
         ],
         "productionEntrypoint": "src/product-identity.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "576f17316cc71ce2e1f331497aace8f60eeaaa85c25d6d6584f189555627361d",
+          "entrypointSha256": "3ef824505f7fa299aa6df568d62304468b2fe47978681998dd343e0bb0dcfaa6",
           "environment": "node>=22.12",
-          "exactTestSha256": "8756f063e31f2ff7863128ed667f59c321366620ffbb92e335a3d203e44a608c"
+          "exactTestSha256": "bfa23e6d7042173e70afaee4b69e89c6d133d086991ec876438dd2992be41247"
         },
         "testPaths": [
           "tests/nolane-product-identity.test.mjs"
@@ -24861,9 +24861,9 @@
         ],
         "productionEntrypoint": "src/small-model/specialist-model-fabric.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "13d8533541d3d6880adfc9308ef384fdd1fb7f88c634d69f2a305fea3ce73dac",
+          "entrypointSha256": "ff5fddfe1bff5fe0e62a41b7f5af292a3ede13fa607961fd317d87e406cf2869",
           "environment": "node>=22.12",
-          "exactTestSha256": "aaecd9be843af4bf66b23f94b58c6cd85041a656ef338c5120cd08f1d5559d6a"
+          "exactTestSha256": "d6ec57a10815894b3c71ad10407fd93a21155df40e966bff6eaa7e9efd43cb71"
         },
         "testPaths": [
           "tests/small-model-specialist-governance-contracts.test.mjs"
@@ -25725,9 +25725,9 @@
         ],
         "productionEntrypoint": "src/small-model/curriculum-factory.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "2e6dda5ebd3cfa1f2d22bd8a850239b4784eb5749d253a2876fd96a837bf2946",
+          "entrypointSha256": "ed1b152a2e137f53ec18a7db167033d11d60a48fb61e9944d64da3ca7a336132",
           "environment": "node>=22.12",
-          "exactTestSha256": "37665b426b48aad82be4b61d699bf5770e8d94d208daaac88f0b5409cc7da56c"
+          "exactTestSha256": "bf135cf80a920d86fe35f9ea4a74c98d3d880157a182b1bf9f6df18e411528fc"
         },
         "testPaths": [
           "tests/small-model-curriculum-factory.test.mjs"
@@ -25817,9 +25817,9 @@
         ],
         "productionEntrypoint": "src/small-model/distillation-orchestrator.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "c574e89827375b419ecd310a385b66386b2475c5ad3124ccef3eb0204a0a3d1a",
+          "entrypointSha256": "25e24e4013c966586d1f9c956b415b57a5738e6eadaba754eee7d535c57e6a01",
           "environment": "node>=22.12",
-          "exactTestSha256": "4c3fd39d8c411f7535dbb9288f5c02a7a83aa87d1773affccde24222e557e9d0"
+          "exactTestSha256": "025adcab0f9b7cdf02d3cd7167d200038b05181ca1d2631c89aac93f5c6d84a8"
         },
         "testPaths": [
           "tests/small-model-distillation-orchestrator.test.mjs"
@@ -26109,9 +26109,9 @@
         ],
         "productionEntrypoint": "ui-v3/control-plane/domains/context-memory.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "2b61e5fb4c9130b827b0115b0b0851f79992933d3d8aa87f666e8133d4ebdd9c",
+          "entrypointSha256": "82f78fc01404b6da71a57acaf8c75a0281af8e4bd0eb2f4b49486b36082eb828",
           "environment": "node>=22.12",
-          "exactTestSha256": "cae0766590bc9a41cd9e6d872bddfc290eed0307b38aba00470b02b3b0b2db74"
+          "exactTestSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f"
         },
         "testPaths": [
           "tests/ui-v3-control-plane-domains.test.mjs"
@@ -26234,9 +26234,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/orchestration-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9",
+          "entrypointSha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374",
           "environment": "node>=22.12",
-          "exactTestSha256": "a459f90ce20e14171b24112d10ec164bc73e91c4f98080d738f6d23af074bc88"
+          "exactTestSha256": "c3502bb4ef58a79498bc6e736f0d36f7b9171a538529b525cc319ce7f6a4c140"
         },
         "testPaths": [
           "tests/nolane-native-orchestration-contracts.test.mjs"
@@ -26591,9 +26591,9 @@
         ],
         "productionEntrypoint": "src/update/update-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "28d4ffbe13e63b499b6f3e325e326a1a34c12dcc4949917543c6633cedf56c42",
+          "entrypointSha256": "bc3fd7437d791f989247a3ee8e175763b6e6f8080fb599a224a3b49c2e625801",
           "environment": "node>=22.12",
-          "exactTestSha256": "89c129d2fdd2a5a839af610341fbdf5fdfd73d6dd88c08f947e83b82ad1f8f06"
+          "exactTestSha256": "cc3ad24a6fc43fd4a6d734223a58d9260f858767db9d21726fa9433ccb71e10b"
         },
         "testPaths": [
           "tests/nolane-data-release-migration.test.mjs"
@@ -26890,9 +26890,9 @@
         ],
         "productionEntrypoint": "src/eval/eval-lane-policy.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "d8c9d3431771baa59e59495e228562a227ce0181fa5069db92ccb34fa861c5cf",
+          "entrypointSha256": "3240c4c7de60462f75bbf88d78e653bcf1b9e39f387f63ac80627eb75ba6a89d",
           "environment": "node>=22.12",
-          "exactTestSha256": "4b554ae95f014c2c4c5ce515e7daf3003ed0c9a75e7b9b0a048baf249ce370df"
+          "exactTestSha256": "155efdfbd590de140f8431a4308b0efae8bda396712063fff35406c9b47580f0"
         },
         "testPaths": [
           "tests/eval-lane-policy.test.mjs"
@@ -26935,7 +26935,7 @@
         "suppliedHashes": {
           "entrypointSha256": "e908eed9f7358b4f14bf823f115e6fb21b3255b95d0c18c8634750c88dbd9a42",
           "environment": "node>=22.12",
-          "exactTestSha256": "cae0766590bc9a41cd9e6d872bddfc290eed0307b38aba00470b02b3b0b2db74"
+          "exactTestSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f"
         },
         "testPaths": [
           "tests/ui-v3-control-plane-domains.test.mjs"
@@ -27242,9 +27242,9 @@
         ],
         "productionEntrypoint": "extensions/vscode/src/legacy-migration.ts",
         "suppliedHashes": {
-          "entrypointSha256": "d63118df52dc6045f775b0dfffd8c99544ee00ff128e69f0666b1324f412cfcf",
+          "entrypointSha256": "ea5f670906498008a5bb0212ca1a29c777b82877e6ab6730d77fb66797fe56cd",
           "environment": "node>=22.12",
-          "exactTestSha256": "0996571d627fad41029ba7f18c96cf333d66739bbead67570b5ce51bb9afc2eb"
+          "exactTestSha256": "f34a7f31cacc08239a8a1cc81639d9511535b2a4fb8874a4c508b9cd2c95c543"
         },
         "testPaths": [
           "tests/vscode-legacy-migration.test.mjs"
@@ -27330,9 +27330,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/agent-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "c09b001a8aa6d555949554b9806ab2384988f8fdacc852f970a0e22113cbe099",
+          "entrypointSha256": "94c057c36b9b2843fa0a20b5b2340b27ec130a979c86c34af4214b90ec7dc226",
           "environment": "node>=22.12",
-          "exactTestSha256": "3c31f27020f721e9e5e5de6d8dd2c3d11b4de28fb165bf49fadba69a0e1ae9eb"
+          "exactTestSha256": "6f1b8faccbb00d108690967e1f4135c646a1191fc5e14409f880c45ad6ce1042"
         },
         "testPaths": [
           "tests/nolane-native-agent-service.test.mjs"
@@ -27373,9 +27373,9 @@
         ],
         "productionEntrypoint": "src/small-model/plasticity-plane.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "eb5ffb961490cd241bed46f216ebf00e30ac59e6d6eff01d6c488a7701c77933",
+          "entrypointSha256": "39173cc288bb45c353305709a18fc1c43422083f5dd8425f3d85df60f2e277cd",
           "environment": "node>=22.12",
-          "exactTestSha256": "4eff5d967963e8e2228de1e5e495a65bb4fc6dad8a2fad20c3ebb6ee0f606fec"
+          "exactTestSha256": "cb0167c73ad979d2f08f6745a6e33ef7fa3dffe0d7e46055942c58b8b2bfeb23"
         },
         "testPaths": [
           "tests/small-model-plasticity-plane.test.mjs"
@@ -27643,9 +27643,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/agent-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "c09b001a8aa6d555949554b9806ab2384988f8fdacc852f970a0e22113cbe099",
+          "entrypointSha256": "94c057c36b9b2843fa0a20b5b2340b27ec130a979c86c34af4214b90ec7dc226",
           "environment": "node>=22.12",
-          "exactTestSha256": "3c31f27020f721e9e5e5de6d8dd2c3d11b4de28fb165bf49fadba69a0e1ae9eb"
+          "exactTestSha256": "6f1b8faccbb00d108690967e1f4135c646a1191fc5e14409f880c45ad6ce1042"
         },
         "testPaths": [
           "tests/nolane-native-agent-service.test.mjs"
@@ -27899,9 +27899,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/operational-boundary-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "e4b5f4e2934c54b9c278be08851e1f48907df98a66528d9dcd57938b3e2b0a1b",
+          "entrypointSha256": "8d891fb385ba0ad5a27de02a016f3bf17aeda997ac140cd3212b6f7849961c46",
           "environment": "node>=22.12",
-          "exactTestSha256": "aea1119006cd3b8e4f8d771b493732674394ae21968475af00443ee2d2f35b68"
+          "exactTestSha256": "f08b6adb88e698f8f5e0bb0b38a3d88305c19d2f9f214a2feb140072591cec7f"
         },
         "testPaths": [
           "tests/nolane-native-operational-boundaries.test.mjs"
@@ -28422,8 +28422,8 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "scripts/generate-nolane-program.mjs": "aa6ae49b889e43734d2aaa99a9003e7941398ba07c8d162c942faecd2df94937",
-          "tests/nolane-program-registry.test.mjs": "505e196d7c43fe9efc941c3ce896901bb908841ad02c1be0abb925272fe091a9"
+          "scripts/generate-nolane-program.mjs": "3826ed3b886c83025816979a5037e8a07f95dc543d4a36d978704b4d0d04f886",
+          "tests/nolane-program-registry.test.mjs": "62ef0f9a8fb063c378348962b984c66bc55caf18e7b392fb7a6089dbe793e6da"
         },
         "externalConditions": [],
         "fileExistenceIsProof": false,
@@ -28434,9 +28434,9 @@
         ],
         "productionEntrypoint": "scripts/generate-nolane-program.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "33d93cf9e25f3d29b5997dc50208d772416093f73712829a337bb05d88e5ad4b",
+          "entrypointSha256": "3826ed3b886c83025816979a5037e8a07f95dc543d4a36d978704b4d0d04f886",
           "environment": "node>=22.12",
-          "exactTestSha256": "48835b2b1a7a7beb3a4e0b507639d590db050c577be2f358913690c89fb4917a"
+          "exactTestSha256": "62ef0f9a8fb063c378348962b984c66bc55caf18e7b392fb7a6089dbe793e6da"
         },
         "testPaths": [
           "tests/nolane-program-registry.test.mjs"
@@ -28913,9 +28913,9 @@
         ],
         "productionEntrypoint": "src/small-model/plasticity-plane.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "eb5ffb961490cd241bed46f216ebf00e30ac59e6d6eff01d6c488a7701c77933",
+          "entrypointSha256": "39173cc288bb45c353305709a18fc1c43422083f5dd8425f3d85df60f2e277cd",
           "environment": "node>=22.12",
-          "exactTestSha256": "4eff5d967963e8e2228de1e5e495a65bb4fc6dad8a2fad20c3ebb6ee0f606fec"
+          "exactTestSha256": "cb0167c73ad979d2f08f6745a6e33ef7fa3dffe0d7e46055942c58b8b2bfeb23"
         },
         "testPaths": [
           "tests/small-model-plasticity-plane.test.mjs"
@@ -29940,9 +29940,9 @@
         ],
         "productionEntrypoint": "src/small-model/adaptive-compute-governor.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "bf6a2683e3b3d62d094d3fda9fafd1c8b2905c544a4db877038aa0208ad3f6e6",
+          "entrypointSha256": "654b09942933f555ea04dfe8d627878aa8a3d276a86ae8e80628ac2fbf05f9a5",
           "environment": "node>=22.12",
-          "exactTestSha256": "db436ec67c0ace8c3098af134dcc1033b0dbc15289e86453ae6256ce212afe5c"
+          "exactTestSha256": "45fdf4e79d583608a69843113304e04eaf83ff0542c42aa442c5a2ac9033c5c7"
         },
         "testPaths": [
           "tests/small-model-compute-calibration.test.mjs"
@@ -30065,9 +30065,9 @@
         ],
         "productionEntrypoint": "src/small-model/model-state-serializer.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "54560ec571fd504fec5cfe60211eb85d76e3a769d4781fd9282a8069b9ef697b",
+          "entrypointSha256": "a7314d49de63b0cb876d47eecbe22dc943a810be4c43622d28074a3a657ebe7b",
           "environment": "node>=22.12",
-          "exactTestSha256": "24997f695b42f0884f189423cf9fcb667761f84bd48e902d4c941d2b0c73de0e"
+          "exactTestSha256": "fdcba69f288a962efdb4699234f4ffb7038b9249ca6facce2240d2031c28ae2a"
         },
         "testPaths": [
           "tests/small-model-specialist-governance-contracts.test.mjs"
@@ -30109,9 +30109,9 @@
         ],
         "productionEntrypoint": "scripts/scan-product-surface-leakage.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "55282e41a7031da0dc61ebd6358f782ae447b9ba68466f2cf3d677a728a1610c",
+          "entrypointSha256": "0f6a960ae10940a686198e01be825d6e616d35fcc2779be3e2c1221683263409",
           "environment": "node>=22.12",
-          "exactTestSha256": "f7df078e9e7081c430df5ef69b23df55b48b89746f3f9ebf60d726c50a9012e5"
+          "exactTestSha256": "30e99382d27d4619db6a526fadf60a4231d8b44805fcc07f9739f0310f033c3b"
         },
         "testPaths": [
           "tests/nolane-environment-brand-leakage.test.mjs"
@@ -30152,9 +30152,9 @@
         ],
         "productionEntrypoint": "src/small-model/trajectory-lab.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "dc33c501a2da795873458bf59cabb58d06d91a5608c883c538d7fc2cc7803ea1",
+          "entrypointSha256": "eba73e8367ae808a9a0b2b602c6f5a8890f82cc4b337790669e152879e107c1c",
           "environment": "node>=22.12",
-          "exactTestSha256": "61d49135bd09ccda84c57bc94296fc526b461071988a7dd437dbabe25b40c384"
+          "exactTestSha256": "4cd291d9b78ab636ab75b81adbcbbcd69329baf9167af48752dae0c2fe0be02f"
         },
         "testPaths": [
           "tests/small-model-trajectory-lab.test.mjs"
@@ -30296,8 +30296,8 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "scripts/generate-nolane-program.mjs": "aa6ae49b889e43734d2aaa99a9003e7941398ba07c8d162c942faecd2df94937",
-          "tests/nolane-program-registry.test.mjs": "505e196d7c43fe9efc941c3ce896901bb908841ad02c1be0abb925272fe091a9"
+          "scripts/generate-nolane-program.mjs": "3826ed3b886c83025816979a5037e8a07f95dc543d4a36d978704b4d0d04f886",
+          "tests/nolane-program-registry.test.mjs": "62ef0f9a8fb063c378348962b984c66bc55caf18e7b392fb7a6089dbe793e6da"
         },
         "externalConditions": [],
         "fileExistenceIsProof": false,
@@ -30308,9 +30308,9 @@
         ],
         "productionEntrypoint": "scripts/generate-nolane-program.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "33d93cf9e25f3d29b5997dc50208d772416093f73712829a337bb05d88e5ad4b",
+          "entrypointSha256": "3826ed3b886c83025816979a5037e8a07f95dc543d4a36d978704b4d0d04f886",
           "environment": "node>=22.12",
-          "exactTestSha256": "48835b2b1a7a7beb3a4e0b507639d590db050c577be2f358913690c89fb4917a"
+          "exactTestSha256": "62ef0f9a8fb063c378348962b984c66bc55caf18e7b392fb7a6089dbe793e6da"
         },
         "testPaths": [
           "tests/nolane-program-registry.test.mjs"
@@ -30869,9 +30869,9 @@
         ],
         "productionEntrypoint": "src/small-model/curriculum-factory.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "2e6dda5ebd3cfa1f2d22bd8a850239b4784eb5749d253a2876fd96a837bf2946",
+          "entrypointSha256": "ed1b152a2e137f53ec18a7db167033d11d60a48fb61e9944d64da3ca7a336132",
           "environment": "node>=22.12",
-          "exactTestSha256": "37665b426b48aad82be4b61d699bf5770e8d94d208daaac88f0b5409cc7da56c"
+          "exactTestSha256": "bf135cf80a920d86fe35f9ea4a74c98d3d880157a182b1bf9f6df18e411528fc"
         },
         "testPaths": [
           "tests/small-model-curriculum-factory.test.mjs"
@@ -31356,9 +31356,9 @@
         ],
         "productionEntrypoint": "src/small-model/symbolic-solver-compiler.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "6272d3aa5c3483f99a9480c5be0f7374f66ddf2a1ce7c356a9ac19913b31d8d2",
+          "entrypointSha256": "2e3ccbd95e002314955a54117faaf0d164005635ae3676b5b13e6674007e5976",
           "environment": "node>=22.12",
-          "exactTestSha256": "cbde8a902b8f0430dc718857a527c53736e0e30f67909c248b722cb05932e25a"
+          "exactTestSha256": "4b1b3063d646513503a7baf6d50450e097cae3612b7b7b48bd9d6a5a3b8c9044"
         },
         "testPaths": [
           "tests/small-model-symbolic-solver.test.mjs"
@@ -33164,9 +33164,9 @@
         ],
         "productionEntrypoint": "src/small-model/verifier-mesh.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "974fcf34310e1236f931ae00ba23d88a73252a2c99b183ce7d9751bb8a286b75",
+          "entrypointSha256": "3c7c044ad3d2e3b70564153d108404455574c1355f7014890d1d33610ba43ad2",
           "environment": "node>=22.12",
-          "exactTestSha256": "f39d81735e1c8f35a35ba35d4954b52164bb3d8bf78013cb5bdf4d29612fb4cf"
+          "exactTestSha256": "439ab4ed64895321afaa75e0c1db4f0f909cf4f0d7d4fac58a85770b37349fe6"
         },
         "testPaths": [
           "tests/small-model-verifier-mesh.test.mjs"
@@ -33293,9 +33293,9 @@
         ],
         "productionEntrypoint": "src/small-model/specialist-model-fabric.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "13d8533541d3d6880adfc9308ef384fdd1fb7f88c634d69f2a305fea3ce73dac",
+          "entrypointSha256": "ff5fddfe1bff5fe0e62a41b7f5af292a3ede13fa607961fd317d87e406cf2869",
           "environment": "node>=22.12",
-          "exactTestSha256": "aaecd9be843af4bf66b23f94b58c6cd85041a656ef338c5120cd08f1d5559d6a"
+          "exactTestSha256": "d6ec57a10815894b3c71ad10407fd93a21155df40e966bff6eaa7e9efd43cb71"
         },
         "testPaths": [
           "tests/small-model-specialist-governance-contracts.test.mjs"
@@ -33404,9 +33404,9 @@
         ],
         "productionEntrypoint": "src/small-model/verifier-mesh.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "974fcf34310e1236f931ae00ba23d88a73252a2c99b183ce7d9751bb8a286b75",
+          "entrypointSha256": "3c7c044ad3d2e3b70564153d108404455574c1355f7014890d1d33610ba43ad2",
           "environment": "node>=22.12",
-          "exactTestSha256": "f39d81735e1c8f35a35ba35d4954b52164bb3d8bf78013cb5bdf4d29612fb4cf"
+          "exactTestSha256": "439ab4ed64895321afaa75e0c1db4f0f909cf4f0d7d4fac58a85770b37349fe6"
         },
         "testPaths": [
           "tests/small-model-verifier-mesh.test.mjs"
@@ -33575,9 +33575,9 @@
         ],
         "productionEntrypoint": "src/small-model/curriculum-factory.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "2e6dda5ebd3cfa1f2d22bd8a850239b4784eb5749d253a2876fd96a837bf2946",
+          "entrypointSha256": "ed1b152a2e137f53ec18a7db167033d11d60a48fb61e9944d64da3ca7a336132",
           "environment": "node>=22.12",
-          "exactTestSha256": "37665b426b48aad82be4b61d699bf5770e8d94d208daaac88f0b5409cc7da56c"
+          "exactTestSha256": "bf135cf80a920d86fe35f9ea4a74c98d3d880157a182b1bf9f6df18e411528fc"
         },
         "testPaths": [
           "tests/small-model-curriculum-factory.test.mjs"
@@ -34482,9 +34482,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/orchestration-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9",
+          "entrypointSha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374",
           "environment": "node>=22.12",
-          "exactTestSha256": "a459f90ce20e14171b24112d10ec164bc73e91c4f98080d738f6d23af074bc88"
+          "exactTestSha256": "c3502bb4ef58a79498bc6e736f0d36f7b9171a538529b525cc319ce7f6a4c140"
         },
         "testPaths": [
           "tests/nolane-native-orchestration-contracts.test.mjs"
@@ -35078,9 +35078,9 @@
         ],
         "productionEntrypoint": "src/small-model/verifier-red-team.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "f5b2c734d75952014841104798f0f645d585b300f074c92c490476f5bfcae6aa",
+          "entrypointSha256": "d9a6870336eeef7138ff130984bfbabf57e917336a294c233ba9f5c690be7bd8",
           "environment": "node>=22.12",
-          "exactTestSha256": "c963ac1dec8d297fef1814a029f8ac6aeee34a05274a3ebc8f87dc85045fadbd"
+          "exactTestSha256": "fcb78d0db3fe0c061d792db76190df7b2db64b47ba5c2ba6eeef440308df2a37"
         },
         "testPaths": [
           "tests/small-model-hidden-verification.test.mjs"
@@ -35584,9 +35584,9 @@
         ],
         "productionEntrypoint": "ui-v3/control-plane/domains/evidence.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "5093ba512670caba403779377203a166cde89c48f63b479e6e2ba215449677c5",
+          "entrypointSha256": "50a83d633d3627f8c777c33ffc5a3662f35f55aa4363f8923c350a2e80462972",
           "environment": "node>=22.12",
-          "exactTestSha256": "cae0766590bc9a41cd9e6d872bddfc290eed0307b38aba00470b02b3b0b2db74"
+          "exactTestSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f"
         },
         "testPaths": [
           "tests/ui-v3-control-plane-domains.test.mjs"
@@ -36174,9 +36174,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/cross-session-memory.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "cb90f968cb165e3d3a8fb8a70fed72a9fac118a1418d3825c9b707d54b3e5f2a",
+          "entrypointSha256": "366c82b1ba8e560e01afa8af3fbd58c816dc49e5f023a688b6bbea9d8381d349",
           "environment": "node>=22.12",
-          "exactTestSha256": "7bbb71ad0b3798a8ea09918653ece50a64659b2d423d211237ae1f896b495012"
+          "exactTestSha256": "20c9bcb9d559a9871ddbff02a1e57e9f2e0008ce13d905ae6c5561a8d6fb33f1"
         },
         "testPaths": [
           "tests/nolane-native-capability-pack.test.mjs"
@@ -37539,9 +37539,9 @@
         ],
         "productionEntrypoint": "src/small-model/scientific-benchmark-harness.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "1c1863e1d8a326e7814eb522ff40d6c3e2ecc5cd6f2d3861b489ff9fd7595867",
+          "entrypointSha256": "c132dff0be8943bc0151d07083600d5b698458ab1416d51354fce814f04ad4d6",
           "environment": "node>=22.12",
-          "exactTestSha256": "7d1b96be5d237933ebf4fd8e4cefdc91afccdf3f407781fc0ab1a5d9e5baeef5"
+          "exactTestSha256": "24dc39274596ddce6211e95e66d5410cc941a11e21915b25474ad6484f0eac34"
         },
         "testPaths": [
           "tests/small-model-scientific-benchmark.test.mjs"
@@ -37793,9 +37793,9 @@
         ],
         "productionEntrypoint": "ui-v3/control-plane/domains/operations.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "836c788fc3533fd420639bb82de7d0317507c6ffa32d389952ccf8a5649730e3",
+          "entrypointSha256": "73197e8662aefc27798a27a2b2b2aea692e7e26c36c891215fcf09c9fb01ffae",
           "environment": "node>=22.12",
-          "exactTestSha256": "cae0766590bc9a41cd9e6d872bddfc290eed0307b38aba00470b02b3b0b2db74"
+          "exactTestSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f"
         },
         "testPaths": [
           "tests/ui-v3-control-plane-domains.test.mjs"
@@ -38695,9 +38695,9 @@
         ],
         "productionEntrypoint": "src/small-model/symbolic-solver-compiler.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "6272d3aa5c3483f99a9480c5be0f7374f66ddf2a1ce7c356a9ac19913b31d8d2",
+          "entrypointSha256": "2e3ccbd95e002314955a54117faaf0d164005635ae3676b5b13e6674007e5976",
           "environment": "node>=22.12",
-          "exactTestSha256": "cbde8a902b8f0430dc718857a527c53736e0e30f67909c248b722cb05932e25a"
+          "exactTestSha256": "4b1b3063d646513503a7baf6d50450e097cae3612b7b7b48bd9d6a5a3b8c9044"
         },
         "testPaths": [
           "tests/small-model-symbolic-solver.test.mjs"
@@ -38738,9 +38738,9 @@
         ],
         "productionEntrypoint": "src/audit/capability-status-policy.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "5a19220d7a580fc0463bd413808b245329ecc7e39095af7adf98f311d4a3b257",
+          "entrypointSha256": "4107b3d95eeacacdf9dbcf5bc9200ac041dddb4bf6a3d39fe5c7e743f4e4d785",
           "environment": "node>=22.12",
-          "exactTestSha256": "e24f67953b18f2d6a89db661350e4e5503bdf738fe1866bdc9b8b0e9d7de12ac"
+          "exactTestSha256": "006f2a0fed85e67c5cf1ff334a3aad9a7282f3ce272695abf9dbe100bf8e34e6"
         },
         "testPaths": [
           "tests/capability-status-policy.test.mjs"
@@ -38915,7 +38915,7 @@
         "suppliedHashes": {
           "entrypointSha256": "e862262b7c4af6dd3d182c096b7033aa68fe621fee97ac0b214b76406e60fc9f",
           "environment": "node>=22.12",
-          "exactTestSha256": "3f7d98ae73301f951b89998d40093df22c9a0d26d3bb433453da521a04babdf9"
+          "exactTestSha256": "a1f3b5647223bef8876809ba0b76a9dc760ad3fd3b34685027152aa3b2d4665e"
         },
         "testPaths": [
           "tests/ui-v3-workroom.test.mjs"
@@ -38956,9 +38956,9 @@
         ],
         "productionEntrypoint": "src/small-model/distillation-orchestrator.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "c574e89827375b419ecd310a385b66386b2475c5ad3124ccef3eb0204a0a3d1a",
+          "entrypointSha256": "25e24e4013c966586d1f9c956b415b57a5738e6eadaba754eee7d535c57e6a01",
           "environment": "node>=22.12",
-          "exactTestSha256": "4c3fd39d8c411f7535dbb9288f5c02a7a83aa87d1773affccde24222e557e9d0"
+          "exactTestSha256": "025adcab0f9b7cdf02d3cd7167d200038b05181ca1d2631c89aac93f5c6d84a8"
         },
         "testPaths": [
           "tests/small-model-distillation-orchestrator.test.mjs"
@@ -39064,9 +39064,9 @@
         ],
         "productionEntrypoint": "src/small-model/ast-codemod-engine.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "c39a84456a8beeee2b26ac29cfd95616cf8c2d0ebc488fbf825c46a68d88e21f",
+          "entrypointSha256": "8b42fe56c624cc3ba74f9bdeba7e024da834fd60485d16029675a38d9d0189e5",
           "environment": "node>=22.12",
-          "exactTestSha256": "197baa831f0c5311ca1dc04481983f1fde90566459a557c314558f12a5ad450a"
+          "exactTestSha256": "80053baea79f74fb5ec4d542dc8d28fb4d4be90e6feb333436d9dd4859968a92"
         },
         "testPaths": [
           "tests/small-model-symbolic-alpha5.test.mjs"
@@ -39950,9 +39950,9 @@
         ],
         "productionEntrypoint": "src/agent/agent-loop.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "e55db670218fefed94b07fbce972e4bd807d2164ff20cf490e057fea446283cf",
+          "entrypointSha256": "3450c7cde9aa316b63a11e2e340440f31ed0e24b12efea698c1cd218514f2e72",
           "environment": "node>=22.12",
-          "exactTestSha256": "a36e7a321061928d2af1e7a0cd6cb75838ca1764b8642ecda2745f44cb91c392"
+          "exactTestSha256": "db62c50367aa8ad92a91b894363af456894705cb95f51d7fa62673a4a8108463"
         },
         "testPaths": [
           "tests/content-ingress-agent-loop.test.mjs"
@@ -40125,9 +40125,9 @@
         ],
         "productionEntrypoint": "src/small-model/recursive-policy-sidecar.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "8a6c5a85837ace19f71fd8a4a5d029f0dd17badcd761a8f9e6462e7dca7d32b4",
+          "entrypointSha256": "8fe64aa0d091b37f31ec8e0fec874cbd39384b7944a548d2d05224564b81ebd6",
           "environment": "node>=22.12",
-          "exactTestSha256": "476b33ab6ff33115dc66249ca0f183fbb2617b8408a848fefb03144f3b2a4268"
+          "exactTestSha256": "d0778a3e457e9ee1b6ab7d772e0910aaf0ea758d965ead5af0d258b65b2a1a54"
         },
         "testPaths": [
           "tests/small-model-recursive-policy.test.mjs"
@@ -40313,9 +40313,9 @@
         ],
         "productionEntrypoint": "src/superiority/deep/local-ui-certification-lab.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "b02a7dd7b37d899a5ed202a5b98ff3a11f0c294dfa2100169597454c0856c18f",
+          "entrypointSha256": "f157bf8c2c408f059380746f4161803eb708de21929cd52bbb6f11a130c03f96",
           "environment": "node>=22.12",
-          "exactTestSha256": "4717bc38728553cb4e8d70fef48260152eeae313adff799d8d25ef47b662260d"
+          "exactTestSha256": "72f3fbb86fe0094ed9dc2446edbb4685cf3dcb3fa5a6e94c0a0c62ae8c244b7a"
         },
         "testPaths": [
           "tests/deep-superiority-ui-dogfood.test.mjs"
@@ -40486,9 +40486,9 @@
         ],
         "productionEntrypoint": "src/small-model/recursive-policy-sidecar.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "8a6c5a85837ace19f71fd8a4a5d029f0dd17badcd761a8f9e6462e7dca7d32b4",
+          "entrypointSha256": "8fe64aa0d091b37f31ec8e0fec874cbd39384b7944a548d2d05224564b81ebd6",
           "environment": "node>=22.12",
-          "exactTestSha256": "476b33ab6ff33115dc66249ca0f183fbb2617b8408a848fefb03144f3b2a4268"
+          "exactTestSha256": "d0778a3e457e9ee1b6ab7d772e0910aaf0ea758d965ead5af0d258b65b2a1a54"
         },
         "testPaths": [
           "tests/small-model-recursive-policy.test.mjs"
@@ -41086,9 +41086,9 @@
         ],
         "productionEntrypoint": "src/small-model/trajectory-lab.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "dc33c501a2da795873458bf59cabb58d06d91a5608c883c538d7fc2cc7803ea1",
+          "entrypointSha256": "eba73e8367ae808a9a0b2b602c6f5a8890f82cc4b337790669e152879e107c1c",
           "environment": "node>=22.12",
-          "exactTestSha256": "61d49135bd09ccda84c57bc94296fc526b461071988a7dd437dbabe25b40c384"
+          "exactTestSha256": "4cd291d9b78ab636ab75b81adbcbbcd69329baf9167af48752dae0c2fe0be02f"
         },
         "testPaths": [
           "tests/small-model-trajectory-lab.test.mjs"
@@ -42154,9 +42154,9 @@
         ],
         "productionEntrypoint": "scripts/lib/nolane-runtime-purity-verifier.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "7063e7c30b5e66101e75760a7ca93d498d147847f341d86f76a3d8dda684f0b8",
+          "entrypointSha256": "067f44062e615c93f28f8b065f21794ff2d0edbd663c0a59335429458ef670d4",
           "environment": "node>=22.12",
-          "exactTestSha256": "138f501492ff0d7d33be5dee7f308dfb464ac2d8d6f4266d4d46b92b07b3f3e1"
+          "exactTestSha256": "a5bec1842620fbae592c2272a9adde42a8f115cd217c7a5bc0e14aa3a3042c55"
         },
         "testPaths": [
           "tests/nolane-runtime-purity.test.mjs"
@@ -42258,9 +42258,9 @@
         ],
         "productionEntrypoint": "src/release/version-coherence.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "e7b479a7a67a09fcbe4fb89bc4a4c58d4f4be77506718d0d767174224f585265",
+          "entrypointSha256": "ac1ed7a8ce4a2583d61ae734b428498a824c9d1ba0b37e63798619888275fba4",
           "environment": "node>=22.12",
-          "exactTestSha256": "fccdd4142ddf247ffdeed59979533c0e3c93f8608c0a9ec68c8dcbcd1b4c9f57"
+          "exactTestSha256": "1de6842259f87ec9d65a380fb7c6d2c1ee0360460ff09ed10a418a98d56f1267"
         },
         "testPaths": [
           "tests/version-coherence.test.mjs"
@@ -42907,9 +42907,9 @@
         ],
         "productionEntrypoint": "ui-v3/views/review/review-view.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "f9e25d008fb2e0128dec38572bc252c827ff71270b0eaf0d02a7736d855b4222",
+          "entrypointSha256": "abb0326ce9146b2a1c76772f8bceb5ebfd87cf21749943d6b278426ff4c672f2",
           "environment": "node>=22.12",
-          "exactTestSha256": "d89208d28936bf527d9086cac02a12b1e312eca2ac043a811f48d33778518565"
+          "exactTestSha256": "900bfd62a1e40e56d55302694b047b25200ce9b527a1ad38d7fc36e97abd821b"
         },
         "testPaths": [
           "tests/ui-v3-review.test.mjs"
@@ -43324,9 +43324,9 @@
         ],
         "productionEntrypoint": "src/small-model/distillation-orchestrator.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "c574e89827375b419ecd310a385b66386b2475c5ad3124ccef3eb0204a0a3d1a",
+          "entrypointSha256": "25e24e4013c966586d1f9c956b415b57a5738e6eadaba754eee7d535c57e6a01",
           "environment": "node>=22.12",
-          "exactTestSha256": "4c3fd39d8c411f7535dbb9288f5c02a7a83aa87d1773affccde24222e557e9d0"
+          "exactTestSha256": "025adcab0f9b7cdf02d3cd7167d200038b05181ca1d2631c89aac93f5c6d84a8"
         },
         "testPaths": [
           "tests/small-model-distillation-orchestrator.test.mjs"
@@ -43367,9 +43367,9 @@
         ],
         "productionEntrypoint": "src/small-model/distillation-orchestrator.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "c574e89827375b419ecd310a385b66386b2475c5ad3124ccef3eb0204a0a3d1a",
+          "entrypointSha256": "25e24e4013c966586d1f9c956b415b57a5738e6eadaba754eee7d535c57e6a01",
           "environment": "node>=22.12",
-          "exactTestSha256": "4c3fd39d8c411f7535dbb9288f5c02a7a83aa87d1773affccde24222e557e9d0"
+          "exactTestSha256": "025adcab0f9b7cdf02d3cd7167d200038b05181ca1d2631c89aac93f5c6d84a8"
         },
         "testPaths": [
           "tests/small-model-distillation-orchestrator.test.mjs"
@@ -43911,9 +43911,9 @@
         ],
         "productionEntrypoint": "ui-v3/views/projects/project-view.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "917d054dfa49f8110d1214261ebf46ec1d24186b873ec6e7c7ed005db41956fa",
+          "entrypointSha256": "8a77680a69dceead6cd0ebc68cabbff5d8615287fff6567cc1e2557a14297994",
           "environment": "node>=22.12",
-          "exactTestSha256": "22e4b0eb439fd933e46be790b1aaea432f77a514e6cf1a034a5b1f5568552721"
+          "exactTestSha256": "1068f7b52fa14efa57a0dab86e72db3ec24fb9e6b86b22a83123440a034646d6"
         },
         "testPaths": [
           "tests/ui-v3-secondary-views.test.mjs"
@@ -45784,9 +45784,9 @@
         ],
         "productionEntrypoint": "src/small-model/verifier-mesh.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "974fcf34310e1236f931ae00ba23d88a73252a2c99b183ce7d9751bb8a286b75",
+          "entrypointSha256": "3c7c044ad3d2e3b70564153d108404455574c1355f7014890d1d33610ba43ad2",
           "environment": "node>=22.12",
-          "exactTestSha256": "f39d81735e1c8f35a35ba35d4954b52164bb3d8bf78013cb5bdf4d29612fb4cf"
+          "exactTestSha256": "439ab4ed64895321afaa75e0c1db4f0f909cf4f0d7d4fac58a85770b37349fe6"
         },
         "testPaths": [
           "tests/small-model-verifier-mesh.test.mjs"
@@ -45827,9 +45827,9 @@
         ],
         "productionEntrypoint": "src/small-model/plasticity-plane.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "eb5ffb961490cd241bed46f216ebf00e30ac59e6d6eff01d6c488a7701c77933",
+          "entrypointSha256": "39173cc288bb45c353305709a18fc1c43422083f5dd8425f3d85df60f2e277cd",
           "environment": "node>=22.12",
-          "exactTestSha256": "4eff5d967963e8e2228de1e5e495a65bb4fc6dad8a2fad20c3ebb6ee0f606fec"
+          "exactTestSha256": "cb0167c73ad979d2f08f6745a6e33ef7fa3dffe0d7e46055942c58b8b2bfeb23"
         },
         "testPaths": [
           "tests/small-model-plasticity-plane.test.mjs"
@@ -45927,9 +45927,9 @@
         ],
         "productionEntrypoint": "ui-v3/control-plane/domains/governance.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "141bc9f77211b3d589284be8e8ddec3b5c2b0c1fac330500c6a77eadd0b76e90",
+          "entrypointSha256": "e5da5914d59b5697956b068cad8c3eaedfe5d5c91856bd89a7784bde25fd4460",
           "environment": "node>=22.12",
-          "exactTestSha256": "cae0766590bc9a41cd9e6d872bddfc290eed0307b38aba00470b02b3b0b2db74"
+          "exactTestSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f"
         },
         "testPaths": [
           "tests/ui-v3-control-plane-domains.test.mjs"
@@ -48059,9 +48059,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/agent-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "c09b001a8aa6d555949554b9806ab2384988f8fdacc852f970a0e22113cbe099",
+          "entrypointSha256": "94c057c36b9b2843fa0a20b5b2340b27ec130a979c86c34af4214b90ec7dc226",
           "environment": "node>=22.12",
-          "exactTestSha256": "3c31f27020f721e9e5e5de6d8dd2c3d11b4de28fb165bf49fadba69a0e1ae9eb"
+          "exactTestSha256": "6f1b8faccbb00d108690967e1f4135c646a1191fc5e14409f880c45ad6ce1042"
         },
         "testPaths": [
           "tests/nolane-native-agent-service.test.mjs"
@@ -48705,9 +48705,9 @@
         ],
         "productionEntrypoint": "src/small-model/verifier-mesh.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "974fcf34310e1236f931ae00ba23d88a73252a2c99b183ce7d9751bb8a286b75",
+          "entrypointSha256": "3c7c044ad3d2e3b70564153d108404455574c1355f7014890d1d33610ba43ad2",
           "environment": "node>=22.12",
-          "exactTestSha256": "f39d81735e1c8f35a35ba35d4954b52164bb3d8bf78013cb5bdf4d29612fb4cf"
+          "exactTestSha256": "439ab4ed64895321afaa75e0c1db4f0f909cf4f0d7d4fac58a85770b37349fe6"
         },
         "testPaths": [
           "tests/small-model-verifier-mesh.test.mjs"
@@ -48748,9 +48748,9 @@
         ],
         "productionEntrypoint": "src/small-model/verifier-mesh.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "974fcf34310e1236f931ae00ba23d88a73252a2c99b183ce7d9751bb8a286b75",
+          "entrypointSha256": "3c7c044ad3d2e3b70564153d108404455574c1355f7014890d1d33610ba43ad2",
           "environment": "node>=22.12",
-          "exactTestSha256": "f39d81735e1c8f35a35ba35d4954b52164bb3d8bf78013cb5bdf4d29612fb4cf"
+          "exactTestSha256": "439ab4ed64895321afaa75e0c1db4f0f909cf4f0d7d4fac58a85770b37349fe6"
         },
         "testPaths": [
           "tests/small-model-verifier-mesh.test.mjs"
@@ -49250,9 +49250,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/orchestration-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9",
+          "entrypointSha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374",
           "environment": "node>=22.12",
-          "exactTestSha256": "a459f90ce20e14171b24112d10ec164bc73e91c4f98080d738f6d23af074bc88"
+          "exactTestSha256": "c3502bb4ef58a79498bc6e736f0d36f7b9171a538529b525cc319ce7f6a4c140"
         },
         "testPaths": [
           "tests/nolane-native-orchestration-contracts.test.mjs"
@@ -49589,9 +49589,9 @@
         ],
         "productionEntrypoint": "src/small-model/trajectory-schema.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "c064497880df194bb526cf7c95b0dfa9e8e59ad872946a11c183aa5516f11cc8",
+          "entrypointSha256": "fae81e360bbd6f94aca69675c0d1833b038e3f0e34bb40f2662c54407ea28bcb",
           "environment": "node>=22.12",
-          "exactTestSha256": "61d49135bd09ccda84c57bc94296fc526b461071988a7dd437dbabe25b40c384"
+          "exactTestSha256": "4cd291d9b78ab636ab75b81adbcbbcd69329baf9167af48752dae0c2fe0be02f"
         },
         "testPaths": [
           "tests/small-model-trajectory-lab.test.mjs"
@@ -50332,9 +50332,9 @@
         ],
         "productionEntrypoint": "src/small-model/plasticity-plane.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "eb5ffb961490cd241bed46f216ebf00e30ac59e6d6eff01d6c488a7701c77933",
+          "entrypointSha256": "39173cc288bb45c353305709a18fc1c43422083f5dd8425f3d85df60f2e277cd",
           "environment": "node>=22.12",
-          "exactTestSha256": "4eff5d967963e8e2228de1e5e495a65bb4fc6dad8a2fad20c3ebb6ee0f606fec"
+          "exactTestSha256": "cb0167c73ad979d2f08f6745a6e33ef7fa3dffe0d7e46055942c58b8b2bfeb23"
         },
         "testPaths": [
           "tests/small-model-plasticity-plane.test.mjs"
@@ -50511,9 +50511,9 @@
         ],
         "productionEntrypoint": "ui-v3/shell/app-shell.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "1281bfb0230add92fdad0f2aa12f7ba013783ecb4364a051198c7795ca40a82e",
+          "entrypointSha256": "6b1479448ed8eb198d8bee90f9d86a29ff80d9464d7555567b01092ff46af61e",
           "environment": "node>=22.12",
-          "exactTestSha256": "e9e1fe6a6b7d015760a1253a6f7dcb9f7ac7317243adf92e9203e83c1d7c669d"
+          "exactTestSha256": "26f5f5dd59e79e22a1ebaed049e37a7b0cb7a68d4bb6de9d94d3480ec0279a02"
         },
         "testPaths": [
           "tests/ui-v3-router.test.mjs"
@@ -50728,9 +50728,9 @@
         ],
         "productionEntrypoint": "src/small-model/hidden-verification-suite.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "41ee8fbbf22a67ee6548beecc305764c024ac074c004cfdf8e6c88329ddb3551",
+          "entrypointSha256": "b03ff73e481820689b2651d38b00b94f8b202d48b4d51328c86a99d3fd71e2fb",
           "environment": "node>=22.12",
-          "exactTestSha256": "c963ac1dec8d297fef1814a029f8ac6aeee34a05274a3ebc8f87dc85045fadbd"
+          "exactTestSha256": "fcb78d0db3fe0c061d792db76190df7b2db64b47ba5c2ba6eeef440308df2a37"
         },
         "testPaths": [
           "tests/small-model-hidden-verification.test.mjs"
@@ -51689,9 +51689,9 @@
         ],
         "productionEntrypoint": "src/small-model/verifier-mesh.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "974fcf34310e1236f931ae00ba23d88a73252a2c99b183ce7d9751bb8a286b75",
+          "entrypointSha256": "3c7c044ad3d2e3b70564153d108404455574c1355f7014890d1d33610ba43ad2",
           "environment": "node>=22.12",
-          "exactTestSha256": "f39d81735e1c8f35a35ba35d4954b52164bb3d8bf78013cb5bdf4d29612fb4cf"
+          "exactTestSha256": "439ab4ed64895321afaa75e0c1db4f0f909cf4f0d7d4fac58a85770b37349fe6"
         },
         "testPaths": [
           "tests/small-model-verifier-mesh.test.mjs"
@@ -52343,9 +52343,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/shell-tool.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "75a44078fdac4b323a8f87312eff4ac7b3c61398fd45308b6ec808f6b992a7f2",
+          "entrypointSha256": "c01cb2438e1a140a25aa14d6d307d866c6328607f47278b58da8e2df8615d78b",
           "environment": "node>=22.12",
-          "exactTestSha256": "3c31f27020f721e9e5e5de6d8dd2c3d11b4de28fb165bf49fadba69a0e1ae9eb"
+          "exactTestSha256": "6f1b8faccbb00d108690967e1f4135c646a1191fc5e14409f880c45ad6ce1042"
         },
         "testPaths": [
           "tests/nolane-native-agent-service.test.mjs"
@@ -52423,8 +52423,8 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "scripts/verify-nolane-evidence-freshness.mjs": "29a156c9fcccfb77b6e9c5359573902cc4ccf034077271a5f7b407c1b6b34d18",
-          "tests/nolane-evidence-freshness.test.mjs": "5e6a8153ae329c4a3a0a5b36dee9495147d1b653b669a4868b74d2c040ad2814"
+          "scripts/verify-nolane-evidence-freshness.mjs": "bd662177003834b22c4659c6b2fa72b5204e132fb48db6001add5f49a4b138cf",
+          "tests/nolane-evidence-freshness.test.mjs": "99b9d9fef62efac4779d6213acefc1bb6395661ba8bb427b989617a8aac54da1"
         },
         "externalConditions": [],
         "fileExistenceIsProof": false,
@@ -52435,9 +52435,9 @@
         ],
         "productionEntrypoint": "scripts/verify-nolane-evidence-freshness.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "240bf3644d0c878cb1f03c7289795f441aeeacc3e910b6e6595ad8dc7a40e74e",
+          "entrypointSha256": "bd662177003834b22c4659c6b2fa72b5204e132fb48db6001add5f49a4b138cf",
           "environment": "node>=22.12",
-          "exactTestSha256": "0bf989051052ab1ef8365fbf3da14278d8dc5d80c4178988b13c42458029c85a"
+          "exactTestSha256": "99b9d9fef62efac4779d6213acefc1bb6395661ba8bb427b989617a8aac54da1"
         },
         "testPaths": [
           "tests/nolane-evidence-freshness.test.mjs"
@@ -52696,9 +52696,9 @@
         ],
         "productionEntrypoint": "ui-v3/views/review/review-view.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "f9e25d008fb2e0128dec38572bc252c827ff71270b0eaf0d02a7736d855b4222",
+          "entrypointSha256": "abb0326ce9146b2a1c76772f8bceb5ebfd87cf21749943d6b278426ff4c672f2",
           "environment": "node>=22.12",
-          "exactTestSha256": "d89208d28936bf527d9086cac02a12b1e312eca2ac043a811f48d33778518565"
+          "exactTestSha256": "900bfd62a1e40e56d55302694b047b25200ce9b527a1ad38d7fc36e97abd821b"
         },
         "testPaths": [
           "tests/ui-v3-review.test.mjs"
@@ -53249,9 +53249,9 @@
         ],
         "productionEntrypoint": "ui-v3/views/workroom/terminal-host.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "ee87fdf3af648f60efbfbb1df97b574e52d19f1484987065fb09011ed72b6879",
+          "entrypointSha256": "0ac0faa96f6daca13547e9738710a7674bcc6650292a27ebffb4fbc163c98988",
           "environment": "node>=22.12",
-          "exactTestSha256": "3f7d98ae73301f951b89998d40093df22c9a0d26d3bb433453da521a04babdf9"
+          "exactTestSha256": "a1f3b5647223bef8876809ba0b76a9dc760ad3fd3b34685027152aa3b2d4665e"
         },
         "testPaths": [
           "tests/ui-v3-workroom.test.mjs"
@@ -53579,9 +53579,9 @@
         ],
         "productionEntrypoint": "src/small-model/adaptive-compute-governor.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "bf6a2683e3b3d62d094d3fda9fafd1c8b2905c544a4db877038aa0208ad3f6e6",
+          "entrypointSha256": "654b09942933f555ea04dfe8d627878aa8a3d276a86ae8e80628ac2fbf05f9a5",
           "environment": "node>=22.12",
-          "exactTestSha256": "9828fcfb4a115faed28acffc352d038a0b1b9c552b36cb05748673b60aca2085"
+          "exactTestSha256": "1e42b62278c2cfe295ecba6dc384486a7ef6d55e84e2d417de757e1874f9c2ba"
         },
         "testPaths": [
           "tests/small-model-adaptive-compute.test.mjs"
@@ -53693,9 +53693,9 @@
         ],
         "productionEntrypoint": "src/ui/capability-registry.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "b4ffe007fc36f562443d5b9732b778e578a3f3ad75dfa6f1ae57c01c430ee5b9",
+          "entrypointSha256": "5dd1e76ff1b1145d68fe68f3fe67447620917d7fb5d74910d9bea13588142c32",
           "environment": "node>=22.12",
-          "exactTestSha256": "c0a7667740f9a56b2a2b5b6a060e62337b8ef95cfba3be1d0d5f46fe39d70963"
+          "exactTestSha256": "d1190c09e884826cd82f53a097a5475bcc08650b72ec5715d843f372c55af073"
         },
         "testPaths": [
           "tests/ui-capability-registry.test.mjs"
@@ -55229,9 +55229,9 @@
         ],
         "productionEntrypoint": "src/small-model/recursive-graph-solver-pack.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "6c110120c3ce35e6a73857b8863a9297973056444468cb13245cb912ddf884ec",
+          "entrypointSha256": "ba9fa39efcf2c2bdcad01b38504c5943d650eb635e4a76b7d7004ba0ff7d5e58",
           "environment": "node>=22.12",
-          "exactTestSha256": "476b33ab6ff33115dc66249ca0f183fbb2617b8408a848fefb03144f3b2a4268"
+          "exactTestSha256": "d0778a3e457e9ee1b6ab7d772e0910aaf0ea758d965ead5af0d258b65b2a1a54"
         },
         "testPaths": [
           "tests/small-model-recursive-policy.test.mjs"
@@ -55426,9 +55426,9 @@
         ],
         "productionEntrypoint": "src/small-model/trajectory-lab.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "dc33c501a2da795873458bf59cabb58d06d91a5608c883c538d7fc2cc7803ea1",
+          "entrypointSha256": "eba73e8367ae808a9a0b2b602c6f5a8890f82cc4b337790669e152879e107c1c",
           "environment": "node>=22.12",
-          "exactTestSha256": "61d49135bd09ccda84c57bc94296fc526b461071988a7dd437dbabe25b40c384"
+          "exactTestSha256": "4cd291d9b78ab636ab75b81adbcbbcd69329baf9167af48752dae0c2fe0be02f"
         },
         "testPaths": [
           "tests/small-model-trajectory-lab.test.mjs"
@@ -56062,9 +56062,9 @@
         ],
         "productionEntrypoint": "src/small-model/latent-memory-router.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "0670dee3edd465b1584d219cca06cb6fc9dcecccf8f31465e567d0508def51a9",
+          "entrypointSha256": "42df79e8ee01aca85e2a80c176da77826d84b8253bdbd7a5d71084447458b1cc",
           "environment": "node>=22.12",
-          "exactTestSha256": "0d6433f8730caf65af69220cbc1d361723e8365c6176837265cd12de39ec5148"
+          "exactTestSha256": "9f6c95aaa04190bfd4de8132415db85f07bc70c2ff01fa98a71eebf5325c781a"
         },
         "testPaths": [
           "tests/small-model-plasticity-alpha5.test.mjs"
@@ -56229,9 +56229,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/file-tools.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "5a1a580af7454e7b2f658aae54564549082372c37a177ecb326dd69e75e74fbc",
+          "entrypointSha256": "d9ed668097e8520b73a5d22942bc6d3a9ca382826197765b412956e69c2f7629",
           "environment": "node>=22.12",
-          "exactTestSha256": "3c31f27020f721e9e5e5de6d8dd2c3d11b4de28fb165bf49fadba69a0e1ae9eb"
+          "exactTestSha256": "6f1b8faccbb00d108690967e1f4135c646a1191fc5e14409f880c45ad6ce1042"
         },
         "testPaths": [
           "tests/nolane-native-agent-service.test.mjs"
@@ -57103,9 +57103,9 @@
         ],
         "productionEntrypoint": "config/nolane-native-runtime.json",
         "suppliedHashes": {
-          "entrypointSha256": "ca098dfd94f364c7fd952b1334089c5b91503b687ff4d452f2ce799d4a4572a1",
+          "entrypointSha256": "e15dc28844d01b92a86b39e2c4ed1b0b35a6d6eec3525e89daf2e8527bc2c04d",
           "environment": "node>=22.12",
-          "exactTestSha256": "4c701aaac4c3285b74baa4b572b2daf101eda98895e2549471c27ce17b8a779c"
+          "exactTestSha256": "e65bb99d6d6b9f385dca0a94660817de36317fbd0928f3d3f0a409c134db4623"
         },
         "testPaths": [
           "tests/nolane-native-runtime-session-tools.test.mjs"
@@ -57146,9 +57146,9 @@
         ],
         "productionEntrypoint": "scripts/lib/nolane-runtime-purity-verifier.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "7063e7c30b5e66101e75760a7ca93d498d147847f341d86f76a3d8dda684f0b8",
+          "entrypointSha256": "067f44062e615c93f28f8b065f21794ff2d0edbd663c0a59335429458ef670d4",
           "environment": "node>=22.12",
-          "exactTestSha256": "138f501492ff0d7d33be5dee7f308dfb464ac2d8d6f4266d4d46b92b07b3f3e1"
+          "exactTestSha256": "a5bec1842620fbae592c2272a9adde42a8f115cd217c7a5bc0e14aa3a3042c55"
         },
         "testPaths": [
           "tests/nolane-runtime-purity.test.mjs"
@@ -57734,9 +57734,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/orchestration-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9",
+          "entrypointSha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374",
           "environment": "node>=22.12",
-          "exactTestSha256": "a459f90ce20e14171b24112d10ec164bc73e91c4f98080d738f6d23af074bc88"
+          "exactTestSha256": "c3502bb4ef58a79498bc6e736f0d36f7b9171a538529b525cc319ce7f6a4c140"
         },
         "testPaths": [
           "tests/nolane-native-orchestration-contracts.test.mjs"
@@ -58975,9 +58975,9 @@
         ],
         "productionEntrypoint": "src/small-model/adaptive-compute-governor.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "bf6a2683e3b3d62d094d3fda9fafd1c8b2905c544a4db877038aa0208ad3f6e6",
+          "entrypointSha256": "654b09942933f555ea04dfe8d627878aa8a3d276a86ae8e80628ac2fbf05f9a5",
           "environment": "node>=22.12",
-          "exactTestSha256": "9828fcfb4a115faed28acffc352d038a0b1b9c552b36cb05748673b60aca2085"
+          "exactTestSha256": "1e42b62278c2cfe295ecba6dc384486a7ef6d55e84e2d417de757e1874f9c2ba"
         },
         "testPaths": [
           "tests/small-model-adaptive-compute.test.mjs"
@@ -59377,9 +59377,9 @@
         ],
         "productionEntrypoint": "src/security/content-ingress-pipeline.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "62942f33f0de85c496c726534b83227cb7c6a7b0ccbd6b223e6161a33a1c2e05",
+          "entrypointSha256": "91325b38f2aba9bca0c1ccf026144b9396939a966a003ab8119423c9cc954693",
           "environment": "node>=22.12",
-          "exactTestSha256": "a36e7a321061928d2af1e7a0cd6cb75838ca1764b8642ecda2745f44cb91c392"
+          "exactTestSha256": "db62c50367aa8ad92a91b894363af456894705cb95f51d7fa62673a4a8108463"
         },
         "testPaths": [
           "tests/content-ingress-agent-loop.test.mjs"
@@ -59473,9 +59473,9 @@
         ],
         "productionEntrypoint": "src/client/nolane-agent-client.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "db671ddeb64e87c00849f597c747d780615353ff2bf59eb7ebf637b8e98d3f3e",
+          "entrypointSha256": "e391f3a69c7d1dcd1c42bf7b1705fe815df8ea871f810f7b7146afb028db8155",
           "environment": "node>=22.12",
-          "exactTestSha256": "52e8fe30f0f3855259a2c913d943d61b5f2e1d33f2a778557780fa82f30e7985"
+          "exactTestSha256": "0be39c77291c1e04d684fe794a1cd6b3fde5945db6c15a05d085fc56102a6698"
         },
         "testPaths": [
           "tests/client-sdk-cli.test.mjs"
@@ -59618,9 +59618,9 @@
         ],
         "productionEntrypoint": "src/eval/eval-lane-policy.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "d8c9d3431771baa59e59495e228562a227ce0181fa5069db92ccb34fa861c5cf",
+          "entrypointSha256": "3240c4c7de60462f75bbf88d78e653bcf1b9e39f387f63ac80627eb75ba6a89d",
           "environment": "node>=22.12",
-          "exactTestSha256": "4b554ae95f014c2c4c5ce515e7daf3003ed0c9a75e7b9b0a048baf249ce370df"
+          "exactTestSha256": "155efdfbd590de140f8431a4308b0efae8bda396712063fff35406c9b47580f0"
         },
         "testPaths": [
           "tests/eval-lane-policy.test.mjs"
@@ -59661,9 +59661,9 @@
         ],
         "productionEntrypoint": "ui-v3/control-plane/domains/runtime.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "7307e7a4573500c7787514c6d46b4401760a90bba6c9018561afd143c61f7dfb",
+          "entrypointSha256": "af231a8342c905b8c46c2db0a9d7c1e22f77b2b4d5548e30b8be5fe3570a78c4",
           "environment": "node>=22.12",
-          "exactTestSha256": "cae0766590bc9a41cd9e6d872bddfc290eed0307b38aba00470b02b3b0b2db74"
+          "exactTestSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f"
         },
         "testPaths": [
           "tests/ui-v3-control-plane-domains.test.mjs"
@@ -59771,9 +59771,9 @@
         ],
         "productionEntrypoint": "src/small-model/recursive-policy-sidecar.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "8a6c5a85837ace19f71fd8a4a5d029f0dd17badcd761a8f9e6462e7dca7d32b4",
+          "entrypointSha256": "8fe64aa0d091b37f31ec8e0fec874cbd39384b7944a548d2d05224564b81ebd6",
           "environment": "node>=22.12",
-          "exactTestSha256": "476b33ab6ff33115dc66249ca0f183fbb2617b8408a848fefb03144f3b2a4268"
+          "exactTestSha256": "d0778a3e457e9ee1b6ab7d772e0910aaf0ea758d965ead5af0d258b65b2a1a54"
         },
         "testPaths": [
           "tests/small-model-recursive-policy.test.mjs"
@@ -60207,9 +60207,9 @@
         ],
         "productionEntrypoint": "src/release/clean-room-certification.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "9784127c004468d16be711b19c632f7fe5788de23d886fe3d0e7b9ccf7140f6a",
+          "entrypointSha256": "dceb47cee9913c94c5c2f411dd6b2c4b8ecf90b57a670747000d25cb7c9452c6",
           "environment": "node>=22.12",
-          "exactTestSha256": "e79c789cedfe1d9121839277cef6485237d67747d8210b0aa653b6b99f13c084"
+          "exactTestSha256": "b70978f64546c75179ac996df23de49e9a42ddd0e85f8f538b92caca739ea60d"
         },
         "testPaths": [
           "tests/clean-room-certification.test.mjs"
@@ -60269,9 +60269,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/orchestration-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9",
+          "entrypointSha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374",
           "environment": "node>=22.12",
-          "exactTestSha256": "a459f90ce20e14171b24112d10ec164bc73e91c4f98080d738f6d23af074bc88"
+          "exactTestSha256": "c3502bb4ef58a79498bc6e736f0d36f7b9171a538529b525cc319ce7f6a4c140"
         },
         "testPaths": [
           "tests/nolane-native-orchestration-contracts.test.mjs"
@@ -61417,9 +61417,9 @@
         ],
         "productionEntrypoint": "src/superiority/deep/local-ui-certification-lab.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "b02a7dd7b37d899a5ed202a5b98ff3a11f0c294dfa2100169597454c0856c18f",
+          "entrypointSha256": "f157bf8c2c408f059380746f4161803eb708de21929cd52bbb6f11a130c03f96",
           "environment": "node>=22.12",
-          "exactTestSha256": "4717bc38728553cb4e8d70fef48260152eeae313adff799d8d25ef47b662260d"
+          "exactTestSha256": "72f3fbb86fe0094ed9dc2446edbb4685cf3dcb3fa5a6e94c0a0c62ae8c244b7a"
         },
         "testPaths": [
           "tests/deep-superiority-ui-dogfood.test.mjs"
@@ -61649,9 +61649,9 @@
         ],
         "productionEntrypoint": "src/small-model/adaptive-compute-governor.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "bf6a2683e3b3d62d094d3fda9fafd1c8b2905c544a4db877038aa0208ad3f6e6",
+          "entrypointSha256": "654b09942933f555ea04dfe8d627878aa8a3d276a86ae8e80628ac2fbf05f9a5",
           "environment": "node>=22.12",
-          "exactTestSha256": "9828fcfb4a115faed28acffc352d038a0b1b9c552b36cb05748673b60aca2085"
+          "exactTestSha256": "1e42b62278c2cfe295ecba6dc384486a7ef6d55e84e2d417de757e1874f9c2ba"
         },
         "testPaths": [
           "tests/small-model-adaptive-compute.test.mjs"
@@ -61917,9 +61917,9 @@
         ],
         "productionEntrypoint": "src/small-model/adaptive-compute-governor.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "bf6a2683e3b3d62d094d3fda9fafd1c8b2905c544a4db877038aa0208ad3f6e6",
+          "entrypointSha256": "654b09942933f555ea04dfe8d627878aa8a3d276a86ae8e80628ac2fbf05f9a5",
           "environment": "node>=22.12",
-          "exactTestSha256": "9828fcfb4a115faed28acffc352d038a0b1b9c552b36cb05748673b60aca2085"
+          "exactTestSha256": "1e42b62278c2cfe295ecba6dc384486a7ef6d55e84e2d417de757e1874f9c2ba"
         },
         "testPaths": [
           "tests/small-model-adaptive-compute.test.mjs"
@@ -63322,9 +63322,9 @@
         ],
         "productionEntrypoint": "ui-v3/views/mission/attention-card.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "56de800fcd9f961933804d216b4ebc6bdffed15b314c7ccbf661b8db7a30a922",
+          "entrypointSha256": "35f2e3aa922e7955b85446005fab06dc4a65011e72520b02bbe5c103b9e374cb",
           "environment": "node>=22.12",
-          "exactTestSha256": "b7124bffa77c56c72e851b7a2071cf5ac09ddead0ab9df18b71858249e5203d5"
+          "exactTestSha256": "e74ed54dea4452a9f15228e7a5747bf0f3eeb4ec1c8400e634ee4eddd59ce2d8"
         },
         "testPaths": [
           "tests/ui-v3-attention-cards.test.mjs"
@@ -63721,9 +63721,9 @@
         ],
         "productionEntrypoint": "scripts/scan-product-surface-leakage.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "55282e41a7031da0dc61ebd6358f782ae447b9ba68466f2cf3d677a728a1610c",
+          "entrypointSha256": "0f6a960ae10940a686198e01be825d6e616d35fcc2779be3e2c1221683263409",
           "environment": "node>=22.12",
-          "exactTestSha256": "f7df078e9e7081c430df5ef69b23df55b48b89746f3f9ebf60d726c50a9012e5"
+          "exactTestSha256": "30e99382d27d4619db6a526fadf60a4231d8b44805fcc07f9739f0310f033c3b"
         },
         "testPaths": [
           "tests/nolane-environment-brand-leakage.test.mjs"
@@ -63882,9 +63882,9 @@
         ],
         "productionEntrypoint": "src/small-model/candidate-ranker.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "9fd6c25fd5fd22bdeead451bf2cfbc933751a0a975097455c3ca1e1fa3e2a2be",
+          "entrypointSha256": "76c9de9d68dc8e0b9740730962351a89b9bd10ae71842d6f221606c46d5ad8ef",
           "environment": "node>=22.12",
-          "exactTestSha256": "f39d81735e1c8f35a35ba35d4954b52164bb3d8bf78013cb5bdf4d29612fb4cf"
+          "exactTestSha256": "439ab4ed64895321afaa75e0c1db4f0f909cf4f0d7d4fac58a85770b37349fe6"
         },
         "testPaths": [
           "tests/small-model-verifier-mesh.test.mjs"
@@ -63925,9 +63925,9 @@
         ],
         "productionEntrypoint": "src/small-model/distillation-orchestrator.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "c574e89827375b419ecd310a385b66386b2475c5ad3124ccef3eb0204a0a3d1a",
+          "entrypointSha256": "25e24e4013c966586d1f9c956b415b57a5738e6eadaba754eee7d535c57e6a01",
           "environment": "node>=22.12",
-          "exactTestSha256": "4c3fd39d8c411f7535dbb9288f5c02a7a83aa87d1773affccde24222e557e9d0"
+          "exactTestSha256": "025adcab0f9b7cdf02d3cd7167d200038b05181ca1d2631c89aac93f5c6d84a8"
         },
         "testPaths": [
           "tests/small-model-distillation-orchestrator.test.mjs"
@@ -64937,9 +64937,9 @@
         ],
         "productionEntrypoint": "src/small-model/specialist-model-fabric.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "13d8533541d3d6880adfc9308ef384fdd1fb7f88c634d69f2a305fea3ce73dac",
+          "entrypointSha256": "ff5fddfe1bff5fe0e62a41b7f5af292a3ede13fa607961fd317d87e406cf2869",
           "environment": "node>=22.12",
-          "exactTestSha256": "aaecd9be843af4bf66b23f94b58c6cd85041a656ef338c5120cd08f1d5559d6a"
+          "exactTestSha256": "d6ec57a10815894b3c71ad10407fd93a21155df40e966bff6eaa7e9efd43cb71"
         },
         "testPaths": [
           "tests/small-model-specialist-governance-contracts.test.mjs"
@@ -65048,9 +65048,9 @@
         ],
         "productionEntrypoint": "src/small-model/curriculum-factory.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "2e6dda5ebd3cfa1f2d22bd8a850239b4784eb5749d253a2876fd96a837bf2946",
+          "entrypointSha256": "ed1b152a2e137f53ec18a7db167033d11d60a48fb61e9944d64da3ca7a336132",
           "environment": "node>=22.12",
-          "exactTestSha256": "37665b426b48aad82be4b61d699bf5770e8d94d208daaac88f0b5409cc7da56c"
+          "exactTestSha256": "bf135cf80a920d86fe35f9ea4a74c98d3d880157a182b1bf9f6df18e411528fc"
         },
         "testPaths": [
           "tests/small-model-curriculum-factory.test.mjs"
@@ -65975,9 +65975,9 @@
         ],
         "productionEntrypoint": "src/small-model/trajectory-schema.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "c064497880df194bb526cf7c95b0dfa9e8e59ad872946a11c183aa5516f11cc8",
+          "entrypointSha256": "fae81e360bbd6f94aca69675c0d1833b038e3f0e34bb40f2662c54407ea28bcb",
           "environment": "node>=22.12",
-          "exactTestSha256": "61d49135bd09ccda84c57bc94296fc526b461071988a7dd437dbabe25b40c384"
+          "exactTestSha256": "4cd291d9b78ab636ab75b81adbcbbcd69329baf9167af48752dae0c2fe0be02f"
         },
         "testPaths": [
           "tests/small-model-trajectory-lab.test.mjs"
@@ -66743,9 +66743,9 @@
         ],
         "productionEntrypoint": "src/small-model/symbolic-solver-compiler.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "6272d3aa5c3483f99a9480c5be0f7374f66ddf2a1ce7c356a9ac19913b31d8d2",
+          "entrypointSha256": "2e3ccbd95e002314955a54117faaf0d164005635ae3676b5b13e6674007e5976",
           "environment": "node>=22.12",
-          "exactTestSha256": "cbde8a902b8f0430dc718857a527c53736e0e30f67909c248b722cb05932e25a"
+          "exactTestSha256": "4b1b3063d646513503a7baf6d50450e097cae3612b7b7b48bd9d6a5a3b8c9044"
         },
         "testPaths": [
           "tests/small-model-symbolic-solver.test.mjs"
@@ -66786,9 +66786,9 @@
         ],
         "productionEntrypoint": "src/small-model/adaptive-compute-governor.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "bf6a2683e3b3d62d094d3fda9fafd1c8b2905c544a4db877038aa0208ad3f6e6",
+          "entrypointSha256": "654b09942933f555ea04dfe8d627878aa8a3d276a86ae8e80628ac2fbf05f9a5",
           "environment": "node>=22.12",
-          "exactTestSha256": "9828fcfb4a115faed28acffc352d038a0b1b9c552b36cb05748673b60aca2085"
+          "exactTestSha256": "1e42b62278c2cfe295ecba6dc384486a7ef6d55e84e2d417de757e1874f9c2ba"
         },
         "testPaths": [
           "tests/small-model-adaptive-compute.test.mjs"
@@ -67452,9 +67452,9 @@
         ],
         "productionEntrypoint": "src/server/http-server.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "714fa23b2813cb059d14e0cd678760d62f5d40f416b25ffbb423ed026f11928a",
+          "entrypointSha256": "620467e24c30ba76e382e05b912ae93ca4d96664a8b44b891db039410d512028",
           "environment": "node>=22.12",
-          "exactTestSha256": "6d4389d18ca2cc29e99cdfa4355e00bb385aad741fdd74029844967715c1f37c"
+          "exactTestSha256": "9789d9c870c21651d436dd9b35b5f75a0da3cc9b43de14a9a6ddfd85f7d6154b"
         },
         "testPaths": [
           "tests/http-boundary-errors.test.mjs"
@@ -69015,9 +69015,9 @@
         ],
         "productionEntrypoint": "src/small-model/adaptive-compute-governor.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "bf6a2683e3b3d62d094d3fda9fafd1c8b2905c544a4db877038aa0208ad3f6e6",
+          "entrypointSha256": "654b09942933f555ea04dfe8d627878aa8a3d276a86ae8e80628ac2fbf05f9a5",
           "environment": "node>=22.12",
-          "exactTestSha256": "9828fcfb4a115faed28acffc352d038a0b1b9c552b36cb05748673b60aca2085"
+          "exactTestSha256": "1e42b62278c2cfe295ecba6dc384486a7ef6d55e84e2d417de757e1874f9c2ba"
         },
         "testPaths": [
           "tests/small-model-adaptive-compute.test.mjs"
@@ -69381,9 +69381,9 @@
         ],
         "productionEntrypoint": "src/repository/repository-file-enumerator.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "b3d615a10ff2604c32ce7857c031dd4341f3d80fed7055feb06588795f27a775",
+          "entrypointSha256": "bb41b64d4c9348d09c85c8aabe781d13feb5898a2dedce09f4bcd9f4100f3d6e",
           "environment": "node>=22.12",
-          "exactTestSha256": "2caa125e11e7b1aaf7afbd7b46a040c8cc8b71c9763cbec2967e021f99879d96"
+          "exactTestSha256": "84a2132ab0db88b2b980fde48c754858a5e80dfee18927c554cf8e9d78a99d94"
         },
         "testPaths": [
           "tests/repository-gitless-discovery.test.mjs"
@@ -69692,9 +69692,9 @@
         ],
         "productionEntrypoint": "src/small-model/symbolic-solver-compiler.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "6272d3aa5c3483f99a9480c5be0f7374f66ddf2a1ce7c356a9ac19913b31d8d2",
+          "entrypointSha256": "2e3ccbd95e002314955a54117faaf0d164005635ae3676b5b13e6674007e5976",
           "environment": "node>=22.12",
-          "exactTestSha256": "cbde8a902b8f0430dc718857a527c53736e0e30f67909c248b722cb05932e25a"
+          "exactTestSha256": "4b1b3063d646513503a7baf6d50450e097cae3612b7b7b48bd9d6a5a3b8c9044"
         },
         "testPaths": [
           "tests/small-model-symbolic-solver.test.mjs"
@@ -71162,9 +71162,9 @@
         ],
         "productionEntrypoint": "ui-v3/views/review/ship-actions.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "c1e91c03d94ec1281eb3818a629af1cd347dd917b914133557fe6c187f4c0a5f",
+          "entrypointSha256": "bbb8ee85d4b2a0604d8f1875e3f425ad098ae92b0184bc2361cbfe0f6ebdd32c",
           "environment": "node>=22.12",
-          "exactTestSha256": "d89208d28936bf527d9086cac02a12b1e312eca2ac043a811f48d33778518565"
+          "exactTestSha256": "900bfd62a1e40e56d55302694b047b25200ce9b527a1ad38d7fc36e97abd821b"
         },
         "testPaths": [
           "tests/ui-v3-review.test.mjs"
@@ -71335,9 +71335,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/media-provider-registry.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "3ff81587bf267ae9f1fa348e3e5b4f387955cfbf902e72e03749828ccbce770e",
+          "entrypointSha256": "6a1dae5a5f3309b46f9cbc11a9d3dbd1dcd5ba5f43a8c74f1db3c31e474d0d54",
           "environment": "node>=22.12",
-          "exactTestSha256": "7bbb71ad0b3798a8ea09918653ece50a64659b2d423d211237ae1f896b495012"
+          "exactTestSha256": "20c9bcb9d559a9871ddbff02a1e57e9f2e0008ce13d905ae6c5561a8d6fb33f1"
         },
         "testPaths": [
           "tests/nolane-native-capability-pack.test.mjs"
@@ -71519,9 +71519,9 @@
         ],
         "productionEntrypoint": "src/small-model/recursive-policy-sidecar.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "8a6c5a85837ace19f71fd8a4a5d029f0dd17badcd761a8f9e6462e7dca7d32b4",
+          "entrypointSha256": "8fe64aa0d091b37f31ec8e0fec874cbd39384b7944a548d2d05224564b81ebd6",
           "environment": "node>=22.12",
-          "exactTestSha256": "476b33ab6ff33115dc66249ca0f183fbb2617b8408a848fefb03144f3b2a4268"
+          "exactTestSha256": "d0778a3e457e9ee1b6ab7d772e0910aaf0ea758d965ead5af0d258b65b2a1a54"
         },
         "testPaths": [
           "tests/small-model-recursive-policy.test.mjs"
@@ -73240,9 +73240,9 @@
         ],
         "productionEntrypoint": "src/small-model/symbolic-solver-compiler.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "6272d3aa5c3483f99a9480c5be0f7374f66ddf2a1ce7c356a9ac19913b31d8d2",
+          "entrypointSha256": "2e3ccbd95e002314955a54117faaf0d164005635ae3676b5b13e6674007e5976",
           "environment": "node>=22.12",
-          "exactTestSha256": "cbde8a902b8f0430dc718857a527c53736e0e30f67909c248b722cb05932e25a"
+          "exactTestSha256": "4b1b3063d646513503a7baf6d50450e097cae3612b7b7b48bd9d6a5a3b8c9044"
         },
         "testPaths": [
           "tests/small-model-symbolic-solver.test.mjs"
@@ -73477,9 +73477,9 @@
         ],
         "productionEntrypoint": "ui-v3/views/mission/mission-view.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "4c0f99d71b1f61363846511ab22856d4c11fbfcf044fa644984e9b12ae389115",
+          "entrypointSha256": "5212babf580a52c42119c60f5db6196e70037efb5a637f992213ff380d729d67",
           "environment": "node>=22.12",
-          "exactTestSha256": "7e32c63b67d80b211aa9315e09ed1097db9c8de5f11ca2fe0ceeac2f729f1f15"
+          "exactTestSha256": "b4455512a5eb3159803cad4db7487ccea1de2dc08ca9f758617886b711abeeab"
         },
         "testPaths": [
           "tests/ui-v3-mission-incremental.test.mjs"
@@ -74376,9 +74376,9 @@
         ],
         "productionEntrypoint": "src/small-model/curriculum-factory.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "2e6dda5ebd3cfa1f2d22bd8a850239b4784eb5749d253a2876fd96a837bf2946",
+          "entrypointSha256": "ed1b152a2e137f53ec18a7db167033d11d60a48fb61e9944d64da3ca7a336132",
           "environment": "node>=22.12",
-          "exactTestSha256": "37665b426b48aad82be4b61d699bf5770e8d94d208daaac88f0b5409cc7da56c"
+          "exactTestSha256": "bf135cf80a920d86fe35f9ea4a74c98d3d880157a182b1bf9f6df18e411528fc"
         },
         "testPaths": [
           "tests/small-model-curriculum-factory.test.mjs"
@@ -74636,9 +74636,9 @@
         ],
         "productionEntrypoint": "src/small-model/solver-sandbox.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "36b61f8ac9e4b0239439e2ea5a514c239074b00efa2324442cee2d39157e5734",
+          "entrypointSha256": "33b06a9367061f01557f4617eb986cb2b342042226bea0a00f00752f765e2efe",
           "environment": "node>=22.12",
-          "exactTestSha256": "cbde8a902b8f0430dc718857a527c53736e0e30f67909c248b722cb05932e25a"
+          "exactTestSha256": "4b1b3063d646513503a7baf6d50450e097cae3612b7b7b48bd9d6a5a3b8c9044"
         },
         "testPaths": [
           "tests/small-model-symbolic-solver.test.mjs"
@@ -74667,8 +74667,8 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "scripts/generate-nolane-program.mjs": "aa6ae49b889e43734d2aaa99a9003e7941398ba07c8d162c942faecd2df94937",
-          "tests/nolane-program-registry.test.mjs": "505e196d7c43fe9efc941c3ce896901bb908841ad02c1be0abb925272fe091a9"
+          "scripts/generate-nolane-program.mjs": "3826ed3b886c83025816979a5037e8a07f95dc543d4a36d978704b4d0d04f886",
+          "tests/nolane-program-registry.test.mjs": "62ef0f9a8fb063c378348962b984c66bc55caf18e7b392fb7a6089dbe793e6da"
         },
         "externalConditions": [],
         "fileExistenceIsProof": false,
@@ -74679,9 +74679,9 @@
         ],
         "productionEntrypoint": "scripts/generate-nolane-program.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "33d93cf9e25f3d29b5997dc50208d772416093f73712829a337bb05d88e5ad4b",
+          "entrypointSha256": "3826ed3b886c83025816979a5037e8a07f95dc543d4a36d978704b4d0d04f886",
           "environment": "node>=22.12",
-          "exactTestSha256": "48835b2b1a7a7beb3a4e0b507639d590db050c577be2f358913690c89fb4917a"
+          "exactTestSha256": "62ef0f9a8fb063c378348962b984c66bc55caf18e7b392fb7a6089dbe793e6da"
         },
         "testPaths": [
           "tests/nolane-program-registry.test.mjs"
@@ -74824,9 +74824,9 @@
         ],
         "productionEntrypoint": "scripts/build-ui-v3.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "6c4585e965fd39a1d09e4df17207dd74a4fde4b0b1f5fa116320b2f5d9ed67f6",
+          "entrypointSha256": "9b14027351fff063bec4a5ed459c122fbd8f1ae9042d8b57dbb86f51e7c826c4",
           "environment": "node>=22.12",
-          "exactTestSha256": "61bb0bc934882c9713f18d3a17fc4b2c27fed7c3dd28226d26f9c61bb04bff54"
+          "exactTestSha256": "be28c3fcbd70b96625136abd9bfe56734c3c91aa12fb5300cf72fb3b7af2250d"
         },
         "testPaths": [
           "tests/ui-v3-module-build.test.mjs"
@@ -75069,9 +75069,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/session-store.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "42a4b1f799ecd3c499dd4473d85ae1142fdef7c83ae1a53c0a80e6dd6d8ce10d",
+          "entrypointSha256": "3b31c3526eefbb90cbd4f9fec157ab4c7c1fab23292fb5838d4c5064a653d123",
           "environment": "node>=22.12",
-          "exactTestSha256": "1b70b3bd0cbccbaa37d9e3209961776c11ec246105916c5db28b1138befd8fd9"
+          "exactTestSha256": "7f70be9aa84caa2ede4adaa356b8d1bae3629f6bf9c54ba78285ff045e614760"
         },
         "testPaths": [
           "tests/nolane-native-session-contracts.test.mjs"
@@ -75910,9 +75910,9 @@
         ],
         "productionEntrypoint": "src/small-model/distillation-orchestrator.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "c574e89827375b419ecd310a385b66386b2475c5ad3124ccef3eb0204a0a3d1a",
+          "entrypointSha256": "25e24e4013c966586d1f9c956b415b57a5738e6eadaba754eee7d535c57e6a01",
           "environment": "node>=22.12",
-          "exactTestSha256": "4c3fd39d8c411f7535dbb9288f5c02a7a83aa87d1773affccde24222e557e9d0"
+          "exactTestSha256": "025adcab0f9b7cdf02d3cd7167d200038b05181ca1d2631c89aac93f5c6d84a8"
         },
         "testPaths": [
           "tests/small-model-distillation-orchestrator.test.mjs"
@@ -76020,9 +76020,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/orchestration-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9",
+          "entrypointSha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374",
           "environment": "node>=22.12",
-          "exactTestSha256": "a459f90ce20e14171b24112d10ec164bc73e91c4f98080d738f6d23af074bc88"
+          "exactTestSha256": "c3502bb4ef58a79498bc6e736f0d36f7b9171a538529b525cc319ce7f6a4c140"
         },
         "testPaths": [
           "tests/nolane-native-orchestration-contracts.test.mjs"
@@ -80998,9 +80998,9 @@
         ],
         "productionEntrypoint": "cli/nolane-agent.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "78aa5e3b50f379ff1043e1f013e7021856f6a94c71ad46fa8dd6f36f3f588e07",
+          "entrypointSha256": "fa77f5bed529f3264ebcf0171252b1d08f1e55eec0ee9c060e9f6ac6debddbc5",
           "environment": "node>=22.12",
-          "exactTestSha256": "52e8fe30f0f3855259a2c913d943d61b5f2e1d33f2a778557780fa82f30e7985"
+          "exactTestSha256": "0be39c77291c1e04d684fe794a1cd6b3fde5945db6c15a05d085fc56102a6698"
         },
         "testPaths": [
           "tests/client-sdk-cli.test.mjs"
@@ -81238,9 +81238,9 @@
         ],
         "productionEntrypoint": "src/small-model/plasticity-plane.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "eb5ffb961490cd241bed46f216ebf00e30ac59e6d6eff01d6c488a7701c77933",
+          "entrypointSha256": "39173cc288bb45c353305709a18fc1c43422083f5dd8425f3d85df60f2e277cd",
           "environment": "node>=22.12",
-          "exactTestSha256": "4eff5d967963e8e2228de1e5e495a65bb4fc6dad8a2fad20c3ebb6ee0f606fec"
+          "exactTestSha256": "cb0167c73ad979d2f08f6745a6e33ef7fa3dffe0d7e46055942c58b8b2bfeb23"
         },
         "testPaths": [
           "tests/small-model-plasticity-plane.test.mjs"
@@ -82157,9 +82157,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/runtime-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "f8c8e535b0be9c473a37d33ce2820bd45f3ac6aaaf335b23bb0b9ce7b34e7eff",
+          "entrypointSha256": "f73305de28f88b91c8667209423d733e7b44fce9774e214d292877e7ac40c518",
           "environment": "node>=22.12",
-          "exactTestSha256": "4277cb06c1dc7b316dfca3c4f3498830903b782775309366ba83cd4929d742e7"
+          "exactTestSha256": "f24df92e79a293fa1b7e853d0eb1c807ec2d9336f5255084ab1194d62348d1ce"
         },
         "testPaths": [
           "tests/nolane-native-runtime-contracts.test.mjs"
@@ -82256,9 +82256,9 @@
         ],
         "productionEntrypoint": "src/small-model/recursive-policy-sidecar.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "8a6c5a85837ace19f71fd8a4a5d029f0dd17badcd761a8f9e6462e7dca7d32b4",
+          "entrypointSha256": "8fe64aa0d091b37f31ec8e0fec874cbd39384b7944a548d2d05224564b81ebd6",
           "environment": "node>=22.12",
-          "exactTestSha256": "476b33ab6ff33115dc66249ca0f183fbb2617b8408a848fefb03144f3b2a4268"
+          "exactTestSha256": "d0778a3e457e9ee1b6ab7d772e0910aaf0ea758d965ead5af0d258b65b2a1a54"
         },
         "testPaths": [
           "tests/small-model-recursive-policy.test.mjs"
@@ -82406,9 +82406,9 @@
         ],
         "productionEntrypoint": "src/small-model/specialist-model-fabric.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "13d8533541d3d6880adfc9308ef384fdd1fb7f88c634d69f2a305fea3ce73dac",
+          "entrypointSha256": "ff5fddfe1bff5fe0e62a41b7f5af292a3ede13fa607961fd317d87e406cf2869",
           "environment": "node>=22.12",
-          "exactTestSha256": "24997f695b42f0884f189423cf9fcb667761f84bd48e902d4c941d2b0c73de0e"
+          "exactTestSha256": "fdcba69f288a962efdb4699234f4ffb7038b9249ca6facce2240d2031c28ae2a"
         },
         "testPaths": [
           "tests/small-model-specialist-governance-contracts.test.mjs"
@@ -82629,9 +82629,9 @@
         ],
         "productionEntrypoint": "src/small-model/verifier-mesh.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "974fcf34310e1236f931ae00ba23d88a73252a2c99b183ce7d9751bb8a286b75",
+          "entrypointSha256": "3c7c044ad3d2e3b70564153d108404455574c1355f7014890d1d33610ba43ad2",
           "environment": "node>=22.12",
-          "exactTestSha256": "f39d81735e1c8f35a35ba35d4954b52164bb3d8bf78013cb5bdf4d29612fb4cf"
+          "exactTestSha256": "439ab4ed64895321afaa75e0c1db4f0f909cf4f0d7d4fac58a85770b37349fe6"
         },
         "testPaths": [
           "tests/small-model-verifier-mesh.test.mjs"
@@ -82757,9 +82757,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/operational-boundary-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "e4b5f4e2934c54b9c278be08851e1f48907df98a66528d9dcd57938b3e2b0a1b",
+          "entrypointSha256": "8d891fb385ba0ad5a27de02a016f3bf17aeda997ac140cd3212b6f7849961c46",
           "environment": "node>=22.12",
-          "exactTestSha256": "aea1119006cd3b8e4f8d771b493732674394ae21968475af00443ee2d2f35b68"
+          "exactTestSha256": "f08b6adb88e698f8f5e0bb0b38a3d88305c19d2f9f214a2feb140072591cec7f"
         },
         "testPaths": [
           "tests/nolane-native-operational-boundaries.test.mjs"
@@ -83176,9 +83176,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/provider-adapters.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "f5bfea42aad14234e93d3b070250b6a0d4721a50f5865b7b218bf2fe4532b767",
+          "entrypointSha256": "db0827635522070d160c80667ac4f5fd9ac16e1b452fd9d00833afd43b7abff0",
           "environment": "node>=22.12",
-          "exactTestSha256": "3c31f27020f721e9e5e5de6d8dd2c3d11b4de28fb165bf49fadba69a0e1ae9eb"
+          "exactTestSha256": "6f1b8faccbb00d108690967e1f4135c646a1191fc5e14409f880c45ad6ce1042"
         },
         "testPaths": [
           "tests/nolane-native-agent-service.test.mjs"
@@ -83238,9 +83238,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/session-store.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "42a4b1f799ecd3c499dd4473d85ae1142fdef7c83ae1a53c0a80e6dd6d8ce10d",
+          "entrypointSha256": "3b31c3526eefbb90cbd4f9fec157ab4c7c1fab23292fb5838d4c5064a653d123",
           "environment": "node>=22.12",
-          "exactTestSha256": "1b70b3bd0cbccbaa37d9e3209961776c11ec246105916c5db28b1138befd8fd9"
+          "exactTestSha256": "7f70be9aa84caa2ede4adaa356b8d1bae3629f6bf9c54ba78285ff045e614760"
         },
         "testPaths": [
           "tests/nolane-native-session-contracts.test.mjs"
@@ -83537,9 +83537,9 @@
         ],
         "productionEntrypoint": "src/small-model/curriculum-factory.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "2e6dda5ebd3cfa1f2d22bd8a850239b4784eb5749d253a2876fd96a837bf2946",
+          "entrypointSha256": "ed1b152a2e137f53ec18a7db167033d11d60a48fb61e9944d64da3ca7a336132",
           "environment": "node>=22.12",
-          "exactTestSha256": "37665b426b48aad82be4b61d699bf5770e8d94d208daaac88f0b5409cc7da56c"
+          "exactTestSha256": "bf135cf80a920d86fe35f9ea4a74c98d3d880157a182b1bf9f6df18e411528fc"
         },
         "testPaths": [
           "tests/small-model-curriculum-factory.test.mjs"
@@ -83708,9 +83708,9 @@
         ],
         "productionEntrypoint": "src/small-model/curriculum-factory.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "2e6dda5ebd3cfa1f2d22bd8a850239b4784eb5749d253a2876fd96a837bf2946",
+          "entrypointSha256": "ed1b152a2e137f53ec18a7db167033d11d60a48fb61e9944d64da3ca7a336132",
           "environment": "node>=22.12",
-          "exactTestSha256": "37665b426b48aad82be4b61d699bf5770e8d94d208daaac88f0b5409cc7da56c"
+          "exactTestSha256": "bf135cf80a920d86fe35f9ea4a74c98d3d880157a182b1bf9f6df18e411528fc"
         },
         "testPaths": [
           "tests/small-model-curriculum-factory.test.mjs"
@@ -84616,9 +84616,9 @@
         ],
         "productionEntrypoint": "extensions/vscode/src/extension.ts",
         "suppliedHashes": {
-          "entrypointSha256": "468704c6031fc7762a1737e645844494a30127118d2978a9a4c6d53de0f903cc",
+          "entrypointSha256": "462965b88dc843f7a5fa3d2b3db0b7bdade522fad0e04ca56d3d6abcb00b95ad",
           "environment": "node>=22.12",
-          "exactTestSha256": "0996571d627fad41029ba7f18c96cf333d66739bbead67570b5ce51bb9afc2eb"
+          "exactTestSha256": "f34a7f31cacc08239a8a1cc81639d9511535b2a4fb8874a4c508b9cd2c95c543"
         },
         "testPaths": [
           "tests/vscode-legacy-migration.test.mjs"
@@ -84718,9 +84718,9 @@
         ],
         "productionEntrypoint": "src/small-model/plasticity-plane.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "eb5ffb961490cd241bed46f216ebf00e30ac59e6d6eff01d6c488a7701c77933",
+          "entrypointSha256": "39173cc288bb45c353305709a18fc1c43422083f5dd8425f3d85df60f2e277cd",
           "environment": "node>=22.12",
-          "exactTestSha256": "4eff5d967963e8e2228de1e5e495a65bb4fc6dad8a2fad20c3ebb6ee0f606fec"
+          "exactTestSha256": "cb0167c73ad979d2f08f6745a6e33ef7fa3dffe0d7e46055942c58b8b2bfeb23"
         },
         "testPaths": [
           "tests/small-model-plasticity-plane.test.mjs"
@@ -86064,9 +86064,9 @@
         ],
         "productionEntrypoint": "src/security/secret-access-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "e5b09fff36cb6e34fdcb45157e415ad876ca3c9d719deddba274cba71badcce0",
+          "entrypointSha256": "3962ebe0ae9bd6e5293e9fab78d0833d99ed0e03c4019a9055d86efa027e8031",
           "environment": "node>=22.12",
-          "exactTestSha256": "4879aa4fdc6935729a73a64e925d7aa9872e5980dc17995ebc00c6176aac6388"
+          "exactTestSha256": "210434606acbb663adb21937f4a68ce28c454c99f97f7bde696a5a20ef175015"
         },
         "testPaths": [
           "tests/secret-access-service.test.mjs"
@@ -86521,9 +86521,9 @@
         ],
         "productionEntrypoint": "src/small-model/plasticity-plane.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "eb5ffb961490cd241bed46f216ebf00e30ac59e6d6eff01d6c488a7701c77933",
+          "entrypointSha256": "39173cc288bb45c353305709a18fc1c43422083f5dd8425f3d85df60f2e277cd",
           "environment": "node>=22.12",
-          "exactTestSha256": "4eff5d967963e8e2228de1e5e495a65bb4fc6dad8a2fad20c3ebb6ee0f606fec"
+          "exactTestSha256": "cb0167c73ad979d2f08f6745a6e33ef7fa3dffe0d7e46055942c58b8b2bfeb23"
         },
         "testPaths": [
           "tests/small-model-plasticity-plane.test.mjs"
@@ -87946,9 +87946,9 @@
         ],
         "productionEntrypoint": "src/small-model/symbolic-solver-compiler.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "6272d3aa5c3483f99a9480c5be0f7374f66ddf2a1ce7c356a9ac19913b31d8d2",
+          "entrypointSha256": "2e3ccbd95e002314955a54117faaf0d164005635ae3676b5b13e6674007e5976",
           "environment": "node>=22.12",
-          "exactTestSha256": "cbde8a902b8f0430dc718857a527c53736e0e30f67909c248b722cb05932e25a"
+          "exactTestSha256": "4b1b3063d646513503a7baf6d50450e097cae3612b7b7b48bd9d6a5a3b8c9044"
         },
         "testPaths": [
           "tests/small-model-symbolic-solver.test.mjs"
@@ -88583,9 +88583,9 @@
         ],
         "productionEntrypoint": "src/small-model/curriculum-factory.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "2e6dda5ebd3cfa1f2d22bd8a850239b4784eb5749d253a2876fd96a837bf2946",
+          "entrypointSha256": "ed1b152a2e137f53ec18a7db167033d11d60a48fb61e9944d64da3ca7a336132",
           "environment": "node>=22.12",
-          "exactTestSha256": "37665b426b48aad82be4b61d699bf5770e8d94d208daaac88f0b5409cc7da56c"
+          "exactTestSha256": "bf135cf80a920d86fe35f9ea4a74c98d3d880157a182b1bf9f6df18e411528fc"
         },
         "testPaths": [
           "tests/small-model-curriculum-factory.test.mjs"
@@ -88675,9 +88675,9 @@
         ],
         "productionEntrypoint": "src/small-model/verifier-mesh.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "974fcf34310e1236f931ae00ba23d88a73252a2c99b183ce7d9751bb8a286b75",
+          "entrypointSha256": "3c7c044ad3d2e3b70564153d108404455574c1355f7014890d1d33610ba43ad2",
           "environment": "node>=22.12",
-          "exactTestSha256": "f39d81735e1c8f35a35ba35d4954b52164bb3d8bf78013cb5bdf4d29612fb4cf"
+          "exactTestSha256": "439ab4ed64895321afaa75e0c1db4f0f909cf4f0d7d4fac58a85770b37349fe6"
         },
         "testPaths": [
           "tests/small-model-verifier-mesh.test.mjs"
@@ -89929,9 +89929,9 @@
         ],
         "productionEntrypoint": "src/superiority/deep/local-ui-certification-lab.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "b02a7dd7b37d899a5ed202a5b98ff3a11f0c294dfa2100169597454c0856c18f",
+          "entrypointSha256": "f157bf8c2c408f059380746f4161803eb708de21929cd52bbb6f11a130c03f96",
           "environment": "node>=22.12",
-          "exactTestSha256": "4717bc38728553cb4e8d70fef48260152eeae313adff799d8d25ef47b662260d"
+          "exactTestSha256": "72f3fbb86fe0094ed9dc2446edbb4685cf3dcb3fa5a6e94c0a0c62ae8c244b7a"
         },
         "testPaths": [
           "tests/deep-superiority-ui-dogfood.test.mjs"
@@ -90275,9 +90275,9 @@
         ],
         "productionEntrypoint": "src/small-model/distillation-orchestrator.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "c574e89827375b419ecd310a385b66386b2475c5ad3124ccef3eb0204a0a3d1a",
+          "entrypointSha256": "25e24e4013c966586d1f9c956b415b57a5738e6eadaba754eee7d535c57e6a01",
           "environment": "node>=22.12",
-          "exactTestSha256": "4c3fd39d8c411f7535dbb9288f5c02a7a83aa87d1773affccde24222e557e9d0"
+          "exactTestSha256": "025adcab0f9b7cdf02d3cd7167d200038b05181ca1d2631c89aac93f5c6d84a8"
         },
         "testPaths": [
           "tests/small-model-distillation-orchestrator.test.mjs"
@@ -90375,9 +90375,9 @@
         ],
         "productionEntrypoint": "src/small-model/speculative-branch-ledger.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "6814255f9ad7d6a02ee4058bb52eddbde0c27cd149b54a2d100c4e207a35abfc",
+          "entrypointSha256": "17ecff27e5aad1b22ab518a1b619814d90a045c9b1b0795c1215abe2bc205b4f",
           "environment": "node>=22.12",
-          "exactTestSha256": "9828fcfb4a115faed28acffc352d038a0b1b9c552b36cb05748673b60aca2085"
+          "exactTestSha256": "1e42b62278c2cfe295ecba6dc384486a7ef6d55e84e2d417de757e1874f9c2ba"
         },
         "testPaths": [
           "tests/small-model-adaptive-compute.test.mjs"
@@ -91350,9 +91350,9 @@
         ],
         "productionEntrypoint": "src/small-model/verifier-reliability-ledger.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "53ab714c780d46682a337bab2211a177e022891ba6625aa6575f917b017f90c5",
+          "entrypointSha256": "c173c39b13f14a28cd36fdd42127fba72248a32d316dae3d10edefb7d5e71bc1",
           "environment": "node>=22.12",
-          "exactTestSha256": "f39d81735e1c8f35a35ba35d4954b52164bb3d8bf78013cb5bdf4d29612fb4cf"
+          "exactTestSha256": "439ab4ed64895321afaa75e0c1db4f0f909cf4f0d7d4fac58a85770b37349fe6"
         },
         "testPaths": [
           "tests/small-model-verifier-mesh.test.mjs"
@@ -91473,9 +91473,9 @@
         ],
         "productionEntrypoint": "src/small-model/specialist-model-fabric.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "13d8533541d3d6880adfc9308ef384fdd1fb7f88c634d69f2a305fea3ce73dac",
+          "entrypointSha256": "ff5fddfe1bff5fe0e62a41b7f5af292a3ede13fa607961fd317d87e406cf2869",
           "environment": "node>=22.12",
-          "exactTestSha256": "24997f695b42f0884f189423cf9fcb667761f84bd48e902d4c941d2b0c73de0e"
+          "exactTestSha256": "fdcba69f288a962efdb4699234f4ffb7038b9249ca6facce2240d2031c28ae2a"
         },
         "testPaths": [
           "tests/small-model-specialist-governance-contracts.test.mjs"
@@ -91611,9 +91611,9 @@
         ],
         "productionEntrypoint": "ui-v3/views/mission/artifact-dock.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "35aee523d2a4fc7b6847cfba55adb1ff4160763bd690036db2fcf73b86499278",
+          "entrypointSha256": "4949553a01aedd477ba053071299afe7aa49864cea1693b32f3a89a38dba25ad",
           "environment": "node>=22.12",
-          "exactTestSha256": "dcabfc7cdf40d002a3d19eb36b98ac582127e16808be2762e8cbaf4948a049a0"
+          "exactTestSha256": "d4a35f0adbb478ff9b5ba2388d8013a9d2f90b14bb02c6e7077a5b075442ff8d"
         },
         "testPaths": [
           "tests/ui-v3-artifact-dock.test.mjs"
@@ -92042,9 +92042,9 @@
         ],
         "productionEntrypoint": "src/superiority/deep/provider-dogfood-replay-lab.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "0fe908f8254e29321e630e22ab69c6cc5ee8ca739630777de52abbc7788582dc",
+          "entrypointSha256": "0085060a62dffb76edd9f95842b0439be5402cf6157823521c43dfce6a6b1e98",
           "environment": "node>=22.12",
-          "exactTestSha256": "4717bc38728553cb4e8d70fef48260152eeae313adff799d8d25ef47b662260d"
+          "exactTestSha256": "72f3fbb86fe0094ed9dc2446edbb4685cf3dcb3fa5a6e94c0a0c62ae8c244b7a"
         },
         "testPaths": [
           "tests/deep-superiority-ui-dogfood.test.mjs"
@@ -92679,9 +92679,9 @@
         ],
         "productionEntrypoint": "ui-v3/views/mission/artifact-dock.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "35aee523d2a4fc7b6847cfba55adb1ff4160763bd690036db2fcf73b86499278",
+          "entrypointSha256": "4949553a01aedd477ba053071299afe7aa49864cea1693b32f3a89a38dba25ad",
           "environment": "node>=22.12",
-          "exactTestSha256": "dcabfc7cdf40d002a3d19eb36b98ac582127e16808be2762e8cbaf4948a049a0"
+          "exactTestSha256": "d4a35f0adbb478ff9b5ba2388d8013a9d2f90b14bb02c6e7077a5b075442ff8d"
         },
         "testPaths": [
           "tests/ui-v3-artifact-dock.test.mjs"
@@ -92722,9 +92722,9 @@
         ],
         "productionEntrypoint": "src/small-model/scientific-benchmark-harness.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "1c1863e1d8a326e7814eb522ff40d6c3e2ecc5cd6f2d3861b489ff9fd7595867",
+          "entrypointSha256": "c132dff0be8943bc0151d07083600d5b698458ab1416d51354fce814f04ad4d6",
           "environment": "node>=22.12",
-          "exactTestSha256": "7d1b96be5d237933ebf4fd8e4cefdc91afccdf3f407781fc0ab1a5d9e5baeef5"
+          "exactTestSha256": "24dc39274596ddce6211e95e66d5410cc941a11e21915b25474ad6484f0eac34"
         },
         "testPaths": [
           "tests/small-model-scientific-benchmark.test.mjs"
@@ -92924,9 +92924,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/agent-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "c09b001a8aa6d555949554b9806ab2384988f8fdacc852f970a0e22113cbe099",
+          "entrypointSha256": "94c057c36b9b2843fa0a20b5b2340b27ec130a979c86c34af4214b90ec7dc226",
           "environment": "node>=22.12",
-          "exactTestSha256": "3c31f27020f721e9e5e5de6d8dd2c3d11b4de28fb165bf49fadba69a0e1ae9eb"
+          "exactTestSha256": "6f1b8faccbb00d108690967e1f4135c646a1191fc5e14409f880c45ad6ce1042"
         },
         "testPaths": [
           "tests/nolane-native-agent-service.test.mjs"
@@ -92967,9 +92967,9 @@
         ],
         "productionEntrypoint": "src/small-model/adaptive-compute-governor.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "bf6a2683e3b3d62d094d3fda9fafd1c8b2905c544a4db877038aa0208ad3f6e6",
+          "entrypointSha256": "654b09942933f555ea04dfe8d627878aa8a3d276a86ae8e80628ac2fbf05f9a5",
           "environment": "node>=22.12",
-          "exactTestSha256": "9828fcfb4a115faed28acffc352d038a0b1b9c552b36cb05748673b60aca2085"
+          "exactTestSha256": "1e42b62278c2cfe295ecba6dc384486a7ef6d55e84e2d417de757e1874f9c2ba"
         },
         "testPaths": [
           "tests/small-model-adaptive-compute.test.mjs"
@@ -93134,9 +93134,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/agent-state.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "ace24f9d78cf7426596b4911482f148d34c72819575ccf516b3e16f6437e963b",
+          "entrypointSha256": "c1411f11c1d9d928227300d2086db93d96dce6550fa837869bd03a9a362151e1",
           "environment": "node>=22.12",
-          "exactTestSha256": "3c31f27020f721e9e5e5de6d8dd2c3d11b4de28fb165bf49fadba69a0e1ae9eb"
+          "exactTestSha256": "6f1b8faccbb00d108690967e1f4135c646a1191fc5e14409f880c45ad6ce1042"
         },
         "testPaths": [
           "tests/nolane-native-agent-service.test.mjs"
@@ -93746,9 +93746,9 @@
         ],
         "productionEntrypoint": "src/release/dependency-preflight-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "a0298ad3059983b469601c5ed6aa35d3a6f7ba542bf8481bfd40b5b5794dd6b6",
+          "entrypointSha256": "09018c3dc00794279ca35935b2087d9ccef201329506cf600c7fa802ca2c36a9",
           "environment": "node>=22.12",
-          "exactTestSha256": "aea1119006cd3b8e4f8d771b493732674394ae21968475af00443ee2d2f35b68"
+          "exactTestSha256": "f08b6adb88e698f8f5e0bb0b38a3d88305c19d2f9f214a2feb140072591cec7f"
         },
         "testPaths": [
           "tests/nolane-native-operational-boundaries.test.mjs"
@@ -93789,9 +93789,9 @@
         ],
         "productionEntrypoint": "src/small-model/scientific-benchmark-harness.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "1c1863e1d8a326e7814eb522ff40d6c3e2ecc5cd6f2d3861b489ff9fd7595867",
+          "entrypointSha256": "c132dff0be8943bc0151d07083600d5b698458ab1416d51354fce814f04ad4d6",
           "environment": "node>=22.12",
-          "exactTestSha256": "7d1b96be5d237933ebf4fd8e4cefdc91afccdf3f407781fc0ab1a5d9e5baeef5"
+          "exactTestSha256": "24dc39274596ddce6211e95e66d5410cc941a11e21915b25474ad6484f0eac34"
         },
         "testPaths": [
           "tests/small-model-scientific-benchmark.test.mjs"
@@ -94273,9 +94273,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/orchestration-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "8f1af42445d4ea6737f4885e92ce7c768a301c9c1892f32c6e4e46ca5206b7e9",
+          "entrypointSha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374",
           "environment": "node>=22.12",
-          "exactTestSha256": "a459f90ce20e14171b24112d10ec164bc73e91c4f98080d738f6d23af074bc88"
+          "exactTestSha256": "c3502bb4ef58a79498bc6e736f0d36f7b9171a538529b525cc319ce7f6a4c140"
         },
         "testPaths": [
           "tests/nolane-native-orchestration-contracts.test.mjs"
@@ -94666,9 +94666,9 @@
         ],
         "productionEntrypoint": "src/small-model/adaptive-compute-governor.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "bf6a2683e3b3d62d094d3fda9fafd1c8b2905c544a4db877038aa0208ad3f6e6",
+          "entrypointSha256": "654b09942933f555ea04dfe8d627878aa8a3d276a86ae8e80628ac2fbf05f9a5",
           "environment": "node>=22.12",
-          "exactTestSha256": "9828fcfb4a115faed28acffc352d038a0b1b9c552b36cb05748673b60aca2085"
+          "exactTestSha256": "1e42b62278c2cfe295ecba6dc384486a7ef6d55e84e2d417de757e1874f9c2ba"
         },
         "testPaths": [
           "tests/small-model-adaptive-compute.test.mjs"
@@ -95678,9 +95678,9 @@
         ],
         "productionEntrypoint": "ui-v3/control-plane/domains/platform.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "5598b88a70a478f419e280277a91d5a0edf62fd1f79aa4cb43342a0d661562a1",
+          "entrypointSha256": "b01419c5e7817d01d113d36bb6352b69849bf0c7ba4ba3d2ba4e08a02eb0f852",
           "environment": "node>=22.12",
-          "exactTestSha256": "cae0766590bc9a41cd9e6d872bddfc290eed0307b38aba00470b02b3b0b2db74"
+          "exactTestSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f"
         },
         "testPaths": [
           "tests/ui-v3-control-plane-domains.test.mjs"
@@ -96736,9 +96736,9 @@
         ],
         "productionEntrypoint": "src/small-model/constraint-adapters.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "729a933f761d81729eeabf3682716a2841464964a77c09c9cff6265f279e41e6",
+          "entrypointSha256": "baed0ac5e1d0af5f64716b9fc02919ffcf71c9907f944e6e03e68f4640c7ef43",
           "environment": "node>=22.12",
-          "exactTestSha256": "197baa831f0c5311ca1dc04481983f1fde90566459a557c314558f12a5ad450a"
+          "exactTestSha256": "80053baea79f74fb5ec4d542dc8d28fb4d4be90e6feb333436d9dd4859968a92"
         },
         "testPaths": [
           "tests/small-model-symbolic-alpha5.test.mjs"
@@ -97905,9 +97905,9 @@
         ],
         "productionEntrypoint": "ui-v3/views/home/home-view.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "3301b8652f6c72d108e601e1f0a1911b7653d4c9808943aac3522116005b522b",
+          "entrypointSha256": "f7c42d0fa3f218a0f84bab50d8065c664e3ea40f6a06a130f17bc1610d15e394",
           "environment": "node>=22.12",
-          "exactTestSha256": "fce999e0cac3418170d5727e3a9689d4394d57183a7f3f01835b6d4551307ff2"
+          "exactTestSha256": "63919301722d3da591e6678068354b27340ed4a97cf0c0c36d4e34263ecab0d1"
         },
         "testPaths": [
           "tests/ui-v3-home.test.mjs"
@@ -98009,9 +98009,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/operational-boundary-service.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "e4b5f4e2934c54b9c278be08851e1f48907df98a66528d9dcd57938b3e2b0a1b",
+          "entrypointSha256": "8d891fb385ba0ad5a27de02a016f3bf17aeda997ac140cd3212b6f7849961c46",
           "environment": "node>=22.12",
-          "exactTestSha256": "aea1119006cd3b8e4f8d771b493732674394ae21968475af00443ee2d2f35b68"
+          "exactTestSha256": "f08b6adb88e698f8f5e0bb0b38a3d88305c19d2f9f214a2feb140072591cec7f"
         },
         "testPaths": [
           "tests/nolane-native-operational-boundaries.test.mjs"
@@ -98184,9 +98184,9 @@
         ],
         "productionEntrypoint": "src/small-model/plasticity-plane.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "eb5ffb961490cd241bed46f216ebf00e30ac59e6d6eff01d6c488a7701c77933",
+          "entrypointSha256": "39173cc288bb45c353305709a18fc1c43422083f5dd8425f3d85df60f2e277cd",
           "environment": "node>=22.12",
-          "exactTestSha256": "4eff5d967963e8e2228de1e5e495a65bb4fc6dad8a2fad20c3ebb6ee0f606fec"
+          "exactTestSha256": "cb0167c73ad979d2f08f6745a6e33ef7fa3dffe0d7e46055942c58b8b2bfeb23"
         },
         "testPaths": [
           "tests/small-model-plasticity-plane.test.mjs"
@@ -98608,9 +98608,9 @@
         ],
         "productionEntrypoint": "src/small-model/specialist-model-fabric.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "13d8533541d3d6880adfc9308ef384fdd1fb7f88c634d69f2a305fea3ce73dac",
+          "entrypointSha256": "ff5fddfe1bff5fe0e62a41b7f5af292a3ede13fa607961fd317d87e406cf2869",
           "environment": "node>=22.12",
-          "exactTestSha256": "aaecd9be843af4bf66b23f94b58c6cd85041a656ef338c5120cd08f1d5559d6a"
+          "exactTestSha256": "d6ec57a10815894b3c71ad10407fd93a21155df40e966bff6eaa7e9efd43cb71"
         },
         "testPaths": [
           "tests/small-model-specialist-governance-contracts.test.mjs"
@@ -98723,9 +98723,9 @@
         ],
         "productionEntrypoint": "ui-v3/control-plane/control-plane-shell.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "01cdaf585f5b47bcee27a4c9d79f22ffe78b42c77eeda354f3093dd69d19bc34",
+          "entrypointSha256": "f3d170499cc9869aa372d436a2c6c131c5b78ef09fa606ec54ee65a5e9133cb8",
           "environment": "node>=22.12",
-          "exactTestSha256": "611bf6fc3a07678a031b54bf1b7f8e1a1aa3995e560c31146b71968c265a0b72"
+          "exactTestSha256": "f3132916d10961f562b432759f0c1fef2355e957c56393d64c4ca9a5b527767d"
         },
         "testPaths": [
           "tests/ui-v3-control-plane.test.mjs"
@@ -98766,9 +98766,9 @@
         ],
         "productionEntrypoint": "src/small-model/curriculum-factory.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "2e6dda5ebd3cfa1f2d22bd8a850239b4784eb5749d253a2876fd96a837bf2946",
+          "entrypointSha256": "ed1b152a2e137f53ec18a7db167033d11d60a48fb61e9944d64da3ca7a336132",
           "environment": "node>=22.12",
-          "exactTestSha256": "37665b426b48aad82be4b61d699bf5770e8d94d208daaac88f0b5409cc7da56c"
+          "exactTestSha256": "bf135cf80a920d86fe35f9ea4a74c98d3d880157a182b1bf9f6df18e411528fc"
         },
         "testPaths": [
           "tests/small-model-curriculum-factory.test.mjs"
@@ -99360,9 +99360,9 @@
         ],
         "productionEntrypoint": "ui-v3/views/workroom/editor-host.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "12034965be47389407f49d84fde326d6358bf5e65d01bff4584e872b4c0090e3",
+          "entrypointSha256": "f348350e9a44e811c2750a1c72b75a6ff57109f322c21fc56b1340d28f596c80",
           "environment": "node>=22.12",
-          "exactTestSha256": "3f7d98ae73301f951b89998d40093df22c9a0d26d3bb433453da521a04babdf9"
+          "exactTestSha256": "a1f3b5647223bef8876809ba0b76a9dc760ad3fd3b34685027152aa3b2d4665e"
         },
         "testPaths": [
           "tests/ui-v3-workroom.test.mjs"
@@ -99403,9 +99403,9 @@
         ],
         "productionEntrypoint": "src/nolane-native/audio-provider-registry.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "777c59c4eee9e031d9bd3cd8b98d439279dec9fb89c407da4942b0a8c74e5219",
+          "entrypointSha256": "169f2ab69cb1bd2ee563b6adbc911f234ba9bcfd7a179ebefabf43ad99380b79",
           "environment": "node>=22.12",
-          "exactTestSha256": "7bbb71ad0b3798a8ea09918653ece50a64659b2d423d211237ae1f896b495012"
+          "exactTestSha256": "20c9bcb9d559a9871ddbff02a1e57e9f2e0008ce13d905ae6c5561a8d6fb33f1"
         },
         "testPaths": [
           "tests/nolane-native-capability-pack.test.mjs"
@@ -99725,9 +99725,9 @@
         ],
         "productionEntrypoint": "src/branding/brand-migration-auditor.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "8368d07f08493b08c15c912909c4812025b05cd3df46d9483961d059b6258eec",
+          "entrypointSha256": "e5c2d48d3bea334085eca47c1f7de4fd785fa30981bc981af22a7bb31192b0d4",
           "environment": "node>=22.12",
-          "exactTestSha256": "df4a4aa8771a29c4558b0c2b6d9127e4ce6b1b7badfd7960c9d37f8a6591406c"
+          "exactTestSha256": "b6adb841a90bd9536969a0f226d442491c5fec84ac692e0cbd627700b1cd3810"
         },
         "testPaths": [
           "tests/brand-migration-alpha5.test.mjs"
@@ -99768,9 +99768,9 @@
         ],
         "productionEntrypoint": "src/small-model/adaptation-policy-learner.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "c43738eb8dc673908a1b584b8b254bb0f2faf5d9646c650e6a97f705ba088f23",
+          "entrypointSha256": "5d6b7eb48c63823a1dabef226b844b0c0d5c0f94a0f7ff91d33059c61294269b",
           "environment": "node>=22.12",
-          "exactTestSha256": "0d6433f8730caf65af69220cbc1d361723e8365c6176837265cd12de39ec5148"
+          "exactTestSha256": "9f6c95aaa04190bfd4de8132415db85f07bc70c2ff01fa98a71eebf5325c781a"
         },
         "testPaths": [
           "tests/small-model-plasticity-alpha5.test.mjs"
@@ -99937,9 +99937,9 @@
         ],
         "productionEntrypoint": "scripts/build-portable.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "d39028fb0976fb8a23c3678397fe2c06401b2d89413b868151e9b9e4ff3913fa",
+          "entrypointSha256": "8c0c102f938a6af1b622dbaf386b64b47cdcebbacb6d4a4938c669eecec91d07",
           "environment": "node>=22.12",
-          "exactTestSha256": "5e8c5344eccde43fb4954164d0c5f4ea624109d5c9e235832950f3420e9ea354"
+          "exactTestSha256": "9e2be7fce1479c36573aa3fffc0eeaf51232a0f0661ec5aed19e3a5703b6a9fe"
         },
         "testPaths": [
           "tests/packaging.test.mjs"
@@ -99980,9 +99980,9 @@
         ],
         "productionEntrypoint": "src/config/nolane-environment.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "8ee517237722122fd0f202b969c1c8dbe6ef21960bc2d452771e333807676912",
+          "entrypointSha256": "0234adeac9ab201188614d9808adccfd5a8bed5f73a561b4918a46730d172b3a",
           "environment": "node>=22.12",
-          "exactTestSha256": "f7df078e9e7081c430df5ef69b23df55b48b89746f3f9ebf60d726c50a9012e5"
+          "exactTestSha256": "30e99382d27d4619db6a526fadf60a4231d8b44805fcc07f9739f0310f033c3b"
         },
         "testPaths": [
           "tests/nolane-environment-brand-leakage.test.mjs"

@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { verifyNolaneRuntimePurity } from './lib/nolane-runtime-purity-verifier.mjs';
 import { REQUIREMENT_DEFINITIONS } from '../requirements/nolane-requirement-definitions.mjs';
 import { validateCapabilityStatusRecord } from '../src/audit/capability-status-policy.mjs';
+import { evidenceFileSha256 } from '../src/release/evidence-file-hash.mjs';
 
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 async function writeJsonAtomic(file, value) {
@@ -204,7 +205,7 @@ export async function generateNolaneProgram({ projectRoot = process.cwd() } = {}
   for (const item of reqs) {
     if (item.status === 'not_implemented') continue;
     const [entrypointBytes, testBytes] = await Promise.all([readFile(path.join(root, item.acceptance.entrypoint)), readFile(path.join(root, item.acceptance.exactTest))]);
-    const evidence = { environment: 'node>=22.12', entrypointSha256: sha256(entrypointBytes), exactTestSha256: sha256(testBytes) };
+    const evidence = { environment: 'node>=22.12', entrypointSha256: evidenceFileSha256(entrypointBytes), exactTestSha256: evidenceFileSha256(testBytes) };
     item.acceptance.evidence = evidence;
     item.acceptance.replayReceiptSha256 = sha256(JSON.stringify({ id: item.id, ...evidence }));
   }
@@ -212,8 +213,6 @@ export async function generateNolaneProgram({ projectRoot = process.cwd() } = {}
   const statusCounts = reqs.reduce((acc, item) => (acc[item.status] = (acc[item.status] ?? 0) + 1, acc), {});
   const registry = { schema: 'nolane.agent.requirements.v5', product: 'Nolane Agent', version: productVersion, productVersion, generatedFrom: ['docs/reference/Nolane-Agent-UI-UX-Master-Plan.md', 'docs/reference/Nolane-Agent-Independent-Audit.md', 'docs/reference/Nolane-Agent-Small-Model-Research.md'], total: reqs.length, totalItems: reqs.length, statusCounts, summary: statusCounts, requirements: reqs };
   await writeJsonAtomic(path.join(requirementsRoot, 'nolane-agent-v5-requirements.json'), registry);
-  await mkdir(path.join(root, 'docs'), { recursive: true });
-  await writeJsonAtomic(path.join(root, 'docs', `feature-audit-${productVersion}.json`), registry);
   return { product: 'Nolane Agent', requirements: { total: reqs.length, notImplemented: statusCounts.not_implemented ?? 0, verified: statusCounts.verified_source_test ?? 0 }, retirement: runtimePuritySummary, historicalNolaneNativeTransformation: historicalSummary };
 }
 
