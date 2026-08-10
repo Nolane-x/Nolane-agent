@@ -1,0 +1,48 @@
+{
+  "schema": "nolane.investigation-checkpoint.v1",
+  "checkpointId": "nolane-agent-autonomous-hardening-2026-08-10",
+  "investigationId": "nolane-agent-autonomous-hardening",
+  "phase": "implementation",
+  "previousPayloadSha256": null,
+  "workspace": {
+    "anchorCommit": "29f7aabf54129e503edd436f4aa54cc31fba7cae",
+    "anchorTree": "7493be8f6d2caceecca40aab20180a5312843521",
+    "anchorState": "clean-before-checkpoint",
+    "anchorDigestSha256": "259c5fe8b0e66b3a61e93a3387ae5b6d148e0d4bc3b7e6f7b0b9fe11c9cccc77"
+  },
+  "payload": {
+    "thesis": "Harden Nolane Agent as an evidence-backed premium desktop agent without claiming untested provider or platform behavior.",
+    "activeHypotheses": [
+      "The v3 home can be compact and task-first without losing project, model, command, or provider controls.",
+      "Hosted GitHub runners can certify runner-bound gates but cannot truthfully certify credentialed third-party services or user-owned hardware.",
+      "Cross-platform release requires a new signed update contract; the current Windows NSIS-only contract must not be generalized by naming alone."
+    ],
+    "strongestEvidence": [
+      "Commit ed62c1d compacted the home composition; 14 focused home tests passed and GitHub visual run 31402307720 passed.",
+      "Commit 4fd41cf added a real nocturne and emerald visual receipt; GitHub visual run 31402991172 passed.",
+      "Commit 29f7aab adds a real Settings scroll-preservation journey; GitHub visual run 31403380446 passed.",
+      "GitHub external gate run 31402307732 passed on Windows, macOS, and Linux; it validates only runner-observable contracts.",
+      "Source quality gates passed: tokens, capability audit, UI release verification, evidence freshness, and master-ledger verification."
+    ],
+    "rejectedAlternatives": [
+      "Do not package Electron or install Chromium locally; all browser visual work uses GitHub-hosted runners.",
+      "Do not publish an unsigned or unnotarized macOS build, or claim macOS/Linux self-update from the Windows NSIS updater.",
+      "Do not relabel remaining external credential and user-hardware claims as verified merely because a generic runner exists."
+    ],
+    "unknowns": [
+      "88 ledger records remain external_gate; credentialed providers, managed cloud services, user-machine accessibility/performance, and independent review still need their own receipts.",
+      "The current cross-platform release workflow remains Windows-only until the staged update-v3 implementation and signing environment are provisioned."
+    ],
+    "cleanup": [
+      "No local Electron or browser package dependency was installed.",
+      "Known session visual/evidence folders total about 4.8 MB under C:\\Users\\admin\\AppData\\Local\\Temp; an exact-target cleanup attempt was rejected by the host policy, so no user files were removed.",
+      "Do not delete C:\\Users\\admin\\AppData\\Local\\Temp\\nolane-ci-fix-7f93ee4262cf4eb18af70b74e156932b before all pushed work is no longer needed."
+    ],
+    "nextActions": [
+      "Wait for the current commit 29f7aab GitHub CI and external-gate workflows, record only successful receipts.",
+      "Implement signed update v3 and its negative tests before adding macOS/Linux publishing to release.yml.",
+      "Continue UI work as focused source plus GitHub Chromium journeys, then preserve only redacted remote artifacts."
+    ]
+  },
+  "payloadSha256": "27ba04f50d738390523d52927e26eb6b09090234344ebebe578b0851324b6cad"
+}
