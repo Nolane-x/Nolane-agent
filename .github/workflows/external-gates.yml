@@ -92,6 +92,12 @@ jobs:
           NOLANE_RUNTIME_PODMAN_GATE: '1'
         run: node --test tests/podman-runtime-evidence.test.mjs
 
+      - name: Run real macOS sandbox gate
+        if: matrix.slug == 'macos'
+        env:
+          NOLANE_RUNTIME_MACOS_SANDBOX_GATE: '1'
+        run: node --test tests/macos-sandbox-runtime-evidence.test.mjs
+
       - name: Build the Windows native gate helpers
         if: runner.os == 'Windows'
         shell: pwsh
