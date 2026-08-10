@@ -5,6 +5,8 @@ import { readFile } from 'node:fs/promises';
 test('external gate workflow uses least privilege and real Windows Linux macOS runners without Electron packaging', async () => {
   const workflow = await readFile('.github/workflows/external-gates.yml', 'utf8');
   assert.match(workflow, /permissions:\s*\n\s+contents:\s*read/);
+  assert.match(workflow, /pull_request:/);
+  assert.doesNotMatch(workflow, /push:\s*\n\s+branches:\s*\n\s+- codex\/external-gate-evidence/);
   assert.match(workflow, /ubuntu-latest/);
   assert.match(workflow, /windows-latest/);
   assert.match(workflow, /macos-latest/);
