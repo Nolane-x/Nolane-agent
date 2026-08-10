@@ -108,7 +108,12 @@ test('service selects cgroup v2, attaches PID, and cleans the group on close', {
 });
 
 test('capabilities report bounded local enforcement without claiming unsupported OS sandboxes', async (t) => {
-  const { service } = await setup(t);
+  const unavailableDriver = { async capabilities() { return { available: false, reason: 'test-unavailable' }; } };
+  const { service } = await setup(t, { service: {
+    podmanDriver: unavailableDriver,
+    windowsJobObjectDriver: unavailableDriver,
+    macOsSandboxDriver: unavailableDriver,
+  } });
   const capabilities = await service.capabilities();
   assert.equal(capabilities.watchdogTerminate, true);
   assert.equal(capabilities.windowsJobObjects, false);

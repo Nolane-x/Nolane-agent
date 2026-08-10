@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, realpath, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -86,6 +86,7 @@ async function createFixture() {
 export async function measureRepositoryTruthPlane({ rootDirectory = process.cwd(), version = '3.3.0' } = {}) {
   void rootDirectory;
   const { root, files } = await createFixture();
+  const canonicalRoot = await realpath(root);
   const store = new StudioStore(path.join(root, '.forge-truth-measurement.db'));
   try {
     const project = store.createProject({ id: 'repository_truth_measurement', name: 'Repository Truth Measurement', workspaceRoot: root });
@@ -158,7 +159,7 @@ export async function measureRepositoryTruthPlane({ rootDirectory = process.cwd(
       workspace: {
         realGitRepository: twin.branch.available === true && /^[a-f0-9]{40}$/.test(String(twin.branch.headSha ?? '')),
         branchDetected: twin.branch.branch === 'feature/repository-truth',
-        worktreeDetected: normalize(twin.branch.worktree) === normalize(root),
+        worktreeDetected: normalize(twin.branch.worktree) === normalize(canonicalRoot),
         dirtyStateDetected: twin.branch.dirtyHash !== 'clean' && twin.branch.uncommittedChanges.some((item) => item.path === 'config/app.json'),
         editorOverlayIsolated: overlaySymbols.length > 0 && diskSymbols.length > 0
           && overlaySymbols.every((node) => node.citation.sourceHash === overlay.sha256)
