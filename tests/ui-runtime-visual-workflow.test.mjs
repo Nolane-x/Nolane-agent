@@ -49,6 +49,7 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(capturer, /AxeBuilder/);
   assert.match(capturer, /reported serious or critical accessibility violations/);
   assert.match(capturer, /violation\.nodes/);
+  assert.match(capturer, /violation\.nodes\.slice\(0, 10\)/);
   assert.match(capturer, /node\.target/);
   assert.match(capturer, /viewport: Object\.freeze\(\{ width: 640, height: 900 \}\)/);
   assert.match(workflow, /NOLANE_UI_VISUAL_STATES=home,home-compact,projects,settings,workroom,control-plane/);

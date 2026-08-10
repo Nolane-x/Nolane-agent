@@ -107,7 +107,7 @@ async function assertAccessibility(page, state) {
   const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
   const blocking = result.violations.filter((violation) => ['serious', 'critical'].includes(String(violation.impact)));
   if (blocking.length) {
-    const summary = blocking.flatMap((violation) => violation.nodes.slice(0, 3).map((node) => `${violation.id} (${violation.impact}) at ${node.target.join(' ')}`)).join(', ');
+    const summary = blocking.flatMap((violation) => violation.nodes.slice(0, 10).map((node) => `${violation.id} (${violation.impact}) at ${node.target.join(' ')}`)).join(', ');
     throw new Error(`${state.id} reported serious or critical accessibility violations: ${summary}`);
   }
 }
