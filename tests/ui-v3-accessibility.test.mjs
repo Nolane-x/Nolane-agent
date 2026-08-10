@@ -16,13 +16,14 @@ test('settings center has landmarks labels live status and keyboard-friendly con
 });
 
 test('runtime-critical labels use the legible secondary text token', async () => {
-  const [shell, experience, onboarding, home, surfaces, settings] = await Promise.all([
+  const [shell, experience, onboarding, home, surfaces, settings, workroom] = await Promise.all([
     readFile('ui-v3/styles/layout/app-shell.css', 'utf8'),
     readFile('ui-v3/styles/components/experience-switcher.css', 'utf8'),
     readFile('ui-v3/styles/pages/onboarding.css', 'utf8'),
     readFile('ui-v3/styles/pages/home.css', 'utf8'),
     readFile('ui-v3/styles/pages/surfaces.css', 'utf8'),
     readFile('ui-v3/styles/pages/settings.css', 'utf8'),
+    readFile('ui-v3/styles/pages/workroom.css', 'utf8'),
   ]);
   assert.match(shell, /\.app-topbar__title\{[^}]*color:var\(--text-secondary\)/);
   assert.match(experience, /\.app-topbar__actions>\.experience-switcher>\.experience-pill\{[^}]*color:var\(--text-secondary\)/);
@@ -43,6 +44,13 @@ test('runtime-critical labels use the legible secondary text token', async () =>
   assert.match(settings, /\.settings-center \.settings-section__eyebrow\{[^}]*color:var\(--text-secondary\)/);
   assert.match(settings, /\.settings-center \.theme-gallery small\{[^}]*color:var\(--text-secondary\)/);
   assert.match(settings, /\.settings-center \.accent-picker>span\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-header a\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-header p\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-header button:last-child\{[^}]*color:var\(--text-primary\)/);
+  assert.match(workroom, /\.workroom-tabs button\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-files>header,\.workroom-agent>header,\.workroom-editor>header\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-empty span\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-empty p\{[^}]*color:var\(--text-secondary\)/);
 });
 
 test('project view toggle buttons have localized accessible names', () => {
