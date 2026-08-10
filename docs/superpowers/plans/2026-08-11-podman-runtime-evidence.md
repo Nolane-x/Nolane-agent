@@ -31,20 +31,20 @@
 - Consumes: the `runner-evidence` matrix with `matrix.slug == 'linux'`.
 - Produces: one Linux-only step called `Run real Podman sandbox gate`.
 
-- [ ] **Step 1: Write the failing workflow assertion**
+- [x] **Step 1: Write the failing workflow assertion**
 
 ```js
 assert.match(workflow, /name:\s*Run real Podman sandbox gate[\s\S]*if:\s*matrix\.slug == 'linux'[\s\S]*NOLANE_RUNTIME_PODMAN_GATE:\s*'1'[\s\S]*node --test tests\/podman-runtime-evidence\.test\.mjs/);
 assert.doesNotMatch(workflow, /electron-builder|build:electron|smoke:packaged|release:matrix/);
 ```
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run: `node --test tests/external-gate-workflow.test.mjs`
 
 Expected: FAIL because the real Podman step is absent.
 
-- [ ] **Step 3: Add the minimal Linux-only step**
+- [x] **Step 3: Add the minimal Linux-only step**
 
 ```yaml
       - name: Run real Podman sandbox gate
@@ -54,13 +54,13 @@ Expected: FAIL because the real Podman step is absent.
         run: node --test tests/podman-runtime-evidence.test.mjs
 ```
 
-- [ ] **Step 4: Run GREEN**
+- [x] **Step 4: Run GREEN**
 
 Run: `node --test tests/external-gate-workflow.test.mjs`
 
 Expected: PASS without invoking Podman locally.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tests/external-gate-workflow.test.mjs .github/workflows/external-gates.yml
@@ -79,7 +79,7 @@ git commit -m "test: require real Podman gate workflow"
 - Consumes: `PodmanSandboxDriver#create`, `.start`, and `.remove`.
 - Produces: runner-only evidence that lifecycle cleanup and container security settings are real.
 
-- [ ] **Step 1: Write the runner-gated test**
+- [x] **Step 1: Write the runner-gated test**
 
 ```js
 test('real Podman executes the bounded sandbox contract', { skip: process.env.NOLANE_RUNTIME_PODMAN_GATE !== '1' }, async () => {
@@ -91,13 +91,13 @@ test('real Podman executes the bounded sandbox contract', { skip: process.env.NO
 });
 ```
 
-- [ ] **Step 2: Run locally**
+- [x] **Step 2: Run locally**
 
 Run: `node --test tests/podman-runtime-evidence.test.mjs`
 
 Expected: SKIP with no image pull, container, or temporary directory.
 
-- [ ] **Step 3: Implement bounded inspection and cleanup**
+- [x] **Step 3: Implement bounded inspection and cleanup**
 
 ```js
 const run = (args) => execFileAsync('podman', args, { timeout: 30_000, maxBuffer: 256_000 });
@@ -106,13 +106,13 @@ const inspect = async (containerId) => JSON.parse((await run(['inspect', contain
 
 Use `mkdtemp`. In `finally`, call `driver.remove(containerId)` when assigned and `rm(workspaceRoot, { recursive: true, force: true })`. Retain the primary failure if cleanup also fails.
 
-- [ ] **Step 4: Run targeted checks**
+- [x] **Step 4: Run targeted checks**
 
 Run: `node --test tests/podman-runtime-evidence.test.mjs tests/external-gate-workflow.test.mjs tests/native-sandbox-drivers.test.mjs`
 
 Expected: PASS with the real-runtime test skipped locally.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tests/podman-runtime-evidence.test.mjs tests/external-gate-workflow.test.mjs .github/workflows/external-gates.yml
@@ -131,18 +131,18 @@ git commit -m "test: add real Podman sandbox evidence"
 - Consumes: existing `npm run audit:external-gates` artifact step.
 - Produces: a passing GitHub run that retains a runner observation without promoting cloud, OS, or Electron claims.
 
-- [ ] **Step 1: Push one verified commit**
+- [x] **Step 1: Push one verified commit**
 
 Run: `git push https://github.com/Nolane-x/Nolane-agent.git HEAD:refs/heads/codex/external-gate-evidence`
 
 Expected: GitHub starts the Linux real-Podman step.
 
-- [ ] **Step 2: Inspect the exact GitHub run**
+- [x] **Step 2: Inspect the exact GitHub run**
 
 Run: `gh run view <run-id> --repo Nolane-x/Nolane-agent --log-failed`
 
 Expected: success, or a precise runner capability failure with no weakened assertion.
 
-- [ ] **Step 3: Preserve non-claims**
+- [x] **Step 3: Preserve non-claims**
 
 Verify final reporting names Kubernetes/cloud, Windows/macOS native enforcement, Electron packaging, and provider credentials as unresolved external conditions.
