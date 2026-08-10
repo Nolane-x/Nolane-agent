@@ -9,6 +9,7 @@ import {
   buildNativeCoreCatalog,
   validateCoreCatalog,
 } from '../src/native-core/core-conformance-verifier.mjs';
+import { evidenceFileSha256 } from '../src/release/evidence-file-hash.mjs';
 
 async function fixture(t) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-core-catalog-'));
@@ -16,7 +17,7 @@ async function fixture(t) {
   await mkdir(path.join(root, 'src'), { recursive: true });
   await mkdir(path.join(root, 'tests'), { recursive: true });
   await writeFile(path.join(root, 'src', 'agent.mjs'), 'export class Agent {}\n');
-  await writeFile(path.join(root, 'src', 'app.mjs'), "import { Agent } from './agent.mjs';\nexport const agent = new Agent();\n");
+  await writeFile(path.join(root, 'src', 'app.mjs'), "import { Agent } from './agent.mjs';\r\nexport const agent = new Agent();\r\n");
   await writeFile(path.join(root, 'tests', 'agent.test.mjs'), "import assert from 'node:assert/strict';\nassert.throws(() => { throw new Error('bounded'); });\n");
   return root;
 }
@@ -68,6 +69,7 @@ test('core conformance verifier binds upstream candidates to production entrypoi
     sha256: 'a'.repeat(64),
   }]);
   assert.equal(receipt.candidateMappings[0].sourceSha256, 'a'.repeat(64));
+  assert.equal(receipt.evidence[0].productionWiring[0].sha256, evidenceFileSha256("import { Agent } from './agent.mjs';\nexport const agent = new Agent();\n"));
   assert.match(receipt.receiptSha256, /^[a-f0-9]{64}$/);
 });
 

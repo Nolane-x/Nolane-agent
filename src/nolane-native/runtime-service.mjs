@@ -2,10 +2,8 @@ import { Worker } from 'node:worker_threads';
 import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import crypto from 'node:crypto';
 import { RuntimeReceiptLedger } from '../native-core/runtime-receipt-ledger.mjs';
-
-const sha256 = (value) => crypto.createHash('sha256').update(value).digest('hex');
+import { evidenceFileSha256 } from '../release/evidence-file-hash.mjs';
 
 export class NolaneNativeRuntimeService {
   constructor({ projectRoot, requestTimeoutMs = 5_000, clock = () => Date.now() } = {}) {
@@ -30,14 +28,14 @@ export class NolaneNativeRuntimeService {
     const workerPath = this.#resolveInsideRoot(manifest.worker);
     const lockPath = this.#resolveInsideRoot(manifest.dependencyLock);
     const [workerBytes, lockBytes] = await Promise.all([readFile(workerPath), readFile(lockPath)]);
-    if (sha256(workerBytes) !== manifest.workerSha256) throw new Error('worker sha256 mismatch');
+    if (evidenceFileSha256(workerBytes) !== manifest.workerSha256) throw new Error('worker sha256 mismatch');
     if (lockBytes.length === 0) throw new Error('offline dependency lock is empty');
     const lock = JSON.parse(lockBytes.toString('utf8'));
     if (!lock.lockfileVersion || !lock.packages) throw new Error('offline dependency lock is invalid');
     const workerInfo = await stat(workerPath);
     if (!workerInfo.isFile()) throw new Error('runtime worker is not a file');
 
-    this.manifest = { ...manifest, workerPath, lockPath, lockSha256: sha256(lockBytes) };
+    this.manifest = { ...manifest, workerPath, lockPath, lockSha256: evidenceFileSha256(lockBytes) };
     this.lifecycle.append({ type: 'preflight', payload: { protocol: manifest.protocol, workerSha256: manifest.workerSha256, dependencyLockSha256: this.manifest.lockSha256 } });
     return {
       ready: true,

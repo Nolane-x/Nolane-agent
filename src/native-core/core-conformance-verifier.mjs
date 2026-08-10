@@ -73,7 +73,7 @@ async function hashFile(rootDirectory, relativePath, label) {
 async function verifyWiring(rootDirectory, wiring, contractId) {
   const source = await readFile(path.resolve(rootDirectory, wiring.path), 'utf8').catch(() => { throw new Error(`production wiring missing for ${contractId}: ${wiring.path}`); });
   if (!source.includes(wiring.contains)) throw new Error(`production wiring token missing for ${contractId}: ${wiring.path} -> ${wiring.contains}`);
-  return { path: wiring.path, contains: wiring.contains, sha256: sha256(source) };
+  return { path: wiring.path, contains: wiring.contains, sha256: evidenceFileSha256(source) };
 }
 
 function matchContract(candidate, contracts) {
