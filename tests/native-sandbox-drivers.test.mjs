@@ -62,6 +62,7 @@ test('macOS sandbox driver refuses non-macOS hosts and writes a deny-default pro
   const calls = [];
   const mac = new MacOsSandboxDriver({ platform: 'darwin', profileRoot: path.join(root, 'profiles'), runner: async (command, args) => { calls.push({ command, args }); return { stdout: '', stderr: '' }; } });
   assert.equal((await mac.capabilities()).available, true);
+  assert.deepEqual(calls[0], { command: '/usr/bin/sandbox-exec', args: ['-p', '(version 1) (allow default)', '/usr/bin/true'] });
   const prepared = await mac.prepare({ id: 'mac-1', workspaceRoot: root, command: ['node', '--version'], allowNetwork: false });
   assert.match(prepared.profile, /\(deny default\)/);
   assert.match(prepared.profile, /\(deny network\*\)/);
