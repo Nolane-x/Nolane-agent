@@ -47,6 +47,29 @@ async function previousCaptures(output) {
   }
 }
 
+async function assertSettingsScrollPreserved(page) {
+  const result = await page.evaluate(async () => {
+    const waitForFrame = () => new Promise((resolve) => requestAnimationFrame(() => resolve()));
+    const scroller = document.querySelector('[data-scroll-key="settings-content"]');
+    if (!scroller) return { error: 'settings scroll container is missing' };
+    const targetTop = Math.min(480, Math.max(0, scroller.scrollHeight - scroller.clientHeight));
+    if (targetTop < 1) return { error: 'settings content is not scrollable' };
+    scroller.scrollTop = targetTop;
+    const before = scroller.scrollTop;
+    const choice = document.querySelector('[data-setting-choice][data-setting-path="appearance.accent"][data-setting-value="blue"]');
+    if (!choice) return { error: 'settings accent choice is missing' };
+    choice.click();
+    await waitForFrame();
+    await waitForFrame();
+    const next = document.querySelector('[data-scroll-key="settings-content"]');
+    const selected = document.querySelector('[data-setting-choice][data-setting-path="appearance.accent"][data-setting-value="blue"][aria-pressed="true"]');
+    return { before, after: next?.scrollTop ?? null, accentApplied: document.documentElement.dataset.accent === 'blue', selected: Boolean(selected) };
+  });
+  if (result.error) throw new Error(result.error);
+  if (!result.accentApplied || !result.selected) throw new Error('settings accent choice did not update the live preference state');
+  if (result.after == null || Math.abs(result.after - result.before) > 2) throw new Error(`settings content did not preserve scroll position: ${result.before} -> ${result.after}`);
+}
+
 export async function captureUiRuntimeVisual({ baseUrl, token, outputDirectory, states = STATES } = {}) {
   const root = required(baseUrl, 'baseUrl');
   const credential = required(token, 'token');
@@ -63,6 +86,7 @@ export async function captureUiRuntimeVisual({ baseUrl, token, outputDirectory, 
       await page.goto(stateUrl(root, credential, state.route), { waitUntil: 'domcontentloaded', timeout: 30_000 });
       await page.locator(state.selector).waitFor({ state: 'visible', timeout: 30_000 });
       await page.waitForTimeout(400);
+      if (state.id === 'settings') await assertSettingsScrollPreserved(page);
       if (pageErrors.length) throw new Error(`${state.id} emitted page errors: ${pageErrors.join(' | ')}`);
       const filename = `${state.id}.png`;
       const file = path.join(output, filename);
