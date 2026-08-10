@@ -51,6 +51,10 @@ test('runtime-critical labels use the legible secondary text token', async () =>
   assert.match(workroom, /\.workroom-files>header,\.workroom-agent>header,\.workroom-editor>header\{[^}]*color:var\(--text-secondary\)/);
   assert.match(workroom, /\.workroom-empty span\{[^}]*color:var\(--text-secondary\)/);
   assert.match(workroom, /\.workroom-empty p\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-agent>header button\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-agent__body p\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-statusbar span\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-statusbar span:first-child\{[^}]*color:var\(--text-secondary\)/);
 });
 
 test('project view toggle buttons have localized accessible names', () => {
