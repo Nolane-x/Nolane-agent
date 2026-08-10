@@ -5,9 +5,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 
+const DEFAULT_VIEWPORT = Object.freeze({ width: 1440, height: 1000 });
+
 const STATES = Object.freeze([
   Object.freeze({ id: 'onboarding', route: '/onboarding', selector: '.onboarding-shell' }),
   Object.freeze({ id: 'home', route: '/', selector: '.home-view' }),
+  Object.freeze({ id: 'home-compact', route: '/', selector: '.home-view', viewport: Object.freeze({ width: 640, height: 900 }) }),
   Object.freeze({ id: 'home-nocturne', route: '/', selector: '.home-view' }),
   Object.freeze({ id: 'projects', route: '/projects', selector: '.projects-page' }),
   Object.freeze({ id: 'settings', route: '/settings', selector: '#workspace' }),
@@ -70,6 +73,18 @@ async function assertSettingsScrollPreserved(page) {
   if (result.after == null || Math.abs(result.after - result.before) > 2) throw new Error(`settings content did not preserve scroll position: ${result.before} -> ${result.after}`);
 }
 
+async function assertResponsiveLayout(page, state) {
+  const result = await page.evaluate(() => Object.freeze({
+    viewportWidth: window.innerWidth,
+    documentWidth: document.documentElement.scrollWidth,
+    bodyWidth: document.body?.scrollWidth ?? 0,
+  }));
+  const renderedWidth = Math.max(result.documentWidth, result.bodyWidth);
+  if (renderedWidth > result.viewportWidth + 1) {
+    throw new Error(`${state.id} responsive layout overflows horizontally: ${renderedWidth}px > ${result.viewportWidth}px`);
+  }
+}
+
 export async function captureUiRuntimeVisual({ baseUrl, token, outputDirectory, states = STATES } = {}) {
   const root = required(baseUrl, 'baseUrl');
   const credential = required(token, 'token');
@@ -80,19 +95,21 @@ export async function captureUiRuntimeVisual({ baseUrl, token, outputDirectory, 
   const captures = [];
   try {
     for (const state of states) {
-      const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 });
+      const viewport = state.viewport ?? DEFAULT_VIEWPORT;
+      const page = await browser.newPage({ viewport, deviceScaleFactor: 1 });
       const pageErrors = [];
       page.on('pageerror', (error) => pageErrors.push(String(error?.message ?? error)));
       await page.goto(stateUrl(root, credential, state.route), { waitUntil: 'domcontentloaded', timeout: 30_000 });
       await page.locator(state.selector).waitFor({ state: 'visible', timeout: 30_000 });
       await page.waitForTimeout(400);
       if (state.id === 'settings') await assertSettingsScrollPreserved(page);
+      await assertResponsiveLayout(page, state);
       if (pageErrors.length) throw new Error(`${state.id} emitted page errors: ${pageErrors.join(' | ')}`);
       const filename = `${state.id}.png`;
       const file = path.join(output, filename);
       await page.screenshot({ path: file, fullPage: true, animations: 'disabled' });
       const body = await readFile(file);
-      captures.push(Object.freeze({ id: state.id, route: state.route, file: filename, bytes: body.length, sha256: sha256(body) }));
+      captures.push(Object.freeze({ id: state.id, route: state.route, viewport: Object.freeze({ ...viewport, deviceScaleFactor: 1 }), file: filename, bytes: body.length, sha256: sha256(body) }));
       await page.close();
     }
   } finally {
@@ -101,7 +118,7 @@ export async function captureUiRuntimeVisual({ baseUrl, token, outputDirectory, 
   const byId = new Map([...prior, ...captures].map((capture) => [capture.id, capture]));
   const report = Object.freeze({
     schema: 'nolane.ui.runtime-visual-receipt.v1',
-    viewport: Object.freeze({ width: 1440, height: 1000, deviceScaleFactor: 1 }),
+    viewport: Object.freeze({ ...DEFAULT_VIEWPORT, deviceScaleFactor: 1 }),
     captures: Object.freeze(STATES.flatMap((state) => byId.has(state.id) ? [byId.get(state.id)] : [])),
   });
   const receiptSha256 = sha256(JSON.stringify(report));

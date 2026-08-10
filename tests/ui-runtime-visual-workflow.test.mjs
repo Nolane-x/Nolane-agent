@@ -26,7 +26,7 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.doesNotMatch(workflow, /^ {4}env:\n(?: {6}[^\n]+\n)* {6}NOLANE_(?:AGENT_DATA_DIR|UI_VISUAL_OUTPUT):\s*\$\{\{\s*runner\.temp/m);
   assert.doesNotMatch(workflow, /electron-builder|build:electron|smoke:packaged|release:matrix/);
 
-  for (const state of ['onboarding', 'home', 'home-nocturne', 'projects', 'settings', 'workroom', 'control-plane']) {
+  for (const state of ['onboarding', 'home', 'home-compact', 'home-nocturne', 'projects', 'settings', 'workroom', 'control-plane']) {
     assert.match(capturer, new RegExp(`id: '${state}'`));
   }
   assert.match(workflow, /appearance"\s*:\s*\{\s*"theme"\s*:\s*"nocturne"/);
@@ -37,5 +37,9 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(capturer, /sha256/);
   assert.match(capturer, /assertSettingsScrollPreserved/);
   assert.match(capturer, /settings content did not preserve scroll position/);
+  assert.match(capturer, /assertResponsiveLayout/);
+  assert.match(capturer, /responsive layout overflows horizontally/);
+  assert.match(capturer, /viewport: Object\.freeze\(\{ width: 640, height: 900 \}\)/);
+  assert.match(workflow, /NOLANE_UI_VISUAL_STATES=home,home-compact,projects,settings,workroom,control-plane/);
   assert.doesNotMatch(capturer, /token\s*:\s*(credential|token)/);
 });
