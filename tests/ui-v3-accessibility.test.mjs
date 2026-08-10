@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { renderProjectsView } from '../ui-v3/views/projects/project-view.mjs';
 import { renderSettingsView } from '../ui-v3/views/settings/settings-view.mjs';
 
 test('settings center has landmarks labels live status and keyboard-friendly controls', () => {
@@ -15,11 +16,12 @@ test('settings center has landmarks labels live status and keyboard-friendly con
 });
 
 test('runtime-critical labels use the legible secondary text token', async () => {
-  const [shell, experience, onboarding, home] = await Promise.all([
+  const [shell, experience, onboarding, home, surfaces] = await Promise.all([
     readFile('ui-v3/styles/layout/app-shell.css', 'utf8'),
     readFile('ui-v3/styles/components/experience-switcher.css', 'utf8'),
     readFile('ui-v3/styles/pages/onboarding.css', 'utf8'),
     readFile('ui-v3/styles/pages/home.css', 'utf8'),
+    readFile('ui-v3/styles/pages/surfaces.css', 'utf8'),
   ]);
   assert.match(shell, /\.app-topbar__title\{[^}]*color:var\(--text-secondary\)/);
   assert.match(experience, /\.app-topbar__actions>\.experience-switcher>\.experience-pill\{[^}]*color:var\(--text-secondary\)/);
@@ -30,4 +32,16 @@ test('runtime-critical labels use the legible secondary text token', async () =>
   assert.match(home, /\.home-section>header>a\{[^}]*color:var\(--text-secondary\)/);
   assert.match(home, /\.capability-card small\{[^}]*color:var\(--text-secondary\)/);
   assert.match(home, /\.empty-state p\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(surfaces, /\.surface-page__header \.eyebrow\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(surfaces, /\.surface-page__header p:last-child\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(surfaces, /\.surface-primary\{[^}]*color:var\(--nolane-ink\)/);
+});
+
+test('project view toggle buttons have localized accessible names', () => {
+  const english = renderProjectsView({status:'ready',language:'en',projects:[]});
+  const vietnamese = renderProjectsView({status:'ready',language:'vi',projects:[]});
+  assert.match(english, /class="surface-view-toggle"><button[^>]*aria-label="Project grid view"/);
+  assert.match(english, /class="surface-view-toggle"><button[^>]*Project grid view[^>]*>[\s\S]*?<\/button><button[^>]*aria-label="Project activity view"/);
+  assert.match(vietnamese, /aria-label="Chế độ lưới dự án"/);
+  assert.match(vietnamese, /aria-label="Chế độ hoạt động dự án"/);
 });

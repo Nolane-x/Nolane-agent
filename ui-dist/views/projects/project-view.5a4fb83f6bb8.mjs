@@ -1,5 +1,5 @@
-import { icon } from '../../core/icon.mjs';
-import { t } from '../../core/i18n.mjs';
+import { icon } from '../../core/icon.99716c050193.mjs';
+import { t } from '../../core/i18n.6e6d56e8c908.mjs';
 export function buildProjectViewModel({ id, path, name = null, trust = 'unknown', missions = [], defaultProvider = 'auto', defaultMode = 'balanced', rulesSummary = null } = {}) {
   if (!id || !path) throw new Error('Project view requires id and path');
   const active = new Set(['planning', 'running', 'needs-input', 'needs_input', 'reviewing','testing']);
