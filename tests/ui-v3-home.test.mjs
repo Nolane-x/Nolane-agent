@@ -49,6 +49,16 @@ test('home composer preserves a distinct deployment key for every provider model
   assert.doesNotMatch(html, /<select\b/);
 });
 
+test('home uses a compact task-first composition instead of an oversized generic hero', async () => {
+  const html = renderHomeView(buildHomeViewModel());
+  const styles = await readFile(new URL('../ui-v3/styles/pages/home.css', import.meta.url), 'utf8');
+  assert.match(html, /class="home-intro"/);
+  assert.doesNotMatch(html, /home-ambient|home-hero/);
+  assert.match(styles, /\.home-intro\{display:grid/);
+  assert.match(styles, /font-size:clamp\(32px,3\.6vw,52px\)/);
+  assert.doesNotMatch(styles, /font-size:clamp\(38px,5\.2vw,72px\)/);
+});
+
 test('home composer sends provider and model separately for the selected deployment', async () => {
   const calls = [];
   const api = {
