@@ -22,9 +22,7 @@ jobs:
       NOLANE_AGENT_HOST: 127.0.0.1
       NOLANE_AGENT_PORT: 4173
       NOLANE_AGENT_TOKEN: nolane-ui-runtime-evidence-token
-      NOLANE_AGENT_DATA_DIR: ${{ runner.temp }}/nolane-ui-runtime-data
       NOLANE_UI_RUNTIME_URL: http://127.0.0.1:4173
-      NOLANE_UI_VISUAL_OUTPUT: ${{ runner.temp }}/nolane-ui-runtime-visual
 
     steps:
       - uses: actions/checkout@v6
@@ -49,6 +47,8 @@ jobs:
 
       - name: Start an authenticated source runtime
         shell: bash
+        env:
+          NOLANE_AGENT_DATA_DIR: ${{ runner.temp }}/nolane-ui-runtime-data
         run: |
           node src/app.mjs > "$RUNNER_TEMP/nolane-ui-runtime.log" 2>&1 &
           echo "NOLANE_UI_RUNTIME_PID=$!" >> "$GITHUB_ENV"
@@ -63,6 +63,8 @@ jobs:
 
       - name: Capture onboarding, workspace, settings, studio, and control-plane states
         shell: bash
+        env:
+          NOLANE_UI_VISUAL_OUTPUT: ${{ runner.temp }}/nolane-ui-runtime-visual
         run: |
           NOLANE_UI_VISUAL_STATES=onboarding node scripts/capture-ui-runtime-visual.mjs
           curl --fail --silent --show-error --request POST \
