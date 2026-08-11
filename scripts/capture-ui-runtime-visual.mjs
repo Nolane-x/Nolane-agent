@@ -54,26 +54,34 @@ async function previousCaptures(output) {
 }
 
 async function assertSettingsScrollPreserved(page) {
-  const result = await page.evaluate(async () => {
-    const waitForFrame = () => new Promise((resolve) => requestAnimationFrame(() => resolve()));
+  const setScrollPosition = () => page.evaluate(() => {
     const scroller = document.querySelector('[data-scroll-key="settings-content"]');
     if (!scroller) return { error: 'settings scroll container is missing' };
     const targetTop = Math.min(480, Math.max(0, scroller.scrollHeight - scroller.clientHeight));
     if (targetTop < 1) return { error: 'settings content is not scrollable' };
     scroller.scrollTop = targetTop;
-    const before = scroller.scrollTop;
-    const choice = document.querySelector('[data-setting-choice][data-setting-path="appearance.accent"][data-setting-value="blue"]');
-    if (!choice) return { error: 'settings accent choice is missing' };
-    choice.click();
-    await waitForFrame();
-    await waitForFrame();
-    const next = document.querySelector('[data-scroll-key="settings-content"]');
-    const selected = document.querySelector('[data-setting-choice][data-setting-path="appearance.accent"][data-setting-value="blue"][aria-pressed="true"]');
-    return { before, after: next?.scrollTop ?? null, accentApplied: document.documentElement.dataset.accent === 'blue', selected: Boolean(selected) };
+    return { before: scroller.scrollTop };
   });
-  if (result.error) throw new Error(result.error);
-  if (!result.accentApplied || !result.selected) throw new Error('settings accent choice did not update the live preference state');
-  if (result.after == null || Math.abs(result.after - result.before) > 2) throw new Error(`settings content did not preserve scroll position: ${result.before} -> ${result.after}`);
+  const assertScroll = async (before, label) => {
+    const after = await page.locator('[data-scroll-key="settings-content"]').evaluate((node) => node.scrollTop);
+    if (after == null || Math.abs(after - before) > 2) throw new Error(`${label} did not preserve scroll position: ${before} -> ${after}`);
+  };
+
+  const accent = await setScrollPosition();
+  if (accent.error) throw new Error(accent.error);
+  const accentChoice = page.locator('[data-setting-choice][data-setting-path="appearance.accent"][data-setting-value="blue"]');
+  await accentChoice.click();
+  await accentChoice.waitFor({ state: 'visible', timeout: 10_000 });
+  if (await accentChoice.getAttribute('aria-pressed') !== 'true') throw new Error('settings accent choice did not update the live preference state');
+  await assertScroll(accent.before, 'settings content');
+
+  const language = await page.evaluate(() => document.querySelector('[data-setting-choice][data-setting-path="general.language"][aria-pressed="true"]')?.dataset?.settingValue === 'vi' ? 'en' : 'vi');
+  const beforeLanguage = await setScrollPosition();
+  if (beforeLanguage.error) throw new Error(beforeLanguage.error);
+  const languageChoice = page.locator(`[data-setting-choice][data-setting-path="general.language"][data-setting-value="${language}"]`);
+  await languageChoice.click();
+  await page.waitForFunction((nextLanguage) => document.documentElement.dataset.language === nextLanguage && document.querySelector(`[data-setting-choice][data-setting-path="general.language"][data-setting-value="${nextLanguage}"][aria-pressed="true"]`), language, { timeout: 10_000 });
+  await assertScroll(beforeLanguage.before, 'settings language choice');
 }
 
 async function assertResponsiveLayout(page, state) {

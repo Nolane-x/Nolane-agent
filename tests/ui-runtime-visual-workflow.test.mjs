@@ -40,7 +40,9 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(capturer, /page\.screenshot/);
   assert.match(capturer, /sha256/);
   assert.match(capturer, /assertSettingsScrollPreserved/);
-  assert.match(capturer, /settings content did not preserve scroll position/);
+  assert.match(capturer, /await assertScroll\(accent\.before, 'settings content'\)/);
+  assert.match(capturer, /await assertScroll\(beforeLanguage\.before, 'settings language choice'\)/);
+  assert.match(capturer, /data-setting-path="general\.language"/);
   assert.match(capturer, /assertResponsiveLayout/);
   assert.match(capturer, /responsive layout overflows horizontally/);
   assert.match(capturer, /assertProjectPickerKeyboard/);

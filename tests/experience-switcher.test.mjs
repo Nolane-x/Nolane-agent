@@ -9,14 +9,20 @@ function fakeRoot() {
   const objective = { id: 'objective', name: '', dataset: {}, type: 'textarea', disabled: false, value: 'keep this draft', checked: undefined, selectionStart: 2, selectionEnd: 5 };
   const workspace = { scrollTop: 140 };
   const sidebar = { scrollTop: 33 };
+  const settingsContent = { dataset: { scrollKey: 'settings-content' }, scrollTop: 4200, scrollLeft: 3 };
   const summary = { dataset: { open: 'true' } };
   return {
     activeElement: objective,
-    querySelectorAll(selector) { return selector === 'input, textarea, select' ? [objective] : []; },
+    querySelectorAll(selector) {
+      if (selector === 'input, textarea, select') return [objective];
+      if (selector === '[data-scroll-key]') return [settingsContent];
+      return [];
+    },
     querySelector(selector) {
       if (selector === '#workspace') return workspace;
       if (selector === '#session-groups') return sidebar;
       if (selector === '#output-summary-root') return summary;
+      if (selector === '[data-scroll-key="settings-content"]') return settingsContent;
       return null;
     }
   };
@@ -39,10 +45,18 @@ test('experience popup uses a dedicated opaque stacking surface', async () => {
 
 test('view-state bridge preserves draft metadata and maps routes to representable destinations', () => {
   const bridge = createViewStateBridge();
-  bridge.capture(fakeRoot(), { experience: 'expert', path: '/control-plane/runtime' });
+  const root = fakeRoot();
+  bridge.capture(root, { experience: 'expert', path: '/control-plane/runtime' });
   const snapshot = bridge.snapshot();
   assert.equal(snapshot.states.expert.controls[0].value, 'keep this draft');
   assert.equal(snapshot.states.expert.workspaceScrollTop, 140);
+  assert.deepEqual(snapshot.states.expert.scrollRegions, [{ key: 'settings-content', top: 4200, left: 3 }]);
+  const settingsContent = root.querySelector('[data-scroll-key="settings-content"]');
+  settingsContent.scrollTop = 0;
+  settingsContent.scrollLeft = 0;
+  bridge.restore(root, { experience: 'expert' });
+  assert.equal(settingsContent.scrollTop, 4200);
+  assert.equal(settingsContent.scrollLeft, 3);
   assert.equal(bridge.resolveDestination({ currentPath: '/control-plane/runtime', targetExperience: 'everyday' }), '/');
   assert.equal(bridge.resolveDestination({ currentPath: '/control-plane/runtime', targetExperience: 'workspace' }), '/missions');
   assert.equal(bridge.resolveDestination({ currentPath: '/control-plane/runtime', targetExperience: 'studio' }), '/workroom');
