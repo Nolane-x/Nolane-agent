@@ -397,7 +397,7 @@ const providers = new ProviderRegistry({ executionPool: providerRuntimePool, ses
 const providerSandboxRoot = path.join(config.dataDir, 'provider-sandboxes');
 await mkdir(providerSandboxRoot, { recursive: true });
 const providerOverrides = {};
-for (const id of ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'qwen-code', 'continue-cli']) {
+for (const id of ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'qwen-code', 'continue-cli', 'cline', 'mistral-vibe-code', 'aider', 'goose']) {
   const cwd = path.join(providerSandboxRoot, id); await mkdir(cwd, { recursive: true }); providerOverrides[id] = { cwd };
 }
 for (const provider of createBuiltInCliProviders(providerOverrides)) providers.register(provider);

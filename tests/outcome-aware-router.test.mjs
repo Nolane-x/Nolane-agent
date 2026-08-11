@@ -51,6 +51,18 @@ test('OutcomeAwareProviderRouter changes trade-offs across intelligence balance 
   assert.equal(router.select({ mode: 'balance', task: { kind: 'edit', complexity: 0.25 }, requiredCapabilities: ['coding', 'tool-calling'] }).id, 'fast');
 });
 
+test('OutcomeAwareProviderRouter excludes a provider pending external safe-plan configuration', () => {
+  const providers = registry([
+    provider('plan-required', { capabilities: ['coding'], qualityTier: 9, costTier: 0, latencyTier: 1, executionSafety: 'external-plan-config-required' }),
+    provider('ready', { capabilities: ['coding'], qualityTier: 2, costTier: 1, latencyTier: 1, executionSafety: 'verified' }),
+  ]);
+  const router = new OutcomeAwareProviderRouter({ registry: providers });
+  assert.equal(router.select({ requiredCapabilities: ['coding'] }).id, 'ready');
+  const denied = router.rank({ requiredCapabilities: ['coding'] }).find((entry) => entry.provider.id === 'plan-required');
+  assert.equal(denied.eligible, false);
+  assert.match(denied.reason, /safe plan/i);
+});
+
 test('OutcomeAwareProviderRouter accounts for warm prompt cache and measured code retention', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-router-feedback-'));
   t.after(() => rm(root, { recursive: true, force: true }));

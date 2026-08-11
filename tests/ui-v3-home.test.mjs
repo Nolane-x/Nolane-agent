@@ -49,6 +49,31 @@ test('home composer preserves a distinct deployment key for every provider model
   assert.doesNotMatch(html, /<select\b/);
 });
 
+test('home composer offers only ready provider deployments and disables send until a provider is usable', () => {
+  const html = renderHomeView(buildHomeViewModel({
+    projects: [{ id: 'p1', name: 'Project' }],
+    providers: [
+      { id: 'ready', available: true, authenticated: true, healthy: true },
+      { id: 'login-required', available: true, authenticated: false, healthy: false },
+      { id: 'plan-required', available: true, authenticated: true, healthy: true, executionSafety: 'external-plan-config-required' },
+    ],
+    models: [
+      { providerId: 'ready', modelId: 'safe-model', displayName: 'Safe model' },
+      { providerId: 'login-required', modelId: 'blocked-model', displayName: 'Blocked model' },
+      { providerId: 'plan-required', modelId: 'unsafe-model', displayName: 'Unsafe model' },
+    ],
+  }));
+  const modelMenu = html.match(/data-composer-picker="modelChoice"[\s\S]*?<div id="composer-modelChoice-menu"[\s\S]*?<\/div>/)?.[0] ?? '';
+  assert.match(modelMenu, /data-picker-value="ready\/safe-model"/);
+  assert.doesNotMatch(modelMenu, /login-required\/blocked-model|plan-required\/unsafe-model/);
+
+  const blocked = renderHomeView(buildHomeViewModel({
+    projects: [{ id: 'p1', name: 'Project' }],
+    providers: [{ id: 'login-required', available: true, authenticated: false, healthy: false }],
+  }));
+  assert.match(blocked, /class="composer-submit" type="submit" disabled/);
+});
+
 test('home uses a compact task-first composition instead of an oversized generic hero', async () => {
   const html = renderHomeView(buildHomeViewModel());
   const styles = await readFile(new URL('../ui-v3/styles/pages/home.css', import.meta.url), 'utf8');
@@ -74,6 +99,24 @@ test('home composer sends provider and model separately for the selected deploym
   await controller.load();
   await controller.submit({ objective: 'Plan this', projectId: 'p1', modelChoice: 'codex-app-server/gpt-5.6-sol' });
   assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Plan this', planningProviderId: 'codex-app-server', planningModelId: 'gpt-5.6-sol', deploymentKey: 'codex-app-server/gpt-5.6-sol', mcpAllowedTools: [] }]]);
+});
+
+test('home composer rejects an unavailable selected model before making a mission request', async () => {
+  const calls = [];
+  const api = {
+    async get(path) {
+      if (path === '/api/projects') return [{ id: 'p1', name: 'Project' }];
+      if (path === '/api/provider-connections') return [{ id: 'cline', available: true, authenticated: false, healthy: false }];
+      if (path === '/api/model-profiles') return [{ key: 'cline/claude-sonnet', providerId: 'cline', modelId: 'claude-sonnet', displayName: 'Claude Sonnet' }];
+      return [];
+    },
+    async post(path, body) { calls.push([path, body]); return { id: 'mission-1' }; },
+  };
+  const controller = createHomeController({ api, language: 'vi' });
+  await controller.load();
+  await assert.rejects(() => controller.submit({ objective: 'Lập kế hoạch', projectId: 'p1', modelChoice: 'cline/claude-sonnet' }), /chưa sẵn sàng/);
+  assert.deepEqual(calls, []);
+  assert.equal(controller.snapshot().error, 'Model đã chọn chưa sẵn sàng. Hãy đăng nhập hoặc kiểm tra provider trước khi gửi.');
 });
 
 test('Vietnamese home renders composer labels without leftover English copy', () => {

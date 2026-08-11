@@ -33,6 +33,14 @@ function accountState(result) {
   });
 }
 
+function retainVerifiedCliConnection(previous, next) {
+  const wasVerified = previous?.available === true && previous?.authenticated === true && previous?.healthy === true && previous?.error == null;
+  const explicitAuthenticationFailure = next?.authenticated === false && next?.error !== 'connection-test-required';
+  const stillRunnable = next?.available === true && next?.error !== 'configuration-error';
+  if (!wasVerified || explicitAuthenticationFailure || !stillRunnable) return next;
+  return Object.freeze({ ...next, authenticated: true, healthy: true, error: null });
+}
+
 export class ProviderConnectionService {
   constructor({ store, registry, credentialVault, codexAppServer = null, cliAuthAdapters = {}, fetchImpl = fetch, clock = () => new Date().toISOString(), modelProfiles = null, modelDiscovery = null, modelProbes = null } = {}) {
     if (!store?.listProviderConfigs || !registry?.upsert || !credentialVault?.set) throw new TypeError('store, registry, and credentialVault are required');
@@ -148,6 +156,9 @@ export class ProviderConnectionService {
 
   async test(id) {
     const cleanId = providerId(id); const provider = this.registry.get(cleanId);
+    if (provider.publicView?.().executionSafety === 'external-plan-config-required') {
+      throw Object.assign(new Error(`${cleanId} requires an externally configured safe plan policy`), { statusCode: 409, code: 'safe_plan_configuration_required' });
+    }
     try {
       const result = await provider.complete({ messages: [{ role: 'user', content: 'Reply with exactly OK.' }], tools: [] });
       const detection = this.registry.setDetection(cleanId, { ...provider.publicView(), available: true, authenticated: true, healthy: true, error: null, lastTestedAt: this.clock() });
@@ -167,7 +178,11 @@ export class ProviderConnectionService {
     if (this.codexAppServer && this.registry.list().some((item) => item.id === 'codex-app-server')) await this.#refreshCodex();
     for (const [id, adapter] of Object.entries(this.cliAuthAdapters)) {
       if (!this.registry.list().some((item) => item.id === id)) continue;
-      try { const status = await adapter.status(); const provider = this.registry.get(id); this.registry.setDetection(id, { ...provider.publicView(), ...status }); }
+      try {
+        const status = await adapter.status(); const provider = this.registry.get(id);
+        const detection = retainVerifiedCliConnection(this.registry.detection(id), { ...provider.publicView(), ...status });
+        this.registry.setDetection(id, detection);
+      }
       catch (error) { const provider = this.registry.get(id); this.registry.setDetection(id, { ...provider.publicView(), available: false, authenticated: false, healthy: false, error: safeError(error) }); }
     }
     if (apiProviders) {
@@ -182,8 +197,10 @@ export class ProviderConnectionService {
     for (const provider of this.registry.list()) {
       if (handled.has(provider.id) || this.registry.detection(provider.id)) continue;
       try {
+        const previous = this.registry.detection(provider.id);
         const detected = await (provider.detect?.() ?? { ...provider.publicView(), available: true });
-        this.registry.setDetection(provider.id, { ...provider.publicView(), ...detected, authenticated: false, healthy: false, error: detected.error ?? (detected.available === false ? 'not-installed' : 'connection-test-required') });
+        const candidate = { ...provider.publicView(), ...detected, authenticated: false, healthy: false, error: detected.error ?? (detected.available === false ? 'not-installed' : 'connection-test-required') };
+        this.registry.setDetection(provider.id, retainVerifiedCliConnection(previous, candidate));
       } catch (error) {
         this.registry.setDetection(provider.id, { ...provider.publicView(), available: false, authenticated: false, healthy: false, error: safeError(error) });
       }
@@ -305,7 +322,7 @@ export class ProviderConnectionService {
     const needed = new Set(requiredCapabilities.map(String));
     const candidates = this.registry.publicView().map((view) => ({
       ...view,
-      eligible: view.available === true && view.authenticated === true && view.healthy === true && [...needed].every((capability) => (view.capabilities ?? []).includes(capability)),
+      eligible: view.executionSafety !== 'external-plan-config-required' && view.available === true && view.authenticated === true && view.healthy === true && [...needed].every((capability) => (view.capabilities ?? []).includes(capability)),
     }));
     const eligible = requested && requested !== 'auto' ? candidates.filter((item) => item.id === requested && item.eligible) : candidates.filter((item) => item.eligible);
     return Object.freeze({ ready: eligible.length > 0, providerId: String(requested ?? 'auto'), requiredCapabilities: Object.freeze([...needed]), readyProviders: Object.freeze(eligible.map((item) => item.id)), providers: Object.freeze(candidates) });

@@ -295,7 +295,17 @@ test('ProviderConnectionService verifies a CLI connection through its governed c
     async detect() { return { id: 'github-copilot', available: true, version: 'test' }; },
     async complete(input) { received = input; return { text: 'OK' }; },
   });
-  const service = new ProviderConnectionService({ store, registry, credentialVault: vault });
+  const service = new ProviderConnectionService({
+    store,
+    registry,
+    credentialVault: vault,
+    cliAuthAdapters: {
+      'github-copilot': {
+        loginArgs: {},
+        async status() { return { available: true, authenticated: false, healthy: false, error: 'connection-test-required' }; },
+      },
+    },
+  });
   await service.refreshAll({ apiProviders: false });
 
   const verified = await service.test('github-copilot');
@@ -304,6 +314,31 @@ test('ProviderConnectionService verifies a CLI connection through its governed c
   assert.match(received.messages.at(-1).content, /Reply with exactly OK/);
   assert.equal(verified.healthy, true);
   assert.equal(registry.detection('github-copilot').authenticated, true);
+  await service.refreshAll({ apiProviders: false });
+  assert.equal(registry.detection('github-copilot').healthy, true);
+  assert.equal(registry.detection('github-copilot').error, null);
+});
+
+test('ProviderConnectionService refuses a CLI until its external plan policy is configured', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-cli-plan-'));
+  const store = new StudioStore(path.join(root, 'studio.db'));
+  const vault = new CredentialVault({ backend: new MemoryCredentialBackend() });
+  t.after(() => store.close());
+  t.after(() => vault.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const registry = new ProviderRegistry();
+  let invoked = false;
+  registry.register({
+    id: 'aider',
+    publicView: () => ({ id: 'aider', kind: 'cli', label: 'Aider', executionSafety: 'external-plan-config-required', capabilities: ['coding'] }),
+    async complete() { invoked = true; return { text: 'unexpected' }; },
+  });
+  registry.setDetection('aider', { available: true, authenticated: true, healthy: true, error: null });
+  const service = new ProviderConnectionService({ store, registry, credentialVault: vault });
+
+  assert.equal(service.readiness({ providerId: 'aider', requiredCapabilities: ['coding'] }).ready, false);
+  await assert.rejects(() => service.test('aider'), (error) => error?.code === 'safe_plan_configuration_required');
+  assert.equal(invoked, false);
 });
 
 test('ProviderConnectionService permits a keyless loopback OpenAI-compatible endpoint', async (t) => {

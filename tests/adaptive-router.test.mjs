@@ -110,3 +110,20 @@ test('AdaptiveProviderRouter excludes installed providers that are not authentic
   assert.match(denied.reason, /authentication/i);
   assert.throws(() => router.select({ providerId: 'logged-out' }), /authentication/i);
 });
+
+test('AdaptiveProviderRouter excludes a CLI whose safe plan policy is not configured', () => {
+  const values = [
+    provider('plan-required', { capabilities: ['coding'], qualityTier: 9, executionSafety: 'external-plan-config-required' }),
+    provider('ready', { capabilities: ['coding'], qualityTier: 2, executionSafety: 'verified' }),
+  ];
+  const detections = new Map([
+    ['plan-required', { available: true, authenticated: true, healthy: true }],
+    ['ready', { available: true, authenticated: true, healthy: true }],
+  ]);
+  const providerRegistry = { ...registry(values), detection: (id) => detections.get(id) ?? null };
+  const router = new AdaptiveProviderRouter({ registry: providerRegistry });
+  assert.equal(router.select({ requiredCapabilities: ['coding'] }).id, 'ready');
+  const denied = router.rank({ requiredCapabilities: ['coding'] }).find((entry) => entry.provider.id === 'plan-required');
+  assert.equal(denied.eligible, false);
+  assert.match(denied.reason, /safe plan/i);
+});
