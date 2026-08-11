@@ -1,6 +1,6 @@
-import { icon } from '../../core/icon.mjs';
-import { t } from '../../core/i18n.mjs';
-import { renderProjectPicker } from '../../shell/project-picker.mjs';
+import { icon } from '../../core/icon.ae3c70f6c31b.mjs';
+import { t } from '../../core/i18n.ef23b306ea15.mjs';
+import { renderProjectPicker } from '../../shell/project-picker.af5775f9d393.mjs';
 
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[character]);
 const arr = (payload, keys = []) => { if (Array.isArray(payload)) return payload; for (const key of keys) if (Array.isArray(payload?.[key])) return payload[key]; return []; };

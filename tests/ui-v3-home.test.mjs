@@ -246,6 +246,16 @@ test('composer finds skills and commands beyond the compact unfiltered menu', ()
   assert.match(command, /Needle command/);
 });
 
+test('composer context search recognizes skills and plugins by their type', () => {
+  const skills = [{ id: 'forge-reference', name: 'Repository reference', source: 'ForgeOS' }];
+  const plugins = [{ id: 'semantic-index', name: 'Semantic index', state: 'installed' }];
+  const skillMenu = renderHomeView(buildHomeViewModel({ menu: { type: 'context', query: 'skill' }, skills }));
+  const pluginMenu = renderHomeView(buildHomeViewModel({ menu: { type: 'context', query: 'plugin' }, plugins }));
+
+  assert.match(skillMenu, /Repository reference/);
+  assert.match(pluginMenu, /Semantic index/);
+});
+
 test('composer project creation event is wired to the desktop picker', async () => {
   const source = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
   assert.match(source, /addEventListener\('nolane:project-create-requested',\s*requestProjectCreation\)/);
