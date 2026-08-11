@@ -12,6 +12,8 @@ if (config.nsis?.deleteAppDataOnUninstall !== false) failures.push('user-data-de
 if (config.nsis?.differentialPackage !== true) failures.push('differential-package-disabled');
 if (config.win?.electronUpdaterCompatibility !== '>=2.16') failures.push('updater-compatibility-missing');
 if (!Array.isArray(config.win?.target) || config.win.target[0]?.target !== 'nsis') failures.push('nsis-target-missing');
+if (!Array.isArray(config.mac?.target) || !config.mac.target.some((entry) => entry?.target === 'dmg') || !config.mac.target.some((entry) => entry?.target === 'zip')) failures.push('macos-update-targets-missing');
+if (!Array.isArray(config.linux?.target) || !config.linux.target.some((entry) => entry?.target === 'AppImage') || !config.linux.target.some((entry) => entry?.target === 'deb')) failures.push('linux-update-targets-missing');
 for (const required of ['!vendor/nolane_native-agent/**', '!src/nolane_native/**']) if (!config.files?.includes(required)) failures.push(`missing-exclusion:${required}`);
 const installer = await readFile(path.join(root, 'build', 'installer.nsh'), 'utf8');
 if (/delete.*appdata|rmdir.*appdata/i.test(installer)) failures.push('installer-deletes-app-data');

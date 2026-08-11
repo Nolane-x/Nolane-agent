@@ -15,15 +15,25 @@ test('CI workflow runs product validation without publishing or release secrets'
   assert.doesNotMatch(source, /NOLANE_UPDATE_PRIVATE_KEY|WIN_CSC|gh release create/);
 });
 
-test('release workflow builds a Windows NSIS installer, signs Nolane manifest, attests artifacts, and publishes GitHub Release assets', async () => {
+test('release workflow builds native Windows, macOS, and Linux artifacts, signs the Windows update manifest, attests artifacts, and publishes one GitHub Release', async () => {
   const source = await read('.github/workflows/release.yml');
   assert.match(source, /tags:\s*\n\s*- ['"]v\*['"]/);
   assert.match(source, /runs-on: windows-latest/);
+  assert.match(source, /macos-release:/);
+  assert.match(source, /runs-on: macos-latest/);
+  assert.match(source, /linux-release:/);
+  assert.match(source, /runs-on: ubuntu-latest/);
   assert.match(source, /contents: write/);
   assert.match(source, /id-token: write/);
   assert.match(source, /attestations: write/);
   assert.match(source, /electron-builder@26\.15\.3/);
   assert.match(source, /npm run build:electron:installer/);
+  assert.match(source, /NOLANE_ELECTRON_TARGET: mac/);
+  assert.match(source, /NOLANE_ELECTRON_TARGET: linux/);
+  assert.match(source, /NolaneAgent-\*\.dmg/);
+  assert.match(source, /NolaneAgent-\*\.AppImage/);
+  assert.match(source, /NolaneAgent-\*\.deb/);
+  assert.match(source, /actions\/download-artifact@v4/);
   assert.match(source, /NOLANE_UPDATE_PRIVATE_KEY_B64/);
   assert.match(source, /nolane\.agent\.update\.v2/);
   assert.match(source, /--package-kind nsis/);

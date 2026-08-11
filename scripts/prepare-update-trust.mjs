@@ -8,7 +8,7 @@ import { requireRepository } from '../src/update/github-release-policy.mjs';
 
 const CHANNELS = new Set(['alpha', 'beta', 'stable', 'nightly']);
 
-export async function prepareUpdateTrust({ privateKeyPath, outputDirectory = 'config', repository, channel = 'stable' } = {}) {
+export async function prepareUpdateTrust({ privateKeyPath, outputDirectory = 'config', repository, channel = 'stable', enabled = true } = {}) {
   const selectedRepository = requireRepository(repository);
   const selectedChannel = String(channel);
   if (!CHANNELS.has(selectedChannel)) throw new TypeError('Unsupported update channel');
@@ -22,7 +22,7 @@ export async function prepareUpdateTrust({ privateKeyPath, outputDirectory = 'co
   const publicPem = createPublicKey(privateKey).export({ type: 'spki', format: 'pem' });
   const endpoint = `https://raw.githubusercontent.com/${selectedRepository}/update-feed/feeds/${selectedChannel}/nolane-agent-update-${selectedChannel}.json`;
   await writeFile(publicKeyPath, publicPem, { mode: 0o644 });
-  await writeFile(configPath, `${JSON.stringify({ schema: 'nolane.agent.update-config.v1', enabled: true, repository: selectedRepository, channel: selectedChannel, endpoint, publicKeyFile: path.basename(publicKeyPath) }, null, 2)}\n`, { mode: 0o644 });
+  await writeFile(configPath, `${JSON.stringify({ schema: 'nolane.agent.update-config.v1', enabled: Boolean(enabled), repository: selectedRepository, channel: selectedChannel, endpoint, publicKeyFile: path.basename(publicKeyPath) }, null, 2)}\n`, { mode: 0o644 });
   return Object.freeze({ publicKeyPath, configPath, repository: selectedRepository, channel: selectedChannel, endpoint });
 }
 
@@ -39,7 +39,7 @@ function parseFlags(argv) {
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isMain) {
   const flags = parseFlags(process.argv.slice(2));
-  prepareUpdateTrust({ privateKeyPath: flags.get('private-key'), outputDirectory: flags.get('output') ?? 'config', repository: flags.get('repository'), channel: flags.get('channel') ?? 'stable' })
+  prepareUpdateTrust({ privateKeyPath: flags.get('private-key'), outputDirectory: flags.get('output') ?? 'config', repository: flags.get('repository'), channel: flags.get('channel') ?? 'stable', enabled: flags.get('enabled') !== 'false' })
     .then((result) => process.stdout.write(`${JSON.stringify({ status: 'pass', ...result })}\n`))
     .catch((error) => { console.error(error.message); process.exitCode = 1; });
 }

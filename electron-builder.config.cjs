@@ -73,5 +73,15 @@ module.exports = {
     packElevateHelper: true,
     include: path.join(__dirname, 'build', 'installer.nsh'),
   },
+  mac: {
+    target: [{ target: 'dmg', arch: ['x64'] }, { target: 'zip', arch: ['x64'] }],
+    artifactName: 'NolaneAgent-${version}-${arch}.${ext}',
+    category: 'public.app-category.developer-tools',
+  },
+  linux: {
+    target: [{ target: 'AppImage', arch: ['x64'] }, { target: 'deb', arch: ['x64'] }],
+    artifactName: 'NolaneAgent-${version}-${arch}.${ext}',
+    category: 'Development',
+  },
   publish: [{ provider: 'github', owner, repo, channel: '${channel}', releaseType: 'draft' }],
 };

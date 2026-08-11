@@ -25,7 +25,152 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  macos-release:
+    runs-on: macos-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+
+      - name: Require Nolane update signing key
+        env:
+          NOLANE_UPDATE_PRIVATE_KEY_B64: ${{ secrets.NOLANE_UPDATE_PRIVATE_KEY_B64 }}
+        run: |
+          test -n "$NOLANE_UPDATE_PRIVATE_KEY_B64" || { echo 'NOLANE_UPDATE_PRIVATE_KEY_B64 is required; release signing fails closed.' >&2; exit 1; }
+
+      - name: Verify immutable tag and commit
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        run: node scripts/verify-release-tag.mjs
+
+      - name: Install locked source dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build the macOS PTY helper
+        run: |
+          cd native/pty
+          go build -trimpath -o NolanePty .
+
+      - name: Install exact Electron release toolchain
+        run: npm install --no-save --package-lock=false electron-builder@26.15.3
+
+      - name: Prepare packaged update trust without an unsupported native installer
+        env:
+          NOLANE_UPDATE_PRIVATE_KEY_B64: ${{ secrets.NOLANE_UPDATE_PRIVATE_KEY_B64 }}
+        run: |
+          key_path="$RUNNER_TEMP/nolane-update-private.pem"
+          NOLANE_UPDATE_PRIVATE_KEY_PATH="$key_path" node -e "require('node:fs').writeFileSync(process.env.NOLANE_UPDATE_PRIVATE_KEY_PATH, Buffer.from(process.env.NOLANE_UPDATE_PRIVATE_KEY_B64, 'base64'))"
+          channel=stable
+          case "$(node -p "require('./package.json').version")" in *-*) channel=beta;; esac
+          node scripts/prepare-update-trust.mjs --private-key "$key_path" --output config --repository "${{ github.repository }}" --channel "$channel" --enabled false
+          rm -f "$key_path"
+
+      - name: Verify installer configuration
+        run: npm run verify:electron-installer
+
+      - name: Build macOS DMG and ZIP release artifacts
+        env:
+          NOLANE_ELECTRON_TARGET: mac
+          CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
+        run: npm run build:electron:installer
+
+      - name: Upload macOS release assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: nolane-agent-macos-release-assets
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            release/installer/NolaneAgent-*.dmg
+            release/installer/NolaneAgent-*.zip
+            release/installer/*.blockmap
+            release/installer/latest-mac.yml
+
+  linux-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+
+      - name: Require Nolane update signing key
+        env:
+          NOLANE_UPDATE_PRIVATE_KEY_B64: ${{ secrets.NOLANE_UPDATE_PRIVATE_KEY_B64 }}
+        run: |
+          test -n "$NOLANE_UPDATE_PRIVATE_KEY_B64" || { echo 'NOLANE_UPDATE_PRIVATE_KEY_B64 is required; release signing fails closed.' >&2; exit 1; }
+
+      - name: Verify immutable tag and commit
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        run: node scripts/verify-release-tag.mjs
+
+      - name: Install locked source dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build the Linux PTY helper
+        run: |
+          cd native/pty
+          go build -trimpath -o NolanePty .
+
+      - name: Install exact Electron release toolchain
+        run: npm install --no-save --package-lock=false electron-builder@26.15.3
+
+      - name: Prepare packaged update trust without an unsupported native installer
+        env:
+          NOLANE_UPDATE_PRIVATE_KEY_B64: ${{ secrets.NOLANE_UPDATE_PRIVATE_KEY_B64 }}
+        run: |
+          key_path="$RUNNER_TEMP/nolane-update-private.pem"
+          NOLANE_UPDATE_PRIVATE_KEY_PATH="$key_path" node -e "require('node:fs').writeFileSync(process.env.NOLANE_UPDATE_PRIVATE_KEY_PATH, Buffer.from(process.env.NOLANE_UPDATE_PRIVATE_KEY_B64, 'base64'))"
+          channel=stable
+          case "$(node -p "require('./package.json').version")" in *-*) channel=beta;; esac
+          node scripts/prepare-update-trust.mjs --private-key "$key_path" --output config --repository "${{ github.repository }}" --channel "$channel" --enabled false
+          rm -f "$key_path"
+
+      - name: Verify installer configuration
+        run: npm run verify:electron-installer
+
+      - name: Build Linux AppImage and Debian release artifacts
+        env:
+          NOLANE_ELECTRON_TARGET: linux
+        run: npm run build:electron:installer
+
+      - name: Upload Linux release assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: nolane-agent-linux-release-assets
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            release/installer/NolaneAgent-*.AppImage
+            release/installer/NolaneAgent-*.deb
+            release/installer/*.blockmap
+            release/installer/latest-linux.yml
+
   windows-release:
+    needs: [macos-release, linux-release]
     runs-on: windows-latest
     timeout-minutes: 180
     steps:
@@ -107,6 +252,13 @@ jobs:
           NOLANE_WINDOWS_PUBLISHER: ${{ vars.NOLANE_WINDOWS_PUBLISHER }}
         run: npm run build:electron:installer
 
+      - name: Collect native macOS and Linux release assets
+        uses: actions/download-artifact@v4
+        with:
+          pattern: nolane-agent-*-release-assets
+          path: release/installer
+          merge-multiple: true
+
       - name: Prepare release asset paths
         id: release_identity
         shell: pwsh
@@ -143,7 +295,7 @@ jobs:
         shell: pwsh
         run: |
           $files = @()
-          $files += Get-ChildItem release/installer -File | Where-Object { $_.Extension -in '.exe','.blockmap','.yml' }
+          $files += Get-ChildItem release/installer -File | Where-Object { $_.Extension -in '.exe','.dmg','.zip','.AppImage','.deb','.blockmap','.yml' }
           $files += Get-Item "${{ steps.release_identity.outputs.manifest_path }}"
           $files += Get-Item "${{ steps.release_identity.outputs.matrix_md }}"
           $files += Get-Item "${{ steps.release_identity.outputs.matrix_json }}"
@@ -155,6 +307,10 @@ jobs:
         with:
           subject-path: |
             release/installer/NolaneAgent-Setup-*.exe
+            release/installer/NolaneAgent-*.dmg
+            release/installer/NolaneAgent-*.zip
+            release/installer/NolaneAgent-*.AppImage
+            release/installer/NolaneAgent-*.deb
             release/installer/*.blockmap
             release/installer/*.yml
             release/github/*.json
@@ -170,6 +326,10 @@ jobs:
           retention-days: 30
           path: |
             release/installer/NolaneAgent-Setup-*.exe
+            release/installer/NolaneAgent-*.dmg
+            release/installer/NolaneAgent-*.zip
+            release/installer/NolaneAgent-*.AppImage
+            release/installer/NolaneAgent-*.deb
             release/installer/*.blockmap
             release/installer/*.yml
             release/github/*.json
@@ -184,7 +344,7 @@ jobs:
         run: |
           $package = Get-Content package.json -Raw | ConvertFrom-Json
           $assets = @()
-          $assets += Get-ChildItem release/installer -File | Where-Object { $_.Extension -in '.exe','.blockmap','.yml' } | ForEach-Object { $_.FullName }
+          $assets += Get-ChildItem release/installer -File | Where-Object { $_.Extension -in '.exe','.dmg','.zip','.AppImage','.deb','.blockmap','.yml' } | ForEach-Object { $_.FullName }
           $assets += (Get-Item "${{ steps.release_identity.outputs.manifest_path }}").FullName
           $assets += (Get-Item "${{ steps.release_identity.outputs.matrix_md }}").FullName
           $assets += (Get-Item "${{ steps.release_identity.outputs.matrix_json }}").FullName

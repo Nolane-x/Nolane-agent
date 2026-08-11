@@ -59,7 +59,7 @@ npm run verify:checkpoint-13-progressive-experience
 npm run verify:checkpoint-14-foundation
 ```
 
-Windows installer and signed update artifacts are produced by the tag-triggered GitHub Actions release workflow. `config/update.json` and the production update public key are generated during release preparation; packaging declarations do not make them normal source-controlled trust inputs.
+The tag-triggered GitHub Actions release workflow builds native x64 artifacts on all three desktop runners: Windows NSIS, macOS DMG+ZIP, and Linux AppImage+DEB. It aggregates their checksums and provenance into one GitHub Release. `config/update.json` and the production update public key are generated during release preparation; packaging declarations do not make them normal source-controlled trust inputs. The signed in-app installer handoff is currently enabled only for Windows NSIS: macOS and Linux packages deliberately ship with it disabled until each platform has a native, verified installation handoff rather than receiving a Windows installer.
 
 ## Evidence limits
 
