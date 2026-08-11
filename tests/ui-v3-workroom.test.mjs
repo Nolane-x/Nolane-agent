@@ -84,6 +84,7 @@ test('Workroom opens the governed terminal socket only from an explicit terminal
   assert.match(source, /request\('input', \{ sessionId: current\.id, data:/);
   assert.match(source, /request\('terminate', \{ sessionId: current\.id \}\)/);
   assert.match(source, /\/api\/git\/status\?projectId=/);
+  assert.match(source, /model\.setFile\(await api\.get\(`\/api\/workroom\/file[\s\S]{0,320}await loadGitStatus\(\);/);
 });
 
 test('Workroom terminal inherits the configured application color tokens', async () => {
