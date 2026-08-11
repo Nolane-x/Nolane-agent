@@ -144,7 +144,7 @@ test('ProviderRegistry exposes secret-free public views and built-in official CL
   assert.doesNotMatch(publicJson, /super-secret|API_KEY/);
 
   const builtIns = createBuiltInCliProviders();
-  assert.deepEqual([...builtIns].map((item) => item.id), ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'qwen-code', 'continue-cli']);
+  assert.deepEqual([...builtIns].map((item) => item.id), ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'qwen-code', 'continue-cli', 'cline', 'mistral-vibe-code', 'aider', 'goose']);
   assert.ok([...builtIns].every((item) => item.credentialOwner === 'official-cli'));
   assert.ok(builtIns.filter((item) => ['codex', 'claude', 'gemini'].includes(item.id)).every((item) => item.profile.capabilities.includes('governed-actions')));
   assert.ok(builtIns.find((item) => item.id === 'codex').baseArgs.includes('read-only'));
@@ -176,6 +176,31 @@ test('ProviderRegistry exposes secret-free public views and built-in official CL
   assert.ok(continueCli.baseArgs.includes('Write'));
   assert.ok(continueCli.baseArgs.includes('Edit'));
   assert.ok(continueCli.baseArgs.includes('Bash'));
+  const cline = builtIns.find((item) => item.id === 'cline');
+  assert.equal(cline.publicView().executionSafety, 'verified');
+  assert.equal(cline.modelFlag, '-m');
+  assert.ok(cline.baseArgs.includes('--plan'));
+  assert.ok(cline.baseArgs.includes('--auto-approve'));
+  assert.ok(cline.baseArgs.includes('false'));
+  assert.ok(cline.profile.capabilities.includes('governed-actions'));
+  const vibe = builtIns.find((item) => item.id === 'mistral-vibe-code');
+  assert.equal(vibe.publicView().executionSafety, 'verified');
+  assert.equal(vibe.modelFlag, null);
+  assert.equal(vibe.publicView().modelSelection.mode, 'cli-config');
+  assert.ok(vibe.baseArgs.includes('plan'));
+  assert.equal(vibe.promptFlag, '--prompt');
+  const aider = builtIns.find((item) => item.id === 'aider');
+  assert.equal(aider.publicView().executionSafety, 'external-plan-config-required');
+  assert.equal(aider.modelFlag, '--model');
+  assert.ok(aider.baseArgs.includes('--no-auto-commits'));
+  assert.equal(aider.profile.capabilities.includes('governed-actions'), false);
+  const goose = builtIns.find((item) => item.id === 'goose');
+  assert.equal(goose.publicView().executionSafety, 'external-plan-config-required');
+  assert.equal(goose.modelFlag, null);
+  assert.equal(goose.publicView().modelSelection.mode, 'cli-config');
+  assert.ok(goose.baseArgs.includes('--no-session'));
+  assert.ok(goose.baseArgs.includes('json'));
+  assert.equal(goose.profile.capabilities.includes('governed-actions'), false);
 });
 
 test('CliProvider forwards an explicitly selected model before the prompt sentinel', async (t) => {

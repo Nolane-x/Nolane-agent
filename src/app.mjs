@@ -430,6 +430,14 @@ const providerConnections = new ProviderConnectionService({
       loginArgs: { github: ['login'] },
       cwd: path.join(providerSandboxRoot, 'github-copilot'),
     }),
+    cline: createAvailabilityOnlyCliAuthAdapter({
+      id: 'cline',
+      label: 'Cline CLI',
+      executable: 'cline',
+      statusArgs: ['--version'],
+      loginArgs: { provider: ['auth'] },
+      cwd: path.join(providerSandboxRoot, 'cline'),
+    }),
   },
 });
 await providerConnections.load();
