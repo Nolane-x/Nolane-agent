@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { createWorkroomModel, renderWorkroomView } from '../ui-v3/views/workroom/workroom-view.mjs';
 import { createFileTreeModel } from '../ui-v3/views/workroom/file-tree.mjs';
 import { createEditorHost } from '../ui-v3/views/workroom/editor-host.mjs';
@@ -43,6 +44,32 @@ test('Workroom diff and preview tabs are bounded and use the selected draft', ()
   assert.match(diff, /new/);
   model.setTab('preview');
   assert.match(renderWorkroomView(model.snapshot()), /<div class="workroom-preview">[\s\S]*new/);
+});
+
+test('Workroom renders a bounded, interactive terminal surface after a local session opens', () => {
+  const model = createWorkroomModel({ projectId: 'p1' });
+  model.setTerminal({ id: 'terminal-1', title: 'pwsh', status: 'connected' });
+  model.setAgentTab('terminal');
+  model.appendTerminalOutput('PS C:\\work> ');
+  const html = renderWorkroomView(model.snapshot());
+  assert.match(html, /data-workroom-agent-tab="terminal"/);
+  assert.match(html, /data-workroom-terminal-output/);
+  assert.match(html, /PS C:\\work&gt; /);
+  assert.match(html, /data-workroom-terminal-form/);
+});
+
+test('Workroom opens the governed terminal socket only from an explicit terminal action', async () => {
+  const source = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
+  assert.match(source, /createTerminalClient/);
+  assert.match(source, /request\('create', \{ projectId: project\.id, shell, cwd: '\.'[,}]?/);
+  assert.match(source, /request\('input', \{ sessionId: current\.id, data:/);
+  assert.match(source, /request\('terminate', \{ sessionId: current\.id \}\)/);
+});
+
+test('Workroom terminal inherits the configured application color tokens', async () => {
+  const css = await readFile(new URL('../ui-v3/styles/pages/workroom-terminal.css', import.meta.url), 'utf8');
+  assert.match(css, /\.workroom-terminal pre\{[^}]*background:var\(--surface-canvas\);color:var\(--text-primary\)/);
+  assert.doesNotMatch(css, /#[0-9a-f]{3,8}\b/i);
 });
 
 test('file tree windows large repositories and preserves keyed nodes', () => {

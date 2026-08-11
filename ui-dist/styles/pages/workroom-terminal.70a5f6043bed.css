@@ -1,0 +1,11 @@
+.workroom-agent__body>button{margin-top:4px;min-height:31px;padding:0 10px;border:1px solid color-mix(in srgb,var(--accent) 28%,var(--border-subtle));border-radius:9px;background:var(--accent-soft);color:var(--accent-strong);font-size:9px}
+.workroom-terminal{display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-height:0;background:var(--surface-canvas)}
+.workroom-terminal>header{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:8px 10px;border-bottom:1px solid var(--border-faint);background:var(--surface-panel)}
+.workroom-terminal>header div{display:grid;min-width:0;gap:2px}.workroom-terminal>header strong,.workroom-terminal>header small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.workroom-terminal>header strong{font:600 9px var(--font-code)}.workroom-terminal>header small{color:var(--text-muted);font-size:8px}
+.workroom-terminal>header button{min-height:26px;padding:0 7px;border:1px solid var(--border-subtle);border-radius:7px;background:var(--surface-raised);color:var(--text-secondary);font-size:8px}
+.workroom-terminal>header button:hover{border-color:color-mix(in srgb,var(--nolane-danger) 38%,var(--border-subtle));color:var(--nolane-danger-soft)}
+.workroom-terminal pre{min-height:0;margin:0;padding:10px;overflow:auto;background:var(--surface-canvas);color:var(--text-primary);font:10px/1.55 var(--font-code);white-space:pre-wrap;word-break:break-word}
+.workroom-terminal form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;padding:7px;border-top:1px solid var(--border-faint);background:var(--surface-panel)}
+.workroom-terminal input{min-width:0;min-height:29px;padding:0 8px;border:1px solid var(--border-subtle);border-radius:7px;outline:0;background:var(--surface-raised);color:var(--text-primary);font:9px var(--font-code)}
+.workroom-terminal input:focus{border-color:color-mix(in srgb,var(--accent) 52%,var(--border-default));box-shadow:0 0 0 2px var(--accent-soft)}
+.workroom-terminal form button{min-width:46px;border:0;border-radius:7px;background:var(--accent);color:var(--text-inverse);font-size:8px}.workroom-terminal form button:disabled{opacity:.45;cursor:not-allowed}
