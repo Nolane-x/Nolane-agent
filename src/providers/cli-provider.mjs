@@ -69,6 +69,12 @@ function estimateTokens(value) {
   return Math.max(1, Math.min(10_000_000, Math.ceil(bytes / 4)));
 }
 
+function isNonAssistantCompletedEvent(item) {
+  if (item?.type !== 'item.completed') return false;
+  const type = String(item?.item?.type ?? '').toLowerCase();
+  return !['agent_message', 'assistant', 'assistant_message', 'message'].includes(type);
+}
+
 const WINDOWS_EXECUTABLE_EXTENSIONS = new Set(['.exe', '.com']);
 
 function execFileText(command, args, options = {}) {
@@ -205,6 +211,7 @@ export class CliProvider {
     for (const line of lines) {
       try {
         const item = JSON.parse(line);
+        if (isNonAssistantCompletedEvent(item)) continue;
         const candidate = item.result ?? item.response ?? item.text ?? item.output ?? item.message?.content ?? item.item?.text ?? item.item?.content;
         if (typeof candidate === 'string') outputText = candidate;
         else if (item.type === 'item.completed' && typeof item.item?.text === 'string') outputText = item.item.text;

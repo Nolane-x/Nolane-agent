@@ -46,6 +46,20 @@ test('CliProvider detects versions and invokes through argv/stdin without a shel
   assert.deepEqual(completion.toolCalls, []);
 });
 
+test('CliProvider keeps a completed Codex agent message when a later tool event reports an error', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-codex-events-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const script = path.join(root, 'codex-events.mjs');
+  await writeFile(script, `
+    console.log(JSON.stringify({ type: 'thread.started', thread_id: 'thread-1' }));
+    console.log(JSON.stringify({ type: 'agent_message', text: 'NOLANE_PROVIDER_OK' }));
+    console.log(JSON.stringify({ type: 'item.completed', item: { type: 'error', content: 'sandbox helper unavailable' } }));
+  `);
+  const provider = new CliProvider({ id: 'codex-events', label: 'Codex events', executable: process.execPath, baseArgs: [script], promptMode: 'stdin' });
+  const completion = await provider.complete({ messages: [{ role: 'user', content: 'Ping' }] });
+  assert.equal(completion.text, 'NOLANE_PROVIDER_OK');
+});
+
 test('CliProvider classifies a non-zero CLI configuration failure without exposing diagnostics', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-config-'));
   t.after(() => rm(root, { recursive: true, force: true }));
