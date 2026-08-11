@@ -1736,6 +1736,11 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
         account: body.account, headers: body.headers, testConnection: body.testConnection !== false,
       }));
     }
+    if (method === 'POST' && pathname === '/api/provider-connections/select-model') {
+      if (!providerConnections?.selectApiModel) throw Object.assign(new Error('API model selection is not configured'), { statusCode: 503 });
+      const body = await readJson(req, 128 * 1024);
+      return json(res, 200, await providerConnections.selectApiModel(body.providerId, { modelId: body.modelId, testConnection: body.testConnection !== false }));
+    }
     const providerDelete = pathname.match(/^\/api\/provider-connections\/([^/]+)$/);
     if (method === 'DELETE' && providerDelete) {
       if (!providerConnections) throw Object.assign(new Error('Provider connection service is not configured'), { statusCode: 503 });

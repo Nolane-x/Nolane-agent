@@ -13,6 +13,7 @@ const DEFAULTS = Object.freeze({
 });
 
 function required(value, label) { const text = String(value ?? '').trim(); if (!text) throw new TypeError(`${label} is required`); return text; }
+function optional(value) { const text = String(value ?? '').trim(); return text || null; }
 function providerId(value) { const text = required(value, 'provider id'); if (!ID.test(text)) throw new TypeError('provider id is invalid'); return text; }
 function safeError(error) { return String(error?.message ?? error).replace(/(?:sk|key|token)-[A-Za-z0-9._-]+/gi, '[REDACTED]').slice(0, 300); }
 function isLoopback(hostname) { return ['localhost', '127.0.0.1', '::1'].includes(hostname); }
@@ -54,9 +55,39 @@ export class ProviderConnectionService {
     throw new TypeError(`Unsupported provider kind: ${record.kind}`);
   }
 
+  #pendingConnection(record) {
+    const config = record?.config ?? {};
+    const defaults = DEFAULTS[record.kind] ?? {};
+    const authenticated = record.kind === 'openai-compatible' || Boolean(config.vaultRef);
+    return Object.freeze({
+      id: record.id,
+      kind: record.kind,
+      label: defaults.label ?? record.id,
+      baseUrl: config.baseUrl ?? defaults.baseUrl ?? null,
+      configured: true,
+      available: true,
+      authenticated,
+      healthy: false,
+      error: authenticated ? 'model-selection-required' : 'credential-missing',
+      capabilities: Object.freeze(['coding', 'tool-calling', 'governed-actions']),
+      modelDiscovery: Object.freeze({ supported: true, mode: 'api', live: true }),
+      config: Object.freeze({ model: null, baseUrl: config.baseUrl ?? null, lastTestStatus: null, lastTestedAt: null }),
+    });
+  }
+
+  #codexCliCatalog(catalog) {
+    const models = (catalog?.models ?? []).map((model) => Object.freeze({
+      ...model,
+      providerId: 'codex',
+      source: Object.freeze({ ...(model?.source ?? {}), type: 'codex-app-server-account-catalog', live: true }),
+    }));
+    return Object.freeze({ ...catalog, providerId: 'codex', models: Object.freeze(models) });
+  }
+
   async load() {
     for (const record of this.store.listProviderConfigs()) {
       if (!API_KINDS.has(record.kind)) continue;
+      if (!optional(record.config?.model)) continue;
       try {
         const provider = this.#factory(record); this.registry.upsert(provider);
         const present = record.config?.vaultRef ? Boolean(await this.credentialVault.resolve(record.config.vaultRef)) : record.kind === 'openai-compatible';
@@ -73,7 +104,7 @@ export class ProviderConnectionService {
 
   async configureApi({ id, kind, model, baseUrl = undefined, apiKey = undefined, account = 'default', headers = {}, testConnection = true } = {}) {
     const cleanKind = required(kind, 'provider kind'); if (!API_KINDS.has(cleanKind)) throw new TypeError(`Unsupported provider kind: ${cleanKind}`);
-    const cleanId = providerId(id ?? DEFAULTS[cleanKind].id); const cleanModel = required(model, 'model');
+    const cleanId = providerId(id ?? DEFAULTS[cleanKind].id); const cleanModel = optional(model);
     const cleanBaseUrl = endpoint(baseUrl, DEFAULTS[cleanKind].baseUrl);
     const candidateVaultRef = { service: `forge.provider.${cleanId}`, account: required(account, 'account') };
     const key = String(apiKey ?? '');
@@ -82,8 +113,29 @@ export class ProviderConnectionService {
     if (cleanKind !== 'openai-compatible' && !existingCredential) throw new TypeError('apiKey is required');
     const vaultRef = existingCredential ? candidateVaultRef : null;
     const record = this.store.upsertProvider({ id: cleanId, kind: cleanKind, config: { model: cleanModel, baseUrl: cleanBaseUrl, vaultRef, headers: cleanKind === 'openai-compatible' ? headers : {}, lastTestStatus: 'pending', lastTestedAt: null } });
+    if (!cleanModel) {
+      const discovery = await this.discoverModels(cleanId);
+      return Object.freeze({ connection: this.#pendingConnection(record), discovery });
+    }
     const provider = this.#factory(record); this.registry.upsert(provider);
     this.registry.setDetection(cleanId, { ...provider.publicView(), available: true, authenticated: cleanKind === 'openai-compatible' || Boolean(existingCredential), healthy: false, error: 'connection-test-required' });
+    return testConnection ? this.test(cleanId) : this.#connection(cleanId);
+  }
+
+  async selectApiModel(id, { modelId, testConnection = true } = {}) {
+    const cleanId = providerId(id);
+    const record = this.store.getProviderConfig(cleanId);
+    if (!record || !API_KINDS.has(record.kind)) throw Object.assign(new Error(`Provider ${cleanId} is not an API connection`), { statusCode: 400, code: 'api_provider_required' });
+    const cleanModel = required(modelId, 'modelId');
+    const next = this.store.upsertProvider({
+      id: record.id,
+      kind: record.kind,
+      config: { ...record.config, model: cleanModel, lastTestStatus: 'pending', lastTestedAt: null },
+    });
+    const provider = this.#factory(next);
+    this.registry.upsert(provider);
+    const authenticated = record.kind === 'openai-compatible' || Boolean(record.config?.vaultRef && await this.credentialVault.resolve(record.config.vaultRef));
+    this.registry.setDetection(cleanId, { ...provider.publicView(), available: true, authenticated, healthy: false, error: authenticated ? 'connection-test-required' : 'credential-missing' });
     return testConnection ? this.test(cleanId) : this.#connection(cleanId);
   }
 
@@ -131,7 +183,7 @@ export class ProviderConnectionService {
       if (handled.has(provider.id) || this.registry.detection(provider.id)) continue;
       try {
         const detected = await (provider.detect?.() ?? { ...provider.publicView(), available: true });
-        this.registry.setDetection(provider.id, { ...provider.publicView(), ...detected, authenticated: false, healthy: false, error: detected.error ?? (detected.available === false ? 'not-installed' : 'authentication-status-unavailable') });
+        this.registry.setDetection(provider.id, { ...provider.publicView(), ...detected, authenticated: false, healthy: false, error: detected.error ?? (detected.available === false ? 'not-installed' : 'connection-test-required') });
       } catch (error) {
         this.registry.setDetection(provider.id, { ...provider.publicView(), available: false, authenticated: false, healthy: false, error: safeError(error) });
       }
@@ -150,6 +202,10 @@ export class ProviderConnectionService {
         try {
           const catalog = await this.codexAppServer.listModels();
           this.modelProfiles?.mergeDiscovery?.(provider.id, catalog.models ?? []);
+          if (this.registry.list().some((item) => item.id === 'codex')) {
+            const cliCatalog = this.#codexCliCatalog(catalog);
+            this.modelProfiles?.mergeDiscovery?.('codex', cliCatalog.models);
+          }
           modelCatalog = { status: catalog.status ?? 'fresh', modelCount: Array.isArray(catalog.models) ? catalog.models.length : 0, observedAt: catalog.observedAt ?? null, error: null };
         } catch (error) {
           modelCatalog = { status: 'unavailable', modelCount: 0, observedAt: null, error: safeError(error) };
@@ -203,12 +259,17 @@ export class ProviderConnectionService {
 
   async discoverModels(id) {
     const cleanId = providerId(id);
-    const registered = this.registry.get(cleanId);
+    const registered = this.registry.list().find((provider) => provider.id === cleanId) ?? null;
     const registeredKind = registered?.kind ?? registered?.publicView?.().kind;
     if ((cleanId === 'codex-app-server' || registeredKind === 'codex-app-server') && typeof this.codexAppServer?.listModels === 'function') {
       const result = await this.codexAppServer.listModels();
       this.modelProfiles?.mergeDiscovery?.(cleanId, result.models ?? []);
       return Object.freeze({ ...result, profiles: this.modelProfiles?.publicView?.({ providerId: cleanId }) ?? null });
+    }
+    if (cleanId === 'codex' && typeof this.codexAppServer?.listModels === 'function') {
+      const catalog = this.#codexCliCatalog(await this.codexAppServer.listModels());
+      this.modelProfiles?.mergeDiscovery?.('codex', catalog.models);
+      return Object.freeze({ ...catalog, profiles: this.modelProfiles?.publicView?.({ providerId: 'codex' }) ?? null });
     }
     if (registered?.kind === 'cli' && typeof registered.discoverModels === 'function') {
       const result = await registered.discoverModels();
@@ -271,8 +332,11 @@ export class ProviderConnectionService {
 
   list() {
     const actual = this.registry.publicView().map((view) => this.#connection(view.id));
-    const existingKinds = new Set(this.store.listProviderConfigs().map((item) => item.kind));
+    const records = this.store.listProviderConfigs();
+    const actualIds = new Set(actual.map((item) => item.id));
+    const pending = records.filter((record) => API_KINDS.has(record.kind) && !actualIds.has(record.id) && !optional(record.config?.model)).map((record) => this.#pendingConnection(record));
+    const existingKinds = new Set(records.map((item) => item.kind));
     const templates = Object.entries(DEFAULTS).filter(([kind]) => !existingKinds.has(kind)).map(([kind, value]) => Object.freeze({ id: value.id, kind, label: value.label, configured: false, available: true, authenticated: false, healthy: false, baseUrl: value.baseUrl, capabilities: ['coding', 'tool-calling', 'governed-actions'] }));
-    return Object.freeze([...actual, ...templates]);
+    return Object.freeze([...actual, ...pending, ...templates]);
   }
 }

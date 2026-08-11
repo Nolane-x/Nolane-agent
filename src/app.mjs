@@ -397,7 +397,7 @@ const providers = new ProviderRegistry({ executionPool: providerRuntimePool, ses
 const providerSandboxRoot = path.join(config.dataDir, 'provider-sandboxes');
 await mkdir(providerSandboxRoot, { recursive: true });
 const providerOverrides = {};
-for (const id of ['codex', 'claude', 'gemini', 'opencode']) {
+for (const id of ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'qwen-code', 'continue-cli']) {
   const cwd = path.join(providerSandboxRoot, id); await mkdir(cwd, { recursive: true }); providerOverrides[id] = { cwd };
 }
 for (const provider of createBuiltInCliProviders(providerOverrides)) providers.register(provider);
@@ -422,13 +422,22 @@ const providerConnections = new ProviderConnectionService({
       logoutArgs: ['auth', 'logout'],
       cwd: path.join(providerSandboxRoot, 'claude'),
     }),
+    'github-copilot': new CliAuthAdapter({
+      id: 'github-copilot',
+      label: 'GitHub Copilot CLI',
+      executable: 'copilot',
+      statusArgs: ['--version'],
+      statusMode: 'available-only',
+      loginArgs: { github: ['login'] },
+      cwd: path.join(providerSandboxRoot, 'github-copilot'),
+    }),
   },
 });
 await providerConnections.load();
 const providerProfiles = modelProfiles.publicView().models;
 for (const connection of providerConnections.list()) {
-  const hasExactModel = connection.kind === 'codex-app-server' && providerProfiles.some((profile) => profile.providerId === connection.id);
-  const modelId = connection.config?.model ?? (connection.kind === 'cli' || (connection.kind === 'codex-app-server' && !hasExactModel) ? 'cli-selected' : null);
+  const hasExactModel = providerProfiles.some((profile) => profile.providerId === connection.id);
+  const modelId = connection.config?.model ?? (!hasExactModel && (connection.kind === 'cli' || connection.kind === 'codex-app-server') ? 'cli-selected' : null);
   if (!modelId) continue;
   const capabilityKeys = new Map([
     ['structured-output', 'structuredOutput'], ['subscription-auth', 'subscriptionAuth'], ['long-context', 'longContext'],

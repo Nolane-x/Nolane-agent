@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { renderModelProfilesPanel } from '../ui-v3/views/settings/model-profiles-panel.mjs';
 import { createSettingsController } from '../ui-v3/views/settings/settings-controller.mjs';
 
@@ -21,6 +22,81 @@ test('CLI model profiles expose discovery and a manual model entry point with Vi
   assert.match(html, /Thêm model/);
   assert.match(html, /data-model-action="discover"/);
   assert.doesNotMatch(html, /Not configured|No discovered models/);
+});
+
+test('CLI cards expose an explicit safe connection verification after sign-in', async () => {
+  const html = renderModelProfilesPanel({
+    models: [],
+    providers: [{ id: 'github-copilot', kind: 'cli', label: 'GitHub Copilot CLI', available: true, authenticated: false, healthy: false, error: 'connection-test-required', loginModes: ['github'] }],
+  });
+  assert.match(html, /Sign in to Github Copilot/);
+  assert.match(html, /data-model-action="verify-provider"[^>]*data-provider-id="github-copilot"/);
+  assert.match(html, /Verify CLI connection/);
+
+  const calls = [];
+  const api = {
+    get: async (path) => path.includes('catalog') ? { categories: [] } : path.includes('effective') ? { value: { experience: { level: 'everyday' } } } : path.includes('provider-connections') ? [{ id: 'github-copilot', kind: 'cli' }] : { models: [] },
+    put: async () => ({}),
+    post: async (path, body) => { calls.push([path, body]); return { id: 'github-copilot', healthy: true }; },
+  };
+  const controller = createSettingsController({ api });
+  await controller.load();
+  await controller.verifyProvider('github-copilot');
+  assert.deepEqual(calls, [['/api/provider-connections/github-copilot/test', {}]]);
+  assert.equal(controller.snapshot().errors.length, 0);
+});
+
+test('CLI-configured model selection is explicit instead of offering a model field Nolane cannot forward', () => {
+  const html = renderModelProfilesPanel({
+    models: [],
+    providers: [{ id: 'continue-cli', kind: 'cli', label: 'Continue CLI', available: true, authenticated: false, modelSelection: { mode: 'cli-config' } }],
+  });
+  assert.match(html, /Model is selected in the Continue CLI configuration/);
+  assert.doesNotMatch(html, /data-model-action="add"[^>]*data-provider-id="continue-cli"/);
+});
+
+test('CLI entries with an externally configured plan policy explain why they are not yet runnable', () => {
+  const html = renderModelProfilesPanel({
+    models: [],
+    providers: [{ id: 'qwen-code', kind: 'cli', label: 'Qwen Code', available: true, authenticated: false, executionSafety: 'external-plan-config-required' }],
+  });
+  assert.match(html, /Configure Qwen Code plan approval before enabling governed execution/);
+  assert.doesNotMatch(html, /data-model-action="verify-provider"[^>]*data-provider-id="qwen-code"/);
+});
+
+test('settings controller selects a discovered API model as the provider default', async () => {
+  const calls = [];
+  const api = {
+    get: async (path) => path.includes('catalog') ? { categories: [] } : path.includes('effective') ? { value: { experience: { level: 'everyday' } } } : path.includes('provider-connections') ? [{ id: 'openai-picker', kind: 'openai-responses', configured: true }] : { models: [] },
+    put: async () => ({}),
+    post: async (path, body) => { calls.push([path, body]); return { config: { model: 'gpt-live' } }; },
+  };
+  const controller = createSettingsController({ api });
+  await controller.load();
+
+  await controller.selectProviderModel('openai-picker', 'gpt-live');
+
+  assert.deepEqual(calls, [['/api/provider-connections/select-model', { providerId: 'openai-picker', modelId: 'gpt-live', testConnection: true }]]);
+  assert.equal(controller.snapshot().errors.length, 0);
+});
+
+test('API model setup discovers before default selection and exposes an explicit default action', () => {
+  const html = renderModelProfilesPanel({
+    providers: [{ id: 'openai-picker', kind: 'openai-responses', label: 'OpenAI API', configured: true, authenticated: true, healthy: false, error: 'model-selection-required' }],
+    models: [{ providerId: 'openai-picker', modelId: 'gpt-live', displayName: 'GPT Live', capabilities: {}, lifecycle: 'unknown' }],
+  });
+
+  assert.doesNotMatch(html, /name="model"[^>]*required/);
+  assert.match(html, /Save credentials & discover models/);
+  assert.match(html, /data-model-action="select"[^>]*data-provider-id="openai-picker"[^>]*data-model-id="gpt-live"/);
+  assert.match(html, /Use as default/);
+});
+
+test('settings event router sends an API default-model choice to the controller', async () => {
+  const app = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
+
+  assert.match(app, /modelAction\.dataset\.modelAction==='select'[\s\S]{0,160}controller\.selectProviderModel\(modelAction\.dataset\.providerId,modelAction\.dataset\.modelId\)/);
+  assert.match(app, /modelAction\.dataset\.modelAction==='verify-provider'[\s\S]{0,120}controller\.verifyProvider\(modelAction\.dataset\.providerId\)/);
 });
 
 test('Vietnamese model profiles do not leak English lifecycle and truth placeholders', () => {

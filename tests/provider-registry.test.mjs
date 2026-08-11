@@ -144,15 +144,38 @@ test('ProviderRegistry exposes secret-free public views and built-in official CL
   assert.doesNotMatch(publicJson, /super-secret|API_KEY/);
 
   const builtIns = createBuiltInCliProviders();
-  assert.deepEqual([...builtIns].map((item) => item.id), ['codex', 'claude', 'gemini', 'opencode']);
+  assert.deepEqual([...builtIns].map((item) => item.id), ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'qwen-code', 'continue-cli']);
   assert.ok([...builtIns].every((item) => item.credentialOwner === 'official-cli'));
   assert.ok(builtIns.filter((item) => ['codex', 'claude', 'gemini'].includes(item.id)).every((item) => item.profile.capabilities.includes('governed-actions')));
   assert.ok(builtIns.find((item) => item.id === 'codex').baseArgs.includes('read-only'));
   assert.ok(builtIns.find((item) => item.id === 'codex').baseArgs.includes('--skip-git-repo-check'));
   assert.ok(builtIns.find((item) => item.id === 'gemini').baseArgs.includes('plan'));
-  assert.equal(builtIns.find((item) => item.id === 'codex').publicView().modelDiscovery.mode, 'compatibility-catalog');
+  // Codex gets its live account catalogue from the authenticated App Server.
+  // Claude and Gemini accept --model but do not expose a documented headless
+  // account-model listing command, so no static list may masquerade as one.
+  assert.ok(builtIns.filter((item) => ['codex', 'claude', 'gemini'].includes(item.id)).every((item) => item.modelCatalog.length === 0));
+  assert.equal(builtIns.find((item) => item.id === 'codex').publicView().modelDiscovery.mode, 'unsupported');
   assert.equal(builtIns.find((item) => item.id === 'opencode').publicView().modelDiscovery.mode, 'command');
   assert.equal(builtIns.find((item) => item.id === 'opencode').publicView().modelDiscovery.live, true);
+  assert.deepEqual(builtIns.find((item) => item.id === 'opencode').modelDiscoveryArgs, ['models', '--refresh']);
+  const copilot = builtIns.find((item) => item.id === 'github-copilot');
+  assert.equal(copilot.publicView().modelDiscovery.mode, 'unsupported');
+  assert.ok(copilot.baseArgs.includes('plan'));
+  assert.ok(copilot.baseArgs.includes('--sandbox'));
+  assert.ok(copilot.baseArgs.includes('--no-remote'));
+  const qwen = builtIns.find((item) => item.id === 'qwen-code');
+  assert.equal(qwen.publicView().modelDiscovery.mode, 'unsupported');
+  assert.ok(qwen.baseArgs.includes('json'));
+  assert.equal(qwen.baseArgs.includes('--approval-mode'), false);
+  assert.equal(qwen.publicView().executionSafety, 'external-plan-config-required');
+  assert.equal(qwen.profile.capabilities.includes('governed-actions'), false);
+  const continueCli = builtIns.find((item) => item.id === 'continue-cli');
+  assert.equal(continueCli.modelFlag, null);
+  assert.equal(continueCli.publicView().modelSelection.mode, 'cli-config');
+  assert.ok(continueCli.baseArgs.includes('--exclude'));
+  assert.ok(continueCli.baseArgs.includes('Write'));
+  assert.ok(continueCli.baseArgs.includes('Edit'));
+  assert.ok(continueCli.baseArgs.includes('Bash'));
 });
 
 test('CliProvider forwards an explicitly selected model before the prompt sentinel', async (t) => {

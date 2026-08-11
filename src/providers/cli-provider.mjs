@@ -109,7 +109,7 @@ async function resolveNpmWindowsWrapper(candidate) {
 export class CliProvider {
   #resolvedExecutable = null;
 
-  constructor({ id, label, executable, versionArgs = ['--version'], baseArgs = [], promptMode = 'stdin', promptFlag = null, modelFlag = '--model', modelDiscoveryArgs = null, modelCatalog = [], timeoutMs = 10 * 60_000, env = {}, secretEnvKeys = [], cwd = null, credentialOwner = 'official-cli', harnessFamily = 'generic-local', profile = {} } = {}) {
+  constructor({ id, label, executable, versionArgs = ['--version'], baseArgs = [], promptMode = 'stdin', promptFlag = null, modelFlag = '--model', modelSelection = null, executionSafety = 'verified', modelDiscoveryArgs = null, modelCatalog = [], timeoutMs = 10 * 60_000, env = {}, secretEnvKeys = [], cwd = null, credentialOwner = 'official-cli', harnessFamily = 'generic-local', profile = {} } = {}) {
     this.id = text(id, 'provider id');
     this.label = text(label ?? id, 'provider label');
     this.kind = 'cli';
@@ -120,6 +120,10 @@ export class CliProvider {
     this.promptMode = promptMode;
     this.promptFlag = promptFlag == null ? null : String(promptFlag);
     this.modelFlag = modelFlag == null ? null : String(modelFlag).trim() || null;
+    this.modelSelection = modelSelection ?? (this.modelFlag ? 'forwarded' : 'cli-config');
+    if (!['forwarded', 'cli-config'].includes(this.modelSelection)) throw new TypeError('modelSelection is invalid');
+    if (!['verified', 'external-plan-config-required'].includes(executionSafety)) throw new TypeError('executionSafety is invalid');
+    this.executionSafety = executionSafety;
     this.modelDiscoveryArgs = modelDiscoveryArgs == null ? null : argv(modelDiscoveryArgs, 'modelDiscoveryArgs');
     if (!Array.isArray(modelCatalog) || modelCatalog.some((item) => typeof item !== 'string')) throw new TypeError('modelCatalog must be an array of strings');
     this.modelCatalog = Object.freeze([...new Set(modelCatalog.map(normalizeModelId).filter(Boolean))]);
@@ -142,11 +146,13 @@ export class CliProvider {
       credentialOwner: this.credentialOwner,
       promptMode: this.promptMode,
       harnessFamily: this.harnessFamily,
+      executionSafety: this.executionSafety,
       modelDiscovery: Object.freeze({
         supported: Boolean(this.modelDiscoveryArgs?.length || this.modelCatalog.length),
         mode: this.modelDiscoveryArgs?.length ? 'command' : (this.modelCatalog.length ? 'compatibility-catalog' : 'unsupported'),
         live: Boolean(this.modelDiscoveryArgs?.length),
       }),
+      modelSelection: Object.freeze({ mode: this.modelSelection, forwarded: this.modelSelection === 'forwarded' }),
       ...this.profile,
     });
   }
@@ -159,7 +165,8 @@ export class CliProvider {
       return Object.freeze({ schema: 'nolane.cli-model-discovery.v1', providerId: this.id, status: 'compatibility', source, models: Object.freeze(models), errors: Object.freeze([]), observedAt });
     }
     if (!this.modelDiscoveryArgs?.length) {
-      return Object.freeze({ schema: 'nolane.cli-model-discovery.v1', providerId: this.id, status: 'unsupported', source: Object.freeze({ type: 'cli-capability', live: false }), models: Object.freeze([]), errors: Object.freeze([]), reason: 'CLI does not expose a model listing command; add a model manually.', observedAt });
+      const reason = this.modelSelection === 'cli-config' ? 'CLI selects its model from its own configuration and does not expose a model listing command.' : 'CLI does not expose a model listing command; add a model manually.';
+      return Object.freeze({ schema: 'nolane.cli-model-discovery.v1', providerId: this.id, status: 'unsupported', source: Object.freeze({ type: 'cli-capability', live: false }), models: Object.freeze([]), errors: Object.freeze([]), reason, observedAt });
     }
     try {
       const result = await this.#spawn(this.modelDiscoveryArgs, { timeoutMs, input: '' });

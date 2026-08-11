@@ -16,3 +16,18 @@ test('model profile HTTP API lists discovers and probes models', async () => {
   assert.equal((await call(route,{method:'POST',pathname:'/api/model-profiles/discover',body:{providerId:'p'}})).body.models[0].id,'m');
   assert.equal((await call(route,{method:'POST',pathname:'/api/model-profiles/probe',body:{providerId:'p',modelId:'m',probes:['text']}})).body.capabilities.text,true);
 });
+
+test('provider connection HTTP API applies a selected discovered model', async () => {
+  const calls = [];
+  const route = createRoutes({
+    providerConnections: {
+      async selectApiModel(providerId, input) { calls.push([providerId, input]); return { id: providerId, config: { model: input.modelId } }; },
+    },
+  });
+
+  const result = await call(route, { method: 'POST', pathname: '/api/provider-connections/select-model', body: { providerId: 'openai-picker', modelId: 'gpt-live', testConnection: false } });
+
+  assert.equal(result.status, 200);
+  assert.equal(result.body.config.model, 'gpt-live');
+  assert.deepEqual(calls, [['openai-picker', { modelId: 'gpt-live', testConnection: false }]]);
+});

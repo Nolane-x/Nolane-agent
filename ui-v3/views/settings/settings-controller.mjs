@@ -166,6 +166,32 @@ export function createSettingsController({ api, projectId = null } = {}) {
       }
       return snapshot();
     },
+    async verifyProvider(providerId) {
+      const id = String(providerId ?? '').trim();
+      state.action = `provider-verify:${id}`; state.statusMessage = `Verifying ${id} through its governed CLI path…`;
+      try {
+        await api.post(`/api/provider-connections/${encodeURIComponent(id)}/test`, {});
+        const providers = await api.get('/api/provider-connections').catch(() => state.providers);
+        state = { ...state, action: null, providers: normalizeProviders(providers), errors: [], statusMessage: `Provider ${id} is ready.` };
+      } catch (error) { state = { ...state, action: null, errors: [errorEntry(error)], statusMessage: `Provider verification failed for ${id}.` }; }
+      return snapshot();
+    },
+    async selectProviderModel(providerId, modelId, { testConnection = true } = {}) {
+      const cleanProvider = String(providerId ?? '').trim();
+      const cleanModel = String(modelId ?? '').trim();
+      state.action = `select-model:${cleanProvider}/${cleanModel}`; state.statusMessage = `Selecting ${cleanModel} for ${cleanProvider}…`;
+      try {
+        await api.post('/api/provider-connections/select-model', { providerId: cleanProvider, modelId: cleanModel, testConnection });
+        const [providers, models] = await Promise.all([
+          api.get('/api/provider-connections').catch(() => state.providers),
+          api.get('/api/model-profiles').catch(() => state.models),
+        ]);
+        state = { ...state, action: null, providers: normalizeProviders(providers), models: normalizeModels(models), errors: [], statusMessage: `Selected ${cleanModel} for ${cleanProvider}.` };
+      } catch (error) {
+        state = { ...state, action: null, errors: [errorEntry(error)], statusMessage: `Model ${cleanModel || 'selection'} was not applied.` };
+      }
+      return snapshot();
+    },
     async discoverModels(providerId) {
       state.action = `discover:${providerId}`; state.statusMessage = `Discovering models for ${providerId}…`;
       try {

@@ -142,6 +142,57 @@ test('ProviderConnectionService keeps shared Codex account detection isolated pe
   assert.deepEqual(registry.detection('codex-app-server').capabilities, ['coding', 'structured-events', 'threads', 'governed-actions']);
 });
 
+test('ProviderConnectionService saves an API credential before a default model is chosen', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-pending-model-'));
+  const store = new StudioStore(path.join(root, 'studio.db'));
+  const vault = new CredentialVault({ backend: new MemoryCredentialBackend() });
+  t.after(() => store.close());
+  t.after(() => vault.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const registry = new ProviderRegistry();
+  const discoveries = [];
+  const service = new ProviderConnectionService({
+    store,
+    registry,
+    credentialVault: vault,
+    modelDiscovery: { async discover(input) { discoveries.push(input); return { providerId: input.providerId, models: [{ id: 'gpt-live' }] }; } },
+    modelProfiles: { mergeDiscovery() {}, publicView: () => ({ models: [] }) },
+  });
+
+  const result = await service.configureApi({ id: 'openai-picker', kind: 'openai-responses', apiKey: 'sk-picker-test' });
+
+  assert.equal(store.getProviderConfig('openai-picker').config.model, null);
+  assert.equal(await vault.resolve({ service: 'forge.provider.openai-picker', account: 'default' }), 'sk-picker-test');
+  assert.equal(discoveries.length, 1);
+  assert.equal(result.connection.error, 'model-selection-required');
+  assert.equal(service.list().find((item) => item.id === 'openai-picker').configured, true);
+});
+
+test('ProviderConnectionService activates a discovered API model only after the user selects it', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-select-model-'));
+  const store = new StudioStore(path.join(root, 'studio.db'));
+  const vault = new CredentialVault({ backend: new MemoryCredentialBackend() });
+  t.after(() => store.close());
+  t.after(() => vault.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const registry = new ProviderRegistry();
+  const service = new ProviderConnectionService({
+    store,
+    registry,
+    credentialVault: vault,
+    modelDiscovery: { async discover() { return { models: [{ id: 'gpt-live' }] }; } },
+    modelProfiles: { mergeDiscovery() {}, publicView: () => ({ models: [] }) },
+  });
+  await service.configureApi({ id: 'openai-picker', kind: 'openai-responses', apiKey: 'sk-picker-test' });
+
+  const selected = await service.selectApiModel('openai-picker', { modelId: 'gpt-live', testConnection: false });
+
+  assert.equal(store.getProviderConfig('openai-picker').config.model, 'gpt-live');
+  assert.equal(registry.get('openai-picker').model, 'gpt-live');
+  assert.equal(selected.config.model, 'gpt-live');
+  assert.equal(selected.error, 'connection-test-required');
+});
+
 test('ProviderConnectionService refreshes the authenticated Codex App Server model catalog with its provenance', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-codex-catalog-'));
   const store = new StudioStore(path.join(root, 'studio.db'));
@@ -182,6 +233,39 @@ test('ProviderConnectionService refreshes the authenticated Codex App Server mod
   assert.deepEqual(calls, ['listModels', 'listModels']);
 });
 
+test('ProviderConnectionService mirrors the live Codex App Server catalog to Codex CLI on their shared account', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-codex-cli-catalog-'));
+  const store = new StudioStore(path.join(root, 'studio.db'));
+  const vault = new CredentialVault({ backend: new MemoryCredentialBackend() });
+  t.after(() => store.close());
+  t.after(() => vault.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const registry = new ProviderRegistry();
+  registry.register({ id: 'codex', kind: 'cli', publicView: () => ({ id: 'codex', kind: 'cli', label: 'Codex CLI', capabilities: ['coding', 'structured-output', 'governed-actions'] }) });
+  registry.register({ id: 'codex-app-server', kind: 'codex-app-server', publicView: () => ({ id: 'codex-app-server', kind: 'codex-app-server', label: 'Codex App Server', capabilities: ['coding', 'structured-events', 'threads'] }) });
+  const codexAppServer = {
+    async detect() { return { id: 'codex-app-server', kind: 'codex-app-server', available: true }; },
+    async accountRead() { return { account: { type: 'chatgpt', planType: 'plus' } }; },
+    async listModels() { return { status: 'fresh', observedAt: '2026-08-11T00:00:00.000Z', models: [{ id: 'gpt-live', displayName: 'GPT Live' }] }; },
+  };
+  const merged = [];
+  const service = new ProviderConnectionService({
+    store,
+    registry,
+    credentialVault: vault,
+    codexAppServer,
+    modelProfiles: { mergeDiscovery(providerId, models) { merged.push({ providerId, models }); }, publicView: () => ({ models: [] }) },
+  });
+
+  await service.refreshAll({ apiProviders: false });
+  const discovered = await service.discoverModels('codex');
+
+  assert.deepEqual(merged.map((entry) => entry.providerId), ['codex-app-server', 'codex', 'codex']);
+  assert.equal(merged[1].models[0].providerId, 'codex');
+  assert.equal(discovered.providerId, 'codex');
+  assert.equal(discovered.models[0].id, 'gpt-live');
+});
+
 test('ProviderConnectionService preserves an installed CLI configuration diagnostic', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-cli-diagnostic-'));
   const store = new StudioStore(path.join(root, 'studio.db'));
@@ -194,6 +278,32 @@ test('ProviderConnectionService preserves an installed CLI configuration diagnos
   const service = new ProviderConnectionService({ store, registry, credentialVault: vault });
   await service.refreshAll({ apiProviders: false });
   assert.equal(registry.detection('gemini').error, 'configuration-error');
+});
+
+test('ProviderConnectionService verifies a CLI connection through its governed completion path', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-cli-verify-'));
+  const store = new StudioStore(path.join(root, 'studio.db'));
+  const vault = new CredentialVault({ backend: new MemoryCredentialBackend() });
+  t.after(() => store.close());
+  t.after(() => vault.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const registry = new ProviderRegistry();
+  let received = null;
+  registry.register({
+    id: 'github-copilot',
+    publicView: () => ({ id: 'github-copilot', kind: 'cli', label: 'GitHub Copilot CLI', credentialOwner: 'official-cli', capabilities: ['coding', 'governed-actions'] }),
+    async detect() { return { id: 'github-copilot', available: true, version: 'test' }; },
+    async complete(input) { received = input; return { text: 'OK' }; },
+  });
+  const service = new ProviderConnectionService({ store, registry, credentialVault: vault });
+  await service.refreshAll({ apiProviders: false });
+
+  const verified = await service.test('github-copilot');
+
+  assert.equal(received.tools.length, 0);
+  assert.match(received.messages.at(-1).content, /Reply with exactly OK/);
+  assert.equal(verified.healthy, true);
+  assert.equal(registry.detection('github-copilot').authenticated, true);
 });
 
 test('ProviderConnectionService permits a keyless loopback OpenAI-compatible endpoint', async (t) => {

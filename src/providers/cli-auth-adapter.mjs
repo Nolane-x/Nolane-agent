@@ -36,8 +36,17 @@ async function launchProcess({ executable, args, cwd = null }) {
   return Object.freeze({ launched: true, pid: child.pid ?? null });
 }
 
-function parseStatus(result) {
+function parseStatus(result, { mode = 'authenticated' } = {}) {
   const combined = `${result?.stdout ?? ''}\n${result?.stderr ?? ''}`.trim();
+  const available = result?.error?.code !== 'ENOENT';
+  if (mode === 'available-only') return Object.freeze({
+    available,
+    authenticated: false,
+    healthy: false,
+    email: null,
+    planType: null,
+    error: available ? 'connection-test-required' : 'not-installed',
+  });
   let payload = null;
   try { payload = result?.stdout?.trim() ? JSON.parse(result.stdout) : null; } catch {}
   const explicit = payload?.authenticated ?? payload?.loggedIn ?? payload?.isAuthenticated ?? payload?.logged_in;
@@ -46,7 +55,7 @@ function parseStatus(result) {
   const email = payload?.email ?? payload?.account?.email ?? null;
   const planType = payload?.subscriptionType ?? payload?.planType ?? payload?.account?.planType ?? null;
   return Object.freeze({
-    available: result?.error?.code !== 'ENOENT',
+    available,
     authenticated,
     healthy: authenticated && result?.exitCode === 0,
     email: email == null ? null : String(email).slice(0, 200),
@@ -56,11 +65,13 @@ function parseStatus(result) {
 }
 
 export class CliAuthAdapter {
-  constructor({ id, label, executable, statusArgs, loginArgs = {}, logoutArgs = null, runner = runProcess, launcher = launchProcess, timeoutMs = 15_000, cwd = null } = {}) {
+  constructor({ id, label, executable, statusArgs, statusMode = 'authenticated', loginArgs = {}, logoutArgs = null, runner = runProcess, launcher = launchProcess, timeoutMs = 15_000, cwd = null } = {}) {
     this.id = required(id, 'adapter id');
     this.label = required(label ?? id, 'adapter label');
     this.executable = required(executable, 'executable');
     this.statusArgs = safeArgs(statusArgs, 'statusArgs');
+    if (!['authenticated', 'available-only'].includes(statusMode)) throw new TypeError('statusMode is invalid');
+    this.statusMode = statusMode;
     this.loginArgs = Object.fromEntries(Object.entries(loginArgs).map(([key, args]) => [String(key), safeArgs(args, `loginArgs.${key}`)]));
     this.logoutArgs = logoutArgs == null ? null : safeArgs(logoutArgs, 'logoutArgs');
     this.runner = runner; this.launcher = launcher; this.timeoutMs = Number(timeoutMs); this.cwd = cwd;
@@ -68,7 +79,7 @@ export class CliAuthAdapter {
 
   async status() {
     const result = await this.runner({ executable: this.executable, args: this.statusArgs, timeoutMs: this.timeoutMs, cwd: this.cwd });
-    return Object.freeze({ id: this.id, label: this.label, ...parseStatus(result) });
+    return Object.freeze({ id: this.id, label: this.label, ...parseStatus(result, { mode: this.statusMode }) });
   }
 
   async startLogin({ type = Object.keys(this.loginArgs)[0] } = {}) {
