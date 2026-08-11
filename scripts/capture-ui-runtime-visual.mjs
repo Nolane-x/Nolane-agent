@@ -81,6 +81,7 @@ async function assertSettingsScrollPreserved(page) {
   const languageChoice = page.locator(`[data-setting-choice][data-setting-path="general.language"][data-setting-value="${language}"]`);
   await languageChoice.click();
   await page.waitForFunction((nextLanguage) => document.documentElement.dataset.language === nextLanguage && document.querySelector(`[data-setting-choice][data-setting-path="general.language"][data-setting-value="${nextLanguage}"][aria-pressed="true"]`), language, { timeout: 10_000 });
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
   await assertScroll(beforeLanguage.before, 'settings language choice');
 }
 
