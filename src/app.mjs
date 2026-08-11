@@ -397,7 +397,7 @@ const providers = new ProviderRegistry({ executionPool: providerRuntimePool, ses
 const providerSandboxRoot = path.join(config.dataDir, 'provider-sandboxes');
 await mkdir(providerSandboxRoot, { recursive: true });
 const providerOverrides = {};
-for (const id of ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'qwen-code', 'continue-cli', 'cline', 'mistral-vibe-code', 'aider', 'goose']) {
+for (const id of ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'cursor-agent', 'kiro-cli', 'factory-droid', 'qwen-code', 'continue-cli', 'cline', 'mistral-vibe-code', 'aider', 'goose']) {
   const cwd = path.join(providerSandboxRoot, id); await mkdir(cwd, { recursive: true }); providerOverrides[id] = { cwd };
 }
 for (const provider of createBuiltInCliProviders(providerOverrides)) providers.register(provider);
@@ -437,6 +437,22 @@ const providerConnections = new ProviderConnectionService({
       statusArgs: ['--version'],
       loginArgs: { provider: ['auth'] },
       cwd: path.join(providerSandboxRoot, 'cline'),
+    }),
+    'cursor-agent': createAvailabilityOnlyCliAuthAdapter({
+      id: 'cursor-agent',
+      label: 'Cursor Agent CLI',
+      executable: 'agent',
+      statusArgs: ['--version'],
+      loginArgs: { cursor: ['login'] },
+      cwd: path.join(providerSandboxRoot, 'cursor-agent'),
+    }),
+    'kiro-cli': createAvailabilityOnlyCliAuthAdapter({
+      id: 'kiro-cli',
+      label: 'Kiro CLI',
+      executable: 'kiro-cli',
+      statusArgs: ['--version'],
+      loginArgs: { kiro: ['login'] },
+      cwd: path.join(providerSandboxRoot, 'kiro-cli'),
     }),
   },
 });

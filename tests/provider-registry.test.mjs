@@ -144,7 +144,7 @@ test('ProviderRegistry exposes secret-free public views and built-in official CL
   assert.doesNotMatch(publicJson, /super-secret|API_KEY/);
 
   const builtIns = createBuiltInCliProviders();
-  assert.deepEqual([...builtIns].map((item) => item.id), ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'qwen-code', 'continue-cli', 'cline', 'mistral-vibe-code', 'aider', 'goose']);
+  assert.deepEqual([...builtIns].map((item) => item.id), ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'cursor-agent', 'kiro-cli', 'factory-droid', 'qwen-code', 'continue-cli', 'cline', 'mistral-vibe-code', 'aider', 'goose']);
   assert.ok([...builtIns].every((item) => item.credentialOwner === 'official-cli'));
   assert.ok(builtIns.filter((item) => ['codex', 'claude', 'gemini'].includes(item.id)).every((item) => item.profile.capabilities.includes('governed-actions')));
   assert.ok(builtIns.find((item) => item.id === 'codex').baseArgs.includes('read-only'));
@@ -163,6 +163,29 @@ test('ProviderRegistry exposes secret-free public views and built-in official CL
   assert.ok(copilot.baseArgs.includes('plan'));
   assert.ok(copilot.baseArgs.includes('--sandbox'));
   assert.ok(copilot.baseArgs.includes('--no-remote'));
+  const cursor = builtIns.find((item) => item.id === 'cursor-agent');
+  assert.equal(cursor.publicView().executionSafety, 'verified');
+  assert.deepEqual(cursor.baseArgs, ['-p', '--output-format', 'json']);
+  assert.equal(cursor.baseArgs.includes('--force'), false);
+  assert.equal(cursor.baseArgs.includes('--yolo'), false);
+  assert.equal(cursor.modelFlag, '--model');
+  assert.equal(cursor.publicView().modelSelection.mode, 'forwarded');
+  const kiro = builtIns.find((item) => item.id === 'kiro-cli');
+  assert.equal(kiro.publicView().executionSafety, 'verified');
+  assert.deepEqual(kiro.baseArgs, ['chat', '--no-interactive', '--trust-tools=read,grep']);
+  assert.equal(kiro.modelFlag, null);
+  assert.equal(kiro.publicView().modelSelection.mode, 'cli-config');
+  assert.deepEqual(kiro.modelDiscoveryArgs, ['chat', '--list-models', '--format', 'json']);
+  assert.equal(kiro.publicView().modelDiscovery.live, true);
+  assert.equal(kiro.profile.capabilities.includes('governed-actions'), false);
+  const droid = builtIns.find((item) => item.id === 'factory-droid');
+  assert.equal(droid.publicView().executionSafety, 'verified');
+  assert.deepEqual(droid.baseArgs, ['exec', '--use-spec', '--output-format', 'json']);
+  assert.equal(droid.baseArgs.includes('--auto'), false);
+  assert.equal(droid.baseArgs.includes('--skip-permissions-unsafe'), false);
+  assert.equal(droid.modelFlag, '--model');
+  assert.equal(droid.publicView().modelSelection.mode, 'forwarded');
+  assert.equal(droid.profile.capabilities.includes('governed-actions'), false);
   const qwen = builtIns.find((item) => item.id === 'qwen-code');
   assert.equal(qwen.publicView().modelDiscovery.mode, 'unsupported');
   assert.ok(qwen.baseArgs.includes('json'));
