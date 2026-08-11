@@ -50,6 +50,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Checkout pinned Tree-sitter JavaScript grammar
+        uses: actions/checkout@v6
+        with:
+          repository: tree-sitter/tree-sitter-javascript
+          ref: 3a837b6f3658ca3618f2022f8707e29739c91364
+          path: .ci/tree-sitter-grammars/tree-sitter-javascript
+          persist-credentials: false
+
       - name: Mark linked issue evidence
         if: github.event_name == 'pull_request'
         shell: pwsh
@@ -78,6 +86,12 @@ jobs:
 
       - name: Install the pinned Tree-sitter CLI runtime
         run: npm install --global tree-sitter-cli@0.25.10
+
+      - name: Run real Tree-sitter grammar gate
+        env:
+          NOLANE_RUNTIME_TREE_SITTER_GATE: '1'
+          NOLANE_TREE_SITTER_JAVASCRIPT_DIR: ${{ github.workspace }}/.ci/tree-sitter-grammars/tree-sitter-javascript
+        run: node --test tests/tree-sitter-runtime-evidence.test.mjs
 
       - name: Install Podman on Linux
         if: runner.os == 'Linux'
