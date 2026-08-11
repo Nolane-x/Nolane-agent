@@ -9,7 +9,7 @@ const root = path.dirname(fileURLToPath(import.meta.url));
 const fixture = path.join(root, 'fixtures', 'codex-app-server.mjs');
 
 function client(overrides = {}) {
-  return new CodexAppServerClient({ executable: process.execPath, args: [fixture], timeoutMs: 1_000, approvalHandler: async (request) => ({ decision: request.command?.[0] === 'git' ? 'accept' : 'decline' }), ...overrides });
+  return new CodexAppServerClient({ executable: process.execPath, args: [fixture], timeoutMs: 5_000, approvalHandler: async (request) => ({ decision: request.command?.[0] === 'git' ? 'accept' : 'decline' }), ...overrides });
 }
 
 test('CodexAppServerClient sends the thread sandbox enum and turn sandboxPolicy object', async (t) => {
@@ -67,4 +67,34 @@ test('CodexAppServerClient exposes documented account login, cancel, and logout 
   await codex.logout();
   const account = await codex.accountRead();
   assert.equal(account.account, null);
+});
+
+test('CodexAppServerClient imports the app-server model catalog without inventing capabilities', async (t) => {
+  const codex = client();
+  t.after(() => codex.close());
+
+  const catalog = await codex.listModels();
+
+  assert.equal(catalog.status, 'fresh');
+  assert.equal(catalog.models.length, 1);
+  assert.deepEqual(catalog.models[0], {
+    id: 'gpt-5.6-codex',
+    displayName: 'GPT-5.6 Codex',
+    discoveredAt: catalog.observedAt,
+    metadata: {
+      source: 'codex-app-server',
+      hidden: false,
+      defaultReasoningEffort: 'medium',
+      supportedReasoningEfforts: ['low', 'medium', 'high'],
+      additionalSpeedTiers: ['standard', 'fast'],
+      serviceTiers: ['default', 'flex'],
+      defaultServiceTier: 'default',
+      modelSpecialty: 'coding',
+      multiAgentVersion: null,
+      upgrade: null,
+      upgradeInfo: null,
+      availabilityNux: null,
+    },
+  });
+  assert.equal(catalog.models[0].capabilities, undefined);
 });

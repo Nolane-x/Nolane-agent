@@ -145,7 +145,17 @@ export class ProviderConnectionService {
       const detected = await this.codexAppServer.detect();
       if (!detected.available) return this.registry.setDetection(provider.id, { ...provider.publicView(), ...detected, authenticated: false, healthy: false });
       const state = accountState(await this.codexAppServer.accountRead({ refreshToken: false }));
-      const detection = this.registry.setDetection(provider.id, { ...provider.publicView(), ...detected, ...state, healthy: state.authenticated, error: state.authenticated ? null : 'login-required' });
+      let modelCatalog = { status: state.authenticated ? 'not-supported' : 'not-authenticated', modelCount: 0, observedAt: null, error: null };
+      if (state.authenticated && typeof this.codexAppServer.listModels === 'function') {
+        try {
+          const catalog = await this.codexAppServer.listModels();
+          this.modelProfiles?.mergeDiscovery?.(provider.id, catalog.models ?? []);
+          modelCatalog = { status: catalog.status ?? 'fresh', modelCount: Array.isArray(catalog.models) ? catalog.models.length : 0, observedAt: catalog.observedAt ?? null, error: null };
+        } catch (error) {
+          modelCatalog = { status: 'unavailable', modelCount: 0, observedAt: null, error: safeError(error) };
+        }
+      }
+      const detection = this.registry.setDetection(provider.id, { ...provider.publicView(), ...detected, ...state, modelCatalog, healthy: state.authenticated, error: state.authenticated ? null : 'login-required' });
       // Codex CLI and Codex App Server share the official account, but they do
       // not share a provider profile. Keep the CLI's own kind/capabilities so
       // the router cannot accidentally require App Server-only capabilities.
@@ -194,6 +204,12 @@ export class ProviderConnectionService {
   async discoverModels(id) {
     const cleanId = providerId(id);
     const registered = this.registry.get(cleanId);
+    const registeredKind = registered?.kind ?? registered?.publicView?.().kind;
+    if ((cleanId === 'codex-app-server' || registeredKind === 'codex-app-server') && typeof this.codexAppServer?.listModels === 'function') {
+      const result = await this.codexAppServer.listModels();
+      this.modelProfiles?.mergeDiscovery?.(cleanId, result.models ?? []);
+      return Object.freeze({ ...result, profiles: this.modelProfiles?.publicView?.({ providerId: cleanId }) ?? null });
+    }
     if (registered?.kind === 'cli' && typeof registered.discoverModels === 'function') {
       const result = await registered.discoverModels();
       if (this.modelProfiles?.mergeDiscovery) this.modelProfiles.mergeDiscovery(cleanId, result.models);

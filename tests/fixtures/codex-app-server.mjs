@@ -11,6 +11,7 @@ rl.on('line', async (line) => {
   if (message.method === 'initialize') return send({ id: message.id, result: { userAgent: 'fixture', codexHome: '/tmp/codex', platformFamily: 'unix', platformOs: 'linux' } });
   if (message.method === 'initialized') return;
   if (message.method === 'account/read') return send({ id: message.id, result: { account, requiresOpenaiAuth: true } });
+  if (message.method === 'model/list') return send({ id: message.id, result: { data: [{ id: 'gpt-5.6-codex', displayName: 'GPT-5.6 Codex', defaultReasoningEffort: 'medium', supportedReasoningEfforts: ['low', 'medium', 'high'], additionalSpeedTiers: ['standard', 'fast'], serviceTiers: ['default', 'flex'], defaultServiceTier: 'default', modelSpecialty: 'coding', hidden: false }], nextCursor: null } });
   if (message.method === 'account/login/start') {
     if (message.params.type === 'chatgpt') return send({ id: message.id, result: { type: 'chatgpt', loginId: 'login_1', authUrl: 'https://chatgpt.com/auth/test' } });
     if (message.params.type === 'chatgptDeviceCode') return send({ id: message.id, result: { type: 'chatgptDeviceCode', loginId: 'login_2', verificationUrl: 'https://auth.openai.com/codex/device', userCode: 'ABCD-1234' } });

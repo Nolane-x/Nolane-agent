@@ -142,6 +142,46 @@ test('ProviderConnectionService keeps shared Codex account detection isolated pe
   assert.deepEqual(registry.detection('codex-app-server').capabilities, ['coding', 'structured-events', 'threads', 'governed-actions']);
 });
 
+test('ProviderConnectionService refreshes the authenticated Codex App Server model catalog with its provenance', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-codex-catalog-'));
+  const store = new StudioStore(path.join(root, 'studio.db'));
+  const vault = new CredentialVault({ backend: new MemoryCredentialBackend() });
+  t.after(() => store.close());
+  t.after(() => vault.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const registry = new ProviderRegistry();
+  registry.register({ id: 'codex-app-server', publicView: () => ({ id: 'codex-app-server', kind: 'codex-app-server', label: 'Codex', capabilities: ['coding', 'structured-events', 'threads', 'governed-actions'] }) });
+  const calls = [];
+  const codexAppServer = {
+    async detect() { return { id: 'codex-app-server', kind: 'codex-app-server', available: true, version: 'test' }; },
+    async accountRead() { return { account: { type: 'chatgpt', planType: 'plus' } }; },
+    async listModels() {
+      calls.push('listModels');
+      return {
+        status: 'fresh', observedAt: '2026-08-11T00:00:00.000Z', nextCursor: null,
+        models: [{ id: 'gpt-5.6-codex', displayName: 'GPT-5.6 Codex', discoveredAt: '2026-08-11T00:00:00.000Z', metadata: { source: 'codex-app-server', supportedReasoningEfforts: ['low', 'high'] } }],
+      };
+    },
+  };
+  const merged = [];
+  const modelProfiles = {
+    mergeDiscovery(providerId, models) { merged.push({ providerId, models }); },
+    publicView() { return { models: [] }; },
+  };
+  const service = new ProviderConnectionService({ store, registry, credentialVault: vault, codexAppServer, modelProfiles });
+
+  await service.refreshAll({ apiProviders: false });
+
+  assert.deepEqual(calls, ['listModels']);
+  assert.deepEqual(merged, [{ providerId: 'codex-app-server', models: [{ id: 'gpt-5.6-codex', displayName: 'GPT-5.6 Codex', discoveredAt: '2026-08-11T00:00:00.000Z', metadata: { source: 'codex-app-server', supportedReasoningEfforts: ['low', 'high'] } }] }]);
+  assert.deepEqual(registry.detection('codex-app-server').modelCatalog, { status: 'fresh', modelCount: 1, observedAt: '2026-08-11T00:00:00.000Z', error: null });
+
+  const discovered = await service.discoverModels('codex-app-server');
+  assert.equal(discovered.status, 'fresh');
+  assert.equal(discovered.models[0].id, 'gpt-5.6-codex');
+  assert.deepEqual(calls, ['listModels', 'listModels']);
+});
+
 test('ProviderConnectionService preserves an installed CLI configuration diagnostic', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-cli-diagnostic-'));
   const store = new StudioStore(path.join(root, 'studio.db'));
