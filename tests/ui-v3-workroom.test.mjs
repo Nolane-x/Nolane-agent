@@ -75,6 +75,7 @@ test('Workroom opens the governed terminal socket only from an explicit terminal
 test('Workroom terminal inherits the configured application color tokens', async () => {
   const css = await readFile(new URL('../ui-v3/styles/pages/workroom-terminal.css', import.meta.url), 'utf8');
   assert.match(css, /\.workroom-terminal pre\{[^}]*background:var\(--surface-canvas\);color:var\(--text-primary\)/);
+  assert.match(css, /\.workroom-agent__body>button\{[^}]*background:var\(--surface-raised\);color:var\(--text-primary\)/);
   assert.doesNotMatch(css, /#[0-9a-f]{3,8}\b/i);
 });
 
