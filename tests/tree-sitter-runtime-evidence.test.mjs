@@ -23,13 +23,14 @@ if (!enabled) {
       expectedVersion: '0.25.10',
     });
     const capabilities = await service.capabilities();
-    assert.equal(capabilities.available, true);
+    assert.equal(capabilities.available, true, `Tree-sitter capability probe failed: ${JSON.stringify(capabilities)}`);
     assert.equal(capabilities.version, '0.25.10');
 
     const parsed = await service.parse({ projectId: 'tree-sitter-javascript', principalId: 'github-actions', file: relativeFile });
     assert.equal(parsed.file, relativeFile);
     assert.equal(parsed.runtime.version, '0.25.10');
-    assert.equal(parsed.tree.type, 'program');
+    assert.equal(parsed.tree.parse_summaries?.length, 1, `Expected one parse summary, received: ${JSON.stringify(parsed.tree)}`);
+    assert.equal(parsed.tree.parse_summaries[0].successful, true, `Tree-sitter parse did not succeed: ${JSON.stringify(parsed.tree)}`);
     assert.match(parsed.receiptSha256, /^[a-f0-9]{64}$/);
   });
 }

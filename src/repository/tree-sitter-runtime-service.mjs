@@ -15,10 +15,6 @@ function defaultRunner(command, args, options = {}) {
 }
 function within(root, target) { const relative = path.relative(root, target); return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative)); }
 function versionFrom(stdout) { return String(stdout ?? '').match(/tree-sitter\s+v?([0-9]+(?:\.[0-9]+){1,3})/i)?.[1] ?? null; }
-function normalizeOneFileTree(value) {
-  if (Array.isArray(value) && value.length === 1 && value[0]?.tree && typeof value[0].tree === 'object') return value[0].tree;
-  return value;
-}
 function freeze(value) { if (!value || typeof value !== 'object') return value; if (Array.isArray(value)) { value.forEach(freeze); return Object.freeze(value); } Object.values(value).forEach(freeze); return Object.freeze(value); }
 
 export class TreeSitterRuntimeService {
@@ -73,7 +69,7 @@ export class TreeSitterRuntimeService {
     const { stdout = '', stderr = '' } = await this.runner(this.command, ['parse', '--json', '--quiet', '--', resolved.target], { cwd: resolved.root, timeoutMs: this.timeoutMs, maxOutputBytes: this.maxOutputBytes });
     if (Buffer.byteLength(String(stdout)) > this.maxOutputBytes) throw coded('TREE_SITTER_OUTPUT_TOO_LARGE', 'Tree-sitter output exceeds the configured limit', 413);
     let tree;
-    try { tree = normalizeOneFileTree(JSON.parse(String(stdout))); } catch { throw coded('TREE_SITTER_OUTPUT_INVALID', 'Tree-sitter returned invalid JSON', 502); }
+    try { tree = JSON.parse(String(stdout)); } catch { throw coded('TREE_SITTER_OUTPUT_INVALID', 'Tree-sitter returned invalid JSON', 502); }
     const base = {
       schema: 'forge.tree-sitter-parse.v1', projectId: resolved.projectId, principalId: principal,
       file: resolved.relativeFile, runtime: { command: capability.command, version: capability.version }, tree,

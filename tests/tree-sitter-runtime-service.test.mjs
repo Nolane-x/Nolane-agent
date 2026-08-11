@@ -14,7 +14,7 @@ test('TreeSitterRuntimeService detects a pinned CLI and parses only project-boun
   const runner = async (command, args, options) => {
     calls.push({ command, args, options });
     if (args[0] === '--version') return { stdout: 'tree-sitter 0.25.10\n', stderr: '' };
-    return { stdout: JSON.stringify({ type: 'program', startPosition: { row: 0, column: 0 }, endPosition: { row: 1, column: 0 } }), stderr: '' };
+    return { stdout: JSON.stringify({ parse_summaries: [{ file: 'src/app.js', successful: true, bytes: 13 }], cumulative_stats: { bytes: 13 } }), stderr: '' };
   };
   const service = new TreeSitterRuntimeService({
     projectResolver: (id) => id === 'p1' ? { id, workspaceRoot: root } : null,
@@ -25,7 +25,7 @@ test('TreeSitterRuntimeService detects a pinned CLI and parses only project-boun
   assert.equal(capabilities.available, true);
   assert.equal(capabilities.version, '0.25.10');
   const result = await service.parse({ projectId: 'p1', principalId: 'local-admin', file: 'src/app.js' });
-  assert.equal(result.tree.type, 'program');
+  assert.equal(result.tree.parse_summaries[0].successful, true);
   assert.equal(result.projectId, 'p1');
   assert.equal(result.principalId, 'local-admin');
   assert.match(result.receiptSha256, /^[a-f0-9]{64}$/);
@@ -34,7 +34,7 @@ test('TreeSitterRuntimeService detects a pinned CLI and parses only project-boun
   assert.equal(parseCall.options.cwd, await realpath(root));
 });
 
-test('TreeSitterRuntimeService normalizes the one-file JSON envelope emitted by the real CLI', async () => {
+test('TreeSitterRuntimeService preserves the JSON parse receipt emitted by the CLI', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-tree-sitter-envelope-'));
   await writeFile(path.join(root, 'app.js'), 'export const answer = 42;\n');
   const service = new TreeSitterRuntimeService({
@@ -42,12 +42,12 @@ test('TreeSitterRuntimeService normalizes the one-file JSON envelope emitted by 
     expectedVersion: '0.25.10',
     runner: async (_command, args) => args[0] === '--version'
       ? { stdout: 'tree-sitter 0.25.10\n', stderr: '' }
-      : { stdout: JSON.stringify([{ path: 'app.js', tree: { type: 'program', named: true } }]), stderr: '' },
+      : { stdout: JSON.stringify({ parse_summaries: [{ file: 'app.js', successful: true, bytes: 26 }], cumulative_stats: { bytes: 26 } }), stderr: '' },
   });
 
   const result = await service.parse({ projectId: 'p1', principalId: 'local-admin', file: 'app.js' });
-  assert.equal(result.tree.type, 'program');
-  assert.equal(result.tree.named, true);
+  assert.equal(result.tree.parse_summaries[0].file, 'app.js');
+  assert.equal(result.tree.parse_summaries[0].successful, true);
 });
 
 test('TreeSitterRuntimeService rejects traversal, symlink escape, unsupported files, and unavailable runtime', async () => {
