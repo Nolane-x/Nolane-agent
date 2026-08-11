@@ -426,9 +426,9 @@ const providerConnections = new ProviderConnectionService({
 });
 await providerConnections.load();
 const providerProfiles = modelProfiles.publicView().models;
-const providersWithExactModels = new Set(providerProfiles.map((profile) => profile.providerId));
 for (const connection of providerConnections.list()) {
-  const modelId = connection.config?.model ?? (connection.kind === 'cli' || (connection.kind === 'codex-app-server' && !providersWithExactModels.has(connection.id)) ? 'cli-selected' : null);
+  const hasExactModel = connection.kind === 'codex-app-server' && providerProfiles.some((profile) => profile.providerId === connection.id);
+  const modelId = connection.config?.model ?? (connection.kind === 'cli' || (connection.kind === 'codex-app-server' && !hasExactModel) ? 'cli-selected' : null);
   if (!modelId) continue;
   const capabilityKeys = new Map([
     ['structured-output', 'structuredOutput'], ['subscription-auth', 'subscriptionAuth'], ['long-context', 'longContext'],
