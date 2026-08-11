@@ -58,6 +58,12 @@ test('Workroom renders a bounded, interactive terminal surface after a local ses
   assert.match(html, /data-workroom-terminal-form/);
 });
 
+test('Workroom disables terminal creation when no project owns the session', () => {
+  const model = createWorkroomModel({ projectId: 'unselected' });
+  const html = renderWorkroomView(model.snapshot());
+  assert.match(html, /data-workroom-action="terminal" disabled>Open terminal<\/button>/);
+});
+
 test('Workroom opens the governed terminal socket only from an explicit terminal action', async () => {
   const source = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
   assert.match(source, /createTerminalClient/);
