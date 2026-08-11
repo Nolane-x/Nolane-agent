@@ -228,6 +228,24 @@ test('composer context menu exposes ForgeOS skills and keeps provenance visible'
   assert.match(html, /data-menu-kind="skill"/);
 });
 
+test('composer finds skills and commands beyond the compact unfiltered menu', () => {
+  const skills = Array.from({ length: 15 }, (_value, index) => ({
+    id: `skill-${index + 1}`,
+    name: index === 14 ? 'Needle skill' : `Skill ${index + 1}`,
+    source: 'ForgeOS',
+  }));
+  const commands = Array.from({ length: 21 }, (_value, index) => ({
+    id: index === 20 ? 'needle-command' : `command-${index + 1}`,
+    title: index === 20 ? 'Needle command' : `Command ${index + 1}`,
+  }));
+
+  const context = renderHomeView(buildHomeViewModel({ menu: { type: 'context', query: 'needle' }, skills }));
+  const command = renderHomeView(buildHomeViewModel({ menu: { type: 'command', query: 'needle' }, commands }));
+
+  assert.match(context, /Needle skill/);
+  assert.match(command, /Needle command/);
+});
+
 test('composer project creation event is wired to the desktop picker', async () => {
   const source = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
   assert.match(source, /addEventListener\('nolane:project-create-requested',\s*requestProjectCreation\)/);
