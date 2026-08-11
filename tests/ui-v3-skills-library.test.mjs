@@ -94,7 +94,8 @@ test('skill library CSS uses semantic tokens and collapses the catalogue split o
   assert.match(styles, /var\(--text-primary\)/);
   assert.match(styles, /\.skills-library__filter\{[^}]*var\(--text-secondary\)/);
   assert.match(styles, /\.skill-library-item__body small\{[^}]*var\(--text-secondary\)/);
-  assert.match(styles, /\.skills-library \.surface-page__header \.eyebrow\{color:var\(--text-secondary\)\}/);
+  assert.match(styles, /\.skills-library\.surface-page \.surface-page__header \.eyebrow\{color:var\(--text-secondary\)\}/);
+  assert.match(styles, /\.skills-library__preview-empty\{[^}]*color:var\(--text-secondary\)/);
   assert.doesNotMatch(styles, /#[0-9a-f]{3,8}\b/i);
   assert.match(responsive, /\.skills-library__body\{grid-template-columns:1fr/);
 });

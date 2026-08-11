@@ -1,3 +1,0 @@
-import { t } from '../../core/i18n.3ac66b9b915e.mjs';
-export function buildIntelligenceView({ symbols = [], routes = [], models = [], dependencies = [], graph = {} } = {}) { return Object.freeze({ symbolCount: symbols.length, routeCount: routes.length, modelCount: models.length, dependencyCount: dependencies.length, graph: Object.freeze({ nodeCount: graph.nodes?.length ?? 0, edgeCount: graph.edges?.length ?? 0, animation: 'interaction-only', backgroundAnimation: false }) }); }
-export function renderIntelligenceView(value, { language = 'en' } = {}) { return `<section><h1>${t('control.domain.intelligence', language)}</h1><p>${value.symbolCount} ${t('control.symbols', language)} · ${value.routeCount} ${t('control.backendRoutes', language)}</p></section>`; }
