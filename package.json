@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node src/app.mjs",
     "test": "node scripts/run-node-test-suite.mjs",
-    "validate": "npm test && node --check src/app.mjs",
+    "validate": "npm run audit:evidence-freshness && npm test && node --check src/app.mjs",
     "smoke": "node scripts/smoke.mjs",
     "build:portable": "node scripts/build-portable.mjs",
     "build:windows": "bash scripts/build-windows.sh",

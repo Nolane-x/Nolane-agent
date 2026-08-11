@@ -12,6 +12,7 @@ test('every package script references files that exist and VS Code builds reprod
     }
   }
   assert.equal(pkg.scripts.test, 'node scripts/run-node-test-suite.mjs');
+  assert.equal(pkg.scripts.validate, 'npm run audit:evidence-freshness && npm test && node --check src/app.mjs');
   assert.equal(pkg.scripts['build:vscode'], 'node scripts/build-vscode-extension.mjs && node scripts/validate-vscode-extension.mjs');
   assert.equal(pkg.scripts['audit:features'], 'node scripts/audit-feature-checklist.mjs docs/source-feature-checklist-vn.txt docs');
 });
