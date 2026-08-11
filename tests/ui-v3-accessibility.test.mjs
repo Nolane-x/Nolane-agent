@@ -15,6 +15,13 @@ test('settings center has landmarks labels live status and keyboard-friendly con
   assert.match(html,/data-settings-layer/);
 });
 
+test('settings switches expose an explicit accessible name', () => {
+  const state={status:'ready',experience:'standard',query:'',draft:{general:{notifications:true}},provenance:{},warnings:[],errors:[],visibleCategories:[{id:'general',title:'General',description:'Core',fields:[{path:'general.notifications',title:'Notifications',type:'boolean',scope:['user'],level:'standard'}]}],models:{models:[]},providers:[]};
+  const html=renderSettingsView(state);
+
+  assert.match(html,/<button[^>]*role="switch"[^>]*aria-label="Notifications"/);
+});
+
 test('runtime-critical labels use the legible secondary text token', async () => {
   const [shell, experience, onboarding, home, surfaces, settings, workroom, controlPlane] = await Promise.all([
     readFile('ui-v3/styles/layout/app-shell.css', 'utf8'),
