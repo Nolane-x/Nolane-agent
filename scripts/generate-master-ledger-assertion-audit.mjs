@@ -1,12 +1,11 @@
 #!/usr/bin/env node
-import { createHash } from 'node:crypto';
 import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { indexTestSource } from '../src/forensics/test-assertion-index.mjs';
 import { auditMasterLedgerAssertions } from '../src/forensics/master-ledger-assertion-audit.mjs';
+import { evidenceFileSha256 } from '../src/release/evidence-file-hash.mjs';
 
-const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
 async function exists(file) { try { await access(file); return true; } catch { return false; } }
 function uniquePaths(requirements) {
   const values = new Set();
@@ -27,8 +26,10 @@ export async function generateMasterLedgerAssertionAudit({ root = process.cwd(),
   for (const relativePath of uniquePaths(requirements)) {
     const absolutePath = path.join(root, relativePath);
     if (!await exists(absolutePath)) continue;
-    const bytes = await readFile(absolutePath); existingPaths.add(relativePath); sha256ByPath.set(relativePath, sha256(bytes));
-    if (relativePath.startsWith('tests/') || relativePath.includes('/test/')) testIndex.set(relativePath, indexTestSource({ path: relativePath, source: bytes.toString('utf8') }));
+    const bytes = await readFile(absolutePath); existingPaths.add(relativePath); sha256ByPath.set(relativePath, evidenceFileSha256(bytes));
+    if (relativePath.startsWith('tests/') || relativePath.includes('/test/')) {
+      testIndex.set(relativePath, { ...indexTestSource({ path: relativePath, source: bytes.toString('utf8') }), sourceSha256: evidenceFileSha256(bytes) });
+    }
   }
   const report = auditMasterLedgerAssertions({ requirements, existingPaths, sha256ByPath, testIndex, maxRequirementsPerTest });
   const outputJson = path.join(root, 'docs/checkpoints/MASTER-LEDGER-ASSERTION-AUDIT.json');
