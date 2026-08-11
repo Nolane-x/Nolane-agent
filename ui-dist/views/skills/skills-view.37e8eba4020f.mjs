@@ -1,4 +1,4 @@
-import { icon } from '../../core/icon.mjs';
+import { icon } from '../../core/icon.a364a819d259.mjs';
 
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 const asList = (value) => Array.isArray(value) ? value : Array.isArray(value?.skills) ? value.skills : Array.isArray(value?.items) ? value.items : [];

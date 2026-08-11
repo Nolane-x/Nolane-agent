@@ -16,7 +16,14 @@ test('orchestration service production-wires skills, scoped subagents, gateway, 
   const service = new NolaneNativeOrchestrationService({ dataDir: root, skillRoots: [skillsRoot], clock: () => 1000, eventSink: (event) => events.push(event) });
   await service.open();
   assert.deepEqual((await service.listSkills()).map((item) => item.id), ['repair']);
-  assert.match((await service.loadSkill('repair', { grantedCapabilities: ['repo:read'] })).receiptSha256, /^[a-f0-9]{64}$/);
+  const localCatalog = await service.skillCatalog({ source: 'nolane', catalog: 'local', limit: 20 });
+  assert.equal(localCatalog.counts.total, 1);
+  assert.equal(localCatalog.counts.bySource.nolane, 1);
+  assert.equal(localCatalog.counts.byCatalog.local, 1);
+  assert.deepEqual(localCatalog.skills.map((skill) => ({ id: skill.id, source: skill.source, catalog: skill.catalog })), [{ id: 'repair', source: 'nolane', catalog: 'local' }]);
+  const loadedSkill = await service.loadSkill('repair', { grantedCapabilities: ['repo:read'] });
+  assert.match(loadedSkill.receiptSha256, /^[a-f0-9]{64}$/);
+  assert.deepEqual({ source: loadedSkill.source, catalog: loadedSkill.catalog, provenanceStatus: loadedSkill.provenanceStatus }, { source: 'nolane', catalog: 'local', provenanceStatus: 'local-user-supplied' });
   const child = service.spawnSubagent({ missionId: 'm1', parentAgentId: 'root', agentId: 'child', objective: 'Inspect', parentCapabilities: ['repo:read'], delegatedCapabilities: ['repo:read'], allowedPaths: ['src/**'] });
   assert.equal(child.status, 'running');
   const handoff = service.completeSubagent('child', { summary: 'Found issue', evidence: [{ receiptSha256: 'a'.repeat(64) }], verified: true });

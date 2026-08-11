@@ -46,6 +46,31 @@ test('library renders translated empty and failure states without unescaped cata
   assert.doesNotMatch(failure, /<unsafe>/);
 });
 
+test('local Agent Skills show their distinct catalog and supply-chain metadata safely', async () => {
+  const api = {
+    async get() {
+      return [{
+        id: 'browser-audit', source: 'nolane', catalog: 'local', title: 'Browser audit',
+        description: 'Review a browser flow.', provenanceStatus: 'local-user-supplied', license: 'MIT',
+        sourceUrl: 'https://example.test/skills/browser-audit', contentSha256: 'a'.repeat(64),
+      }];
+    },
+    async post() { return { id: 'browser-audit', title: 'Browser audit', content: '# Browser audit' }; },
+  };
+  const controller = createSkillsLibraryController({ api, language: 'en' });
+  await controller.load();
+  controller.setCatalog('local');
+  await controller.selectSkill('browser-audit');
+  const html = renderSkillsLibrary(controller.snapshot());
+
+  assert.match(html, /Nolane local/);
+  assert.match(html, /local-user-supplied/);
+  assert.match(html, /MIT/);
+  assert.match(html, /aaaaaaaaaaaa/);
+  assert.match(html, /example\.test\/skills\/browser-audit/);
+  assert.match(html, /<option value="local" selected>Local skills<\/option>/);
+});
+
 test('skill library is discoverable from Home without expanding the frozen global rail', async () => {
   const [rail, app, home] = await Promise.all([
     readFile('ui-v3/shell/global-rail.mjs', 'utf8'),

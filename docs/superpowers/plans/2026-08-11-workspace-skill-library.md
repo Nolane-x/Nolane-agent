@@ -32,7 +32,7 @@
 - [x] Implement a local-state controller. Filter title/name/source/maturity text case-insensitively; catalog filter accepts `''`, `native`, `v2`, and `legacy`. Escape every dynamic string in render output. Preserve preview only for the selected returned entry and clear it if filtering hides that entry.
 - [x] Extend the test for Vietnamese copy, selection `aria-pressed`, native catalog visibility, runtime error, empty result, and a mismatched returned id.
 - [x] Re-run the focused test; pass.
-- [ ] Commit: `feat: add workspace skill library view` after all route, styling, and generated release assets are verified.
+- [x] Route, styling, generated UI release assets, accessibility tests, and semantic-token validation were verified. The later interoperability follow-up is tracked in `2026-08-11-agent-skills-interoperability.md`.
 
 ### Task 2: Route and navigation exposure
 
@@ -49,7 +49,7 @@
 - [x] Run `node --test tests/ui-v3-skills-library.test.mjs`; the navigation-contract regression was reproduced before changing the discoverability surface.
 - [x] Register the route after Projects. Add a visible Home action without expanding the global rail; mount event listeners for search input, catalog select, and preview buttons; remove listeners on cleanup. Map `/skills` to Workspace in the view-state bridge.
 - [x] Run `node --test tests/ui-v3-skills-library.test.mjs tests/ui-v3-accessibility.test.mjs`; pass.
-- [ ] Commit with the completed library feature.
+- [x] Route and Home discoverability are implemented and covered by the workspace Skill Library test contract.
 
 ### Task 3: Theme-aware responsive page
 
@@ -74,7 +74,7 @@
   npm run verify:ui-v3-release
   npm run audit:ui-quality
   ```
-- [ ] Commit the completed feature with generated UI release assets.
+- [x] Generated UI release assets were rebuilt and verified without Electron packaging.
 
 ## Self-review
 
