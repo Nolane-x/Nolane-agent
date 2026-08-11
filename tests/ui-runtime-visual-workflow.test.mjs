@@ -39,6 +39,12 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(capturer, /page\.goto/);
   assert.match(capturer, /page\.screenshot/);
   assert.match(capturer, /sha256/);
+  assert.match(capturer, /async function captureRenderDiagnostic/);
+  assert.match(capturer, /UI state did not render: \$\{state\.id\}/);
+  assert.match(capturer, /api\/onboarding\/status/);
+  assert.match(capturer, /onboardingStatus/);
+  assert.match(capturer, /pageErrors: pageErrors\.map\(redactDiagnosticText\)/);
+  assert.doesNotMatch(capturer, /credential:\s*credential/);
   assert.match(capturer, /assertSettingsScrollPreserved/);
   assert.match(capturer, /setScrollForVisibleControl/);
   assert.match(capturer, /await assertScroll\(accent\.before, 'settings content'\)/);

@@ -53,6 +53,64 @@ async function previousCaptures(output) {
   }
 }
 
+function redactDiagnosticText(value) {
+  return String(value ?? '').replace(/([?&](?:token|authorization)=[^&\s]+)/gi, '$1[redacted]');
+}
+
+function safeDiagnosticUrl(value) {
+  try {
+    const url = new URL(value);
+    return `${url.origin}${url.pathname}${url.hash}`;
+  } catch {
+    return 'unavailable';
+  }
+}
+
+async function readOnboardingStatus(root, credential) {
+  try {
+    const endpoint = new URL('/api/onboarding/status', root);
+    endpoint.searchParams.set('token', credential);
+    const response = await fetch(endpoint);
+    if (!response.ok) return Object.freeze({ reachable: false, status: response.status });
+    const payload = await response.json();
+    return Object.freeze({
+      reachable: true,
+      status: response.status,
+      required: Boolean(payload?.required),
+      disabled: Boolean(payload?.disabled),
+      inferredExistingUser: Boolean(payload?.inferredExistingUser),
+      completionSource: typeof payload?.state?.source === 'string' ? payload.state.source : null,
+    });
+  } catch (error) {
+    return Object.freeze({ reachable: false, error: redactDiagnosticText(error?.message ?? error) });
+  }
+}
+
+async function captureRenderDiagnostic({ page, state, root, credential, pageErrors }) {
+  try {
+    const rendered = await page.evaluate((selector) => Object.freeze({
+      title: document.title,
+      hash: location.hash,
+      selectorPresent: Boolean(document.querySelector(selector)),
+      roots: [...document.body.children].slice(0, 8).map((node) => Object.freeze({
+        tag: node.tagName.toLowerCase(),
+        id: node.id || null,
+        className: typeof node.className === 'string' ? node.className.slice(0, 160) : null,
+        hidden: Boolean(node.hidden),
+      })),
+    }), state.selector);
+    const onboardingStatus = state.id === 'onboarding' ? await readOnboardingStatus(root, credential) : null;
+    return Object.freeze({
+      url: safeDiagnosticUrl(page.url()),
+      rendered,
+      onboardingStatus,
+      pageErrors: pageErrors.map(redactDiagnosticText),
+    });
+  } catch (error) {
+    return Object.freeze({ diagnosticFailure: redactDiagnosticText(error?.message ?? error), pageErrors: pageErrors.map(redactDiagnosticText) });
+  }
+}
+
 async function assertSettingsScrollPreserved(page) {
   const setScrollPosition = () => page.evaluate(() => {
     const scroller = document.querySelector('[data-scroll-key="settings-content"]');
@@ -159,7 +217,12 @@ export async function captureUiRuntimeVisual({ baseUrl, token, outputDirectory, 
       const pageErrors = [];
       page.on('pageerror', (error) => pageErrors.push(String(error?.message ?? error)));
       await page.goto(stateUrl(root, credential, state.route), { waitUntil: 'domcontentloaded', timeout: 30_000 });
-      await page.locator(state.selector).waitFor({ state: 'visible', timeout: 30_000 });
+      try {
+        await page.locator(state.selector).waitFor({ state: 'visible', timeout: 30_000 });
+      } catch (error) {
+        const diagnostic = await captureRenderDiagnostic({ page, state, root, credential, pageErrors });
+        throw new Error(`UI state did not render: ${state.id}; diagnostic=${JSON.stringify(diagnostic)}`, { cause: error });
+      }
       await page.waitForTimeout(400);
       if (state.prepare) await state.prepare(page);
       if (state.id === 'settings') await assertSettingsScrollPreserved(page);
