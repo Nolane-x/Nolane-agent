@@ -39,7 +39,8 @@ test('project picker localizes actions and can represent no active project', () 
   assert.match(html, /Không làm việc trong dự án/);
 });
 
-test('project registry Add project action reuses the shared project creation flow', async () => {
+test('project registry owns its Add project action without a duplicate global listener', async () => {
   const source = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
-  assert.match(source, /\['new',\s*'add',\s*'none'\]/);
+  assert.match(source, /data-project-action="add"[^\n]+nolane:project-create-requested/);
+  assert.doesNotMatch(source, /\['new',\s*'add',\s*'none'\]/);
 });
