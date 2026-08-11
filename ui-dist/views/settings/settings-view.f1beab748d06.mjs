@@ -1,6 +1,6 @@
-import { renderModelProfilesPanel } from './model-profiles-panel.mjs';
-import { icon } from '../../core/icon.mjs';
-import { normalizeExperience } from '../../core/experience-policy.mjs';
+import { renderModelProfilesPanel } from './model-profiles-panel.73db3c5047e0.mjs';
+import { icon } from '../../core/icon.b57a30fa36f4.mjs';
+import { normalizeExperience } from '../../core/experience-policy.7f6fe4ef0cdf.mjs';
 
 const esc=(v)=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function at(root,path){return String(path).split('.').reduce((v,k)=>v?.[k],root)}

@@ -24,5 +24,6 @@ test('UI v3 settings keeps Vietnamese labels translated after a live language sw
   assert.match(view, /Đêm tím/);
   assert.match(view, /VI_SUFFIX/);
   assert.match(view, /ngày/);
+  assert.match(view, /Đã đặt model định tuyến mặc định/);
   assert.match(view, /Mục này chỉ có thao tác và chẩn đoán/);
 });

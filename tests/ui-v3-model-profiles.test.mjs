@@ -16,11 +16,13 @@ test('model profile panel distinguishes unknown capabilities and exposes discove
 });
 
 test('CLI model profiles expose discovery and a manual model entry point with Vietnamese copy', () => {
-  const html = renderModelProfilesPanel({ models: [], providers: [{ id: 'codex', kind: 'cli', label: 'Codex CLI', available: true, authenticated: true, healthy: true }] }, { lang: 'vi' });
+  const html = renderModelProfilesPanel({ models: [{ key: 'codex/gpt-5.6-codex', providerId: 'codex', modelId: 'gpt-5.6-codex', capabilities: {} }], providers: [{ id: 'codex', kind: 'cli', label: 'Codex CLI', available: true, authenticated: true, healthy: true, modelSelection: { mode: 'forwarded' } }] }, { lang: 'vi' });
   assert.match(html, /Thêm model CLI/);
   assert.match(html, /name="modelId"/);
   assert.match(html, /Thêm model/);
   assert.match(html, /data-model-action="discover"/);
+  assert.match(html, /data-model-action="set-routing-default"[^>]*data-model-key="codex\/gpt-5\.6-codex"/);
+  assert.match(html, /Dùng để định tuyến/);
   assert.doesNotMatch(html, /Not configured|No discovered models/);
 });
 
@@ -97,6 +99,21 @@ test('settings controller selects a discovered API model as the provider default
   assert.equal(controller.snapshot().errors.length, 0);
 });
 
+test('settings controller can make a forwarded CLI model the routing default without calling an API-model endpoint', async () => {
+  const api = {
+    get: async (path) => path.includes('catalog') ? { categories: [] } : path.includes('effective') ? { value: { agent: { model: 'auto' }, experience: { level: 'everyday' } } } : path.includes('provider-connections') ? [{ id: 'codex', kind: 'cli' }] : { models: [] },
+    put: async () => ({}),
+    post: async () => { throw new Error('routing default should remain a pending settings change'); },
+  };
+  const controller = createSettingsController({ api });
+  await controller.load();
+  controller.setRoutingDefault('codex/gpt-5.6-codex');
+  const snapshot = controller.snapshot();
+  assert.equal(snapshot.draft.agent.model, 'codex/gpt-5.6-codex');
+  assert.equal(snapshot.dirty, true);
+  assert.match(snapshot.statusMessage, /Routing default set to codex\/gpt-5\.6-codex/);
+});
+
 test('API model setup discovers before default selection and exposes an explicit default action', () => {
   const html = renderModelProfilesPanel({
     providers: [{ id: 'openai-picker', kind: 'openai-responses', label: 'OpenAI API', configured: true, authenticated: true, healthy: false, error: 'model-selection-required' }],
@@ -113,6 +130,7 @@ test('settings event router sends an API default-model choice to the controller'
   const app = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
 
   assert.match(app, /modelAction\.dataset\.modelAction==='select'[\s\S]{0,160}controller\.selectProviderModel\(modelAction\.dataset\.providerId,modelAction\.dataset\.modelId\)/);
+  assert.match(app, /modelAction\.dataset\.modelAction==='set-routing-default'[\s\S]{0,160}controller\.setRoutingDefault\(modelAction\.dataset\.modelKey\)/);
   assert.match(app, /modelAction\.dataset\.modelAction==='verify-provider'[\s\S]{0,120}controller\.verifyProvider\(modelAction\.dataset\.providerId\)/);
 });
 
