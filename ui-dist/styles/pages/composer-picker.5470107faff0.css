@@ -1,0 +1,4 @@
+.composer-select__search{display:block;padding:4px 4px 7px;border-bottom:1px solid var(--border-subtle)}
+.composer-select__search input{width:100%;min-height:32px;padding:0 9px;border:1px solid var(--border-default);border-radius:8px;background:var(--surface-raised);color:var(--text-primary);font-size:11px;outline:0}
+.composer-select__search input:focus{border-color:color-mix(in srgb,var(--accent) 58%,var(--border-default));box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 12%,transparent)}
+.composer-select__option[hidden]{display:none}

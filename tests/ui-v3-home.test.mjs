@@ -60,6 +60,8 @@ test('home composer keeps every ready discovered model selectable', () => {
   const modelMenu = html.match(/data-composer-picker="modelChoice"[\s\S]*?<div id="composer-modelChoice-menu"[\s\S]*?<\/div>/)?.[0] ?? '';
 
   assert.match(modelMenu, /data-picker-value="codex\/model-51"/);
+  assert.match(modelMenu, /data-composer-picker-search/);
+  assert.match(modelMenu, /placeholder="Search models…"/);
 });
 
 test('home composer offers only ready provider deployments and disables send until a provider is usable', () => {
