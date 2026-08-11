@@ -1553,7 +1553,7 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
     }
     if (method === 'POST' && pathname === '/api/onboarding/skip') {
       if (!onboardingService?.skip) throw Object.assign(new Error('Onboarding service is not configured'), { statusCode: 503 });
-      return json(res, 200, await onboardingService.skip());
+      return json(res, 200, await onboardingService.skip(await readJson(req, 64_000)));
     }
     if (method === 'GET' && pathname === '/api/session/restore') {
       if (!sessionRestore?.restore) throw Object.assign(new Error('Session restore service is not configured'), { statusCode: 503 });

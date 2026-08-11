@@ -32,6 +32,17 @@ test('onboarding controller restores progress and sends explicit completion', as
   assert.equal(calls.at(-1)[1].source,'guided');
 });
 
+test('onboarding skip preserves a deliberately selected interface language', async () => {
+  const calls=[];
+  const api={
+    get:async()=>({required:true,state:{currentStep:0,draft:{language:'en'}}}),
+    post:async(path,body)=>{calls.push([path,body]);return{profile:{preferences:{experience:{level:'everyday'}}}};}
+  };
+  const controller=createOnboardingController({api});await controller.load();
+  controller.set('language','vi');await controller.skip();
+  assert.deepEqual(calls.at(-1),['/api/onboarding/skip',{answers:{language:'vi'}}]);
+});
+
 test('fresh product defaults begin in Everyday instead of a legacy experience alias', () => {
   const appSource = fs.readFileSync(new URL('../src/app.mjs', import.meta.url), 'utf8');
   assert.match(appSource, /experience:\s*\{\s*level:\s*'everyday'\s*\}/);

@@ -102,3 +102,13 @@ test('skip is idempotent and never overwrites an existing completion source', as
   assert.equal(second.skipped, false);
   assert.equal(second.state.source, 'guided');
 });
+
+test('skip preserves an explicitly selected interface language without applying other onboarding defaults', async (t) => {
+  const { settings, service } = await fixture(t);
+  const result = await service.skip({ answers: { language: 'vi' } });
+
+  assert.equal(result.skipped, true);
+  const user = await settings.layer('user');
+  assert.equal(user.general.language, 'vi');
+  assert.equal(user.experience, undefined);
+});

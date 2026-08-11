@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { GLOBAL_DESTINATIONS, createAppShellModel } from '../ui-v3/shell/app-shell.mjs';
+import { GLOBAL_DESTINATIONS, createAppShellModel, localizeRouteTitle } from '../ui-v3/shell/app-shell.mjs';
 
 test('Nolane Agent rail contains exactly the approved top-level destinations', () => {
   assert.deepEqual(GLOBAL_DESTINATIONS.map((item) => item.id), [
@@ -19,4 +19,9 @@ test('AppShell keeps rail and sidebar identities stable across route changes', (
   assert.equal(next.railInstanceId, initial.railInstanceId);
   assert.equal(next.sidebarInstanceId, initial.sidebarInstanceId);
   assert.equal(next.activePath, '/missions');
+});
+
+test('AppShell localizes the onboarding route title before setup is completed', () => {
+  assert.equal(localizeRouteTitle('/onboarding', 'Welcome', 'vi'), 'Chào mừng');
+  assert.equal(localizeRouteTitle('/onboarding', 'Welcome', 'en'), 'Welcome');
 });

@@ -65,7 +65,7 @@ export class OnboardingService {
     return this.complete({ answers, source: 'recommended-defaults' });
   }
 
-  async skip() {
+  async skip({ answers = {} } = {}) {
     const status = await this.status();
     if (!status.required) {
       return Object.freeze({
@@ -76,7 +76,11 @@ export class OnboardingService {
         profile: await this.personalizationProfile.exportProfile()
       });
     }
-    const state = await this.state.complete({ source: 'skipped', draft: {} });
-    return Object.freeze({ schema: 'nolane.onboarding-completion.v1', skipped: true, alreadyCompleted: false, state, profile: await this.personalizationProfile.exportProfile() });
+    const language = ['system', 'en', 'vi'].includes(String(answers?.language ?? '')) ? String(answers.language) : null;
+    const profile = language
+      ? await this.personalizationProfile.updatePreferences({ patch: { general: { language }, personalization: { preferredDocumentationLanguage: language } }, source: 'onboarding-skip' }).then((result) => result.profile)
+      : await this.personalizationProfile.exportProfile();
+    const state = await this.state.complete({ source: 'skipped', draft: language ? { language } : {} });
+    return Object.freeze({ schema: 'nolane.onboarding-completion.v1', skipped: true, alreadyCompleted: false, state, profile });
   }
 }
