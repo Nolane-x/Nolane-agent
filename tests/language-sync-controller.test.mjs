@@ -66,6 +66,7 @@ test('language sync restores the active view state after a full route render', a
     rerender: async () => calls.push('render'),
     reconcile: async () => ({ language: 'en' }),
     invalidate: () => calls.push('invalidate'),
+    settle: async () => calls.push('settle'),
     captureViewState: () => {
       calls.push('capture');
       return state;
@@ -76,5 +77,5 @@ test('language sync restores the active view state after a full route render', a
   });
 
   await controller.preview('vi', '/settings');
-  assert.deepEqual(calls, ['capture', 'invalidate', 'render', ['restore', state]]);
+  assert.deepEqual(calls, ['capture', 'invalidate', 'render', 'settle', ['restore', state]]);
 });
