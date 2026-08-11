@@ -1,23 +1,23 @@
-import { createRouter } from './core/router.mjs';
-import { createUiStore } from './core/ui-store.mjs';
-import { createUiBus } from './core/ui-bus.mjs';
-import { createApiClient } from './core/api-client.mjs';
-import { createLayoutStore } from './core/layout-store.mjs';
-import { createResizableRegionController } from './core/resizable-region.mjs';
-import { applyPreferences, readCachedPreferences } from './core/preference-runtime.mjs';
-import { createLanguageSyncController } from './core/language-sync-controller.mjs';
-import { normalizeExperience } from './core/experience-policy.mjs';
-import { createExperienceTransitionController } from './core/experience-transition-controller.mjs';
-import { createViewStateBridge } from './core/view-state-bridge.mjs';
-import { captureViewState, restoreViewState } from './core/view-state-preserver.mjs';
-import { createSessionRestoreController } from './core/session-restore-controller.mjs';
-import { createUpdateStateController } from './core/update-state-controller.mjs';
-import { localizeRouteTitle, renderAppShell } from './shell/app-shell.mjs';
-import { renderUpdateNotice } from './components/update-notice/update-notice.mjs';
-import { createSessionSidebarModel } from './shell/session-sidebar.mjs';
-import { projectNameFromPath } from './shell/project-picker.mjs';
-import { createOutputSummaryController, renderOutputSummary } from './views/summary/output-summary.mjs';
-import { BACKEND_ATLAS } from './generated/backend-atlas.mjs';
+import { createRouter } from './core/router.4de6216e3fb3.mjs';
+import { createUiStore } from './core/ui-store.620c61a0042e.mjs';
+import { createUiBus } from './core/ui-bus.3d196ea4c292.mjs';
+import { createApiClient } from './core/api-client.0c99f78cc56a.mjs';
+import { createLayoutStore } from './core/layout-store.b831bd598214.mjs';
+import { createResizableRegionController } from './core/resizable-region.10bad18a42c4.mjs';
+import { applyPreferences, readCachedPreferences } from './core/preference-runtime.a46dfcc7a12d.mjs';
+import { createLanguageSyncController } from './core/language-sync-controller.1de5ebd646ff.mjs';
+import { normalizeExperience } from './core/experience-policy.3493026a7e95.mjs';
+import { createExperienceTransitionController } from './core/experience-transition-controller.45bfc47ed5df.mjs';
+import { createViewStateBridge } from './core/view-state-bridge.3840b58cf584.mjs';
+import { captureViewState, restoreViewState } from './core/view-state-preserver.2b6cab9bf155.mjs';
+import { createSessionRestoreController } from './core/session-restore-controller.9f8ba315f0f1.mjs';
+import { createUpdateStateController } from './core/update-state-controller.6df7adcf6e79.mjs';
+import { localizeRouteTitle, renderAppShell } from './shell/app-shell.a54643dd79f7.mjs';
+import { renderUpdateNotice } from './components/update-notice/update-notice.f82121b6dabd.mjs';
+import { createSessionSidebarModel } from './shell/session-sidebar.4c74ec071356.mjs';
+import { projectNameFromPath } from './shell/project-picker.d8343a4b7e77.mjs';
+import { createOutputSummaryController, renderOutputSummary } from './views/summary/output-summary.c88db85b9b61.mjs';
+import { BACKEND_ATLAS } from './generated/backend-atlas.5e0fbe90b1f4.mjs';
 
 const store = createUiStore({ route: '/', ready: false });
 const bus = createUiBus();
@@ -223,7 +223,7 @@ function rerenderView(root, view, { preserve = null } = {}) {
 
 router.register({ id: 'home', pattern: /^\/(?:\?.*)?$/, title: 'Chat', load: async () => {
   // The build rewrites this local import to the immutable hashed home module.
-  const { createHomeController, renderHomeView } = await import('./views/home/home-view.mjs');
+  const { createHomeController, renderHomeView } = await import('./views/home/home-view.ef9a89d6ad0d.mjs');
   const restoredDraft = sessionRestore.snapshot().drafts.home;
   const queryProjectId = new URLSearchParams((location.hash.split('?')[1] ?? '')).get('projectId');
   const controller = createHomeController({ api, language: cachedPreferences.language }); await controller.load();
@@ -276,16 +276,16 @@ router.register({ id: 'home', pattern: /^\/(?:\?.*)?$/, title: 'Chat', load: asy
 } });
 
 router.register({ id: 'missions', pattern: /^\/missions(?:\?.*)?$/, cache: 'path', title: 'Activity', load: async () => {
-  const { createActivityController, renderActivityView } = await import('./views/activity/activity-view.mjs');
+  const { createActivityController, renderActivityView } = await import('./views/activity/activity-view.c30491ac9763.mjs');
   const selectedMissionId=new URLSearchParams((location.hash.split('?')[1]??'')).get('id');const controller=createActivityController({api,language:cachedPreferences.language,selectedMissionId,experience:cachedPreferences.experience});await controller.load();let root=null;let timer=null;const view={experienceLevel:'workspace',render:()=>renderActivityView(controller.snapshot()),mount(node){root=node;const repaint=()=>{if(root)root.innerHTML=view.render();};const click=async(e)=>{const f=e.target.closest('[data-activity-filter]');if(f){controller.setFilter(f.dataset.activityFilter);repaint();return;}const mission=e.target.closest('[data-activity-mission]');if(mission){await controller.selectMission(mission.dataset.activityMission);repaint();return;}const tt=e.target.closest('[data-time-travel-action]');if(!tt)return;const action=tt.dataset.timeTravelAction;const checkpointId=tt.dataset.timeTravelCheckpoint;tt.disabled=true;try{if(action==='create')await controller.createCheckpoint();else if(action==='select')await controller.selectCheckpoint(checkpointId);else if(action==='compare')await controller.compareCheckpoint(checkpointId);else if(action==='branch')await controller.createBranch(checkpointId);else if(action==='replay')await controller.replayMission(checkpointId);else if(action==='restore'){const file=tt.dataset.timeTravelPath;const approved=confirm(cachedPreferences.language==='vi'?`Khôi phục ${file} từ checkpoint? Trạng thái hiện tại sẽ được backup và ghi receipt mới.`:`Restore ${file} from the checkpoint? The current state will be backed up and a new receipt recorded.`);if(approved)await controller.restoreFile(checkpointId,file,{confirmOverwrite:true});}repaint();}catch(error){alert(String(error?.message??error));repaint();}};const change=(e)=>{if(e.target.matches('[data-activity-follow]')){controller.setFollow(e.target.checked);repaint();}};timer=setInterval(async()=>{if(controller.snapshot().follow){await controller.refresh();repaint();}},5000);root.addEventListener('click',click);root.addEventListener('change',change);return()=>{clearInterval(timer);root.removeEventListener('click',click);root.removeEventListener('change',change);root=null;}}};return view;
 } });
 
 router.register({ id: 'projects', pattern: /^\/projects(?:\?.*)?$/, title: 'Projects', load: async () => {
-  const { createProjectsController, renderProjectsView } = await import('./views/projects/project-view.mjs');const controller=createProjectsController({api,language:cachedPreferences.language});await controller.load();let root=null;const view={render:()=>renderProjectsView(controller.snapshot()),mount(node){root=node;const input=e=>{if(e.target.matches('[data-project-search]')){controller.setQuery(e.target.value);rerenderView(root,view);}};const click=e=>{if(e.target.closest('[data-project-action="add"]')){window.dispatchEvent(new CustomEvent('nolane:project-create-requested',{detail:{source:'projects-view'}}));}};root.addEventListener('input',input);root.addEventListener('click',click);return()=>{root.removeEventListener('input',input);root.removeEventListener('click',click)}}};return view;
+  const { createProjectsController, renderProjectsView } = await import('./views/projects/project-view.68018f060ef8.mjs');const controller=createProjectsController({api,language:cachedPreferences.language});await controller.load();let root=null;const view={render:()=>renderProjectsView(controller.snapshot()),mount(node){root=node;const input=e=>{if(e.target.matches('[data-project-search]')){controller.setQuery(e.target.value);rerenderView(root,view);}};const click=e=>{if(e.target.closest('[data-project-action="add"]')){window.dispatchEvent(new CustomEvent('nolane:project-create-requested',{detail:{source:'projects-view'}}));}};root.addEventListener('input',input);root.addEventListener('click',click);return()=>{root.removeEventListener('input',input);root.removeEventListener('click',click)}}};return view;
 } });
 
 router.register({ id: 'skills', pattern: /^\/skills(?:\?.*)?$/, title: 'Skills', load: async () => {
-  const { createSkillsLibraryController, renderSkillsLibrary } = await import('./views/skills/skills-view.mjs');
+  const { createSkillsLibraryController, renderSkillsLibrary } = await import('./views/skills/skills-view.1c17674982a0.mjs');
   const controller = createSkillsLibraryController({ api, language: cachedPreferences.language });
   await controller.load();
   let root = null;
@@ -328,11 +328,11 @@ router.register({ id: 'skills', pattern: /^\/skills(?:\?.*)?$/, title: 'Skills',
   return view;
 } });
 
-router.register({ id: 'review-mission', pattern: /^\/review\/.+$/, cache: 'path', title: 'Review & Ship', load: async () => { const { createReviewModel, renderReviewView } = await import('./views/review/review-view.mjs'); const model = createReviewModel({ missionId: location.hash.slice(1).split('/').at(-1) || 'current' }); return { experienceLevel:'workspace',render: () => renderReviewView(model.snapshot(), { language: cachedPreferences.language }) }; } });
-router.register({ id: 'review', pattern: '/review', title: 'Review Queue', load: async () => { const { createReviewController, renderReviewQueue } = await import('./views/review-queue/review-queue.mjs');const controller=createReviewController({api,language:cachedPreferences.language});await controller.load();return {experienceLevel:'workspace',render:()=>renderReviewQueue(controller.snapshot())}; } });
+router.register({ id: 'review-mission', pattern: /^\/review\/.+$/, cache: 'path', title: 'Review & Ship', load: async () => { const { createReviewModel, renderReviewView } = await import('./views/review/review-view.2708ba2b1093.mjs'); const model = createReviewModel({ missionId: location.hash.slice(1).split('/').at(-1) || 'current' }); return { experienceLevel:'workspace',render: () => renderReviewView(model.snapshot(), { language: cachedPreferences.language }) }; } });
+router.register({ id: 'review', pattern: '/review', title: 'Review Queue', load: async () => { const { createReviewController, renderReviewQueue } = await import('./views/review-queue/review-queue.28e6ddebd335.mjs');const controller=createReviewController({api,language:cachedPreferences.language});await controller.load();return {experienceLevel:'workspace',render:()=>renderReviewQueue(controller.snapshot())}; } });
 
 router.register({ id: 'workroom', pattern: /^\/workroom(?:\?.*)?$/, title: 'Studio', load: async () => {
-  const { createWorkroomModel, renderWorkroomView } = await import('./views/workroom/workroom-view.mjs');
+  const { createWorkroomModel, renderWorkroomView } = await import('./views/workroom/workroom-view.7ae9d2dfaf5a.mjs');
   const projects = await api.get('/api/projects').catch(() => []); const list = Array.isArray(projects) ? projects : projects?.projects ?? [];
   const params = new URLSearchParams(location.hash.split('?')[1] ?? ''); const requestedProject = params.get('project') ?? params.get('projectId');
   const project = list.find((item) => String(item.id) === String(requestedProject)) ?? list[0] ?? null;
@@ -370,7 +370,7 @@ router.register({ id: 'workroom', pattern: /^\/workroom(?:\?.*)?$/, title: 'Stud
 } });
 
 router.register({ id: 'control-plane', pattern: /^\/control-plane(?:\/.*)?$/, cache: 'path', title: 'Control Plane', load: async () => {
-  const [{ createControlPlaneModel, renderControlPlaneShell }, { loadControlPlaneDomain, renderControlPlaneDomain }, { hasLiveDomainWorkspace, loadLiveDomainWorkspace, renderLiveDomainWorkspace }, browserView] = await Promise.all([import('./control-plane/control-plane-shell.mjs'), import('./control-plane/route-registry.mjs'), import('./control-plane/live-domain-workspace.mjs'), import('./views/browser/browser-view.mjs')]);
+  const [{ createControlPlaneModel, renderControlPlaneShell }, { loadControlPlaneDomain, renderControlPlaneDomain }, { hasLiveDomainWorkspace, loadLiveDomainWorkspace, renderLiveDomainWorkspace }, browserView] = await Promise.all([import('./control-plane/control-plane-shell.da0291d86841.mjs'), import('./control-plane/route-registry.4664a10f665b.mjs'), import('./control-plane/live-domain-workspace.a8ee32299c65.mjs'), import('./views/browser/browser-view.cfb606376345.mjs')]);
   const model=createControlPlaneModel({loader:loadControlPlaneDomain});let active=await model.navigate(location.hash.slice(1)||'/control-plane/overview');if(typeof active.module?.loadAgentKernelSnapshot==='function')await active.module.loadAgentKernelSnapshot({api});let capabilityModel=active.domain==='capabilities'?active.module.buildCapabilitiesViewModel():null;let root=null;
   const [projectPayload,missionPayload]=await Promise.all([api.get('/api/projects').catch(()=>[]),api.get('/api/missions').catch(()=>[])]);const projects=Array.isArray(projectPayload)?projectPayload:projectPayload?.projects??[];const missions=Array.isArray(missionPayload)?missionPayload:missionPayload?.missions??[];const mission=missions[0]??null;const projectId=activeProjectId??mission?.projectId??projects[0]?.id??null;const missionId=mission?.id??null;const goalId=mission?.metadata?.goalId??mission?.goalId??null;let skillQuery='';let skillCatalog='';let skillReloadTimer=null;const isBrowserWorkspace=active.domain==='runtime'&&active.subroute==='browser';let browserController=isBrowserWorkspace?browserView.createBrowserWorkspaceController({api,projectId,missionId,goalId,language:cachedPreferences.language}):null;if(browserController)await browserController.load();let liveWorkspace=!isBrowserWorkspace&&hasLiveDomainWorkspace(active.domain)?await loadLiveDomainWorkspace({api,domain:active.domain,projectId,missionId,language:cachedPreferences.language,skillQuery,skillCatalog}):null;
   const content=()=>browserController?browserView.renderBrowserWorkspace(browserController.snapshot()):active.domain==='capabilities'?active.module.renderCapabilitiesView({...capabilityModel,language:cachedPreferences.language}):liveWorkspace?renderLiveDomainWorkspace(liveWorkspace):renderControlPlaneDomain(active.domain,active.module,{language:cachedPreferences.language});
@@ -379,10 +379,10 @@ router.register({ id: 'control-plane', pattern: /^\/control-plane(?:\/.*)?$/, ca
   const view={experienceLevel:'expert',render:()=>renderControlPlaneShell(model.snapshot(),{content:content(),language:cachedPreferences.language}),mount(node){root=node;const click=async e=>{const refresh=e.target.closest('[data-control-action="refresh"]');const browserAction=e.target.closest('[data-browser-action]');if(browserAction&&browserController){browserAction.disabled=true;try{const browserUrl=root?.querySelector('[data-browser-url]')?.value;if(browserAction.dataset.browserAction==='refresh')await refreshLive(browserAction);if(browserAction.dataset.browserAction==='open'){browserController.setUrl(browserUrl);await browserController.open();}if(browserAction.dataset.browserAction==='goto'){browserController.setUrl(browserUrl);await browserController.goto();}if(browserAction.dataset.browserAction==='screenshot')await browserController.captureScreenshot();if(browserAction.dataset.browserAction==='close')await browserController.close();}finally{browserAction.disabled=false;}if(root)root.innerHTML=view.render();return;}if(refresh&&liveWorkspace){await refreshLive(refresh);return;}const skill=e.target.closest('[data-skill-id]');if(skill&&active.domain==='extensions'){skill.setAttribute('aria-busy','true');try{const preview=await api.post(`/api/skills/catalog/${encodeURIComponent(skill.dataset.skillId)}/load`,{});liveWorkspace=Object.freeze({...liveWorkspace,skillPreview:preview});if(root)root.innerHTML=view.render();}catch(error){alert(String(error?.payload?.error??error?.message??error));}finally{skill.removeAttribute('aria-busy');}return;}if(active.domain!=='capabilities')return;const domain=e.target.closest('[data-atlas-domain]');const method=e.target.closest('[data-atlas-method]');if(domain)capabilityModel=active.module.buildCapabilitiesViewModel({...capabilityModel,domain:domain.dataset.atlasDomain||null});if(method)capabilityModel=active.module.buildCapabilitiesViewModel({...capabilityModel,method:method.dataset.atlasMethod});if(domain||method)root.innerHTML=view.render();};const input=e=>{if(active.domain==='extensions'&&e.target.matches('[data-skill-catalog-search]')){skillQuery=e.target.value;clearTimeout(skillReloadTimer);skillReloadTimer=setTimeout(()=>reloadSkills().catch(()=>{}),180);return;}if(active.domain==='capabilities'&&e.target.matches('[data-atlas-search]')){capabilityModel=active.module.buildCapabilitiesViewModel({...capabilityModel,query:e.target.value});rerenderView(root,view);}};const change=e=>{if(active.domain==='extensions'&&e.target.matches('[data-skill-catalog-filter]')){skillCatalog=e.target.value;reloadSkills().catch(()=>{});}};root.addEventListener('click',click);root.addEventListener('input',input);root.addEventListener('change',change);return()=>{clearTimeout(skillReloadTimer);root.removeEventListener('click',click);root.removeEventListener('input',input);root.removeEventListener('change',change)}}};return view;
 } });
 
-router.register({ id: 'search', pattern: /^\/search(?:\?.*)?$/, title: 'Search', load: async () => { const { createSearchController, renderSearchView } = await import('./views/search/search-view.mjs');const controller=createSearchController({api,language:cachedPreferences.language,capabilities:BACKEND_ATLAS.entries});await controller.load();let root=null;const view={render:()=>renderSearchView(controller.snapshot()),mount(node){root=node;const input=e=>{if(e.target.matches('[data-global-search-input]')){controller.setQuery(e.target.value);rerenderView(root,view);}};const click=e=>{const filter=e.target.closest('[data-search-filter]');if(filter){controller.setFilter(filter.dataset.searchFilter);root.innerHTML=view.render();root.querySelector('[data-global-search-input]')?.focus();}};root.addEventListener('input',input);root.addEventListener('click',click);return()=>{root.removeEventListener('input',input);root.removeEventListener('click',click)}}};return view; } });
+router.register({ id: 'search', pattern: /^\/search(?:\?.*)?$/, title: 'Search', load: async () => { const { createSearchController, renderSearchView } = await import('./views/search/search-view.87ad9d29cc49.mjs');const controller=createSearchController({api,language:cachedPreferences.language,capabilities:BACKEND_ATLAS.entries});await controller.load();let root=null;const view={render:()=>renderSearchView(controller.snapshot()),mount(node){root=node;const input=e=>{if(e.target.matches('[data-global-search-input]')){controller.setQuery(e.target.value);rerenderView(root,view);}};const click=e=>{const filter=e.target.closest('[data-search-filter]');if(filter){controller.setFilter(filter.dataset.searchFilter);root.innerHTML=view.render();root.querySelector('[data-global-search-input]')?.focus();}};root.addEventListener('input',input);root.addEventListener('click',click);return()=>{root.removeEventListener('input',input);root.removeEventListener('click',click)}}};return view; } });
 
 router.register({ id: 'onboarding', pattern: '/onboarding', title: 'Welcome', load: async () => {
-  const [{ createOnboardingController }, { renderOnboardingView }] = await Promise.all([import('./views/onboarding/onboarding-controller.mjs'), import('./views/onboarding/onboarding-view.mjs')]);
+  const [{ createOnboardingController }, { renderOnboardingView }] = await Promise.all([import('./views/onboarding/onboarding-controller.5acf9e9e63fb.mjs'), import('./views/onboarding/onboarding-view.a93afa2581e8.mjs')]);
   const controller=createOnboardingController({api});await controller.load();let mountedRoot=null;let persistTimer=null;
   const rerender=()=>{if(mountedRoot)mountedRoot.innerHTML=renderOnboardingView(controller.snapshot());};
   const currentValue=(path)=>String(path).split('.').reduce((value,key)=>value?.[key],controller.snapshot().answers);
@@ -405,7 +405,7 @@ router.register({ id: 'onboarding', pattern: '/onboarding', title: 'Welcome', lo
 } });
 
 router.register({ id: 'settings', pattern: '/settings', title: 'Settings', load: async () => {
-  const [{ createSettingsController }, { renderSettingsView }] = await Promise.all([import('./views/settings/settings-controller.mjs'), import('./views/settings/settings-view.mjs')]);
+  const [{ createSettingsController }, { renderSettingsView }] = await Promise.all([import('./views/settings/settings-controller.52d7acb7e0a8.mjs'), import('./views/settings/settings-view.62fdd8cbf572.mjs')]);
   const controller=createSettingsController({api});await controller.load();let mountedRoot=null;let inputTimer=null;let authPollTimer=null;let authPollAttempts=0;
   const applySettingsPreview=({forcePreferencePaths=[]}={})=>{const draft=structuredClone(controller.snapshot().draft??{});const forced=new Set(forcePreferencePaths);draft.general??={};draft.appearance??={};if(draft.general.language==='system'&&!forced.has('general.language'))draft.general.language=cachedPreferences.language;if(draft.appearance.theme==='system'&&!forced.has('appearance.theme'))draft.appearance.theme=cachedPreferences.theme;cachedPreferences=applyPreferences(draft);return cachedPreferences;};
   const rerender=({preserveFocus=null,forcePreferencePaths=[]}={})=>{if(!mountedRoot)return;const viewState=captureViewState(mountedRoot);const focusPath=preserveFocus??document.activeElement?.dataset?.settingPath??null;applySettingsPreview({forcePreferencePaths});mountedRoot.innerHTML=renderSettingsView(controller.snapshot());restoreViewState(mountedRoot,viewState);if(focusPath)mountedRoot.querySelector(`[data-setting-path="${CSS.escape(focusPath)}"]`)?.focus({preventScroll:true});const pill=document.querySelector('[data-command="toggle-experience"]');if(pill)pill.querySelector('span:nth-child(2)').textContent=normalizeExperience(cachedPreferences.experience).replace(/^./,x=>x.toUpperCase());};
