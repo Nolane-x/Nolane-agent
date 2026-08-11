@@ -256,9 +256,11 @@ test('composer context search recognizes skills and plugins by their type', () =
   assert.match(pluginMenu, /Semantic index/);
 });
 
-test('composer project creation event is wired to the desktop picker', async () => {
+test('composer project creation supports a local-folder fallback outside Electron', async () => {
   const source = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
   assert.match(source, /addEventListener\('nolane:project-create-requested',\s*requestProjectCreation\)/);
+  assert.match(source, /openProjectCreateDialog/);
+  assert.doesNotMatch(source, /Creating a project requires the Electron desktop launcher/);
 });
 
 test('composer surfaces planning-input failures instead of a generic internal error', async () => {

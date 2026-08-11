@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { stat } from 'node:fs/promises';
 import { AUTONOMY_PROFILES } from '../security/autonomy-policy.mjs';
 import { BROWSER_WRITE_ACTIONS } from '../security/browser-permission-service.mjs';
 
@@ -17,6 +18,17 @@ async function readJson(req, maxBytes = 1_000_000) {
   if (!chunks.length) return {};
   try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); }
   catch { throw Object.assign(new Error('Invalid JSON body'), { statusCode: 400 }); }
+}
+
+async function projectWorkspaceRoot(value) {
+  const workspaceRoot = String(value ?? '').trim();
+  if (!workspaceRoot) throw Object.assign(new Error('A project folder is required'), { statusCode: 400, code: 'PROJECT_WORKSPACE_REQUIRED' });
+  const resolved = path.resolve(workspaceRoot);
+  let details;
+  try { details = await stat(resolved); }
+  catch { throw Object.assign(new Error('The selected project folder is unavailable'), { statusCode: 400, code: 'PROJECT_WORKSPACE_UNAVAILABLE' }); }
+  if (!details.isDirectory()) throw Object.assign(new Error('The selected project path is not a folder'), { statusCode: 400, code: 'PROJECT_WORKSPACE_NOT_DIRECTORY' });
+  return resolved;
 }
 
 function defaultPlanner({ objective }) {
@@ -1901,7 +1913,8 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
     }
     if (method === 'POST' && pathname === '/api/projects') {
       const body = await readJson(req);
-      return json(res, 201, await (projectService?.create?.({ name: body.name, workspaceRoot: body.workspaceRoot, metadata: body.metadata ?? {} }) ?? store.createProject({ name: body.name, workspaceRoot: body.workspaceRoot, metadata: body.metadata ?? {} })));
+      const workspaceRoot = await projectWorkspaceRoot(body.workspaceRoot);
+      return json(res, 201, await (projectService?.create?.({ name: body.name, workspaceRoot, metadata: body.metadata ?? {} }) ?? store.createProject({ name: body.name, workspaceRoot, metadata: body.metadata ?? {} })));
     }
     if (method === 'GET' && pathname === '/api/agent/runs') {
       if (!runCoordinator) throw Object.assign(new Error('Agent run coordinator is not configured'), { statusCode: 503 });

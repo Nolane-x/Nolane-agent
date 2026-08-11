@@ -142,6 +142,8 @@ test('HTTP server binds loopback, requires auth, sets CSP, and rejects traversal
 
 test('project, task, provider, and mission endpoints execute real handlers', async (t) => {
   const f = await fixture(t);
+  const missingFolder = await fetch(`${f.url}/api/projects`, auth({ method: 'POST', body: JSON.stringify({ name: 'Missing', workspaceRoot: path.join(f.root, 'does-not-exist') }) }));
+  assert.equal(missingFolder.status, 400);
   const createdResponse = await fetch(`${f.url}/api/projects`, auth({ method: 'POST', body: JSON.stringify({ name: 'Demo', workspaceRoot: f.root }) }));
   assert.equal(createdResponse.status, 201);
   const project = await createdResponse.json();
