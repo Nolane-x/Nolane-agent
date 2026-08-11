@@ -64,6 +64,31 @@ function parseStatus(result, { mode = 'authenticated' } = {}) {
   });
 }
 
+export function createAvailabilityOnlyCliAuthAdapter({ id, label, executable, statusArgs = ['--version'], loginArgs = {}, runner = runProcess, launcher = launchProcess, timeoutMs = 15_000, cwd = null } = {}) {
+  const cleanId = required(id, 'adapter id');
+  const cleanLabel = required(label ?? id, 'adapter label');
+  const cleanExecutable = required(executable, 'executable');
+  const cleanStatusArgs = safeArgs(statusArgs, 'statusArgs');
+  const cleanLoginArgs = Object.freeze(Object.fromEntries(Object.entries(loginArgs).map(([key, args]) => [String(key), safeArgs(args, `loginArgs.${key}`)])));
+  const cleanTimeout = Number(timeoutMs);
+  if (!Number.isInteger(cleanTimeout) || cleanTimeout < 10) throw new TypeError('timeoutMs is invalid');
+  return Object.freeze({
+    id: cleanId,
+    label: cleanLabel,
+    loginArgs: cleanLoginArgs,
+    logoutArgs: null,
+    async status() {
+      const result = await runner({ executable: cleanExecutable, args: cleanStatusArgs, timeoutMs: cleanTimeout, cwd });
+      return Object.freeze({ id: cleanId, label: cleanLabel, ...parseStatus(result, { mode: 'available-only' }) });
+    },
+    async startLogin({ type = Object.keys(cleanLoginArgs)[0] } = {}) {
+      const args = cleanLoginArgs[String(type)];
+      if (!args) throw new TypeError(`Unsupported ${cleanLabel} login type: ${type}`);
+      return Object.freeze({ id: cleanId, type: String(type), ...(await launcher({ executable: cleanExecutable, args, cwd })) });
+    },
+  });
+}
+
 export class CliAuthAdapter {
   constructor({ id, label, executable, statusArgs, statusMode = 'authenticated', loginArgs = {}, logoutArgs = null, runner = runProcess, launcher = launchProcess, timeoutMs = 15_000, cwd = null } = {}) {
     this.id = required(id, 'adapter id');

@@ -12,7 +12,7 @@ import { ForgeOsBridge } from './forge/forgeos-bridge.mjs';
 import { ForgeOsToolGateway } from './forge/forgeos-tool-gateway.mjs';
 import { ProviderRegistry, createBuiltInCliProviders } from './providers/provider-registry.mjs';
 import { CodexAppServerClient } from './providers/codex-app-server.mjs';
-import { CliAuthAdapter } from './providers/cli-auth-adapter.mjs';
+import { CliAuthAdapter, createAvailabilityOnlyCliAuthAdapter } from './providers/cli-auth-adapter.mjs';
 import { ProviderConnectionService } from './providers/provider-connection-service.mjs';
 import { OutcomeAwareProviderRouter, OutcomeMetricsStore } from './providers/outcome-aware-router.mjs';
 import { ProviderOutcomeFeedbackService } from './providers/provider-outcome-feedback-service.mjs';
@@ -422,12 +422,11 @@ const providerConnections = new ProviderConnectionService({
       logoutArgs: ['auth', 'logout'],
       cwd: path.join(providerSandboxRoot, 'claude'),
     }),
-    'github-copilot': new CliAuthAdapter({
+    'github-copilot': createAvailabilityOnlyCliAuthAdapter({
       id: 'github-copilot',
       label: 'GitHub Copilot CLI',
       executable: 'copilot',
       statusArgs: ['--version'],
-      statusMode: 'available-only',
       loginArgs: { github: ['login'] },
       cwd: path.join(providerSandboxRoot, 'github-copilot'),
     }),
