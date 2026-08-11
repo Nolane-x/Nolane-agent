@@ -16,11 +16,14 @@ if (!enabled) {
     const fixtureDirectory = await mkdtemp(path.join(grammarRoot, '.nolane-tree-sitter-'));
     t.after(() => rm(fixtureDirectory, { recursive: true, force: true }));
     const relativeFile = `${path.basename(fixtureDirectory)}/sample.js`;
+    const configPath = path.join(fixtureDirectory, 'tree-sitter-config.json');
     await writeFile(path.join(fixtureDirectory, 'sample.js'), 'export const add = (left, right) => left + right;\n', 'utf8');
+    await writeFile(configPath, JSON.stringify({ 'parser-directories': [path.dirname(grammarRoot)] }), 'utf8');
 
     const service = new TreeSitterRuntimeService({
       projectResolver: (projectId) => projectId === 'tree-sitter-javascript' ? { id: projectId, workspaceRoot: grammarRoot } : null,
       expectedVersion: '0.25.10',
+      configPath,
     });
     const capabilities = await service.capabilities();
     assert.equal(capabilities.available, true, `Tree-sitter capability probe failed: ${JSON.stringify(capabilities)}`);

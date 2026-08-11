@@ -34,18 +34,23 @@ test('TreeSitterRuntimeService detects a pinned CLI and parses only project-boun
   assert.equal(result.principalId, 'local-admin');
   assert.match(result.receiptSha256, /^[a-f0-9]{64}$/);
   const parseCall = calls.find((call) => call.args[0] === 'parse');
-  assert.deepEqual(parseCall.args.slice(0, 6), ['parse', '--json', '--quiet', '--grammar-path', await realpath(root), '--']);
+  assert.deepEqual(parseCall.args.slice(0, 4), ['parse', '--json', '--quiet', '--']);
   assert.equal(parseCall.options.cwd, await realpath(root));
 });
 
-test('TreeSitterRuntimeService passes the trusted project root as the grammar path', async (t) => {
+test('TreeSitterRuntimeService passes a validated host-provided grammar configuration to the CLI', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-tree-sitter-grammar-root-'));
+  const configDirectory = await mkdtemp(path.join(os.tmpdir(), 'forge-tree-sitter-config-'));
   t.after(() => rm(root, { recursive: true, force: true }));
+  t.after(() => rm(configDirectory, { recursive: true, force: true }));
   await writeFile(path.join(root, 'sample.js'), 'export const answer = 42;\n', 'utf8');
+  const configPath = path.join(configDirectory, 'config.json');
+  await writeFile(configPath, JSON.stringify({ 'parser-directories': [path.dirname(root)] }), 'utf8');
   const calls = [];
   const service = new TreeSitterRuntimeService({
     projectResolver: () => ({ workspaceRoot: root }),
     expectedVersion: '0.25.10',
+    configPath,
     runner: async (_command, args) => {
       calls.push(args);
       return args[0] === '--version'
@@ -56,7 +61,30 @@ test('TreeSitterRuntimeService passes the trusted project root as the grammar pa
 
   await service.parse({ projectId: 'p1', principalId: 'local-admin', file: 'sample.js' });
   const parseArgs = calls.find((args) => args[0] === 'parse');
-  assert.deepEqual(parseArgs.slice(0, 6), ['parse', '--json', '--quiet', '--grammar-path', await realpath(root), '--']);
+  assert.deepEqual(parseArgs.slice(0, 6), ['parse', '--json', '--quiet', '--config-path', await realpath(configPath), '--']);
+});
+
+test('TreeSitterRuntimeService rejects a missing host-provided grammar configuration before invoking the CLI', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-tree-sitter-missing-config-root-'));
+  const configDirectory = await mkdtemp(path.join(os.tmpdir(), 'forge-tree-sitter-missing-config-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  t.after(() => rm(configDirectory, { recursive: true, force: true }));
+  await writeFile(path.join(root, 'sample.js'), 'export const answer = 42;\n', 'utf8');
+  const calls = [];
+  const service = new TreeSitterRuntimeService({
+    projectResolver: () => ({ workspaceRoot: root }),
+    expectedVersion: '0.25.10',
+    configPath: path.join(configDirectory, 'missing.json'),
+    runner: async (_command, args) => {
+      calls.push(args);
+      return args[0] === '--version'
+        ? { stdout: 'tree-sitter 0.25.10\n', stderr: '' }
+        : { stdout: JSON.stringify({ parse_summaries: [{ successful: true }] }), stderr: '' };
+    },
+  });
+
+  await assert.rejects(() => service.parse({ projectId: 'p1', principalId: 'local-admin', file: 'sample.js' }), (error) => error.code === 'TREE_SITTER_CONFIG_INVALID' && error.statusCode === 503);
+  assert.deepEqual(calls, []);
 });
 
 test('TreeSitterRuntimeService invokes the default Windows CLI through cmd.exe', { skip: process.platform !== 'win32' }, async (t) => {

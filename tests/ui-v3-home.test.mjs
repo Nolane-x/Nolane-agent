@@ -111,6 +111,23 @@ test('home composer preserves an unavailable saved model instead of silently rou
   assert.match(html, /class="composer-submit" type="submit" disabled/);
 });
 
+test('home composer explains when a preserved model is unavailable', () => {
+  const input = {
+    projects: [{ id: 'p1', name: 'Project' }],
+    selectedModel: 'login-required/blocked-model',
+    providers: [{ id: 'login-required', available: true, authenticated: false, healthy: false }],
+    models: [{ providerId: 'login-required', modelId: 'blocked-model', displayName: 'Blocked model' }],
+  };
+
+  const english = renderHomeView(buildHomeViewModel(input));
+  assert.match(english, /Selected model is not ready\. Choose another model or sign in to its provider\./);
+  assert.match(english, /composer-runtime" data-state="limited"/);
+
+  const vietnamese = renderHomeView(buildHomeViewModel({ ...input, language: 'vi' }));
+  assert.match(vietnamese, /Model đã chọn chưa sẵn sàng\. Hãy chọn model khác hoặc đăng nhập provider đó\./);
+  assert.match(vietnamese, /composer-runtime" data-state="limited"/);
+});
+
 test('home uses a compact task-first composition instead of an oversized generic hero', async () => {
   const html = renderHomeView(buildHomeViewModel());
   const styles = await readFile(new URL('../ui-v3/styles/pages/home.css', import.meta.url), 'utf8');

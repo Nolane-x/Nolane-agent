@@ -577,7 +577,7 @@ const codebaseKnowledge = Object.freeze({
 });
 const semanticDependency = new SemanticDependencyIntelligenceService({ store, repositoryIntelligence, codebaseKnowledge: codebaseKnowledgeGraph });
 const codeRelationships = new CodeRelationshipIntelligenceService({ store, codebaseKnowledge: codebaseKnowledgeGraph });
-const treeSitterRuntime = new TreeSitterRuntimeService({ projectResolver: (projectId) => store.getProject(projectId), expectedVersion: nolaneEnvironment.get('TREE_SITTER_VERSION') ?? null });
+const treeSitterRuntime = new TreeSitterRuntimeService({ projectResolver: (projectId) => store.getProject(projectId), expectedVersion: nolaneEnvironment.get('TREE_SITTER_VERSION') ?? null, configPath: nolaneEnvironment.get('TREE_SITTER_CONFIG_PATH') ?? null });
 let languageServerDefinitions = [];
 if (nolaneEnvironment.get('LANGUAGE_SERVERS_JSON')) {
   languageServerDefinitions = JSON.parse(nolaneEnvironment.get('LANGUAGE_SERVERS_JSON'));
