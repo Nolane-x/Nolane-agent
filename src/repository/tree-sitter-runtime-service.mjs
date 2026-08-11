@@ -10,7 +10,16 @@ const SOURCE_EXTENSIONS = new Set(['.js', '.mjs', '.cjs', '.jsx', '.ts', '.mts',
 
 function coded(code, message, statusCode = 400) { return Object.assign(new Error(message), { code, statusCode }); }
 function required(value, label) { const text = String(value ?? '').trim(); if (!text) throw new TypeError(`${label} is required`); return text; }
+function quoteWindowsCommandArgument(value) {
+  const text = String(value);
+  if (/[\r\n&|<>()^%!]/.test(text)) throw coded('TREE_SITTER_COMMAND_ARGUMENT_DENIED', 'Tree-sitter cannot process Windows paths containing shell metacharacters', 400);
+  return `"${text}"`;
+}
 function defaultRunner(command, args, options = {}) {
+  if (process.platform === 'win32' && command === 'tree-sitter') {
+    const commandLine = ['tree-sitter.cmd', ...args.map(quoteWindowsCommandArgument)].join(' ');
+    return execFileAsync(process.env.ComSpec ?? 'cmd.exe', ['/d', '/s', '/c', commandLine], { cwd: options.cwd, windowsHide: true, windowsVerbatimArguments: true, timeout: options.timeoutMs ?? 15_000, maxBuffer: options.maxOutputBytes ?? 2_000_000 });
+  }
   return execFileAsync(command, args, { cwd: options.cwd, windowsHide: true, timeout: options.timeoutMs ?? 15_000, maxBuffer: options.maxOutputBytes ?? 2_000_000 });
 }
 function within(root, target) { const relative = path.relative(root, target); return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative)); }

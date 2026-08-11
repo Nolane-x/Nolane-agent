@@ -1,10 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, realpath, writeFile } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
+import { mkdtemp, mkdir, realpath, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { promisify } from 'node:util';
 
 import { TreeSitterRuntimeService } from '../src/repository/tree-sitter-runtime-service.mjs';
+
+const execFileAsync = promisify(execFile);
 
 test('TreeSitterRuntimeService detects a pinned CLI and parses only project-bound files', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-tree-sitter-'));
@@ -32,6 +36,51 @@ test('TreeSitterRuntimeService detects a pinned CLI and parses only project-boun
   const parseCall = calls.find((call) => call.args[0] === 'parse');
   assert.deepEqual(parseCall.args.slice(0, 4), ['parse', '--json', '--quiet', '--']);
   assert.equal(parseCall.options.cwd, await realpath(root));
+});
+
+test('TreeSitterRuntimeService invokes the default Windows CLI through cmd.exe', { skip: process.platform !== 'win32' }, async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-tree-sitter-windows-root-'));
+  const bin = await mkdtemp(path.join(os.tmpdir(), 'forge-tree-sitter-windows-bin-'));
+  const originalPath = process.env.PATH;
+  const originalPathCase = process.env.Path;
+  const configuredPath = [bin, originalPath ?? originalPathCase ?? ''].join(path.delimiter);
+  process.env.PATH = configuredPath;
+  process.env.Path = configuredPath;
+  t.after(async () => {
+    if (originalPath === undefined) delete process.env.PATH;
+    else process.env.PATH = originalPath;
+    if (originalPathCase === undefined) delete process.env.Path;
+    else process.env.Path = originalPathCase;
+    await Promise.all([rm(root, { recursive: true, force: true }), rm(bin, { recursive: true, force: true })]);
+  });
+  await writeFile(path.join(bin, 'tree-sitter.cmd'), [
+    '@echo off',
+    'if "%~1"=="--version" (',
+    '  echo tree-sitter 0.25.10',
+    '  exit /b 0',
+    ')',
+    'if "%~1"=="parse" (',
+    '  echo {"parse_summaries":[{"file":"sample.js","successful":true,"bytes":1}],"cumulative_stats":{"bytes":1}}',
+    '  exit /b 0',
+    ')',
+    'exit /b 1',
+  ].join('\r\n'), 'utf8');
+  await writeFile(path.join(root, 'sample.js'), 'export const answer = 42;\n', 'utf8');
+  await writeFile(path.join(root, 'unsafe&path.js'), 'export const unsafe = true;\n', 'utf8');
+  const service = new TreeSitterRuntimeService({
+    projectResolver: () => ({ workspaceRoot: root }),
+    expectedVersion: '0.25.10',
+  });
+
+  const discovered = await execFileAsync(process.env.ComSpec ?? 'cmd.exe', ['/d', '/s', '/c', 'where.exe tree-sitter.cmd']);
+  assert.match(discovered.stdout, /forge-tree-sitter-windows-bin-/i);
+  const direct = await execFileAsync(process.env.ComSpec ?? 'cmd.exe', ['/d', '/s', '/c', 'tree-sitter.cmd "--version"'], { windowsVerbatimArguments: true });
+  assert.match(direct.stdout, /tree-sitter 0\.25\.10/);
+  const capabilities = await service.capabilities();
+  assert.equal(capabilities.available, true);
+  const result = await service.parse({ projectId: 'p1', principalId: 'local-admin', file: 'sample.js' });
+  assert.equal(result.tree.parse_summaries[0].successful, true);
+  await assert.rejects(() => service.parse({ projectId: 'p1', principalId: 'local-admin', file: 'unsafe&path.js' }), (error) => error.code === 'TREE_SITTER_COMMAND_ARGUMENT_DENIED');
 });
 
 test('TreeSitterRuntimeService preserves the JSON parse receipt emitted by the CLI', async () => {
