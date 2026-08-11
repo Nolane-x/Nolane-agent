@@ -1,6 +1,6 @@
-import { icon } from '../core/icon.mjs';
-import { canAccess } from '../core/experience-policy.mjs';
-import { t } from '../core/i18n.mjs';
+import { icon } from '../core/icon.995607d2e2a5.mjs';
+import { canAccess } from '../core/experience-policy.e988087d0e3b.mjs';
+import { t } from '../core/i18n.64b1be839c88.mjs';
 
 export const GLOBAL_DESTINATIONS = Object.freeze([
   { id: 'home', path: '/', label: 'Home', labelKey: 'nav.home', icon: 'chat', minExperience: 'everyday' },

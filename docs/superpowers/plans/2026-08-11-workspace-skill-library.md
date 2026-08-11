@@ -4,7 +4,7 @@
 
 **Goal:** Make the existing native and ForgeOS skill catalog discoverable and safely inspectable from a Workspace-level page.
 
-**Architecture:** A small view/controller module owns catalogue state and calls only existing read/preview endpoints. The app router mounts it at `/skills`; the global rail exposes the route at Workspace level. Styling is a compact catalogue–preview layout using existing semantic tokens.
+**Architecture:** A small view/controller module owns catalogue state and calls only existing read/preview endpoints. The app router mounts it at `/skills`; a visible Home workspace action exposes the route without expanding the frozen global rail. Styling is a compact catalogue–preview layout using existing semantic tokens.
 
 **Tech Stack:** Vanilla ES modules, Node test runner, existing `ui-v3` token CSS and API client.
 
@@ -38,16 +38,16 @@
 
 **Files:**
 
-- Modify: `ui-v3/shell/global-rail.mjs`
 - Modify: `ui-v3/core/view-state-bridge.mjs`
 - Modify: `ui-v3/app.mjs`
+- Modify: `ui-v3/views/home/home-view.mjs`
 - Test: `tests/ui-v3-skills-library.test.mjs`
 
-**Interface:** The rail includes `{ id: 'skills', path: '/skills', icon: 'spark', minExperience: 'workspace' }`. The app route uses `/^\\/skills(?:\\?.*)?$/` and mounts the Task 1 controller.
+**Interface:** Home renders a `#/skills` workspace action. The app route uses `/^\\/skills(?:\\?.*)?$/` and mounts the Task 1 controller; `GLOBAL_DESTINATIONS` remains unchanged.
 
-- [x] Write failing static route/rail assertions for the exact id/path/minimum experience and route pattern.
-- [x] Run `node --test tests/ui-v3-skills-library.test.mjs`; the missing route assertion failed before registration.
-- [x] Register the route after Projects. Load the controller once; mount event listeners for search input, catalog select, and preview buttons; remove listeners on cleanup. Map `/skills` to Workspace in the view-state bridge.
+- [x] Write failing static route/discoverability assertions for the Home action, unchanged global rail, and route pattern.
+- [x] Run `node --test tests/ui-v3-skills-library.test.mjs`; the navigation-contract regression was reproduced before changing the discoverability surface.
+- [x] Register the route after Projects. Add a visible Home action without expanding the global rail; mount event listeners for search input, catalog select, and preview buttons; remove listeners on cleanup. Map `/skills` to Workspace in the view-state bridge.
 - [x] Run `node --test tests/ui-v3-skills-library.test.mjs tests/ui-v3-accessibility.test.mjs`; pass.
 - [ ] Commit with the completed library feature.
 

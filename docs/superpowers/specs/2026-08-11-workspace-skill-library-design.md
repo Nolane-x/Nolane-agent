@@ -8,8 +8,8 @@ composer context menu, which makes a real capability look absent.
 
 ## Chosen approach
 
-Add a dedicated `/skills` route at Workspace level and a matching global-rail
-destination. The page is a catalogue and preview surface, not an installer:
+Add a dedicated `/skills` route at Workspace level and a visible Home workspace
+action. The page is a catalogue and preview surface, not an installer:
 installation and trust decisions stay in the existing Extension Control Plane.
 
 The page has three bounded responsibilities:

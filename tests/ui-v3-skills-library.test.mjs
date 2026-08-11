@@ -46,14 +46,16 @@ test('library renders translated empty and failure states without unescaped cata
   assert.doesNotMatch(failure, /<unsafe>/);
 });
 
-test('skill library is visible at Workspace level and has a mounted application route', async () => {
-  const [rail, app] = await Promise.all([
+test('skill library is discoverable from Home without expanding the frozen global rail', async () => {
+  const [rail, app, home] = await Promise.all([
     readFile('ui-v3/shell/global-rail.mjs', 'utf8'),
     readFile('ui-v3/app.mjs', 'utf8'),
+    readFile('ui-v3/views/home/home-view.mjs', 'utf8'),
   ]);
-  assert.match(rail, /id: 'skills', path: '\/skills'.*minExperience: 'workspace'/);
+  assert.doesNotMatch(rail, /id: 'skills'/);
   assert.ok(app.includes("router.register({ id: 'skills', pattern: /^\\/skills"));
   assert.match(app, /views\/skills\/skills-view\.mjs/);
+  assert.match(home, /href="#\/skills" data-route="\/skills"/);
 });
 
 test('skill library CSS uses semantic tokens and collapses the catalogue split on narrow screens', async () => {
