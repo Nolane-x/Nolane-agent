@@ -148,3 +148,21 @@ test('Browser workspace captures and renders a bounded project-scoped screenshot
   assert.match(html, /data:image\/png;base64,aW1hZ2U=/);
   assert.match(html, /Screenshot/);
 });
+
+test('Browser workspace keeps user-operated screenshots available when an agent goal omits that read action', async () => {
+  const api = createApi({
+    '/api/browser/runtime': { ready: true },
+    '/api/browser/detect': { available: true },
+    '/api/browser/status?projectId=project-a': { available: true, sessions: [{ name: 'tab-1', url: 'https://example.test', title: 'Example' }] },
+    '/api/browser/tabs': { tabs: [{ id: 'tab-1', url: 'https://example.test', title: 'Example' }] },
+    '/api/permissions/browser?goalId=mission-a': { allowedActions: ['open', 'snapshot'], denied: ['screenshot'] },
+    '/api/browser/screenshot': { available: true, artifactPath: 'workspace.png' },
+    '/api/browser/artifact': { available: true, mimeType: 'image/png', bytes: 5, contentBase64: 'aW1hZ2U=', sha256: 'b'.repeat(64) },
+  });
+  const controller = createBrowserWorkspaceController({ api, projectId: 'project-a', missionId: 'mission-a' });
+  await controller.load();
+  await controller.captureScreenshot();
+
+  assert.deepEqual(api.calls.find((call) => call.path === '/api/browser/screenshot')?.body, { projectId: 'project-a', filename: 'workspace.png' });
+  assert.equal(controller.snapshot().screenshot.status, 'ready');
+});
