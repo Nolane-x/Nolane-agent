@@ -58,7 +58,7 @@ Checkpoint: **5.0.0-beta.6-wave15-checkpoint.1**
 - Wave 18 cần chạy đủ 10 dogfood scenario và adversarial replay trên Windows.
 - Wave 19 chỉ mở khi external contract = 0, Nolane gap = 0 và independent parity review pass.
 
-Checkpoint receipt SHA-256: `7c3b70410f6ac53120a52fd8413e83bd01cbc3e313d6509e984ad2ae05f08d9a`
+Checkpoint receipt SHA-256: `8af358a03e55f78765182f50c45b939d53c9b4a4cbba1f0671e8b764d4afe99b`
 
 `completeParityClaimAllowed=false`
 

@@ -191,7 +191,7 @@ export class CodebaseKnowledgeGraphService {
     return sha256(rows.sort().join('\n'));
   }
 
-  async index(project) {
+  async index(project, { includeGitHistory = true } = {}) {
     if (!project?.id || !project?.workspaceRoot) throw new TypeError('project with workspaceRoot is required');
     const candidates = (await listFiles(project.workspaceRoot)).slice(0, this.maxFiles);
     const existing = new Map(this.store.db.prepare('SELECT path,sha256 FROM codebase_knowledge_files WHERE project_id=?').all(project.id).map((row) => [row.path, row.sha256]));
@@ -219,9 +219,11 @@ export class CodebaseKnowledgeGraphService {
     let removed = 0;
     for (const relative of existing.keys()) if (!seen.has(relative)) { this.store.db.prepare('DELETE FROM codebase_knowledge_files WHERE project_id=? AND path=?').run(project.id, relative); this.store.db.prepare('DELETE FROM codebase_knowledge_entities WHERE project_id=? AND path=?').run(project.id, relative); removed += 1; changedPaths.push(relative); }
     await this.#rebuildEdges(project.id);
-    const history = await gitHistory(project.workspaceRoot, this.maxGitBytes);
-    const historyUpdate = this.store.db.prepare('UPDATE codebase_knowledge_files SET last_commit_at=?,last_commit_hash=?,commit_count=? WHERE project_id=? AND path=?');
-    this.store.transaction(() => { for (const [filePath, item] of history) historyUpdate.run(item.lastCommitAt, item.lastCommitHash, item.commitCount, project.id, filePath); });
+    if (includeGitHistory) {
+      const history = await gitHistory(project.workspaceRoot, this.maxGitBytes);
+      const historyUpdate = this.store.db.prepare('UPDATE codebase_knowledge_files SET last_commit_at=?,last_commit_hash=?,commit_count=? WHERE project_id=? AND path=?');
+      this.store.transaction(() => { for (const [filePath, item] of history) historyUpdate.run(item.lastCommitAt, item.lastCommitHash, item.commitCount, project.id, filePath); });
+    }
     return Object.freeze({ schema: 'forge.codebase-knowledge-index.v1', projectId: project.id, scanned: candidates.length, indexed, reused, ignored, removed, changedPaths: Object.freeze(changedPaths.sort()), limited: candidates.length >= this.maxFiles, graphSha256: this.graphSha256(project.id) });
   }
 
