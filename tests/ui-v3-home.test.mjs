@@ -74,6 +74,28 @@ test('home composer offers only ready provider deployments and disables send unt
   assert.match(blocked, /class="composer-submit" type="submit" disabled/);
 });
 
+test('home composer preserves an unavailable saved model instead of silently routing it automatically', () => {
+  const html = renderHomeView(buildHomeViewModel({
+    projects: [{ id: 'p1', name: 'Project' }],
+    selectedModel: 'login-required/blocked-model',
+    providers: [
+      { id: 'ready', available: true, authenticated: true, healthy: true },
+      { id: 'login-required', available: true, authenticated: false, healthy: false },
+    ],
+    models: [
+      { providerId: 'ready', modelId: 'safe-model', displayName: 'Safe model' },
+      { providerId: 'login-required', modelId: 'blocked-model', displayName: 'Blocked model' },
+    ],
+  }));
+  const modelMenu = html.match(/data-composer-picker="modelChoice"[\s\S]*?<div id="composer-modelChoice-menu"[\s\S]*?<\/div>/)?.[0] ?? '';
+
+  assert.match(html, /<input type="hidden" name="modelChoice" value="login-required\/blocked-model"/);
+  assert.match(html, /data-picker-label="Blocked model — Not ready"/);
+  assert.match(modelMenu, /data-picker-value="login-required\/blocked-model"[^>]*aria-selected="true"[^>]*disabled/);
+  assert.match(modelMenu, /<small>login-required · blocked-model · Not ready<\/small>/);
+  assert.match(html, /class="composer-submit" type="submit" disabled/);
+});
+
 test('home uses a compact task-first composition instead of an oversized generic hero', async () => {
   const html = renderHomeView(buildHomeViewModel());
   const styles = await readFile(new URL('../ui-v3/styles/pages/home.css', import.meta.url), 'utf8');
