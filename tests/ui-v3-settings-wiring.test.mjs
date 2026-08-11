@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 test('UI v3 settings route mounts the real API controller and applies preferences', async () => {
   const app = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
+  const view = await readFile(new URL('../ui-v3/views/settings/settings-view.mjs', import.meta.url), 'utf8');
   assert.match(app, /createApiClient/);
   assert.match(app, /createSettingsController/);
   assert.match(app, /applyPreferences/);
@@ -14,6 +15,10 @@ test('UI v3 settings route mounts the real API controller and applies preference
   assert.match(app, /startProviderLogin/);
   assert.match(app, /refreshProviders/);
   assert.match(app, /logoutProvider/);
+  assert.match(app, /captureViewState\(mountedRoot\)/);
+  assert.match(app, /restoreViewState\(mountedRoot,viewState\)/);
+  assert.match(app, /focus\(\{preventScroll:true\}\)/);
+  assert.match(view, /data-scroll-key="settings-content"/);
 });
 
 test('UI v3 settings keeps Vietnamese labels translated after a live language switch', async () => {

@@ -1,4 +1,4 @@
-import { t } from '../../core/i18n.mjs';
+import { t } from '../../core/i18n.6551ad72d3e2.mjs';
 
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[character]));
 const rows = (items, empty, render) => items?.length ? items.map(render).join('') : `<p class="summary-empty">${esc(empty)}</p>`;

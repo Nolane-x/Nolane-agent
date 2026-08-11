@@ -6,13 +6,13 @@ export class UiSummaryService {
     const workspace = this.getWorkspace(projectId); const outputs = [];
     if (workspace?.root || workspace?.workspaceRoot) outputs.push({ id: `workspace:${workspace.id ?? projectId ?? 'current'}`, kind: 'workspace', label: workspace.name ?? 'Workspace', path: workspace.root ?? workspace.workspaceRoot });
     for (const artifact of (await this.getArtifacts(projectId) ?? []).slice(0, this.maxItems - outputs.length)) outputs.push({ id: text(artifact.id ?? artifact.path, 200), kind: text(artifact.kind ?? 'artifact', 40), label: text(artifact.label ?? artifact.name ?? artifact.path, 200), path: text(artifact.path, 1000) });
-    const processes = [];
+    const processes = []; const terminals = [];
     const managedItems = await (this.managedProcesses?.list?.() ?? []);
     for (const item of managedItems.slice(0, this.maxItems)) processes.push({ id: text(item.id, 120), kind: 'process', label: text([item.command, ...(item.args ?? [])].join(' '), 300), state: text(item.state, 40), pid: item.pid ?? null, cwd: text(item.cwd, 1000), startedAt: item.startedAt ?? null, stdout: text(item.stdout, this.maxText), stderr: text(item.stderr, this.maxText), truncated: Boolean(item.truncated), stoppable: item.state === 'running' || item.state === 'starting' });
     const terminalItems = await (this.terminalManager?.list?.() ?? []);
-    for (const item of terminalItems.slice(0, Math.max(0, this.maxItems - processes.length))) processes.push({ id: text(item.id ?? item.sessionId, 120), kind: 'terminal', label: text(item.label ?? item.shell ?? 'Terminal', 300), state: text(item.state ?? 'running', 40), cwd: text(item.cwd, 1000), startedAt: item.startedAt ?? null, stoppable: item.state !== 'exited' });
+    for (const item of terminalItems.slice(0, Math.max(0, this.maxItems - processes.length))) terminals.push({ id: text(item.id ?? item.sessionId, 120), kind: 'terminal', label: text(item.label ?? item.shell ?? 'Terminal', 300), state: text(item.state ?? 'running', 40), cwd: text(item.cwd, 1000), startedAt: item.startedAt ?? null, stoppable: item.state !== 'exited' });
     const sources = (this.mcpRegistry?.publicView?.() ?? []).slice(0, this.maxItems).map((item) => ({ id: text(item.id, 120), kind: 'mcp', label: text(item.label ?? item.id, 200), state: text(item.state ?? (item.healthy === false ? 'error' : 'ready'), 40), tools: Number(item.tools ?? item.toolCount ?? 0), error: text(item.error, 300) || null }));
-    return freeze({ schema: 'nolane.ui.summary.v1', generatedAt: this.clock(), projectId, outputs, processes, sources, availability: { outputs: true, processes: Boolean(this.managedProcesses || this.terminalManager), terminals: Boolean(this.terminalManager), sources: Boolean(this.mcpRegistry) } });
+    return freeze({ schema: 'nolane.ui.summary.v1', generatedAt: this.clock(), projectId, outputs, processes, terminals, sources, availability: { outputs: true, processes: Boolean(this.managedProcesses || this.terminalManager), terminals: Boolean(this.terminalManager), sources: Boolean(this.mcpRegistry) } });
   }
   async stopProcess(id) {
     const clean = String(id ?? '').trim(); if (!clean) throw new TypeError('process id is required');
