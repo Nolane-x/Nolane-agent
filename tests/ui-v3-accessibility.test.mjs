@@ -45,6 +45,7 @@ test('runtime-critical labels use the legible secondary text token', async () =>
   assert.match(settings, /\.settings-center \.settings-section__eyebrow\{[^}]*color:var\(--text-secondary\)/);
   assert.match(settings, /\.settings-center \.theme-gallery small\{[^}]*color:var\(--text-secondary\)/);
   assert.match(settings, /\.settings-center \.accent-picker>span\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(settings, /\.settings-center \.language-cards small\{[^}]*color:var\(--text-secondary\)/);
   assert.match(workroom, /\.workroom-header a\{[^}]*color:var\(--text-secondary\)/);
   assert.match(workroom, /\.workroom-header p\{[^}]*color:var\(--text-secondary\)/);
   assert.match(workroom, /\.workroom-header button:last-child\{[^}]*color:var\(--text-primary\)/);
