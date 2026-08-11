@@ -138,6 +138,26 @@ test('home composer sends provider and model separately for the selected deploym
   assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Plan this', planningProviderId: 'codex-app-server', planningModelId: 'gpt-5.6-sol', deploymentKey: 'codex-app-server/gpt-5.6-sol', mcpAllowedTools: [] }]]);
 });
 
+test('home composer uses the persisted routing default until the user chooses another model', async () => {
+  const api = {
+    async get(path) {
+      if (path === '/api/projects') return [{ id: 'p1', name: 'Project' }];
+      if (path === '/api/provider-connections') return [{ id: 'codex', available: true, authenticated: true, healthy: true }];
+      if (path === '/api/model-profiles') return [{ key: 'codex/gpt-5.6-codex', providerId: 'codex', modelId: 'gpt-5.6-codex', displayName: 'Codex 5.6' }];
+      if (path === '/api/settings/effective') return { value: { agent: { model: 'codex/gpt-5.6-codex' } } };
+      return [];
+    },
+  };
+  const controller = createHomeController({ api });
+  await controller.load();
+
+  assert.equal(controller.snapshot().selectedModel, 'codex/gpt-5.6-codex');
+  assert.match(renderHomeView(controller.snapshot()), /<input type="hidden" name="modelChoice" value="codex\/gpt-5\.6-codex"/);
+
+  controller.setModel('auto');
+  assert.equal(controller.snapshot().selectedModel, 'auto');
+});
+
 test('home composer turns an explicit Skill selection into a removable mission context receipt request', async () => {
   const calls = [];
   const api = {

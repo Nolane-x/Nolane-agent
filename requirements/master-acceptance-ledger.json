@@ -18,7 +18,7 @@
   },
   "product": "Nolane Agent",
   "productVersion": "5.0.0-beta.6",
-  "receiptSha256": "5963e55bc26155132186ace84dde8fa7a83bf6011f5fcbcd6ba64a4f6ac2deba",
+  "receiptSha256": "acd209df6baef91b764806ab15edf90ce0c1ac267e0d8e9809a48e10cad643ba",
   "requirements": [
     {
       "acceptance": {
@@ -59409,13 +59409,13 @@
       "acceptance": {
         "evidenceHashes": {
           "src/app.mjs": "6cf2e34f29b0ada3c121e0209f33dce786ab331ce81f03b89d8b212bd7bc3376",
-          "src/repository/tree-sitter-runtime-service.mjs": "2f453267b072d03eb640cf053b52716ecc2abd5de6d1a9fc0674354678c7ef1e",
+          "src/repository/tree-sitter-runtime-service.mjs": "db84f55df7dc818adc202cf8ecae0c1021a29e2f7d07fed1e8d946f868b03a92",
           "src/server/http-server.mjs": "620467e24c30ba76e382e05b912ae93ca4d96664a8b44b891db039410d512028",
           "src/server/routes.mjs": "4a030fe87099e914a9730a434c80868079af9fb33ad781020696715408803e3e",
           "tests/completion-release-gate.test.mjs": "04d83f34efe092e5e12a8ef989f896de14ac5d93f4a93c073d6a57ef97b737db",
           "tests/completion-runtime-app-wiring.test.mjs": "2adaaeb3591bbb401736c00a7f06eb1bcf43f964dcd16fa6015236304484d371",
           "tests/tree-sitter-http-api.test.mjs": "0e4e07efdcd557e850601724886173ba1c1fc0c1ad5040e73c65a3606647350b",
-          "tests/tree-sitter-runtime-service.test.mjs": "e733fae2b658cf7c677d6dc545aa3d0c646c0c77f21add77cdf2a980c46ed708"
+          "tests/tree-sitter-runtime-service.test.mjs": "ed90303d3d6fff2849847b9a45f516e5fa20e6a84bf02e03a433d81cbd077da3"
         },
         "externalConditions": [
           "Có contract, policy hoặc logic cục bộ; hoàn tất production cần hạ tầng, credential, runner hệ điều hành hoặc dịch vụ bên ngoài được vận hành thật."
@@ -97893,8 +97893,8 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "tests/ui-v3-home.test.mjs": "b092009e8d418ff725be8a54e58720dde0add3135c43b1d9e4df94fe204d0a4d",
-          "ui-v3/views/home/home-view.mjs": "43e387951682f66135b81fcc724ca6e9eb85b728ae45e96781fcf4fda9d16086"
+          "tests/ui-v3-home.test.mjs": "d157a43d436ca6ff3c647dbb31c84ecb59076be24728333c1b903496203a34de",
+          "ui-v3/views/home/home-view.mjs": "08d68b408d13a5019d84dff7717f12b0bd3bd069ed681e4a720e85b1491b27d8"
         },
         "externalConditions": [],
         "fileExistenceIsProof": false,
@@ -97905,9 +97905,9 @@
         ],
         "productionEntrypoint": "ui-v3/views/home/home-view.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "43e387951682f66135b81fcc724ca6e9eb85b728ae45e96781fcf4fda9d16086",
+          "entrypointSha256": "08d68b408d13a5019d84dff7717f12b0bd3bd069ed681e4a720e85b1491b27d8",
           "environment": "node>=22.12",
-          "exactTestSha256": "b092009e8d418ff725be8a54e58720dde0add3135c43b1d9e4df94fe204d0a4d"
+          "exactTestSha256": "d157a43d436ca6ff3c647dbb31c84ecb59076be24728333c1b903496203a34de"
         },
         "testPaths": [
           "tests/ui-v3-home.test.mjs"

@@ -75,7 +75,7 @@ export class TreeSitterRuntimeService {
     const resolved = await this.#resolveProjectFile(projectId, file);
     const capability = await this.capabilities();
     if (!capability.available) throw coded('TREE_SITTER_RUNTIME_UNAVAILABLE', `Tree-sitter runtime unavailable: ${capability.reason}`, 503);
-    const { stdout = '', stderr = '' } = await this.runner(this.command, ['parse', '--json', '--quiet', '--', resolved.target], { cwd: resolved.root, timeoutMs: this.timeoutMs, maxOutputBytes: this.maxOutputBytes });
+    const { stdout = '', stderr = '' } = await this.runner(this.command, ['parse', '--json', '--quiet', '--grammar-path', resolved.root, '--', resolved.target], { cwd: resolved.root, timeoutMs: this.timeoutMs, maxOutputBytes: this.maxOutputBytes });
     if (Buffer.byteLength(String(stdout)) > this.maxOutputBytes) throw coded('TREE_SITTER_OUTPUT_TOO_LARGE', 'Tree-sitter output exceeds the configured limit', 413);
     let tree;
     try { tree = JSON.parse(String(stdout)); } catch { throw coded('TREE_SITTER_OUTPUT_INVALID', 'Tree-sitter returned invalid JSON', 502); }
