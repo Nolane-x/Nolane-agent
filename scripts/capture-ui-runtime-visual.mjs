@@ -15,6 +15,7 @@ const STATES = Object.freeze([
   Object.freeze({ id: 'home-nocturne', route: '/', selector: '.home-view' }),
   Object.freeze({ id: 'projects', route: '/projects', selector: '.projects-page' }),
   Object.freeze({ id: 'skills', route: '/skills', selector: '.skills-library' }),
+  Object.freeze({ id: 'skills-forge-preview', route: '/skills', selector: '.skills-library', prepare: assertForgeSkillInstallPreview }),
   Object.freeze({ id: 'settings', route: '/settings', selector: '#workspace' }),
   Object.freeze({ id: 'workroom', route: '/workroom', selector: '.workroom-view' }),
   Object.freeze({ id: 'control-plane', route: '/control-plane', selector: '#workspace' }),
@@ -104,6 +105,16 @@ async function assertProjectPickerKeyboard(page) {
   if (!triggerFocused) throw new Error('project picker did not return focus to its trigger after Escape');
 }
 
+async function assertForgeSkillInstallPreview(page) {
+  await page.locator('[data-skills-catalog]').selectOption('v2');
+  const forgeSkill = page.locator('[data-skill-library-select^="forgeos:"]').first();
+  await forgeSkill.waitFor({ state: 'visible', timeout: 10_000 });
+  await forgeSkill.click();
+  const install = page.locator('[data-action="install-skill"]');
+  await install.waitFor({ state: 'visible', timeout: 10_000 });
+  if (await install.isDisabled()) throw new Error('skills Forge OS preview did not expose an installation action');
+}
+
 async function assertAccessibility(page, state) {
   const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
   const blocking = result.violations.filter((violation) => ['serious', 'critical'].includes(String(violation.impact)));
@@ -131,6 +142,7 @@ export async function captureUiRuntimeVisual({ baseUrl, token, outputDirectory, 
       await page.goto(stateUrl(root, credential, state.route), { waitUntil: 'domcontentloaded', timeout: 30_000 });
       await page.locator(state.selector).waitFor({ state: 'visible', timeout: 30_000 });
       await page.waitForTimeout(400);
+      if (state.prepare) await state.prepare(page);
       if (state.id === 'settings') await assertSettingsScrollPreserved(page);
       if (state.id === 'home') await assertProjectPickerKeyboard(page);
       await assertResponsiveLayout(page, state);
