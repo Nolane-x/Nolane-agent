@@ -34,6 +34,22 @@ test('TreeSitterRuntimeService detects a pinned CLI and parses only project-boun
   assert.equal(parseCall.options.cwd, await realpath(root));
 });
 
+test('TreeSitterRuntimeService normalizes the one-file JSON envelope emitted by the real CLI', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-tree-sitter-envelope-'));
+  await writeFile(path.join(root, 'app.js'), 'export const answer = 42;\n');
+  const service = new TreeSitterRuntimeService({
+    projectResolver: () => ({ workspaceRoot: root }),
+    expectedVersion: '0.25.10',
+    runner: async (_command, args) => args[0] === '--version'
+      ? { stdout: 'tree-sitter 0.25.10\n', stderr: '' }
+      : { stdout: JSON.stringify([{ path: 'app.js', tree: { type: 'program', named: true } }]), stderr: '' },
+  });
+
+  const result = await service.parse({ projectId: 'p1', principalId: 'local-admin', file: 'app.js' });
+  assert.equal(result.tree.type, 'program');
+  assert.equal(result.tree.named, true);
+});
+
 test('TreeSitterRuntimeService rejects traversal, symlink escape, unsupported files, and unavailable runtime', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-tree-sitter-deny-'));
   await writeFile(path.join(root, 'data.txt'), 'x');
