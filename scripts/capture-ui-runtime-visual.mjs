@@ -62,6 +62,17 @@ async function assertSettingsScrollPreserved(page) {
     scroller.scrollTop = targetTop;
     return { before: scroller.scrollTop };
   });
+  const setScrollForVisibleControl = (control) => control.evaluate((node) => {
+    const scroller = document.querySelector('[data-scroll-key="settings-content"]');
+    if (!scroller) return { error: 'settings scroll container is missing' };
+    const scrollerBox = scroller.getBoundingClientRect();
+    const controlBox = node.getBoundingClientRect();
+    const contentTop = scroller.scrollTop + controlBox.top - scrollerBox.top;
+    const targetTop = Math.min(480, Math.max(0, scroller.scrollHeight - scroller.clientHeight), Math.max(0, contentTop - 24));
+    if (targetTop < 1) return { error: 'settings language choice cannot remain visible at a nonzero scroll position' };
+    scroller.scrollTop = targetTop;
+    return { before: scroller.scrollTop };
+  });
   const assertScroll = async (before, label) => {
     const after = await page.locator('[data-scroll-key="settings-content"]').evaluate((node) => node.scrollTop);
     if (after == null || Math.abs(after - before) > 2) throw new Error(`${label} did not preserve scroll position: ${before} -> ${after}`);
@@ -76,12 +87,11 @@ async function assertSettingsScrollPreserved(page) {
   await assertScroll(accent.before, 'settings content');
 
   const language = await page.evaluate(() => document.querySelector('[data-setting-choice][data-setting-path="general.language"][aria-pressed="true"]')?.dataset?.settingValue === 'vi' ? 'en' : 'vi');
-  const beforeLanguage = await setScrollPosition();
-  if (beforeLanguage.error) throw new Error(beforeLanguage.error);
   const languageChoice = page.locator(`[data-setting-choice][data-setting-path="general.language"][data-setting-value="${language}"]`);
+  const beforeLanguage = await setScrollForVisibleControl(languageChoice);
+  if (beforeLanguage.error) throw new Error(beforeLanguage.error);
   await languageChoice.click();
-  await page.waitForFunction((nextLanguage) => document.documentElement.dataset.language === nextLanguage && document.querySelector(`[data-setting-choice][data-setting-path="general.language"][data-setting-value="${nextLanguage}"][aria-pressed="true"]`), language, { timeout: 10_000 });
-  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  await page.waitForFunction(({ nextLanguage, expectedTop }) => document.documentElement.dataset.language === nextLanguage && document.querySelector(`[data-setting-choice][data-setting-path="general.language"][data-setting-value="${nextLanguage}"][aria-pressed="true"]`) && Math.abs((document.querySelector('[data-scroll-key="settings-content"]')?.scrollTop ?? 0) - expectedTop) <= 2, { nextLanguage: language, expectedTop: beforeLanguage.before }, { timeout: 10_000 });
   await assertScroll(beforeLanguage.before, 'settings language choice');
 }
 
