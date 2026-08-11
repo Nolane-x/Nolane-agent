@@ -56,3 +56,25 @@ test('ForgeOS catalog rejects entries that escape its repository root', async (t
   const catalog = new ForgeOsSkillCatalog({ roots: [root] });
   assert.deepEqual(await catalog.discover(), []);
 });
+
+test('ForgeOS install bundle preserves vetted documentation and omits scripts', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-forgeos-install-bundle-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const skillRoot = path.join(root, 'skills-v2', 'stable', 'inspect');
+  await mkdir(path.join(skillRoot, 'sections'), { recursive: true });
+  await mkdir(path.join(skillRoot, 'scripts'), { recursive: true });
+  await writeFile(path.join(skillRoot, 'SKILL.md'), '---\nname: inspect\ndescription: Inspect safely.\n---\n# Inspect\n');
+  await writeFile(path.join(skillRoot, 'manifest.json'), '{"id":"inspect"}\n');
+  await writeFile(path.join(skillRoot, 'sections', 'procedure.md'), '# Procedure\n');
+  await writeFile(path.join(skillRoot, 'scripts', 'run.mjs'), 'throw new Error("never copied");\n');
+  await writeFile(path.join(root, 'skills-v2', 'catalog.json'), JSON.stringify([{
+    id: 'inspect', path: 'skills-v2/stable/inspect', maturity: 'stable', kernelLevel: 'L1', capabilityIds: [], targetTokens: 10,
+  }]));
+  await writeFile(path.join(root, 'package.json'), JSON.stringify({ version: '0.6.1', license: 'MIT' }));
+
+  const bundle = await new ForgeOsSkillCatalog({ roots: [root] }).readInstallBundle('forgeos:v2:inspect');
+  assert.equal(bundle.skill.id, 'forgeos:v2:inspect');
+  assert.deepEqual(bundle.files.map((file) => file.relativePath), ['SKILL.md', 'manifest.json', 'sections/procedure.md']);
+  assert.ok(bundle.files.every((file) => /^[a-f0-9]{64}$/.test(file.contentSha256)));
+  assert.ok(bundle.files.every((file) => !file.relativePath.startsWith('scripts/')));
+});

@@ -1,4 +1,5 @@
-import { lstat, readFile, realpath } from 'node:fs/promises';
+import { lstat, readFile, readdir, realpath } from 'node:fs/promises';
+import { isUtf8 } from 'node:buffer';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
@@ -39,6 +40,16 @@ async function regularFile(file) {
 const humanize = (value) => String(value ?? '').replaceAll('-', ' ').replace(/\b\w/g, (character) => character.toUpperCase());
 
 const DEFAULT_SOURCE_URL = 'https://github.com/Nolane-x/forge-os';
+const INSTALL_BUNDLE_DIRECTORIES = new Set(['sections', 'references', 'evaluators']);
+const INSTALL_BUNDLE_EXTENSIONS = new Set(['.md', '.json', '.txt', '.yaml', '.yml']);
+
+async function readInstallBundleFile({ root, directory, relativePath }) {
+  const file = path.resolve(directory, relativePath);
+  if (!inside(root, file) || !inside(directory, file) || !await regularFile(file)) return null;
+  const content = await readFile(file);
+  if (!isUtf8(content)) return null;
+  return Object.freeze({ relativePath: relativePath.replaceAll(path.sep, '/'), content: content.toString('utf8'), contentSha256: sha256(content) });
+}
 
 async function readJsonFile(file) {
   if (!await regularFile(file)) return { value: null, bytes: null };
@@ -153,6 +164,7 @@ export class ForgeOsSkillCatalog {
             manifestSha256: typeof entry?.manifestSha256 === 'string' ? entry.manifestSha256 : null,
             contentSha256: sha256(content),
             catalogSha256,
+            root,
             directory,
             skillFile,
             contentLoaded: false,
@@ -162,7 +174,7 @@ export class ForgeOsSkillCatalog {
       }
     }
     this.skills = discovered;
-    return [...discovered.values()].map(({ directory, skillFile, ...view }) => Object.freeze({ ...view }));
+    return [...discovered.values()].map(({ root, directory, skillFile, ...view }) => Object.freeze({ ...view }));
   }
 
   async load(id) {
@@ -227,5 +239,34 @@ export class ForgeOsSkillCatalog {
       contentLoaded: true,
       receiptSha256: sha256(JSON.stringify(receiptBase)),
     });
+  }
+
+  async readInstallBundle(id) {
+    const skill = await this.load(id);
+    const record = this.skills.get(skill.id);
+    if (!record) throw new Error(`unknown ForgeOS skill: ${id}`);
+    const files = [];
+    for (const relativePath of ['SKILL.md', 'manifest.json']) {
+      const file = await readInstallBundleFile({ root: record.root, directory: record.directory, relativePath });
+      if (file) files.push(file);
+    }
+    for (const childDirectory of INSTALL_BUNDLE_DIRECTORIES) {
+      const directory = path.join(record.directory, childDirectory);
+      let entries;
+      try {
+        const info = await lstat(directory);
+        if (!info.isDirectory() || info.isSymbolicLink()) continue;
+        entries = await readdir(directory, { withFileTypes: true });
+      } catch { continue; }
+      entries.sort((a, b) => a.name.localeCompare(b.name));
+      for (const entry of entries) {
+        if (!entry.isFile() || entry.isSymbolicLink() || !INSTALL_BUNDLE_EXTENSIONS.has(path.extname(entry.name).toLowerCase())) continue;
+        const file = await readInstallBundleFile({ root: record.root, directory: record.directory, relativePath: path.join(childDirectory, entry.name) });
+        if (file) files.push(file);
+      }
+    }
+    const entrypoint = files.find((file) => file.relativePath === 'SKILL.md');
+    if (!entrypoint || entrypoint.contentSha256 !== skill.contentSha256) throw new Error(`ForgeOS skill content changed after discovery: ${id}`);
+    return Object.freeze({ skill, files: Object.freeze(files) });
   }
 }

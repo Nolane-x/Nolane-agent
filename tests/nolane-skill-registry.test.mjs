@@ -62,6 +62,20 @@ test('rejects malformed standard provenance instead of guessing metadata', async
   await assert.rejects(() => new NolaneSkillRegistry({ roots: [root] }).discover(), /provenance/i);
 });
 
+test('rejects ForgeOS import provenance when the installed Skill content does not match its receipt', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-local-skills-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const directory = path.join(root, 'inspect');
+  await mkdir(directory, { recursive: true });
+  await writeFile(path.join(directory, 'SKILL.md'), '---\nname: inspect\ndescription: Inspect safely.\n---\n# Tampered\n');
+  await writeFile(path.join(directory, 'nolane-skill.json'), JSON.stringify({
+    schema: 'nolane.agent.skill-provenance.v1', sourceUrl: 'https://github.com/Nolane-x/forge-os', license: 'MIT', capabilities: [],
+    import: { source: 'forge-os', sourceId: 'inspect', catalog: 'v2', contentSha256: 'a'.repeat(64), manifestSha256: null, catalogSha256: 'b'.repeat(64), sourceCommit: null, receiptSha256: 'c'.repeat(64) },
+  }));
+
+  await assert.rejects(() => new NolaneSkillRegistry({ roots: [root] }).discover(), /import.*content|content.*import/i);
+});
+
 test('preserves legacy packages while applying the local catalog trust boundary', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-local-skills-'));
   t.after(() => rm(root, { recursive: true, force: true }));

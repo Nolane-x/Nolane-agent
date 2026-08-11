@@ -4,6 +4,7 @@ import crypto from 'node:crypto';
 
 const sha256 = (value) => crypto.createHash('sha256').update(value).digest('hex');
 const inside = (root, candidate) => { const relative = path.relative(root, candidate); return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative)); };
+const SHA256_PATTERN = /^[a-f0-9]{64}$/;
 
 async function regularFile(file) {
   try {
@@ -44,7 +45,7 @@ async function readProvenanceSidecar(directory) {
   const sidecarPath = path.join(directory, 'nolane-skill.json');
   let info;
   try { info = await lstat(sidecarPath); } catch (error) {
-    if (error?.code === 'ENOENT') return Object.freeze({ sourceUrl: null, license: null, capabilities: null });
+    if (error?.code === 'ENOENT') return Object.freeze({ sourceUrl: null, license: null, capabilities: null, import: null });
     throw error;
   }
   if (!info.isFile() || info.isSymbolicLink()) throw new Error('skill provenance sidecar must be a regular file');
@@ -54,10 +55,28 @@ async function readProvenanceSidecar(directory) {
   if (sidecar.sourceUrl != null && (typeof sidecar.sourceUrl !== 'string' || !/^https:\/\/[^\s]+$/i.test(sidecar.sourceUrl))) throw new Error('invalid skill provenance sourceUrl');
   if (sidecar.license != null && (typeof sidecar.license !== 'string' || !sidecar.license.trim() || sidecar.license.length > 200)) throw new Error('invalid skill provenance license');
   if (sidecar.capabilities != null && (!Array.isArray(sidecar.capabilities) || sidecar.capabilities.some((capability) => typeof capability !== 'string' || !capability.trim()))) throw new Error('invalid skill provenance capabilities');
+  let imported = null;
+  if (sidecar.import != null) {
+    const candidate = sidecar.import;
+    if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate) || candidate.source !== 'forge-os') throw new Error('invalid skill provenance import');
+    if (!/^[a-z0-9][a-z0-9-]{1,127}$/.test(String(candidate.sourceId ?? ''))) throw new Error('invalid skill provenance import sourceId');
+    if (!['v2', 'legacy'].includes(candidate.catalog)) throw new Error('invalid skill provenance import catalog');
+    for (const field of ['contentSha256', 'catalogSha256', 'receiptSha256']) {
+      if (!SHA256_PATTERN.test(String(candidate[field] ?? ''))) throw new Error(`invalid skill provenance import ${field}`);
+    }
+    if (candidate.manifestSha256 != null && !SHA256_PATTERN.test(String(candidate.manifestSha256))) throw new Error('invalid skill provenance import manifestSha256');
+    if (candidate.sourceCommit != null && !/^[a-f0-9]{40}$/i.test(String(candidate.sourceCommit))) throw new Error('invalid skill provenance import sourceCommit');
+    imported = Object.freeze({
+      source: 'forge-os', sourceId: String(candidate.sourceId), catalog: candidate.catalog,
+      contentSha256: String(candidate.contentSha256), manifestSha256: candidate.manifestSha256 == null ? null : String(candidate.manifestSha256),
+      catalogSha256: String(candidate.catalogSha256), sourceCommit: candidate.sourceCommit == null ? null : String(candidate.sourceCommit), receiptSha256: String(candidate.receiptSha256),
+    });
+  }
   return Object.freeze({
     sourceUrl: sidecar.sourceUrl?.trim() || null,
     license: sidecar.license?.trim() || null,
     capabilities: sidecar.capabilities == null ? null : Object.freeze([...new Set(sidecar.capabilities.map((capability) => capability.trim()))].sort()),
+    import: imported,
   });
 }
 
@@ -97,10 +116,11 @@ export class NolaneSkillRegistry {
         }
         const capabilities = provenance.capabilities ?? manifest.capabilities;
         if (!standard && provenance.capabilities && JSON.stringify(capabilities) !== JSON.stringify([...manifest.capabilities].sort())) throw new Error(`skill provenance capabilities conflict with manifest: ${manifest.id}`);
-        manifest = Object.freeze({ ...manifest, capabilities, sourceUrl: provenance.sourceUrl, license: provenance.license, provenanceStatus: 'local-user-supplied' });
+        manifest = Object.freeze({ ...manifest, capabilities, sourceUrl: provenance.sourceUrl, license: provenance.license, import: provenance.import, provenanceStatus: provenance.import ? 'forge-os-imported' : 'local-user-supplied' });
         if (discovered.has(manifest.id)) throw new Error(`duplicate skill id: ${manifest.id}`);
         if (!await regularFile(entrypoint)) throw new Error(`skill entrypoint must be a regular file: ${manifest.id}`);
         const contentSha256 = sha256(await readFile(entrypoint));
+        if (manifest.import && (manifest.id !== manifest.import.sourceId || manifest.capabilities.length || contentSha256 !== manifest.import.contentSha256)) throw new Error(`ForgeOS import content does not match provenance: ${manifest.id}`);
         discovered.set(manifest.id, Object.freeze({
           id: manifest.id,
           sourceId: manifest.id,
@@ -112,6 +132,7 @@ export class NolaneSkillRegistry {
           sourceUrl: manifest.sourceUrl,
           license: manifest.license,
           provenanceStatus: manifest.provenanceStatus,
+          import: manifest.import,
           directory,
           entrypoint,
           manifestSha256: sha256(JSON.stringify(manifest)),
@@ -133,8 +154,8 @@ export class NolaneSkillRegistry {
     if (missing.length) throw new Error(`missing capability for skill ${id}: ${missing.join(', ')}`);
     const bytes = await readFile(skill.entrypoint);
     if (sha256(bytes) !== skill.contentSha256) throw new Error(`skill content changed after discovery: ${id}`);
-    const receiptBase = { schema: 'nolane.agent.skill-load.v1', id, source: skill.source, catalog: skill.catalog, provenanceStatus: skill.provenanceStatus, sourceUrl: skill.sourceUrl, license: skill.license, manifestSha256: skill.manifestSha256, contentSha256: skill.contentSha256, capabilities: skill.capabilities };
-    return Object.freeze({ id, sourceId: skill.sourceId, source: skill.source, catalog: skill.catalog, title: skill.title, description: skill.description, capabilities: skill.capabilities, sourceUrl: skill.sourceUrl, license: skill.license, provenanceStatus: skill.provenanceStatus, content: bytes.toString('utf8'), contentLoaded: true, receiptSha256: sha256(JSON.stringify(receiptBase)) });
+    const receiptBase = { schema: 'nolane.agent.skill-load.v1', id, source: skill.source, catalog: skill.catalog, provenanceStatus: skill.provenanceStatus, sourceUrl: skill.sourceUrl, license: skill.license, import: skill.import, manifestSha256: skill.manifestSha256, contentSha256: skill.contentSha256, capabilities: skill.capabilities };
+    return Object.freeze({ id, sourceId: skill.sourceId, source: skill.source, catalog: skill.catalog, title: skill.title, description: skill.description, capabilities: skill.capabilities, sourceUrl: skill.sourceUrl, license: skill.license, provenanceStatus: skill.provenanceStatus, import: skill.import, content: bytes.toString('utf8'), contentLoaded: true, receiptSha256: sha256(JSON.stringify(receiptBase)) });
   }
 
 

@@ -971,6 +971,16 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
       if (!nativeOrchestration) throw Object.assign(new Error('Nolane skill hub is not configured'), { statusCode: 503 });
       return json(res, 200, await nativeOrchestration.loadSkill(decodeURIComponent(skillHubLoad[1]), await readJson(req)));
     }
+    const skillHubInstall = pathname.match(/^\/api\/skills\/catalog\/([^/]+)\/install$/);
+    if (skillHubInstall && method === 'POST') {
+      if (!nativeOrchestration) throw Object.assign(new Error('Nolane skill hub is not configured'), { statusCode: 503 });
+      const id = decodeURIComponent(skillHubInstall[1]);
+      const body = await readJson(req);
+      if (body?.confirmed !== true) throw Object.assign(new Error('Skill installation requires explicit confirmation'), { statusCode: 400, code: 'SKILL_INSTALL_CONFIRMATION_REQUIRED' });
+      if (!id.startsWith('forgeos:')) throw Object.assign(new Error('Only ForgeOS catalog Skills can be installed'), { statusCode: 400, code: 'SKILL_INSTALL_SOURCE_UNSUPPORTED' });
+      if (typeof nativeOrchestration.installForgeOsSkill !== 'function') throw Object.assign(new Error('Nolane Skill installation is not configured'), { statusCode: 503, code: 'SKILL_INSTALL_UNAVAILABLE' });
+      return json(res, 201, await nativeOrchestration.installForgeOsSkill(id));
+    }
     if (pathname === '/api/nolane/orchestration/status') {
       if (!nativeOrchestration) throw Object.assign(new Error('Nolane native orchestration service is not configured'), { statusCode: 503 });
       if (method === 'GET') return json(res, 200, nativeOrchestration.status());

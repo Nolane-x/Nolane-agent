@@ -73,6 +73,38 @@ test('local Agent Skills show their distinct catalog and supply-chain metadata s
   assert.match(html, /Use in next mission/);
 });
 
+test('ForgeOS preview installs only after explicit controller confirmation and refreshes the catalog', async () => {
+  const calls = [];
+  const api = {
+    async get(path) {
+      calls.push(['get', path]);
+      return [{ id: 'forgeos:v2:inspect', source: 'forge-os', catalog: 'v2', title: 'Inspect', license: 'MIT', contentSha256: 'a'.repeat(64) }];
+    },
+    async post(path, body) {
+      calls.push(['post', path, body]);
+      if (path.endsWith('/load')) return { id: 'forgeos:v2:inspect', source: 'forge-os', catalog: 'v2', title: 'Inspect', content: '# Inspect', license: 'MIT', contentSha256: 'a'.repeat(64) };
+      return { id: 'forgeos:v2:inspect', provenanceStatus: 'forge-os-imported', receiptSha256: 'b'.repeat(64) };
+    },
+  };
+  const controller = createSkillsLibraryController({ api, language: 'en' });
+  await controller.load();
+  await controller.selectSkill('forgeos:v2:inspect');
+  await controller.installSelectedSkill();
+  const html = renderSkillsLibrary(controller.snapshot());
+
+  assert.deepEqual(calls, [
+    ['get', '/api/skills/catalog?limit=500'],
+    ['post', '/api/skills/catalog/forgeos%3Av2%3Ainspect/load', {}],
+    ['post', '/api/skills/catalog/forgeos%3Av2%3Ainspect/install', { confirmed: true }],
+    ['get', '/api/skills/catalog?limit=500'],
+  ]);
+  assert.match(html, /data-action="install-skill"/);
+  assert.match(html, /Forge OS skill added to local library/);
+
+  const local = renderSkillsLibrary({ ...controller.snapshot(), preview: { id: 'inspect', source: 'nolane', catalog: 'local', title: 'Inspect', content: '# Inspect' } });
+  assert.doesNotMatch(local, /data-action="install-skill"/);
+});
+
 test('skill library is discoverable from Home without expanding the frozen global rail', async () => {
   const [rail, app, home] = await Promise.all([
     readFile('ui-v3/shell/global-rail.mjs', 'utf8'),

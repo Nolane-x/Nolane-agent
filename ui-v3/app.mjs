@@ -311,6 +311,13 @@ router.register({ id: 'skills', pattern: /^\/skills(?:\?.*)?$/, title: 'Skills',
         repaint();
       };
       const click = async (event) => {
+        const install = event.target.closest('[data-action="install-skill"]');
+        if (install) {
+          install.disabled = true;
+          await controller.installSelectedSkill();
+          repaint();
+          return;
+        }
         const selected = event.target.closest('[data-skill-library-select]');
         if (!selected) return;
         selected.disabled = true;
