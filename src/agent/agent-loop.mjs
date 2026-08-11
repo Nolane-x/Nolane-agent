@@ -625,7 +625,7 @@ ${JSON.stringify(dependency.metadata.handoff).slice(0, 12_000)}`,
           await runHook('BeforeModel', { turn, providerId: provider.id, messageCount: composed.messages.length, harnessProfileId: composed.profileId, harnessRevision: composed.profileRevision });
           const requestStartedAt = performance.now();
           try {
-            response = await provider.complete({ messages: composed.messages, tools: composed.tools, ...(model ? { model } : {}), signal, leaseContext: { missionId: task.missionId, taskId: task.id, role: task.role ?? 'executor', harnessProfileId: composed.profileId, harnessRevision: composed.profileRevision } });
+            response = await provider.complete({ messages: composed.messages, tools: composed.tools, cwd: projectRoot, ...(model ? { model } : {}), signal, leaseContext: { missionId: task.missionId, taskId: task.id, role: task.role ?? 'executor', harnessProfileId: composed.profileId, harnessRevision: composed.profileRevision } });
             this.router?.recordSuccess(provider.id);
             try {
               const usage = response?.usage ?? {};

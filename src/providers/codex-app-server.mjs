@@ -200,9 +200,9 @@ export class CodexAppServerClient {
 
   async closeSession(_session, _options = {}) { return Object.freeze({ closed: true, processRetained: this.state === 'ready' }); }
 
-  async complete({ messages = [], tools = [], signal = null, model = undefined } = {}) {
-    const thread = await this.startThread({ cwd: this.cwd, ephemeral: true, sandboxPolicy: { type: 'read-only' }, approvalPolicy: 'untrusted' });
-    return this.completeInSession({ id: thread.id, threadId: thread.id, cwd: this.cwd }, { messages, tools, signal, model });
+  async complete({ messages = [], tools = [], signal = null, model = undefined, cwd = this.cwd } = {}) {
+    const thread = await this.startThread({ cwd, ephemeral: true, sandboxPolicy: { type: 'read-only' }, approvalPolicy: 'untrusted' });
+    return this.completeInSession({ id: thread.id, threadId: thread.id, cwd }, { messages, tools, signal, model, cwd });
   }
 
   async close() { await this.rpc.close(); this.state = 'closed'; }

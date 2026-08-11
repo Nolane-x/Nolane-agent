@@ -35,7 +35,7 @@ async function fixture(t, responses) {
   let index = 0;
   const provider = {
     id: 'fake-model', kind: 'test', publicView: () => ({ id: 'fake-model', kind: 'test' }),
-    async complete(request) { calls.push(['model', request.messages.length]); const item = responses[Math.min(index++, responses.length - 1)]; if (item instanceof Error) throw item; return item; },
+    async complete(request) { calls.push(['model', request.messages.length, request.cwd]); const item = responses[Math.min(index++, responses.length - 1)]; if (item instanceof Error) throw item; return item; },
   };
   const providers = new ProviderRegistry(); providers.register(provider);
   const broker = new ToolBroker({ workspaceRoot: root, allowedCommands: [process.execPath] });
@@ -50,6 +50,7 @@ test('AgentLoop routes before the model, executes tools through receipts, and ch
   ]);
   const result = await f.loop.run(f.task, { providerId: 'fake-model', budgets: { maxTurns: 4, maxToolCalls: 4, maxEstimatedTokens: 100, maxElapsedMs: 1000 } });
   assert.deepEqual(f.calls.slice(0, 2).map((item) => item[0]), ['route', 'model']);
+  assert.equal(f.calls.find((item) => item[0] === 'model')[2], f.project.workspaceRoot);
   assert.equal(result.state, 'awaiting-verification');
   assert.equal(result.output, 'README says hello.');
   assert.equal(result.receipts.length, 1);

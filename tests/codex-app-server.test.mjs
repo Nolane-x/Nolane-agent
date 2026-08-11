@@ -69,6 +69,20 @@ test('CodexAppServerClient exposes documented account login, cancel, and logout 
   assert.equal(account.account, null);
 });
 
+test('CodexAppServerClient complete() preserves the selected project working directory', async (t) => {
+  const codex = client();
+  t.after(() => codex.close());
+  const calls = [];
+  codex.startThread = async (request) => { calls.push(['thread', request]); return { id: 'thr_project' }; };
+  codex.completeInSession = async (session, request) => { calls.push(['turn', session, request]); return { providerId: 'codex-app-server', text: 'fixture answer' }; };
+
+  const cwd = path.join(process.cwd(), 'project-root');
+  await codex.complete({ cwd, messages: [{ role: 'user', content: 'Work here.' }] });
+
+  assert.equal(calls[0][1].cwd, cwd);
+  assert.equal(calls[1][1].cwd, cwd);
+});
+
 test('CodexAppServerClient imports the app-server model catalog without inventing capabilities', async (t) => {
   const codex = client();
   t.after(() => codex.close());
