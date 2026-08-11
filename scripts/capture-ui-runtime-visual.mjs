@@ -14,6 +14,7 @@ const STATES = Object.freeze([
   Object.freeze({ id: 'home-compact', route: '/', selector: '.home-view', viewport: Object.freeze({ width: 640, height: 900 }) }),
   Object.freeze({ id: 'home-nocturne', route: '/', selector: '.home-view' }),
   Object.freeze({ id: 'projects', route: '/projects', selector: '.projects-page' }),
+  Object.freeze({ id: 'skills', route: '/skills', selector: '.skills-library' }),
   Object.freeze({ id: 'settings', route: '/settings', selector: '#workspace' }),
   Object.freeze({ id: 'workroom', route: '/workroom', selector: '.workroom-view' }),
   Object.freeze({ id: 'control-plane', route: '/control-plane', selector: '#workspace' }),
