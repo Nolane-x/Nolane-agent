@@ -39,7 +39,7 @@ jobs:
           node-version: 24
           cache: npm
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: '1.24.x'
 
@@ -112,7 +112,7 @@ jobs:
           node-version: 24
           cache: npm
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: '1.24.x'
 
@@ -184,7 +184,7 @@ jobs:
           node-version: 24
           cache: npm
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: '1.24.x'
 
