@@ -1,6 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+
+const execFileAsync = promisify(execFile);
+
+test('the UI runtime entrypoint is syntactically valid before Chromium evidence runs', async () => {
+  await assert.doesNotReject(() => execFileAsync(process.execPath, ['--check', 'ui-v3/app.mjs']));
+});
 
 test('UI runtime visual workflow captures authenticated source-rendered states without packaging Electron', async () => {
   const workflow = await readFile('.github/workflows/ui-runtime-visual.yml', 'utf8');

@@ -48,3 +48,22 @@ test('UI v3 fingerprints are invariant to CRLF and LF source checkout line endin
     await rm(root, { recursive: true, force: true });
   }
 });
+
+test('UI v3 build rejects invalid JavaScript before replacing a prior distribution', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-ui-syntax-'));
+  const sourceRoot = path.join(root, 'ui-v3');
+  const outputRoot = path.join(root, 'ui-dist');
+  try {
+    await mkdir(sourceRoot, { recursive: true });
+    await writeFile(path.join(sourceRoot, 'index.html'), '<!doctype html><script type="module" src="./app.mjs"></script>');
+    await writeFile(path.join(sourceRoot, 'app.mjs'), 'export const ready = true;\n');
+    await buildUiV3({ sourceRoot, outputRoot });
+    const priorManifest = await readFile(path.join(outputRoot, 'manifest.json'), 'utf8');
+    await writeFile(path.join(sourceRoot, 'app.mjs'), 'export const broken = ;\n');
+
+    await assert.rejects(buildUiV3({ sourceRoot, outputRoot }), /UI v3 JavaScript syntax is invalid: app\.mjs/);
+    assert.equal(await readFile(path.join(outputRoot, 'manifest.json'), 'utf8'), priorManifest);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

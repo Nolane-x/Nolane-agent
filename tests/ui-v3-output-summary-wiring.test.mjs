@@ -8,7 +8,8 @@ test('UI v3 mounts global live output summary with working output, terminal, sto
   assert.match(app,/createOutputSummaryController/); assert.match(app,/toggle-summary/); assert.match(app,/data-stop-process/); assert.match(summary,/visibilitychange/); assert.match(summary,/processes\/.*\/stop/);
   assert.match(summary,/data-terminal-id/);
   assert.match(app,/summaryAction==='add-output'/);
-  assert.match(app,/\/workroom\$\{projectId\?/);
+  assert.match(app,/location\.hash=projectId\?`\/workroom\?project=/);
+  assert.match(app,/:'\/workroom';return;}const terminal=/);
   assert.match(app,/params\.get\('terminal'\)/);
   assert.match(app,/request\('list'\)/);
   assert.match(app,/request\('snapshot'/);
