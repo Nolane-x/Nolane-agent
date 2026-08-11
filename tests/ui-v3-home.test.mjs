@@ -49,6 +49,19 @@ test('home composer preserves a distinct deployment key for every provider model
   assert.doesNotMatch(html, /<select\b/);
 });
 
+test('home composer keeps every ready discovered model selectable', () => {
+  const models = Array.from({ length: 51 }, (_value, index) => ({
+    providerId: 'codex', modelId: `model-${index + 1}`, displayName: `Model ${index + 1}`,
+  }));
+  const html = renderHomeView(buildHomeViewModel({
+    providers: [{ id: 'codex', available: true, authenticated: true, healthy: true }],
+    models,
+  }));
+  const modelMenu = html.match(/data-composer-picker="modelChoice"[\s\S]*?<div id="composer-modelChoice-menu"[\s\S]*?<\/div>/)?.[0] ?? '';
+
+  assert.match(modelMenu, /data-picker-value="codex\/model-51"/);
+});
+
 test('home composer offers only ready provider deployments and disables send until a provider is usable', () => {
   const html = renderHomeView(buildHomeViewModel({
     projects: [{ id: 'p1', name: 'Project' }],
