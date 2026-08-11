@@ -85,7 +85,7 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Install the pinned Tree-sitter CLI runtime
-        run: npm install --global tree-sitter-cli@0.25.10
+        run: npm install --global --allow-scripts=tree-sitter-cli tree-sitter-cli@0.25.10
 
       - name: Run real Tree-sitter grammar gate
         env:
