@@ -101,6 +101,27 @@ test('home composer sends provider and model separately for the selected deploym
   assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Plan this', planningProviderId: 'codex-app-server', planningModelId: 'gpt-5.6-sol', deploymentKey: 'codex-app-server/gpt-5.6-sol', mcpAllowedTools: [] }]]);
 });
 
+test('home composer turns an explicit Skill selection into a removable mission context receipt request', async () => {
+  const calls = [];
+  const api = {
+    async get(path) {
+      if (path === '/api/projects') return [{ id: 'p1', name: 'Project' }];
+      if (path === '/api/provider-connections') return [{ id: 'codex', state: 'ready' }];
+      if (path === '/api/skills/catalog?limit=120') return [{ id: 'browser-audit', title: 'Browser audit', source: 'nolane', catalog: 'local' }];
+      return [];
+    },
+    async post(path, body) { calls.push([path, body]); return { id: 'mission-1', objective: body.objective }; },
+  };
+  const controller = createHomeController({ api });
+  await controller.load();
+  controller.addSkill('browser-audit');
+  const html = renderHomeView(controller.snapshot());
+  assert.match(html, /Browser audit/);
+  assert.match(html, /data-selected-skill-remove="browser-audit"/);
+  await controller.submit({ objective: 'Review this flow', projectId: 'p1' });
+  assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Review this flow', planningProviderId: 'auto', mcpAllowedTools: [], skillIds: ['browser-audit'] }]]);
+});
+
 test('home composer rejects an unavailable selected model before making a mission request', async () => {
   const calls = [];
   const api = {

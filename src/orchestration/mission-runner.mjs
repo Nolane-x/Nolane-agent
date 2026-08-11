@@ -96,6 +96,7 @@ export class MissionRunner {
           ...(mission.metadata?.goalAutoApplyPlanPatches !== undefined ? { goalAutoApplyPlanPatches: mission.metadata.goalAutoApplyPlanPatches === true } : {}),
           ...(Array.isArray(mission.metadata?.browserAllowedActions) ? { browserAllowedActions: [...mission.metadata.browserAllowedActions] } : {}),
           ...(Array.isArray(mission.metadata?.mcpAllowedTools) ? { mcpAllowedTools: [...mission.metadata.mcpAllowedTools] } : {}),
+          ...(Array.isArray(mission.metadata?.selectedSkills) ? { selectedSkills: structuredClone(mission.metadata.selectedSkills) } : {}),
         },
       }));
     }

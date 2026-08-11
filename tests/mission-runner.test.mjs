@@ -44,6 +44,23 @@ test('MissionRunner validates planner JSON, roles, DAG, and independent review',
   assert.equal(mission.tasks[1].metadata.testMatrix.changedPaths[0], 'src/**');
 });
 
+test('MissionRunner carries explicitly selected skill receipts into every planned task', async (t) => {
+  const f = await fixture(t);
+  const selectedSkills = [{
+    id: 'forgeos:v2:repository-review', source: 'forge-os', catalog: 'v2', title: 'Repository review',
+    contentSha256: 'a'.repeat(64), receiptSha256: 'b'.repeat(64), provenanceStatus: 'verified-source-snapshot',
+  }];
+  const mission = await f.runner.plan({
+    projectId: f.project.id,
+    objective: 'Review the repository safely',
+    planner: async () => plan,
+    planningMetadata: { selectedSkills },
+  });
+
+  assert.deepEqual(mission.metadata.selectedSkills, selectedSkills);
+  assert.ok(mission.tasks.every((task) => JSON.stringify(task.metadata.selectedSkills) === JSON.stringify(selectedSkills)));
+});
+
 test('MissionRunner runs leased work and blocks completion without passing commit-bound evidence', async (t) => {
   const f = await fixture(t);
   const mission = await f.runner.plan({ projectId: f.project.id, objective: 'Build feature', planner: async () => plan });

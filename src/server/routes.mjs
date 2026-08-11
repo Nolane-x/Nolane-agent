@@ -2143,6 +2143,29 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
       if (!projectId) throw Object.assign(new TypeError('Choose a project before sending a mission.'), { statusCode: 400, code: 'PROJECT_REQUIRED' });
       if (typeof store?.getProject === 'function' && !store.getProject(projectId)) throw Object.assign(new Error('The selected project is no longer available. Choose another project.'), { statusCode: 404, code: 'PROJECT_NOT_FOUND' });
       if (!objective) throw Object.assign(new TypeError('Enter a mission objective before sending.'), { statusCode: 400, code: 'OBJECTIVE_REQUIRED' });
+      if (body.skillIds != null && !Array.isArray(body.skillIds)) throw Object.assign(new TypeError('Selected skills must be an array.'), { statusCode: 400, code: 'SKILL_SELECTION_INVALID' });
+      const requestedSkillIds = [...new Set((body.skillIds ?? []).map((item) => String(item ?? '').trim()))];
+      if (requestedSkillIds.length > 8 || requestedSkillIds.some((id) => !id || id.length > 180 || /\s/.test(id))) throw Object.assign(new TypeError('Select up to eight valid skills.'), { statusCode: 400, code: 'SKILL_SELECTION_INVALID' });
+      const selectedSkills = [];
+      if (requestedSkillIds.length) {
+        if (typeof nativeOrchestration?.loadSkill !== 'function') throw Object.assign(new Error('The skill context runtime is not configured.'), { statusCode: 503, code: 'SKILL_CONTEXT_UNAVAILABLE' });
+        for (const id of requestedSkillIds) {
+          let skill;
+          try { skill = await nativeOrchestration.loadSkill(id, { grantedCapabilities: [] }); }
+          catch { throw Object.assign(new Error(`Selected skill is unavailable or requires an explicit capability: ${id}`), { statusCode: 400, code: 'SKILL_ATTACH_UNAVAILABLE' }); }
+          if (String(skill?.id ?? '') !== id || typeof skill?.content !== 'string' || !/^[a-f0-9]{64}$/i.test(String(skill?.contentSha256 ?? ''))) throw Object.assign(new Error(`Selected skill has no verified content receipt: ${id}`), { statusCode: 400, code: 'SKILL_ATTACH_UNAVAILABLE' });
+          selectedSkills.push(Object.freeze({
+            id,
+            source: skill.source ?? null,
+            catalog: skill.catalog ?? null,
+            title: String(skill.title ?? id),
+            contentSha256: skill.contentSha256,
+            manifestSha256: skill.manifestSha256 ?? null,
+            provenanceStatus: skill.provenanceStatus ?? null,
+            receiptSha256: skill.receiptSha256 ?? null,
+          }));
+        }
+      }
       const requestedMcpTools = Array.isArray(body.mcpAllowedTools)
         ? [...new Set(body.mcpAllowedTools.map((item) => String(item).trim()).filter(Boolean))].slice(0, 128)
         : [];
@@ -2168,7 +2191,7 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
         projectId,
         objective,
         planner,
-        planningMetadata: { planningProviderId, ...(planningModelId ? { planningModelId } : {}) },
+        planningMetadata: { planningProviderId, ...(planningModelId ? { planningModelId } : {}), ...(selectedSkills.length ? { selectedSkills } : {}) },
       });
       return json(res, 201, result);
     }

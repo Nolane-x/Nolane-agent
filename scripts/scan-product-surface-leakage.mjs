@@ -20,8 +20,8 @@ const FILE_TARGETS = Object.freeze([
 ]);
 const EXTENSIONS = new Set(['.cjs', '.js', '.mjs', '.ts', '.json', '.html', '.css', '.md', '.xml']);
 const PATTERNS = Object.freeze([
-  { id: 'legacy-product', expression: /ForgeStudio|Forge Studio|Forge OS/g },
-  { id: 'legacy-brand-word', expression: /\bForge\b/g },
+  { id: 'legacy-product', expression: /ForgeStudio|Forge Studio/g },
+  { id: 'legacy-brand-word', expression: /\bForge\b(?! OS)/g },
   { id: 'legacy-symbol', expression: /\bForgeStudio[A-Za-z0-9_]*/g },
   { id: 'legacy-command', expression: /['"`]forge\.[a-zA-Z0-9_.-]+['"`]/g },
   { id: 'legacy-config', expression: /\bforgeStudio(?:\.[a-zA-Z0-9_.-]+)?\b/g },

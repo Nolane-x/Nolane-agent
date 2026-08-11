@@ -69,6 +69,8 @@ test('local Agent Skills show their distinct catalog and supply-chain metadata s
   assert.match(html, /aaaaaaaaaaaa/);
   assert.match(html, /example\.test\/skills\/browser-audit/);
   assert.match(html, /<option value="local" selected>Local skills<\/option>/);
+  assert.match(html, /href="#\/\?skill=browser-audit" data-route="\/\?skill=browser-audit"/);
+  assert.match(html, /Use in next mission/);
 });
 
 test('skill library is discoverable from Home without expanding the frozen global rail', async () => {
@@ -90,6 +92,9 @@ test('skill library CSS uses semantic tokens and collapses the catalogue split o
   ]);
   assert.match(styles, /var\(--surface-panel\)/);
   assert.match(styles, /var\(--text-primary\)/);
+  assert.match(styles, /\.skills-library__filter\{[^}]*var\(--text-secondary\)/);
+  assert.match(styles, /\.skill-library-item__body small\{[^}]*var\(--text-secondary\)/);
+  assert.match(styles, /\.skills-library \.surface-page__header \.eyebrow\{color:var\(--text-secondary\)\}/);
   assert.doesNotMatch(styles, /#[0-9a-f]{3,8}\b/i);
   assert.match(responsive, /\.skills-library__body\{grid-template-columns:1fr/);
 });

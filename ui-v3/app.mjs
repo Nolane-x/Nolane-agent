@@ -56,6 +56,7 @@ function composerDraft(root = document) {
     projectId: form.elements.projectId?.value || null,
     intent: form.elements.intent?.value || 'ask',
     modelChoice: form.elements.modelChoice?.value || 'auto',
+    skillIds: [...form.querySelectorAll('[data-selected-skill-id]')].map((item) => item.dataset.selectedSkillId).filter(Boolean),
     attachmentRefs: []
   };
 }
@@ -226,12 +227,14 @@ router.register({ id: 'home', pattern: /^\/(?:\?.*)?$/, title: 'Chat', load: asy
   const { createHomeController, renderHomeView } = await import('./views/home/home-view.mjs');
   const restoredDraft = sessionRestore.snapshot().drafts.home;
   const queryProjectId = new URLSearchParams((location.hash.split('?')[1] ?? '')).get('projectId');
+  const querySkillId = new URLSearchParams((location.hash.split('?')[1] ?? '')).get('skill');
   const controller = createHomeController({ api, language: cachedPreferences.language }); await controller.load();
   const preferredProjectId = activeProjectId ?? queryProjectId ?? restoredDraft?.projectId ?? controller.snapshot().selectedProjectId;
   if (preferredProjectId) controller.setProject(preferredProjectId);
   activeProjectId = controller.snapshot().selectedProjectId || null;
   if (restoredDraft?.intent) controller.setIntent(restoredDraft.intent);
   if (restoredDraft?.modelChoice) controller.setModel(restoredDraft.modelChoice);
+  for (const skillId of [...(restoredDraft?.skillIds ?? []), querySkillId].filter(Boolean)) controller.addSkill(skillId);
   let root = null; let selectedMenuIndex = 0;
   const view = {
     experienceLevel: 'everyday',
@@ -252,8 +255,9 @@ router.register({ id: 'home', pattern: /^\/(?:\?.*)?$/, title: 'Chat', load: asy
       window.addEventListener('nolane:project-selected', onExternalProjectSelected);
       const openMenu = (type, query = '') => { selectedMenuIndex=0; controller.setMenu({type,query}); render({focus:true}); };
       const closeMenu = () => { const value=root.querySelector('#objective')?.value??'';controller.setMenu(null);render({textareaValue:value,focus:true}); };
-      const chooseMenuItem = (button) => { const area=root.querySelector('#objective'); if(!area)return; const kind=button.dataset.menuKind; const id=button.dataset.menuId; const label=button.dataset.menuLabel; const value=area.value; const token=kind==='command'?`/${id}`:`@${kind}:${id}`; const match=value.match(/(^|\s)([@/][^\s]*)$/); area.value=match?`${value.slice(0,match.index)}${match[1]}${token} `:`${value}${value&& !value.endsWith(' ')?' ':''}${token} `; if(kind==='command'&&['ask','plan','build','verify'].includes(id))controller.setIntent(id); controller.setMenu(null); render({textareaValue:area.value,focus:true}); saveDraft(); };
+      const chooseMenuItem = (button) => { const area=root.querySelector('#objective'); if(!area)return; const kind=button.dataset.menuKind; const id=button.dataset.menuId; const value=area.value; const match=value.match(/(^|\s)([@/][^\s]*)$/); if(kind==='skill'){ const next=match?`${value.slice(0,match.index)}${match[1]}`:value; controller.addSkill(id); controller.setMenu(null); render({textareaValue:next,focus:true}); saveDraft(); return; } const token=kind==='command'?`/${id}`:`@${kind}:${id}`; area.value=match?`${value.slice(0,match.index)}${match[1]}${token} `:`${value}${value&& !value.endsWith(' ')?' ':''}${token} `; if(kind==='command'&&['ask','plan','build','verify'].includes(id))controller.setIntent(id); controller.setMenu(null); render({textareaValue:area.value,focus:true}); saveDraft(); };
       const click = async (event) => {
+        const selectedSkillRemove=event.target.closest('[data-selected-skill-remove]'); if(selectedSkillRemove){const value=root.querySelector('#objective')?.value??'';controller.removeSkill(selectedSkillRemove.dataset.selectedSkillRemove);render({textareaValue:value,focus:true});saveDraft();return;}
         const pickerToggle=event.target.closest('[data-composer-picker-toggle]'); if(pickerToggle){event.stopPropagation();openComposerPicker(pickerToggle.closest('[data-composer-picker]'));return;}
         const pickerOption=event.target.closest('[data-composer-picker-option]'); if(pickerOption){event.stopPropagation();chooseComposerOption(pickerOption);return;}
         const projectPickerToggle=event.target.closest('[data-project-picker-toggle]'); if(projectPickerToggle){event.stopPropagation();const picker=projectPickerToggle.closest('[data-project-picker]');const menu=picker?.querySelector('[data-project-picker-menu]');if(menu){const open=menu.hidden;menu.hidden=!open;projectPickerToggle.setAttribute('aria-expanded',String(open));if(open)requestAnimationFrame(()=>menu.querySelector('[data-project-search]')?.focus({preventScroll:true}));}return;}

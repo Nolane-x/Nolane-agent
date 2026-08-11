@@ -48,4 +48,5 @@ test('application opens and passes Nolane native orchestration service', async (
   assert.match(source, /await nativeOrchestration\.open\(\)/);
   assert.match(source, /forgeOsRoots: \[config\.forgeOsRoot\]/);
   assert.match(source, /nativeOrchestration,/);
+  assert.match(source, /skillContextResolver:\s*async \(id\) => nativeOrchestration\.loadSkill\(id, \{ grantedCapabilities: \[\] \}\)/);
 });

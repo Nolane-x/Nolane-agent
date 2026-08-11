@@ -203,7 +203,7 @@ const sleep = (ms, signal) => new Promise((resolve, reject) => {
 });
 
 export class AgentLoop {
-  constructor({ forge, providers, router = null, repositoryIndex = null, instructionDiscovery = null, instructionPolicy = null, memoryService = null, evidenceContextRuntime = null, pluginService = null, contentIngress = null, mcpGateway = null, browserGateway = null, goalGateway = null, forgeGateway = null, operatingPlaneGateway = null, adaptiveIntelligenceGateway = null, dynamicToolCatalog = null, hookEngineFactory = null, verificationClaimGuard = new VerificationClaimGuard(), harnessComposer = null, harnessFailureStore = null, harnessFailureClassifier = null, contextEscalationController = null, decisionPlane = null, modelObservationSink = null, broker, store, contextBuilder } = {}) {
+  constructor({ forge, providers, router = null, repositoryIndex = null, instructionDiscovery = null, instructionPolicy = null, memoryService = null, evidenceContextRuntime = null, pluginService = null, contentIngress = null, skillContextResolver = null, mcpGateway = null, browserGateway = null, goalGateway = null, forgeGateway = null, operatingPlaneGateway = null, adaptiveIntelligenceGateway = null, dynamicToolCatalog = null, hookEngineFactory = null, verificationClaimGuard = new VerificationClaimGuard(), harnessComposer = null, harnessFailureStore = null, harnessFailureClassifier = null, contextEscalationController = null, decisionPlane = null, modelObservationSink = null, broker, store, contextBuilder } = {}) {
     if (!forge || !providers || !broker || !store || !contextBuilder) throw new TypeError('AgentLoop dependencies are required');
     this.forge = forge;
     this.providers = providers;
@@ -216,6 +216,8 @@ export class AgentLoop {
     this.pluginService = pluginService;
     if (contentIngress !== null && typeof contentIngress?.screen !== 'function') throw new TypeError('contentIngress must expose screen()');
     this.contentIngress = contentIngress;
+    if (skillContextResolver !== null && typeof skillContextResolver !== 'function') throw new TypeError('skillContextResolver must be a function');
+    this.skillContextResolver = skillContextResolver;
     this.mcpGateway = mcpGateway;
     this.browserGateway = browserGateway;
     this.goalGateway = goalGateway;
@@ -528,6 +530,28 @@ ${item.text}`,
         pluginOmissions = pluginContext.omissions ?? [];
         if (pluginReferences.length) this.#event('agent.plugins.selected', { plugins: [...new Set(pluginReferences.map((item) => item.metadata.pluginId))], selected: pluginReferences.map((item) => ({ id: item.id, sourcePath: item.metadata.sourcePath, contentSha256: item.metadata.contentSha256 })), omissions: pluginOmissions }, refs);
       }
+      const selectedSkillReferences = [];
+      const selectedSkillRecords = Array.isArray(task.metadata?.selectedSkills) ? task.metadata.selectedSkills.slice(0, 8) : [];
+      if (selectedSkillRecords.length) {
+        if (!this.skillContextResolver) throw new Error('selected skill context resolver is unavailable');
+        for (const selected of selectedSkillRecords) {
+          const id = String(selected?.id ?? '').trim();
+          if (!id) throw new Error('selected skill id is required');
+          const loaded = await this.skillContextResolver(id);
+          if (String(loaded?.id ?? '') !== id || typeof loaded?.content !== 'string' || !String(loaded?.contentSha256 ?? '')) throw new Error(`selected skill could not be loaded: ${id}`);
+          const expectedHash = String(selected?.contentSha256 ?? '').trim();
+          if (expectedHash && expectedHash !== loaded.contentSha256) throw new Error(`selected skill content changed since mission planning: ${id}`);
+          const content = loaded.content.slice(0, 20_000);
+          selectedSkillReferences.push(screenItem({
+            id: `selected-skill:${id}`,
+            text: `[user-selected-skill id=${id} source=${String(loaded.source ?? 'unknown')} catalog=${String(loaded.catalog ?? 'unknown')} provenance=${String(loaded.provenanceStatus ?? 'unknown')}]\n${content}`,
+            sha256: loaded.contentSha256,
+            priority: 930,
+            metadata: { skillId: id, source: loaded.source ?? null, catalog: loaded.catalog ?? null, provenanceStatus: loaded.provenanceStatus ?? null, contentSha256: loaded.contentSha256, receiptSha256: loaded.receiptSha256 ?? null, trust: 'user-selected-skill-untrusted', truncated: loaded.content.length > content.length },
+          }, 'selected-skill', `selected-skill:${id}`));
+        }
+        this.#event('agent.skills.selected', { selected: selectedSkillReferences.map((item) => ({ id: item.metadata.skillId, contentSha256: item.metadata.contentSha256, receiptSha256: item.metadata.receiptSha256, provenanceStatus: item.metadata.provenanceStatus })), count: selectedSkillReferences.length }, refs);
+      }
       const dependencyReferences = task.dependencies
         .map((dependencyId) => this.store.getTask(dependencyId))
         .filter((dependency) => dependency?.metadata?.handoff)
@@ -578,7 +602,7 @@ ${JSON.stringify(dependency.metadata.handoff).slice(0, 12_000)}`,
         model: contextModel,
         code: [...screenItems(task.metadata?.code, 'repository', 'task-code'), ...repositoryCode],
         memory: [...screenItems(task.metadata?.memory, 'memory', 'task-memory'), ...activeMemory],
-        references: [...screenItems(task.metadata?.references, 'reference', 'task-reference'), ...hookReferences, ...instructionReferences, ...instructionPolicyReferences, ...pluginReferences, ...dependencyReferences, ...evidenceReferences],
+        references: [...screenItems(task.metadata?.references, 'reference', 'task-reference'), ...hookReferences, ...instructionReferences, ...instructionPolicyReferences, ...selectedSkillReferences, ...pluginReferences, ...dependencyReferences, ...evidenceReferences],
       });
       const built = this.contextBuilder.build(contextPack, { task, extraOmissions: [...repositoryContext.omissions, ...instructionOmissions, ...pluginOmissions] });
       messages = [...built.messages];
