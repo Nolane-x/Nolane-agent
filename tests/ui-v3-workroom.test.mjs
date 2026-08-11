@@ -58,6 +58,19 @@ test('Workroom renders a bounded, interactive terminal surface after a local ses
   assert.match(html, /data-workroom-terminal-form/);
 });
 
+test('Workroom status bar reports live Git and session state instead of fixed diagnostics', () => {
+  const model = createWorkroomModel({ projectId: 'p1', language: 'en' });
+  model.setGitStatus({ clean: false, entries: [{ path: 'src/main.mjs' }, { path: 'README.md' }] });
+  model.setFile({ path: 'src/main.mjs', content: 'before', sha256: 'c'.repeat(64) });
+  model.setDraftContent('after');
+  model.setTerminal({ id: 'terminal-1', status: 'connected' });
+  const html = renderWorkroomView(model.snapshot());
+  assert.match(html, /data-workroom-git-status="changed">2 files changed/);
+  assert.match(html, /data-workroom-file-state="dirty">Unsaved changes/);
+  assert.match(html, /data-workroom-terminal-state="connected">Terminal connected/);
+  assert.doesNotMatch(html, />main<|>0 errors<|>0 warnings</);
+});
+
 test('Workroom disables terminal creation when no project owns the session', () => {
   const model = createWorkroomModel({ projectId: 'unselected' });
   const html = renderWorkroomView(model.snapshot());
@@ -70,6 +83,7 @@ test('Workroom opens the governed terminal socket only from an explicit terminal
   assert.match(source, /request\('create', \{ projectId: project\.id, shell, cwd: '\.'[,}]?/);
   assert.match(source, /request\('input', \{ sessionId: current\.id, data:/);
   assert.match(source, /request\('terminate', \{ sessionId: current\.id \}\)/);
+  assert.match(source, /\/api\/git\/status\?projectId=/);
 });
 
 test('Workroom terminal inherits the configured application color tokens', async () => {
