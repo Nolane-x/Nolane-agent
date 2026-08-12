@@ -26,6 +26,9 @@ test('command classifier fails closed for mutating Git variants and substring-sh
   assert.deepEqual(classifyCommand({ command: 'git', args: ['remote', 'add', 'origin', 'https://example.test/repo.git'] }), { commandClass: 'git', readOnly: false, gitOperation: 'remote' });
   assert.deepEqual(classifyCommand({ command: 'git', args: ['branch', '-D', 'feature'] }), { commandClass: 'git', readOnly: false, gitOperation: 'branch' });
   assert.deepEqual(classifyCommand({ command: 'npm', args: ['run', 'retest-build'] }), { commandClass: 'arbitrary', readOnly: false });
+  assert.deepEqual(classifyCommand({ command: 'node', args: ['scripts/publish.mjs'] }), { commandClass: 'arbitrary-code-execution', readOnly: false });
+  assert.deepEqual(classifyCommand({ command: 'python', args: ['-c', 'import socket'] }), { commandClass: 'arbitrary-code-execution', readOnly: false });
+  assert.deepEqual(classifyCommand({ command: 'npx', args: ['remote-package'] }), { commandClass: 'arbitrary-code-execution', readOnly: false });
 });
 
 test('autonomy guard cannot elevate a denied network grant from a dependency heuristic', async () => {
@@ -55,6 +58,7 @@ test('workspace autopilot allows read-only git inspection outside a worktree but
 
   const managed = fixture();
   await assert.rejects(() => managed.guarded.execute({ tool: 'process.run', input: { command: 'npm', args: ['install'] } }), (error) => error.code === 'AUTONOMY_APPROVAL_REQUIRED');
+  await assert.rejects(() => managed.guarded.execute({ tool: 'process.run', input: { command: 'node', args: ['scripts/publish.mjs'] } }), (error) => error.code === 'AUTONOMY_APPROVAL_REQUIRED');
 });
 
 test('guided mode keeps state changes behind an approval boundary', async () => {

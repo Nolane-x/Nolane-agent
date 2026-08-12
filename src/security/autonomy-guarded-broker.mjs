@@ -39,7 +39,7 @@ export function classifyCommand(input = {}) {
   if (hasToken(tokens, ['install', 'ci', 'add'])) return Object.freeze({ commandClass: 'dependency-install', readOnly: false });
   if (hasToken(tokens, ['dev', 'serve', 'start'])) return Object.freeze({ commandClass: 'dev-server', readOnly: false });
   if (hasToken(tokens, ['generate', 'codegen'])) return Object.freeze({ commandClass: 'codegen', readOnly: false });
-  if (['node', 'python', 'python3', 'npx'].includes(command)) return Object.freeze({ commandClass: 'codegen', readOnly: false });
+  if (['node', 'python', 'python3', 'npx'].includes(command)) return Object.freeze({ commandClass: 'arbitrary-code-execution', readOnly: false });
   return Object.freeze({ commandClass: 'arbitrary', readOnly: false });
 }
 
