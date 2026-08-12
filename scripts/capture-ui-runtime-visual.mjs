@@ -31,8 +31,9 @@ function required(value, name) {
 
 function stateUrl(baseUrl, token, route) {
   const target = new URL(baseUrl);
-  target.searchParams.set('token', token);
-  target.hash = route;
+  const routeUrl = new URL(route, target);
+  routeUrl.searchParams.set('token', token);
+  target.hash = `${routeUrl.pathname}${routeUrl.search}`;
   return target.toString();
 }
 
@@ -69,8 +70,7 @@ function safeDiagnosticUrl(value) {
 async function readOnboardingStatus(root, credential) {
   try {
     const endpoint = new URL('/api/onboarding/status', root);
-    endpoint.searchParams.set('token', credential);
-    const response = await fetch(endpoint);
+    const response = await fetch(endpoint, { headers: { authorization: `Bearer ${credential}` } });
     if (!response.ok) return Object.freeze({ reachable: false, status: response.status });
     const payload = await response.json();
     return Object.freeze({

@@ -41,6 +41,18 @@ function retainVerifiedCliConnection(previous, next) {
   return Object.freeze({ ...next, authenticated: true, healthy: true, error: null });
 }
 
+async function refreshWithConcurrency(tasks, concurrency = 4) {
+  let next = 0;
+  const worker = async () => {
+    while (next < tasks.length) {
+      const task = tasks[next];
+      next += 1;
+      await task();
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(concurrency, tasks.length) }, worker));
+}
+
 export class ProviderConnectionService {
   constructor({ store, registry, credentialVault, codexAppServer = null, cliAuthAdapters = {}, fetchImpl = fetch, clock = () => new Date().toISOString(), modelProfiles = null, modelDiscovery = null, modelProbes = null } = {}) {
     if (!store?.listProviderConfigs || !registry?.upsert || !credentialVault?.set) throw new TypeError('store, registry, and credentialVault are required');
@@ -175,36 +187,47 @@ export class ProviderConnectionService {
   }
 
   async refreshAll({ apiProviders = true } = {}) {
-    if (this.codexAppServer && this.registry.list().some((item) => item.id === 'codex-app-server')) await this.#refreshCodex();
+    const providers = this.registry.list();
+    const registeredIds = new Set(providers.map((item) => item.id));
+    const records = this.store.listProviderConfigs();
+    const tasks = [];
+    if (this.codexAppServer && registeredIds.has('codex-app-server')) tasks.push(() => this.#refreshCodex());
     for (const [id, adapter] of Object.entries(this.cliAuthAdapters)) {
-      if (!this.registry.list().some((item) => item.id === id)) continue;
-      try {
-        const status = await adapter.status(); const provider = this.registry.get(id);
-        const detection = retainVerifiedCliConnection(this.registry.detection(id), { ...provider.publicView(), ...status });
-        this.registry.setDetection(id, detection);
-      }
-      catch (error) { const provider = this.registry.get(id); this.registry.setDetection(id, { ...provider.publicView(), available: false, authenticated: false, healthy: false, error: safeError(error) }); }
+      if (!registeredIds.has(id)) continue;
+      tasks.push(async () => {
+        try {
+          const status = await adapter.status(); const provider = this.registry.get(id);
+          const detection = retainVerifiedCliConnection(this.registry.detection(id), { ...provider.publicView(), ...status });
+          this.registry.setDetection(id, detection);
+        }
+        catch (error) { const provider = this.registry.get(id); this.registry.setDetection(id, { ...provider.publicView(), available: false, authenticated: false, healthy: false, error: safeError(error) }); }
+      });
     }
     if (apiProviders) {
-      for (const record of this.store.listProviderConfigs()) {
-        if (!API_KINDS.has(record.kind) || !this.registry.list().some((item) => item.id === record.id)) continue;
-        const provider = this.registry.get(record.id); const detection = await provider.detect();
-        const tested = record.config?.lastTestStatus === 'pass';
-        this.registry.setDetection(record.id, { ...detection, healthy: detection.authenticated === true && tested, error: detection.authenticated !== true ? detection.error : (tested ? null : 'connection-test-required') });
+      for (const record of records) {
+        if (!API_KINDS.has(record.kind) || !registeredIds.has(record.id)) continue;
+        tasks.push(async () => {
+          const provider = this.registry.get(record.id); const detection = await provider.detect();
+          const tested = record.config?.lastTestStatus === 'pass';
+          this.registry.setDetection(record.id, { ...detection, healthy: detection.authenticated === true && tested, error: detection.authenticated !== true ? detection.error : (tested ? null : 'connection-test-required') });
+        });
       }
     }
-    const handled = new Set(['codex', 'codex-app-server', ...Object.keys(this.cliAuthAdapters), ...this.store.listProviderConfigs().map((item) => item.id)]);
-    for (const provider of this.registry.list()) {
+    const handled = new Set(['codex', 'codex-app-server', ...Object.keys(this.cliAuthAdapters), ...records.map((item) => item.id)]);
+    for (const provider of providers) {
       if (handled.has(provider.id) || this.registry.detection(provider.id)) continue;
-      try {
-        const previous = this.registry.detection(provider.id);
-        const detected = await (provider.detect?.() ?? { ...provider.publicView(), available: true });
-        const candidate = { ...provider.publicView(), ...detected, authenticated: false, healthy: false, error: detected.error ?? (detected.available === false ? 'not-installed' : 'connection-test-required') };
-        this.registry.setDetection(provider.id, retainVerifiedCliConnection(previous, candidate));
-      } catch (error) {
-        this.registry.setDetection(provider.id, { ...provider.publicView(), available: false, authenticated: false, healthy: false, error: safeError(error) });
-      }
+      tasks.push(async () => {
+        try {
+          const previous = this.registry.detection(provider.id);
+          const detected = await (provider.detect?.() ?? { ...provider.publicView(), available: true });
+          const candidate = { ...provider.publicView(), ...detected, authenticated: false, healthy: false, error: detected.error ?? (detected.available === false ? 'not-installed' : 'connection-test-required') };
+          this.registry.setDetection(provider.id, retainVerifiedCliConnection(previous, candidate));
+        } catch (error) {
+          this.registry.setDetection(provider.id, { ...provider.publicView(), available: false, authenticated: false, healthy: false, error: safeError(error) });
+        }
+      });
     }
+    await refreshWithConcurrency(tasks);
     return this.list();
   }
 

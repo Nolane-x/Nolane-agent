@@ -16,6 +16,10 @@ test('Electron main process uses utilityProcess and a secure BrowserWindow lifec
   assert.match(main, /NOLANE_AGENT_ELECTRON_USER_DATA/);
   assert.match(main, /app\.setPath\('userData'/);
   assert.match(main, /NOLANE_AGENT_ELECTRON_RUNTIME_FILE/);
+  assert.match(main, /installRuntimeAuthentication/);
+  assert.match(main, /onBeforeSendHeaders/);
+  assert.match(main, /Authorization/);
+  assert.doesNotMatch(main, /\?token=/);
   assert.doesNotMatch(main, /nodeIntegration\s*:\s*true/);
 });
 

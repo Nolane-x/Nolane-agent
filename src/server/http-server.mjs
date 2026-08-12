@@ -6,12 +6,12 @@ import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { eventToSse } from '../protocol/events.mjs';
 import { createRoutes, json } from './routes.mjs';
 import { attachTerminalWebSocket } from './terminal-websocket.mjs';
+import { localRequestToken } from './local-session-auth.mjs';
 import { VERSION } from '../version.mjs';
 
 const MIME = Object.freeze({ '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.json': 'application/json; charset=utf-8', '.wasm': 'application/wasm', '.ttf': 'font/ttf', '.woff': 'font/woff', '.woff2': 'font/woff2' });
 const CSP = "default-src 'self'; img-src 'self' data:; font-src 'self' data:; style-src 'self'; script-src 'self'; worker-src 'self' blob:; connect-src 'self' ws:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'";
 function sameSecret(actual, expected) { const a = Buffer.from(String(actual ?? '')); const b = Buffer.from(String(expected ?? '')); return a.length === b.length && timingSafeEqual(a, b); }
-function requestToken(req, url) { const header = String(req.headers.authorization ?? ''); return header.startsWith('Bearer ') ? header.slice(7) : url.searchParams.get('token'); }
 
 const FORBIDDEN_PATH_CODES = new Set(['PATH_ESCAPE', 'PATH_SYMLINK_ESCAPE', 'PATH_SCOPE_DENIED', 'PATH_DENIED']);
 const BAD_INPUT_PATH_CODES = new Set(['INVALID_PATH', 'PATH_REQUIRED']);
@@ -52,6 +52,7 @@ export function classifyHttpError(error) {
 export async function createHttpServer({ config, store, providers, missionRunner, runCoordinator = null, projectService = null, webIntelligence = null, repositoryIndex = null, router = null, mcpRegistry = null, evalRunner = null, verificationRunner = null, plannerService = null, memoryService = null, gitInspector = null, autopilot = null, terminalManager = null, fileService = null, credentialVault = null, providerConnections = null, uiAssets = null, updateService = null, updatePreparation = null, instructionDiscovery = null, instructionPolicy = null, runtimeStatus = null, goalService = null, goalRunService = null, replanner = null, commandRegistry = null, browserService = null, browserRuntimeInstaller = null, browserPermissionService = null, pluginService = null, settingsService = null, personalizationProfile = null, onboardingService = null, sessionRestore = null, missionGraph = null, goalScheduler = null, forgeBridge = null, enterpriseCloudRoutes = null, operatingPlane = null, capabilityLedger = null, adaptiveIntelligence = null, environmentControl = null, nativeRuntime = null, nativeAgent = null, nativeOrchestration = null, sessionStore = null, smallModelFoundation = null, nativeCapabilities = null, operationalBoundary = null, dependencyPreflight = null, workspaceTrust = null, diffReview = null, operationsCenter = null, contextMemoryCenter = null, contextOrchestration = null, traceEvidenceCenter = null, repositoryDiscovery = null, codebaseKnowledge = null, semanticDependency = null, codeRelationships = null, localResourceSandbox = null, localTaskHandoff = null, gitGovernance = null, treeSitterRuntime = null, agentModes = null, missionStateProgress = null, localOperations = null, architectureStageGate = null, missionCompletion = null, localContainerPreflight = null, evidenceContextRuntime = null, missionResourceFabric = null, modelProfiles = null, modelManager = null, executionStory = null, timeTravel = null, sovereignKernel = null, uiSummary = null, eventHub = null, remoteMcpHttp = null, scimHttp = null, oidcHttp = null, requestAuthorizer = null, routeSecurityTelemetry = null, allowRemoteBinding = false, uiRoot, uiAssetsRoot = null } = {}) {
   const host = String(config?.host ?? '127.0.0.1');
   if (!['127.0.0.1', '::1', 'localhost'].includes(host) && allowRemoteBinding !== true) throw new Error('HTTP server must bind to loopback unless explicit remote binding is enabled');
+  const localSessionCookieAllowed = ['127.0.0.1', '::1', 'localhost'].includes(host);
   const token = String(config?.authToken ?? randomBytes(32).toString('base64url'));
   const root = path.resolve(uiRoot);
   const assetsRoot = uiAssetsRoot ? path.resolve(uiAssetsRoot) : null;
@@ -77,12 +78,12 @@ export async function createHttpServer({ config, store, providers, missionRunner
         const handled = await oidcHttp.handle(req, res, url);
         if (handled) return;
       }
-      const localAuthorized = sameSecret(requestToken(req, url), token);
+      const localAuthorized = sameSecret(localRequestToken(req), token);
       const principal = localAuthorized
         ? Object.freeze({ subject: 'local-admin', organizationId: 'local', roles: Object.freeze(['owner']), groups: Object.freeze([]), kind: 'local-token' })
         : (oidcHttp?.authenticateRequest ? await oidcHttp.authenticateRequest(req) : null);
       req.forgePrincipal = principal;
-      const protectedPath = url.pathname.startsWith('/api/') || url.pathname === '/events' || url.pathname === '/';
+      const protectedPath = url.pathname.startsWith('/api/') || url.pathname === '/events';
       if (protectedPath) routeTrace?.record('authentication', principal ? 'allow' : 'deny', { statusCode: principal ? 200 : 401 });
       if (protectedPath && !principal) return json(res, 401, { error: 'unauthorized' });
       if (protectedPath && typeof requestAuthorizer === 'function') {
@@ -91,6 +92,14 @@ export async function createHttpServer({ config, store, providers, missionRunner
         routeTrace?.record('organization-authorization', allowed ? 'allow' : 'deny', { statusCode: allowed ? 200 : 403, code: allowed ? null : decision?.code ?? 'request-denied' });
         if (!allowed) return json(res, 403, { error: 'forbidden', code: decision?.code ?? 'request-denied' });
       } else if (protectedPath) routeTrace?.record('organization-authorization', 'allow', { statusCode: 200, code: 'local-policy' });
+      if (req.method === 'POST' && url.pathname === '/api/local-session/bootstrap') {
+        if (!localAuthorized) return json(res, 403, { error: 'local-session-bootstrap-requires-local-token' });
+        if (!localSessionCookieAllowed) return json(res, 403, { error: 'local-session-bootstrap-loopback-only' });
+        return json(res, 200, { authenticated: true, transport: 'local-session-cookie' }, {
+          'cache-control': 'no-store',
+          'set-cookie': `nolane_local_session=${encodeURIComponent(token)}; HttpOnly; SameSite=Strict; Path=/`,
+        });
+      }
       if (req.method === 'GET' && url.pathname === '/events') {
         res.writeHead(200, { 'content-type': 'text/event-stream; charset=utf-8', 'cache-control': 'no-cache, no-transform', connection: 'keep-alive' });
         res.flushHeaders?.();

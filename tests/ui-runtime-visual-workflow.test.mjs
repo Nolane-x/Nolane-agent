@@ -27,7 +27,9 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(workflow, /@axe-core\/playwright@4\.12\.1/);
   assert.match(workflow, /NOLANE_AGENT_TOKEN/);
   assert.match(workflow, /node src\/app\.mjs/);
-  assert.match(workflow, /\/health\?token=/);
+  assert.match(workflow, /\$NOLANE_UI_RUNTIME_URL\/health/);
+  assert.doesNotMatch(workflow, /\?token=/);
+  assert.match(workflow, /authorization: Bearer \$NOLANE_AGENT_TOKEN/);
   assert.doesNotMatch(workflow, /api\/onboarding\/recommended/);
   assert.match(workflow, /capture-ui-runtime-visual\.mjs/);
   assert.match(workflow, /actions\/upload-artifact@v6/);

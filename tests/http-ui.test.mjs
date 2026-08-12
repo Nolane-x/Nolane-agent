@@ -10,7 +10,7 @@ import { StudioStore } from '../src/storage/studio-store.mjs';
 import { ProviderRegistry } from '../src/providers/provider-registry.mjs';
 import { createEvent } from '../src/protocol/events.mjs';
 
-async function fixture(t) {
+async function fixture(t, { host = '127.0.0.1', allowRemoteBinding = false } = {}) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-http-'));
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
   const providers = new ProviderRegistry();
@@ -117,8 +117,9 @@ async function fixture(t) {
   };
   await mkdir(path.join(root, 'xterm'), { recursive: true }); await writeFile(path.join(root, 'xterm', 'probe.mjs'), 'export const probe = true;');
   const service = await createHttpServer({
-    config: { host: '127.0.0.1', port: 0, authToken: 'test-token' }, store, providers, missionRunner, runCoordinator, projectService, webIntelligence,
+    config: { host, port: 0, authToken: 'test-token' }, store, providers, missionRunner, runCoordinator, projectService, webIntelligence,
     repositoryIndex, router, mcpRegistry, evalRunner, verificationRunner, plannerService, memoryService, gitInspector, browserService, browserPermissionService, autopilot, terminalManager, fileService, credentialVault, uiAssets, updateService, updatePreparation, instructionDiscovery, runtimeStatus, forgeBridge, uiRoot: path.resolve('ui'), uiAssetsRoot: root,
+    allowRemoteBinding,
   });
   t.after(() => service.close());
   t.after(() => rm(root, { recursive: true, force: true }));
@@ -133,11 +134,33 @@ test('HTTP server binds loopback, requires auth, sets CSP, and rejects traversal
   const health = await fetch(`${f.url}/health`); assert.equal(health.status, 200);
   assert.equal((await health.json()).status, 'ok');
   const unauthorized = await fetch(`${f.url}/api/projects`); assert.equal(unauthorized.status, 401);
-  const ui = await fetch(`${f.url}/?token=test-token`); assert.equal(ui.status, 200);
+  const ui = await fetch(`${f.url}/`); assert.equal(ui.status, 200);
   assert.match(ui.headers.get('content-security-policy'), /default-src 'self'/);
   assert.match(await ui.text(), /Nolane Agent/);
-  const traversal = await fetch(`${f.url}/..%2Fpackage.json?token=test-token`); assert.ok([400, 404].includes(traversal.status));
+  const traversal = await fetch(`${f.url}/..%2Fpackage.json`); assert.ok([400, 404].includes(traversal.status));
+  const tokenInQuery = await fetch(`${f.url}/api/projects?token=test-token`); assert.equal(tokenInQuery.status, 401);
   const moduleAsset = await fetch(`${f.url}/vendor-assets/xterm/probe.mjs`); assert.equal(moduleAsset.status, 200); assert.match(moduleAsset.headers.get('content-type'), /text\/javascript/);
+});
+
+test('local session bootstrap exchanges an authorization header for an HttpOnly same-site cookie', async (t) => {
+  const f = await fixture(t);
+  const bootstrap = await fetch(`${f.url}/api/local-session/bootstrap`, auth({ method: 'POST', body: '{}' }));
+  assert.equal(bootstrap.status, 200);
+  assert.deepEqual(await bootstrap.json(), { authenticated: true, transport: 'local-session-cookie' });
+  const setCookie = bootstrap.headers.get('set-cookie');
+  assert.match(setCookie, /^nolane_local_session=test-token;/);
+  assert.match(setCookie, /HttpOnly/);
+  assert.match(setCookie, /SameSite=Strict/);
+  const session = await fetch(`${f.url}/api/projects`, { headers: { cookie: setCookie.split(';')[0] } });
+  assert.equal(session.status, 200);
+});
+
+test('local session bootstrap refuses an explicitly remote-bound runtime', async (t) => {
+  const f = await fixture(t, { host: '0.0.0.0', allowRemoteBinding: true });
+  const localUrl = f.url.replace('0.0.0.0', '127.0.0.1');
+  const bootstrap = await fetch(`${localUrl}/api/local-session/bootstrap`, auth({ method: 'POST', body: '{}' }));
+  assert.equal(bootstrap.status, 403);
+  assert.equal((await bootstrap.json()).error, 'local-session-bootstrap-loopback-only');
 });
 
 test('project, task, provider, and mission endpoints execute real handlers', async (t) => {
@@ -176,7 +199,7 @@ test('SSE replays durable events and UI contains only wired action controls', as
   const f = await fixture(t);
   f.store.appendEvent(createEvent('test.event', { value: 7 }));
   const controller = new AbortController();
-  const response = await fetch(`${f.url}/events?token=test-token&after=0`, { signal: controller.signal });
+  const response = await fetch(`${f.url}/events?after=0`, { headers: { authorization: 'Bearer test-token' }, signal: controller.signal });
   assert.equal(response.status, 200);
   const reader = response.body.getReader();
   let text = '';
@@ -185,8 +208,8 @@ test('SSE replays durable events and UI contains only wired action controls', as
   assert.match(text, /event: test\.event/);
   assert.match(text, /"value":7/);
 
-  const appJs = await (await fetch(`${f.url}/app.js?token=test-token`)).text();
-  const workroomJs = await (await fetch(`${f.url}/workroom.js?token=test-token`)).text();
+  const appJs = await (await fetch(`${f.url}/app.js`)).text();
+  const workroomJs = await (await fetch(`${f.url}/workroom.js`)).text();
   for (const endpoint of ['/api/workroom/tree', '/api/workroom/file', '/api/credentials', '/api/ui-assets', '/api/updates/check', '/api/instructions', '/api/runtime']) assert.match(workroomJs, new RegExp(endpoint.replace('/', '\\/')));
   assert.doesNotMatch(workroomJs, /TODO|coming soon|fake button/i);
   for (const endpoint of ['/api/projects', '/api/agent/runs', '/messages', '/pause', '/resume', '/stop', '/retry', '/autonomy']) assert.match(appJs, new RegExp(endpoint.replace('/', '\\/')));
@@ -327,7 +350,7 @@ test('terminal WebSocket requires authentication and forwards bounded terminal p
     await new Promise((resolve, reject) => { socket.onopen = resolve; socket.onerror = () => reject(new Error('unauthorized')); });
   }, /unauthorized/);
 
-  const socket = new WebSocket(`${f.url.replace('http:', 'ws:')}/terminal?token=test-token`);
+  const socket = new WebSocket(`${f.url.replace('http:', 'ws:')}/terminal`, ['nolane-auth.test-token']);
   t.after(() => socket.close());
   await new Promise((resolve, reject) => { socket.onopen = resolve; socket.onerror = reject; });
   const messages = [];
@@ -371,7 +394,7 @@ test('workroom, credential, asset, update, and instruction endpoints are wired t
 test('terminal WebSocket reclaims sessions for the same durable client identity', async (t) => {
   const f = await fixture(t);
   const connect = async () => {
-    const socket = new WebSocket(`${f.url.replace('http:', 'ws:')}/terminal?token=test-token&clientId=workroom-client`);
+    const socket = new WebSocket(`${f.url.replace('http:', 'ws:')}/terminal?clientId=workroom-client`, ['nolane-auth.test-token']);
     await new Promise((resolve, reject) => { socket.onopen = resolve; socket.onerror = reject; });
     return socket;
   };

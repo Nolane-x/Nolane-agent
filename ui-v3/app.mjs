@@ -12,6 +12,7 @@ import { createViewStateBridge } from './core/view-state-bridge.mjs';
 import { captureViewState, restoreViewState } from './core/view-state-preserver.mjs';
 import { createSessionRestoreController } from './core/session-restore-controller.mjs';
 import { createUpdateStateController } from './core/update-state-controller.mjs';
+import { routeFromHash, scrubBootstrapToken } from './core/route-auth.mjs';
 import { localizeRouteTitle, renderAppShell } from './shell/app-shell.mjs';
 import { renderUpdateNotice } from './components/update-notice/update-notice.mjs';
 import { createSessionSidebarModel } from './shell/session-sidebar.mjs';
@@ -64,7 +65,7 @@ function composerDraft(root = document) {
 
 function persistCurrentSession({ immediate = false } = {}) {
   const patch = {
-    activeRoute: currentRouteState?.path ?? (location.hash.slice(1) || '/'),
+    activeRoute: currentRouteState?.path ?? routeFromHash(),
     experienceLevel: currentExperience,
     view: {
       summaryOpen: summaryRoot()?.dataset?.open === 'true',
@@ -339,7 +340,7 @@ router.register({ id: 'skills', pattern: /^\/skills(?:\?.*)?$/, title: 'Skills',
   return view;
 } });
 
-router.register({ id: 'review-mission', pattern: /^\/review\/.+$/, cache: 'path', title: 'Review & Ship', load: async () => { const { createReviewModel, renderReviewView } = await import('./views/review/review-view.mjs'); const model = createReviewModel({ missionId: location.hash.slice(1).split('/').at(-1) || 'current' }); return { experienceLevel:'workspace',render: () => renderReviewView(model.snapshot(), { language: cachedPreferences.language }) }; } });
+router.register({ id: 'review-mission', pattern: /^\/review\/.+$/, cache: 'path', title: 'Review & Ship', load: async () => { const { createReviewModel, renderReviewView } = await import('./views/review/review-view.mjs'); const model = createReviewModel({ missionId: routeFromHash().split('?')[0].split('/').at(-1) || 'current' }); return { experienceLevel:'workspace',render: () => renderReviewView(model.snapshot(), { language: cachedPreferences.language }) }; } });
 router.register({ id: 'review', pattern: '/review', title: 'Review Queue', load: async () => { const { createReviewController, renderReviewQueue } = await import('./views/review-queue/review-queue.mjs');const controller=createReviewController({api,language:cachedPreferences.language});await controller.load();return {experienceLevel:'workspace',render:()=>renderReviewQueue(controller.snapshot())}; } });
 
 router.register({ id: 'workroom', pattern: /^\/workroom(?:\?.*)?$/, title: 'Studio', load: async () => {
@@ -433,7 +434,7 @@ router.register({ id: 'workroom', pattern: /^\/workroom(?:\?.*)?$/, title: 'Stud
 
 router.register({ id: 'control-plane', pattern: /^\/control-plane(?:\/.*)?$/, cache: 'path', title: 'Control Plane', load: async () => {
   const [{ createControlPlaneModel, renderControlPlaneShell }, { loadControlPlaneDomain, renderControlPlaneDomain }, { hasLiveDomainWorkspace, loadLiveDomainWorkspace, renderLiveDomainWorkspace }, browserView] = await Promise.all([import('./control-plane/control-plane-shell.mjs'), import('./control-plane/route-registry.mjs'), import('./control-plane/live-domain-workspace.mjs'), import('./views/browser/browser-view.mjs')]);
-  const model=createControlPlaneModel({loader:loadControlPlaneDomain});let active=await model.navigate(location.hash.slice(1)||'/control-plane/overview');if(typeof active.module?.loadAgentKernelSnapshot==='function')await active.module.loadAgentKernelSnapshot({api});let capabilityModel=active.domain==='capabilities'?active.module.buildCapabilitiesViewModel():null;let root=null;
+  const model=createControlPlaneModel({loader:loadControlPlaneDomain});let active=await model.navigate(routeFromHash()||'/control-plane/overview');if(typeof active.module?.loadAgentKernelSnapshot==='function')await active.module.loadAgentKernelSnapshot({api});let capabilityModel=active.domain==='capabilities'?active.module.buildCapabilitiesViewModel():null;let root=null;
   const [projectPayload,missionPayload]=await Promise.all([api.get('/api/projects').catch(()=>[]),api.get('/api/missions').catch(()=>[])]);const projects=Array.isArray(projectPayload)?projectPayload:projectPayload?.projects??[];const missions=Array.isArray(missionPayload)?missionPayload:missionPayload?.missions??[];const mission=missions[0]??null;const projectId=activeProjectId??mission?.projectId??projects[0]?.id??null;const missionId=mission?.id??null;const goalId=mission?.metadata?.goalId??mission?.goalId??null;let skillQuery='';let skillCatalog='';let skillReloadTimer=null;const isBrowserWorkspace=active.domain==='runtime'&&active.subroute==='browser';let browserController=isBrowserWorkspace?browserView.createBrowserWorkspaceController({api,projectId,missionId,goalId,language:cachedPreferences.language}):null;if(browserController)await browserController.load();let liveWorkspace=!isBrowserWorkspace&&hasLiveDomainWorkspace(active.domain)?await loadLiveDomainWorkspace({api,domain:active.domain,projectId,missionId,language:cachedPreferences.language,skillQuery,skillCatalog}):null;
   const content=()=>browserController?browserView.renderBrowserWorkspace(browserController.snapshot()):active.domain==='capabilities'?active.module.renderCapabilitiesView({...capabilityModel,language:cachedPreferences.language}):liveWorkspace?renderLiveDomainWorkspace(liveWorkspace):renderControlPlaneDomain(active.domain,active.module,{language:cachedPreferences.language});
   const refreshLive=async(button)=>{if(browserController){button?.setAttribute('disabled','');button?.setAttribute('aria-busy','true');await browserController.refresh();if(root)root.innerHTML=view.render();return;}if(!liveWorkspace)return;button?.setAttribute('disabled','');button?.setAttribute('aria-busy','true');liveWorkspace=await loadLiveDomainWorkspace({api,domain:active.domain,projectId,missionId,language:cachedPreferences.language,skillQuery,skillCatalog});if(root)root.innerHTML=view.render();};
@@ -449,7 +450,7 @@ router.register({ id: 'onboarding', pattern: '/onboarding', title: 'Welcome', lo
   const rerender=()=>{if(mountedRoot)mountedRoot.innerHTML=renderOnboardingView(controller.snapshot());};
   const currentValue=(path)=>String(path).split('.').reduce((value,key)=>value?.[key],controller.snapshot().answers);
   const queuePersist=()=>{clearTimeout(persistTimer);persistTimer=setTimeout(async()=>{await controller.persist();rerender();},220);};
-  const finish=async()=>{onboardingRequired=false;await reconcileEffectivePreferences();router.invalidate();const level=controller.snapshot().profile?.preferences?.experience?.level??controller.snapshot().answers?.experience??cachedPreferences.experience;const destination=routeForExperience(level);if((location.hash.slice(1)||'/')===destination){await render(destination);return;}location.hash=destination;};
+  const finish=async()=>{onboardingRequired=false;await reconcileEffectivePreferences();router.invalidate();const level=controller.snapshot().profile?.preferences?.experience?.level??controller.snapshot().answers?.experience??cachedPreferences.experience;const destination=routeForExperience(level);if(routeFromHash()===destination){await render(destination);return;}location.hash=destination;};
   const click=async(event)=>{
     const choice=event.target.closest?.('[data-onboarding-path]');if(choice){const path=choice.dataset.onboardingPath;const value=choice.dataset.onboardingValue;controller.set(path,value);if(path==='language'){await languageSync.preview(value,currentRouteState?.path??'/onboarding');queuePersist();return;}rerender();queuePersist();return;}
     const toggle=event.target.closest?.('[data-onboarding-toggle]');if(toggle){const path=toggle.dataset.onboardingToggle;controller.set(path,!Boolean(currentValue(path)));rerender();queuePersist();return;}
@@ -496,7 +497,7 @@ async function render(path) {
 
 window.addEventListener('nolane:project-selected',(event)=>{activeProjectId=String(event.detail?.projectId ?? '')||null;syncProjectSelection(activeProjectId);if(summaryController.snapshot().open)void summaryController.refresh();});
 window.addEventListener('nolane:project-create-requested',requestProjectCreation);
-window.addEventListener('hashchange',()=>{const path=location.hash.slice(1)||'/';if(onboardingRequired&&path!=='/onboarding'){location.hash='/onboarding';return;}render(path);});
+window.addEventListener('hashchange',()=>{const path=routeFromHash();if(onboardingRequired&&path!=='/onboarding'){location.hash='/onboarding';return;}render(path);});
 document.addEventListener('click',async(event)=>{
   const pickerToggle=event.target.closest?.('[data-project-picker-toggle]'); if(pickerToggle){event.preventDefault();const picker=pickerToggle.closest('[data-project-picker]');const menu=picker?.querySelector('[data-project-picker-menu]');if(menu){const open=menu.hidden;menu.hidden=!open;pickerToggle.setAttribute('aria-expanded',String(open));if(open)requestAnimationFrame(()=>menu.querySelector('[data-project-search]')?.focus({preventScroll:true}));}return;}
   const projectChoice=event.target.closest?.('[data-project-choice]'); if(projectChoice){event.preventDefault();const id=String(projectChoice.dataset.projectId??'');window.dispatchEvent(new CustomEvent('nolane:project-selected',{detail:{projectId:id,source:'sidebar'}}));return;}
@@ -526,8 +527,9 @@ window.addEventListener('pagehide',()=>{persistCurrentSession({immediate:true});
 window.addEventListener('beforeunload',()=>{persistCurrentSession({immediate:true});activeViewCleanup?.();resizer?.destroy();summaryController.destroy();sessionRestore.destroy();updateStateController.destroy();});
 applyPreferences(cachedPreferenceDocument());
 (async()=>{
+  try { await api.post('/api/local-session/bootstrap', {}); scrubBootstrapToken(); } catch {}
   await Promise.all([reconcileEffectivePreferences(),sessionRestore.load(),updateStateController.load()]);
-  const explicitPath=location.hash.slice(1);let path=explicitPath||sessionRestore.snapshot().restore?.activeRoute||'/';
+  const explicitPath=routeFromHash();let path=explicitPath||sessionRestore.snapshot().restore?.activeRoute||'/';
   try { const status=await api.get('/api/onboarding/status');onboardingRequired=Boolean(status?.required);if(onboardingRequired)path='/onboarding';else if(path==='/onboarding')path=routeForExperience(); } catch { onboardingRequired=false; }
   await render(path);
 })();

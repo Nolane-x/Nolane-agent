@@ -64,6 +64,25 @@ function safeSender(event) {
   return Boolean(runtimeOrigin && isAllowedRuntimeUrl(url, runtimeOrigin));
 }
 
+function matchesRuntimeRequest(candidate) {
+  try {
+    const request = new URL(candidate);
+    const runtime = new URL(runtimeOrigin);
+    const protocol = request.protocol === 'ws:' ? 'http:' : request.protocol === 'wss:' ? 'https:' : request.protocol;
+    return protocol === runtime.protocol && request.hostname === runtime.hostname && request.port === runtime.port;
+  } catch { return false; }
+}
+
+function installRuntimeAuthentication() {
+  const webRequest = session.defaultSession.webRequest;
+  webRequest.onBeforeSendHeaders(null);
+  if (!runtimeOrigin || !runtimeToken) return;
+  webRequest.onBeforeSendHeaders({ urls: ['<all_urls>'] }, (details, callback) => {
+    if (!matchesRuntimeRequest(details.url)) return callback({ requestHeaders: details.requestHeaders });
+    callback({ requestHeaders: { ...details.requestHeaders, Authorization: `Bearer ${runtimeToken}` } });
+  });
+}
+
 function installIpc() {
   const selectDirectory = async (event) => {
     if (!safeSender(event)) throw new Error('Untrusted IPC sender');
@@ -103,9 +122,9 @@ function installIpc() {
   ipcMain.handle('nolane:core-status', async (event) => {
     if (!safeSender(event)) throw new Error('Untrusted IPC sender');
     if (!runtimeOrigin || !runtimeToken) return Object.freeze({ ready: false, reason: 'runtime-unavailable' });
-    const response = await fetch(`${runtimeOrigin}/api/nolane/native-core/status?token=${encodeURIComponent(runtimeToken)}`, {
+    const response = await fetch(`${runtimeOrigin}/api/nolane/native-core/status`, {
       method: 'GET',
-      headers: { accept: 'application/json' },
+      headers: { accept: 'application/json', Authorization: `Bearer ${runtimeToken}` },
       redirect: 'error',
     });
     if (!response.ok) throw new Error(`Native core status failed with HTTP ${response.status}`);
@@ -221,8 +240,9 @@ async function startRuntimeAndLoad({ recovering = false } = {}) {
   const runtime = await supervisor.start();
   runtimeOrigin = new URL(runtime.url).origin;
   runtimeToken = runtime.token;
+  installRuntimeAuthentication();
   if (!mainWindow || mainWindow.isDestroyed()) mainWindow = createWindow();
-  const target = `${runtimeOrigin}/?token=${encodeURIComponent(runtime.token)}&desktop=electron`;
+  const target = new URL('/', runtimeOrigin).toString();
   await mainWindow.loadURL(target);
   const recovery = await updateController?.markHealthy().catch((error) => ({ state: 'recovery-error', message: error.message }));
   await updateCoordinator?.start();
@@ -265,6 +285,7 @@ app.on('before-quit', async (event) => {
   event.preventDefault();
   quitting = true;
   updateCoordinator?.stop();
+  session.defaultSession.webRequest.onBeforeSendHeaders(null);
   await supervisor?.stop().catch(() => {});
   app.quit();
 });

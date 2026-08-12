@@ -45,6 +45,35 @@ import { CredentialVault, MemoryCredentialBackend } from '../src/security/creden
 import { CliAuthAdapter } from '../src/providers/cli-auth-adapter.mjs';
 import { CliProvider } from '../src/providers/cli-provider.mjs';
 
+test('ProviderConnectionService refreshes independent CLI detections concurrently', async () => {
+  const registry = new ProviderRegistry();
+  const started = [];
+  let release;
+  const gate = new Promise((resolve) => { release = resolve; });
+  for (const id of ['cli-a', 'cli-b', 'cli-c', 'cli-d']) {
+    registry.register({
+      id,
+      publicView: () => ({ id, kind: 'cli', label: id, capabilities: ['coding'] }),
+      async detect() {
+        started.push(id);
+        await gate;
+        return { id, available: true };
+      },
+    });
+  }
+  const service = new ProviderConnectionService({
+    store: { listProviderConfigs: () => [], getProviderConfig: () => null },
+    registry,
+    credentialVault: { set() {} },
+  });
+
+  const refresh = service.refreshAll({ apiProviders: false });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual([...started].sort(), ['cli-a', 'cli-b', 'cli-c', 'cli-d']);
+  release();
+  await refresh;
+});
+
 test('ProviderConnectionService stores API keys only in the vault, restores providers, and reports readiness', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-service-'));
   const store = new StudioStore(path.join(root, 'studio.db'));
