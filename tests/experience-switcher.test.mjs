@@ -43,6 +43,13 @@ test('experience popup uses a dedicated opaque stacking surface', async () => {
   assert.match(css, /\.app-topbar[^\{]*\{[^}]*position:relative/);
 });
 
+test('experience popup supporting text uses the accessible secondary text token', async () => {
+  const css = await (await import('node:fs/promises')).readFile('ui-v3/styles/components/experience-switcher.css', 'utf8');
+  assert.match(css, /\.experience-switcher__menu>header small\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(css, /\.experience-switcher__options small\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(css, /\.experience-switcher__menu>footer\{[^}]*color:var\(--text-secondary\)/);
+});
+
 test('view-state bridge preserves draft metadata and maps routes to representable destinations', () => {
   const bridge = createViewStateBridge();
   const root = fakeRoot();
