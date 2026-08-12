@@ -35,7 +35,6 @@ const READ_ONLY_KINDS = new Set([
   'git.status',
   'git.diff',
   'memory.read',
-  'web.fetch',
   'process.listManaged',
 ]);
 
