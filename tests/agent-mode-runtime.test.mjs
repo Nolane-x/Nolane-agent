@@ -80,6 +80,7 @@ test('AutonomyGuardedBroker blocks writes for read-only mode and records mode re
     policy: new AutonomyPolicy(),
     store: { getAutonomyGrant: () => ({ profile: 'guided', scope: { network: 'deny' } }) },
     task,
+    environmentAttester: async () => ({ withinWorkspace: true, inManagedWorktree: false, inSandbox: false }),
   });
   await guarded.execute({ tool: 'fs.read', input: { path: 'src/app.mjs' } });
   assert.equal(calls[0].context.refs.modeId, 'read-only');
