@@ -83,6 +83,26 @@ test('provider cards expose execution, model-selection, and catalog semantics be
   assert.match(renderModelProfilesPanel({ models: [], providers: [{ id: 'kiro-cli', kind: 'cli', label: 'Kiro CLI', executionSafety: 'verified', modelSelection: { mode: 'cli-config' }, modelDiscovery: { supported: true, live: true } }] }, { lang: 'vi' }), /Được bảo vệ, chỉ đọc/);
 });
 
+test('provider catalog gives every discovered connector a truthful, direct settings destination', () => {
+  const html = renderModelProfilesPanel({
+    models: [],
+    providers: [
+      { id: 'codex', kind: 'cli', label: 'OpenAI Codex CLI', available: true, authenticated: true, healthy: true, executionSafety: 'verified', modelSelection: { mode: 'forwarded' }, modelDiscovery: { supported: true, live: true } },
+      { id: 'aider', kind: 'cli', label: 'Aider', available: false, authenticated: false, error: 'not-found', executionSafety: 'external-plan-config-required', modelSelection: { mode: 'forwarded' }, modelDiscovery: { supported: false, live: false } },
+      { id: 'openai-api', kind: 'openai-responses', label: 'OpenAI API', configured: false },
+    ],
+  });
+
+  assert.match(html, /Agents &amp; providers/);
+  assert.match(html, /data-provider-catalog-count="cli">2 CLI agents/);
+  assert.match(html, /data-provider-catalog-count="api">1 API provider/);
+  assert.match(html, /href="#provider-codex"/);
+  assert.match(html, /data-provider-catalog-state="ready">Ready/);
+  assert.match(html, /data-provider-catalog-state="not-installed">Not installed/);
+  assert.match(html, /data-provider-catalog-state="not-configured">Not configured/);
+  assert.match(renderModelProfilesPanel({ models: [], providers: [{ id: 'codex', kind: 'cli', label: 'OpenAI Codex CLI', available: true, authenticated: true, healthy: true, executionSafety: 'verified' }] }, { lang: 'vi' }), /Tác nhân &amp; provider/);
+});
+
 test('settings controller selects a discovered API model as the provider default', async () => {
   const calls = [];
   const api = {
