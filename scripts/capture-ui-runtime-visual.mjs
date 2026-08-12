@@ -11,6 +11,7 @@ const DEFAULT_VIEWPORT = Object.freeze({ width: 1440, height: 1000 });
 const STATES = Object.freeze([
   Object.freeze({ id: 'onboarding', route: '/onboarding', selector: '.onboarding-shell', afterCapture: assertOnboardingRecommendedNavigation }),
   Object.freeze({ id: 'home', route: '/', selector: '.home-view' }),
+  Object.freeze({ id: 'home-experience-menu', route: '/', selector: '.home-view', prepare: assertExperienceMenuOpaque }),
   Object.freeze({ id: 'home-compact', route: '/', selector: '.home-view', viewport: Object.freeze({ width: 640, height: 900 }) }),
   Object.freeze({ id: 'home-nocturne', route: '/', selector: '.home-view' }),
   Object.freeze({ id: 'projects', route: '/projects', selector: '.projects-page' }),
@@ -180,6 +181,25 @@ async function assertProjectPickerKeyboard(page) {
   if (!await menu.isHidden()) throw new Error('project picker did not close after Escape');
   const triggerFocused = await trigger.evaluate((node) => document.activeElement === node);
   if (!triggerFocused) throw new Error('project picker did not return focus to its trigger after Escape');
+}
+
+async function assertExperienceMenuOpaque(page) {
+  const trigger = page.locator('[data-command="toggle-experience"]');
+  const menu = page.locator('[data-experience-menu]');
+  await trigger.click();
+  await menu.waitFor({ state: 'visible', timeout: 5_000 });
+  const result = await menu.evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    const computed = getComputedStyle(node);
+    const sampleX = Math.round(rect.left + Math.min(24, rect.width / 2));
+    const sampleY = Math.round(rect.top + Math.min(24, rect.height / 2));
+    const top = document.elementFromPoint(sampleX, sampleY);
+    const color = computed.backgroundColor;
+    const alpha = color.startsWith('rgba(') ? Number(color.slice(color.lastIndexOf(',') + 1, -1).trim()) : 1;
+    return Object.freeze({ alpha, occupiesTopLayer: Boolean(top && node.contains(top)), visibility: computed.visibility, opacity: Number(computed.opacity) });
+  });
+  if (result.alpha < 1 || result.opacity < 1 || result.visibility !== 'visible') throw new Error('experience menu background is not opaque');
+  if (!result.occupiesTopLayer) throw new Error('experience menu did not occupy the top stacking position');
 }
 
 async function assertForgeSkillInstallPreview(page) {

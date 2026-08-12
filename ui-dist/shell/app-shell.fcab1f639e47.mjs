@@ -1,10 +1,10 @@
-import { GLOBAL_DESTINATIONS, renderGlobalRail } from './global-rail.mjs';
-import { createSessionSidebarModel, renderSessionSidebar } from './session-sidebar.mjs';
-import { icon } from '../core/icon.mjs';
-import { experienceMeta, normalizeExperience } from '../core/experience-policy.mjs';
-import { t } from '../core/i18n.mjs';
-import { renderExperienceSwitcher } from '../components/experience-switcher/experience-switcher.mjs';
-import { renderUpdateNotice } from '../components/update-notice/update-notice.mjs';
+import { GLOBAL_DESTINATIONS, renderGlobalRail } from './global-rail.65411ba1726f.mjs';
+import { createSessionSidebarModel, renderSessionSidebar } from './session-sidebar.d6e5c24225b2.mjs';
+import { icon } from '../core/icon.aedb8015d5a6.mjs';
+import { experienceMeta, normalizeExperience } from '../core/experience-policy.1b058eb3c581.mjs';
+import { t } from '../core/i18n.20e33f3a6baa.mjs';
+import { renderExperienceSwitcher } from '../components/experience-switcher/experience-switcher.eb3da7c7e697.mjs';
+import { renderUpdateNotice } from '../components/update-notice/update-notice.ede831a515de.mjs';
 
 let instanceCounter = 0;
 const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);

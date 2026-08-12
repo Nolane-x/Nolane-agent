@@ -74,7 +74,7 @@ jobs:
           NOLANE_UI_VISUAL_OUTPUT: ${{ runner.temp }}/nolane-ui-runtime-visual
         run: |
           NOLANE_UI_VISUAL_STATES=onboarding node scripts/capture-ui-runtime-visual.mjs
-          NOLANE_UI_VISUAL_STATES=home,home-compact,projects,skills,skills-forge-preview,settings,workroom,control-plane node scripts/capture-ui-runtime-visual.mjs
+          NOLANE_UI_VISUAL_STATES=home,home-experience-menu,home-compact,projects,skills,skills-forge-preview,settings,workroom,control-plane node scripts/capture-ui-runtime-visual.mjs
           curl --fail --silent --show-error --request PUT \
             --header "authorization: Bearer $NOLANE_AGENT_TOKEN" \
             --header 'content-type: application/json' \
