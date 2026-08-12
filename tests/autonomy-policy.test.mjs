@@ -53,7 +53,8 @@ test('workspace autopilot never treats an outbound web fetch as a read-only oper
 });
 
 test('sandbox autopilot requires sandbox containment and exports immutable profile descriptors', () => {
-  assert.equal(policy.evaluate({ kind: 'process.run', commandClass: 'arbitrary' }, { profile: 'sandbox-autopilot', inSandbox: true }).decision, 'allow');
+  assert.equal(policy.evaluate({ kind: 'process.run', commandClass: 'test' }, { profile: 'sandbox-autopilot', inSandbox: true }).decision, 'allow');
+  assert.equal(policy.evaluate({ kind: 'process.run', commandClass: 'arbitrary-code-execution' }, { profile: 'sandbox-autopilot', inSandbox: true }).decision, 'ask');
   assert.equal(policy.evaluate({ kind: 'process.run', commandClass: 'arbitrary' }, { profile: 'sandbox-autopilot', inSandbox: false }).decision, 'ask');
   assert.deepEqual(Object.keys(AUTONOMY_PROFILES), ['guided', 'workspace-autopilot', 'sandbox-autopilot']);
   assert.ok(Object.isFrozen(AUTONOMY_PROFILES));

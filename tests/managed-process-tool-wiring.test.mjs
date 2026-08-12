@@ -40,6 +40,10 @@ test('autonomy guarded broker classifies and forwards managed-process tools', as
   const broker = { async execute(request, context) { calls.push([request, context]); return { status: 'pass', output: {}, receipt: { receiptSha256: 'a'.repeat(64) } }; } };
   const guarded = new AutonomyGuardedBroker({ broker, policy: new AutonomyPolicy(), store, task });
   await guarded.execute({ tool: 'process.startManaged', input: { id: 'dev', command: 'npm', args: ['run', 'dev'], commandClass: 'dev-server' } });
+  await assert.rejects(
+    () => guarded.execute({ tool: 'process.startManaged', input: { id: 'script', command: 'node', args: ['-e', 'require(\"node:net\").createServer().listen(0)'], commandClass: 'dev-server' } }),
+    (error) => error.code === 'AUTONOMY_APPROVAL_REQUIRED',
+  );
   await guarded.execute({ tool: 'process.listManaged', input: {} });
   await guarded.execute({ tool: 'process.stopManaged', input: { id: 'dev' } });
   assert.deepEqual(calls.map(([request]) => request.tool), ['process.startManaged', 'process.listManaged', 'process.stopManaged']);

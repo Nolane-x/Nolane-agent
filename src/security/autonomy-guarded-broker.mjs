@@ -49,9 +49,7 @@ function actionFor(request, task, grant) {
   if (tool === 'fs.read') return Object.freeze({ kind: 'fs.read', toolGroup: 'read' });
   if (tool === 'fs.write' || tool === 'fs.patch' || tool === 'fs.patchSet' || tool === 'fs.delete') return Object.freeze({ kind: tool, reversible: managed, toolGroup: 'edit' });
   if (tool === 'process.run' || tool === 'process.startManaged') {
-    const classified = tool === 'process.startManaged'
-      ? Object.freeze({ commandClass: 'dev-server', readOnly: false })
-      : classifyCommand(request.input);
+    const classified = classifyCommand(request.input);
     const declaredNetwork = grant?.scope?.network ?? 'deny';
     const network = declaredNetwork;
     const toolGroup = classified.commandClass === 'test' || classified.commandClass === 'typecheck' || classified.commandClass === 'lint' || classified.commandClass === 'build' ? 'test' : classified.commandClass === 'git' || classified.commandClass === 'git-read' ? 'git' : classified.commandClass === 'dependency-install' ? 'dependency' : classified.commandClass === 'format' || classified.commandClass === 'codegen' ? 'edit' : 'terminal';
