@@ -44,6 +44,24 @@ test('StdioMcpClient surfaces JSON-RPC errors, times out, cancels, and cleans up
   await cancelled.close();
 });
 
+test('StdioMcpClient grants only its declared environment to the MCP child', async (t) => {
+  const inheritedName = 'NOLANE_TEST_PARENT_SECRET';
+  const grantedName = 'NOLANE_TEST_MCP_GRANTED';
+  const previous = process.env[inheritedName];
+  process.env[inheritedName] = 'parent-only';
+  t.after(() => {
+    if (previous === undefined) delete process.env[inheritedName];
+    else process.env[inheritedName] = previous;
+  });
+
+  const mcp = client({ env: { [grantedName]: 'granted-only' } });
+  t.after(() => mcp.close());
+  await mcp.connect();
+  const result = await mcp.request('test/environment', { names: [inheritedName, grantedName] });
+
+  assert.deepEqual(result.present, { [inheritedName]: false, [grantedName]: true });
+});
+
 test('McpRegistry exposes namespaced tools and rejects duplicates', async (t) => {
   const registry = new McpRegistry();
   const mcp = client();

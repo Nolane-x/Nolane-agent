@@ -3,11 +3,11 @@ import { EventEmitter } from 'node:events';
 import readline from 'node:readline';
 
 export class JsonlRpcProcess extends EventEmitter {
-  constructor({ executable, args = [], cwd = null, env = {}, timeoutMs = 30_000, includeJsonrpc = true, requestHandler = null } = {}) {
+  constructor({ executable, args = [], cwd = null, env = {}, inheritEnvironment = true, timeoutMs = 30_000, includeJsonrpc = true, requestHandler = null } = {}) {
     super();
     if (!String(executable ?? '').trim()) throw new TypeError('executable is required');
     if (!Array.isArray(args) || args.some((item) => typeof item !== 'string')) throw new TypeError('args must be strings');
-    this.executable = String(executable); this.args = [...args]; this.cwd = cwd; this.env = { ...env };
+    this.executable = String(executable); this.args = [...args]; this.cwd = cwd; this.env = { ...env }; this.inheritEnvironment = inheritEnvironment !== false;
     this.timeoutMs = Math.max(10, Number(timeoutMs) || 30_000); this.includeJsonrpc = Boolean(includeJsonrpc); this.requestHandler = requestHandler;
     this.child = null; this.state = 'idle'; this.nextId = 1; this.pending = new Map(); this.stderr = '';
   }
@@ -16,7 +16,8 @@ export class JsonlRpcProcess extends EventEmitter {
     if (this.state === 'running') return this;
     if (this.state !== 'idle') throw new Error(`Cannot start JSON-RPC process in state ${this.state}`);
     this.state = 'starting';
-    const child = spawn(this.executable, this.args, { cwd: this.cwd ?? undefined, env: { ...process.env, ...this.env }, shell: false, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'], detached: process.platform !== 'win32' });
+    const env = this.inheritEnvironment ? { ...process.env, ...this.env } : { ...this.env };
+    const child = spawn(this.executable, this.args, { cwd: this.cwd ?? undefined, env, shell: false, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'], detached: process.platform !== 'win32' });
     this.child = child;
     child.stderr.on('data', (chunk) => { this.stderr = `${this.stderr}${chunk.toString('utf8')}`.slice(-64_000); this.emit('stderr', chunk.toString('utf8')); });
     const lines = readline.createInterface({ input: child.stdout, crlfDelay: Infinity });

@@ -135,7 +135,7 @@ export class AutonomyPolicy {
     if (kind === 'process.run' || kind === 'process.startManaged') {
       const commandClass = String(action.commandClass ?? 'arbitrary');
       if (!WORKSPACE_COMMANDS.has(commandClass)) return decision('ask', 'Lệnh không thuộc nhóm phát triển đã được cấp trước.', { category: 'command' });
-      if (commandClass === 'dependency-install' && !['deny', 'allowlisted'].includes(String(action.network ?? 'deny'))) {
+      if (commandClass === 'dependency-install' && String(action.network ?? 'deny') !== 'allowlisted') {
         return decision('ask', 'Cài dependency chỉ được tự động với mạng bị chặn hoặc allowlist.', { category: 'network' });
       }
     }

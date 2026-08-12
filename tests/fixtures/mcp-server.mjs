@@ -5,6 +5,10 @@ rl.on('line', async (line) => {
   const message = JSON.parse(line);
   if (message.method === 'initialize') return send({ jsonrpc: '2.0', id: message.id, result: { protocolVersion: '2025-11-25', capabilities: { tools: { listChanged: false } }, serverInfo: { name: 'fixture', version: '1.0.0' } } });
   if (message.method === 'notifications/initialized') return;
+  if (message.method === 'test/environment') {
+    const names = Array.isArray(message.params?.names) ? message.params.names : [];
+    return send({ jsonrpc: '2.0', id: message.id, result: { present: Object.fromEntries(names.map((name) => [name, Object.hasOwn(process.env, String(name))])) } });
+  }
   if (message.method === 'tools/list') return send({ jsonrpc: '2.0', id: message.id, result: { tools: [
     { name: 'echo', description: 'Echo text', inputSchema: { type: 'object', required: ['text'], properties: { text: { type: 'string' } } } },
     { name: 'slow', description: 'Wait', inputSchema: { type: 'object', properties: {} } },

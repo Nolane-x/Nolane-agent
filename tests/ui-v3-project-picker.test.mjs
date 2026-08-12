@@ -39,6 +39,15 @@ test('project picker localizes actions and can represent no active project', () 
   assert.match(html, /Không làm việc trong dự án/);
 });
 
+test('empty project picker directs people to add a local folder from this workspace', () => {
+  const english = renderProjectPicker({ id: 'empty-project-picker', projects: [], language: 'en', open: true });
+  const vietnamese = renderProjectPicker({ id: 'empty-project-picker-vi', projects: [], language: 'vi', open: true });
+
+  assert.match(english, /No projects yet\. Add a local folder to give Nolane a workspace\./);
+  assert.match(vietnamese, /Chưa có dự án\. Hãy thêm thư mục cục bộ để Nolane có không gian làm việc\./);
+  assert.doesNotMatch(`${english}\n${vietnamese}`, /desktop launcher/i);
+});
+
 test('project registry owns its Add project action without a duplicate global listener', async () => {
   const source = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
   assert.match(source, /data-project-action="add"[^\n]+nolane:project-create-requested/);

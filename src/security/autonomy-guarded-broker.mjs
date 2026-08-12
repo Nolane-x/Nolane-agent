@@ -1,21 +1,34 @@
 import path from 'node:path';
 
-const GIT_READ_COMMANDS = new Set(['status', 'diff', 'log', 'show', 'rev-parse', 'ls-files', 'grep', 'blame', 'remote', 'branch']);
+const GIT_READ_COMMANDS = new Set(['status', 'diff', 'log', 'show', 'rev-parse', 'ls-files', 'grep', 'blame']);
+const GIT_REMOTE_READ_COMMANDS = new Set(['get-url', 'show']);
+const GIT_BRANCH_READ_FLAGS = new Set(['--show-current', '--list', '-l', '--all', '-a', '--remotes', '-r', '--verbose', '-v', '-vv']);
 
 function tokensOf(input) {
   return (Array.isArray(input?.args) ? input.args : []).map((item) => String(item).toLowerCase());
 }
 
 function hasToken(tokens, values) {
-  return tokens.some((token) => values.some((value) => token === value || token.includes(value)));
+  return tokens.some((token) => values.includes(token));
+}
+
+function gitReadOnlyOperation(operation, following) {
+  if (GIT_READ_COMMANDS.has(operation)) return true;
+  if (operation === 'remote') {
+    const subcommand = following.find((token) => !token.startsWith('-'));
+    return !subcommand || GIT_REMOTE_READ_COMMANDS.has(subcommand);
+  }
+  if (operation === 'branch') return following.length === 0 || following.every((token) => GIT_BRANCH_READ_FLAGS.has(token));
+  return false;
 }
 
 export function classifyCommand(input = {}) {
   const command = path.basename(String(input.command ?? '')).replace(/\.exe$/i, '').toLowerCase();
   const tokens = tokensOf(input);
   if (command === 'git') {
-    const operation = tokens.find((token) => !token.startsWith('-')) ?? '';
-    if (GIT_READ_COMMANDS.has(operation)) return Object.freeze({ commandClass: 'git-read', readOnly: true, gitOperation: operation });
+    const operationIndex = tokens.findIndex((token) => !token.startsWith('-'));
+    const operation = operationIndex === -1 ? '' : tokens[operationIndex];
+    if (gitReadOnlyOperation(operation, tokens.slice(operationIndex + 1))) return Object.freeze({ commandClass: 'git-read', readOnly: true, gitOperation: operation });
     return Object.freeze({ commandClass: 'git', readOnly: false, gitOperation: operation });
   }
   if (command === 'pytest' || hasToken(tokens, ['--test', 'test', 'pytest'])) return Object.freeze({ commandClass: 'test', readOnly: false });
@@ -40,7 +53,7 @@ function actionFor(request, task, grant) {
       ? Object.freeze({ commandClass: 'dev-server', readOnly: false })
       : classifyCommand(request.input);
     const declaredNetwork = grant?.scope?.network ?? 'deny';
-    const network = classified.commandClass === 'dependency-install' && task?.metadata?.networkPolicyEnforced !== true ? 'allow' : declaredNetwork;
+    const network = declaredNetwork;
     const toolGroup = classified.commandClass === 'test' || classified.commandClass === 'typecheck' || classified.commandClass === 'lint' || classified.commandClass === 'build' ? 'test' : classified.commandClass === 'git' || classified.commandClass === 'git-read' ? 'git' : classified.commandClass === 'dependency-install' ? 'dependency' : classified.commandClass === 'format' || classified.commandClass === 'codegen' ? 'edit' : 'terminal';
     return Object.freeze({ kind: tool, ...classified, network, toolGroup });
   }

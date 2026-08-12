@@ -1,11 +1,25 @@
 import { JsonlRpcProcess } from '../protocol/jsonl-rpc-process.mjs';
 import { VERSION } from '../version.mjs';
 
+function childEnvironment(env = {}) {
+  const names = process.platform === 'win32'
+    ? ['PATH', 'Path', 'SYSTEMROOT', 'SystemRoot', 'WINDIR', 'COMSPEC', 'PATHEXT', 'TEMP', 'TMP']
+    : ['PATH', 'TMPDIR', 'TMP', 'TEMP'];
+  const base = {};
+  for (const name of names) {
+    const value = process.env[name];
+    if (typeof value !== 'string' || !value) continue;
+    if (name === 'Path' && base.PATH) continue;
+    base[name === 'Path' ? 'PATH' : name] = value;
+  }
+  return { ...base, ...env };
+}
+
 export class StdioMcpClient {
   constructor({ id, label = id, executable, args = [], cwd = null, env = {}, timeoutMs = 30_000, protocolVersion = '2025-11-25' } = {}) {
     if (!String(id ?? '').trim()) throw new TypeError('MCP id is required');
     this.id = String(id); this.label = String(label ?? id); this.executable = String(executable ?? ''); this.args = [...args]; this.cwd = cwd; this.timeoutMs = timeoutMs; this.protocolVersion = protocolVersion;
-    this.rpc = new JsonlRpcProcess({ executable: this.executable, args: this.args, cwd, env, timeoutMs });
+    this.rpc = new JsonlRpcProcess({ executable: this.executable, args: this.args, cwd, env: childEnvironment(env), inheritEnvironment: false, timeoutMs });
     this.state = 'idle'; this.serverInfo = null; this.capabilities = {}; this.toolCache = null;
     this.rpc.on('closed', () => { this.state = 'closed'; });
   }

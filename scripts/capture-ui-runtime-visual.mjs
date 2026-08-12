@@ -9,7 +9,7 @@ import { chromium } from 'playwright';
 const DEFAULT_VIEWPORT = Object.freeze({ width: 1440, height: 1000 });
 
 const STATES = Object.freeze([
-  Object.freeze({ id: 'onboarding', route: '/onboarding', selector: '.onboarding-shell' }),
+  Object.freeze({ id: 'onboarding', route: '/onboarding', selector: '.onboarding-shell', afterCapture: assertOnboardingRecommendedNavigation }),
   Object.freeze({ id: 'home', route: '/', selector: '.home-view' }),
   Object.freeze({ id: 'home-compact', route: '/', selector: '.home-view', viewport: Object.freeze({ width: 640, height: 900 }) }),
   Object.freeze({ id: 'home-nocturne', route: '/', selector: '.home-view' }),
@@ -192,6 +192,15 @@ async function assertForgeSkillInstallPreview(page) {
   if (await install.isDisabled()) throw new Error('skills Forge OS preview did not expose an installation action');
 }
 
+async function assertOnboardingRecommendedNavigation(page) {
+  await page.locator('[data-onboarding-action="recommended"]').click();
+  try {
+    await page.locator('.home-view').waitFor({ state: 'visible', timeout: 10_000 });
+  } catch {
+    throw new Error('onboarding completion did not navigate to the home workspace');
+  }
+}
+
 async function assertAccessibility(page, state) {
   const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
   const blocking = result.violations.filter((violation) => ['serious', 'critical'].includes(String(violation.impact)));
@@ -235,6 +244,7 @@ export async function captureUiRuntimeVisual({ baseUrl, token, outputDirectory, 
       await page.screenshot({ path: file, fullPage: true, animations: 'disabled' });
       const body = await readFile(file);
       captures.push(Object.freeze({ id: state.id, route: state.route, viewport: Object.freeze({ ...viewport, deviceScaleFactor: 1 }), file: filename, bytes: body.length, sha256: sha256(body) }));
+      if (state.afterCapture) await state.afterCapture(page);
       await context.close();
     }
   } finally {

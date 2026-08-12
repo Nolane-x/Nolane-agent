@@ -21,6 +21,26 @@ test('command classifier recognizes bounded development and read-only git comman
   assert.deepEqual(classifyCommand({ command: 'npm', args: ['install'] }), { commandClass: 'dependency-install', readOnly: false });
 });
 
+test('command classifier fails closed for mutating Git variants and substring-shaped arguments', () => {
+  assert.deepEqual(classifyCommand({ command: 'git', args: ['remote', 'get-url', 'origin'] }), { commandClass: 'git-read', readOnly: true, gitOperation: 'remote' });
+  assert.deepEqual(classifyCommand({ command: 'git', args: ['remote', 'add', 'origin', 'https://example.test/repo.git'] }), { commandClass: 'git', readOnly: false, gitOperation: 'remote' });
+  assert.deepEqual(classifyCommand({ command: 'git', args: ['branch', '-D', 'feature'] }), { commandClass: 'git', readOnly: false, gitOperation: 'branch' });
+  assert.deepEqual(classifyCommand({ command: 'npm', args: ['run', 'retest-build'] }), { commandClass: 'arbitrary', readOnly: false });
+});
+
+test('autonomy guard cannot elevate a denied network grant from a dependency heuristic', async () => {
+  let observedAction = null;
+  const guarded = new AutonomyGuardedBroker({
+    broker: { async execute() { return { status: 'pass' }; } },
+    policy: { evaluate(action) { observedAction = action; return { decision: 'allow', category: 'test' }; } },
+    store: { getAutonomyGrant() { return { profile: 'workspace-autopilot', scope: { network: 'deny' } }; } },
+    task: { id: 'task-network', projectId: 'project-network', metadata: { worktree: { path: '/managed/task-network' } } },
+  });
+
+  await guarded.execute({ tool: 'process.run', input: { command: 'npm', args: ['install'] } });
+  assert.equal(observedAction.network, 'deny');
+});
+
 test('workspace autopilot runs reversible worktree changes without prompting', async () => {
   const f = fixture();
   await f.guarded.execute({ tool: 'fs.patch', input: { patch: 'x' } }, { refs: { taskId: f.task.id } });

@@ -28,7 +28,7 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(workflow, /NOLANE_AGENT_TOKEN/);
   assert.match(workflow, /node src\/app\.mjs/);
   assert.match(workflow, /\/health\?token=/);
-  assert.match(workflow, /api\/onboarding\/recommended/);
+  assert.doesNotMatch(workflow, /api\/onboarding\/recommended/);
   assert.match(workflow, /capture-ui-runtime-visual\.mjs/);
   assert.match(workflow, /actions\/upload-artifact@v6/);
   assert.match(workflow, /retention-days:\s*14/);
@@ -48,6 +48,9 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(capturer, /page\.screenshot/);
   assert.match(capturer, /sha256/);
   assert.match(capturer, /async function captureRenderDiagnostic/);
+  assert.match(capturer, /afterCapture: assertOnboardingRecommendedNavigation/);
+  assert.match(capturer, /async function assertOnboardingRecommendedNavigation/);
+  assert.match(capturer, /onboarding completion did not navigate to the home workspace/);
   assert.match(capturer, /UI state did not render: \$\{state\.id\}/);
   assert.match(capturer, /api\/onboarding\/status/);
   assert.match(capturer, /onboardingStatus/);
