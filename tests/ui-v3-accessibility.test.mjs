@@ -83,13 +83,16 @@ test('project view toggle buttons have localized accessible names', () => {
   assert.match(vietnamese, /aria-label="Chế độ hoạt động dự án"/);
 });
 
-test('dark native selectors request dark platform menus and retain a visible focus ring', async () => {
-  const [settings, skills] = await Promise.all([
+test('native selectors inherit the active theme scheme and retain a visible focus ring', async () => {
+  const [settings, skills, semantic] = await Promise.all([
     readFile('ui-v3/styles/pages/settings.css', 'utf8'),
     readFile('ui-v3/styles/pages/skills.css', 'utf8'),
+    readFile('ui-v3/styles/tokens/semantic.css', 'utf8'),
   ]);
-  assert.match(settings, /\.settings-content\{[^}]*color-scheme:dark/);
+  assert.match(semantic, /:root\{\s*color-scheme:dark/);
+  assert.match(semantic, /\[data-theme=\"snow\"\],\[data-theme=\"light\"\]\{color-scheme:light/);
+  assert.match(settings, /\.settings-content\{[^}]*color-scheme:inherit/);
   assert.match(settings, /\.settings-content select:focus-visible\{[^}]*outline:2px solid var\(--focus-ring\)/);
-  assert.match(skills, /\.skills-library\{[^}]*color-scheme:dark/);
+  assert.match(skills, /\.skills-library\{[^}]*color-scheme:inherit/);
   assert.match(skills, /\.skills-library__filter select:focus-visible\{[^}]*outline:2px solid var\(--focus-ring\)/);
 });
