@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { GLOBAL_DESTINATIONS, createAppShellModel, localizeRouteTitle, renderAppShell } from '../ui-v3/shell/app-shell.mjs';
 
 test('Nolane Agent rail contains exactly the approved top-level destinations', () => {
@@ -37,4 +38,10 @@ test('AppShell makes global search and local runtime state visible in the deskto
   assert.match(english, /Local runtime online/);
   assert.match(vietnamese, /Tìm dự án, tệp và cuộc trò chuyện…/);
   assert.match(vietnamese, /Runtime không khả dụng/);
+});
+
+test('workspace command bar uses accessible contrast tokens for its visible text and shortcut', async () => {
+  const css = await readFile(new URL('../ui-v3/styles/layout/app-shell.css', import.meta.url), 'utf8');
+  assert.match(css, /\.shell-command-search\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(css, /\.shell-command-search>kbd\{[^}]*color:var\(--text-secondary\)/);
 });
