@@ -1,5 +1,7 @@
 import path from 'node:path';
 
+export { createTaskEnvironmentAttester } from './task-environment-attester.mjs';
+
 const GIT_READ_COMMANDS = new Set(['status', 'diff', 'log', 'show', 'rev-parse', 'ls-files', 'grep', 'blame']);
 const GIT_REMOTE_READ_COMMANDS = new Set(['get-url', 'show']);
 const GIT_BRANCH_READ_FLAGS = new Set(['--show-current', '--list', '-l', '--all', '-a', '--remotes', '-r', '--verbose', '-v', '-vv']);
