@@ -4,12 +4,15 @@ import assert from 'node:assert/strict';
 import { AutonomyGuardedBroker, classifyCommand } from '../src/security/autonomy-guarded-broker.mjs';
 import { AutonomyPolicy } from '../src/security/autonomy-policy.mjs';
 
-function fixture({ profile = 'workspace-autopilot', worktree = true } = {}) {
+function fixture({ profile = 'workspace-autopilot', worktree = true, sandbox = false, environment = null } = {}) {
   const calls = [];
-  const task = { id: 'task-1', projectId: 'project-1', metadata: worktree ? { worktree: { path: '/managed/task-1' } } : {} };
+  const metadata = {};
+  if (worktree) metadata.worktree = { path: '/managed/task-1' };
+  if (sandbox) metadata.sandbox = true;
+  const task = { id: 'task-1', projectId: 'project-1', metadata };
   const store = { getAutonomyGrant() { return { profile, scope: { network: 'deny' } }; } };
   const broker = { async execute(request, context) { calls.push([request, context]); return { status: 'pass', output: {}, receipt: { receiptSha256: 'a'.repeat(64) } }; } };
-  return { calls, task, guarded: new AutonomyGuardedBroker({ broker, policy: new AutonomyPolicy(), store, task }) };
+  return { calls, task, guarded: new AutonomyGuardedBroker({ broker, policy: new AutonomyPolicy(), store, task, environmentAttester: environment ? () => environment : undefined }) };
 }
 
 test('command classifier recognizes bounded development and read-only git commands', () => {
@@ -44,25 +47,42 @@ test('autonomy guard cannot elevate a denied network grant from a dependency heu
   assert.equal(observedAction.network, 'deny');
 });
 
-test('workspace autopilot runs reversible worktree changes without prompting', async () => {
-  const f = fixture();
-  await f.guarded.execute({ tool: 'fs.patch', input: { patch: 'x' } }, { refs: { taskId: f.task.id } });
+test('workspace autopilot runs bounded process work only with an attested environment', async () => {
+  const f = fixture({ environment: { withinWorkspace: true, inManagedWorktree: true } });
   await f.guarded.execute({ tool: 'process.run', input: { command: 'npm', args: ['test'] } }, { refs: { taskId: f.task.id } });
-  assert.equal(f.calls.length, 2);
+  assert.equal(f.calls.length, 1);
 });
 
-test('workspace autopilot allows read-only git inspection outside a worktree but blocks writes and network installs', async () => {
-  const f = fixture({ worktree: false });
+test('workspace metadata cannot authorize bounded process work without an environmental attestation', async () => {
+  const f = fixture();
+  await assert.rejects(() => f.guarded.execute({ tool: 'process.run', input: { command: 'npm', args: ['test'] } }), (error) => error.code === 'AUTONOMY_HARD_STOP');
+  assert.equal(f.calls.length, 0);
+});
+
+test('sandbox metadata cannot authorize bounded process work without an environmental attestation', async () => {
+  const f = fixture({ profile: 'sandbox-autopilot', worktree: false, sandbox: true });
+  await assert.rejects(() => f.guarded.execute({ tool: 'process.run', input: { command: 'npm', args: ['test'] } }), (error) => error.code === 'AUTONOMY_HARD_STOP');
+  assert.equal(f.calls.length, 0);
+});
+
+test('a managed worktree does not make direct file mutation reversible', async () => {
+  const f = fixture({ environment: { withinWorkspace: true, inManagedWorktree: true } });
+  await assert.rejects(() => f.guarded.execute({ tool: 'fs.patch', input: { patch: 'x' } }), (error) => error.code === 'AUTONOMY_APPROVAL_REQUIRED');
+  assert.equal(f.calls.length, 0);
+});
+
+test('workspace autopilot allows attested read-only git inspection outside a worktree but blocks writes and network installs', async () => {
+  const f = fixture({ worktree: false, environment: { withinWorkspace: true, inManagedWorktree: false } });
   await f.guarded.execute({ tool: 'process.run', input: { command: 'git', args: ['status', '--short'] } });
   await assert.rejects(() => f.guarded.execute({ tool: 'fs.write', input: { path: 'src/a.mjs', content: 'x' } }), (error) => error.code === 'AUTONOMY_APPROVAL_REQUIRED');
 
-  const managed = fixture();
+  const managed = fixture({ environment: { withinWorkspace: true, inManagedWorktree: true } });
   await assert.rejects(() => managed.guarded.execute({ tool: 'process.run', input: { command: 'npm', args: ['install'] } }), (error) => error.code === 'AUTONOMY_APPROVAL_REQUIRED');
   await assert.rejects(() => managed.guarded.execute({ tool: 'process.run', input: { command: 'node', args: ['scripts/publish.mjs'] } }), (error) => error.code === 'AUTONOMY_APPROVAL_REQUIRED');
 });
 
 test('guided mode keeps state changes behind an approval boundary', async () => {
-  const f = fixture({ profile: 'guided' });
+  const f = fixture({ profile: 'guided', environment: { withinWorkspace: true, inManagedWorktree: true } });
   await f.guarded.execute({ tool: 'fs.read', input: { path: 'src/a.mjs' } });
   await assert.rejects(() => f.guarded.execute({ tool: 'process.run', input: { command: 'npm', args: ['test'] } }), (error) => error.code === 'AUTONOMY_APPROVAL_REQUIRED');
   assert.equal(f.calls.length, 1);

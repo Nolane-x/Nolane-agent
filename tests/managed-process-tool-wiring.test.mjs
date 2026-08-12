@@ -38,7 +38,7 @@ test('autonomy guarded broker classifies and forwards managed-process tools', as
   const task = { id: 'task-1', projectId: 'project-1', metadata: { worktree: { path: '/managed/task-1' } } };
   const store = { getAutonomyGrant() { return { profile: 'workspace-autopilot', scope: { network: 'deny' } }; } };
   const broker = { async execute(request, context) { calls.push([request, context]); return { status: 'pass', output: {}, receipt: { receiptSha256: 'a'.repeat(64) } }; } };
-  const guarded = new AutonomyGuardedBroker({ broker, policy: new AutonomyPolicy(), store, task });
+  const guarded = new AutonomyGuardedBroker({ broker, policy: new AutonomyPolicy(), store, task, environmentAttester: () => ({ withinWorkspace: true, inManagedWorktree: true }) });
   await guarded.execute({ tool: 'process.startManaged', input: { id: 'dev', command: 'npm', args: ['run', 'dev'], commandClass: 'dev-server' } });
   await assert.rejects(
     () => guarded.execute({ tool: 'process.startManaged', input: { id: 'script', command: 'node', args: ['-e', 'require(\"node:net\").createServer().listen(0)'], commandClass: 'dev-server' } }),

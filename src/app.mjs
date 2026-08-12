@@ -20,6 +20,7 @@ import { createAdaptiveHarnessLab } from './providers/adaptive-harness-lab.mjs';
 import { ToolBroker } from './execution/tool-broker.mjs';
 import { AutonomyPolicy } from './security/autonomy-policy.mjs';
 import { AutonomyGuardedBroker } from './security/autonomy-guarded-broker.mjs';
+import { createTaskEnvironmentAttester } from './security/task-environment-attester.mjs';
 import { TaskWorkspaceService } from './execution/task-workspace.mjs';
 import { LocalTaskHandoffService } from './execution/local-task-handoff-service.mjs';
 import { ContextBuilder } from './agent/context-builder.mjs';
@@ -522,6 +523,11 @@ const autonomyPolicy = new AutonomyPolicy();
 const brokerForTask = (task, { verification = false } = {}) => {
   const project = store.getProject(task.projectId);
   if (!project) throw new Error(`Unknown project: ${task.projectId}`);
+  const environmentAttester = createTaskEnvironmentAttester({
+    projectResolver: (projectId) => store.getProject(projectId),
+    taskResolver: (taskId) => store.getTask(taskId) ?? (String(task.id ?? '') === taskId ? task : null),
+    worktreesRoot: path.join(config.dataDir, 'worktrees'),
+  });
   const broker = new ToolBroker({
     workspaceRoot: task.metadata?.executionWorkspace ?? project.workspaceRoot,
     allowedPaths: verification ? ['**'] : (task.allowedPaths?.length ? task.allowedPaths : ['**']),
@@ -533,7 +539,7 @@ const brokerForTask = (task, { verification = false } = {}) => {
     commandGovernance: commandExecutionGovernance,
     managedProcessRegistry: managedProcesses,
   });
-  return new AutonomyGuardedBroker({ broker, policy: autonomyPolicy, store, task });
+  return new AutonomyGuardedBroker({ broker, policy: autonomyPolicy, store, task, environmentAttester });
 };
 const outcomeMetricsStore = new OutcomeMetricsStore({ file: path.join(config.dataDir, 'provider-outcomes.db') });
 const providerOutcomeFeedback = new ProviderOutcomeFeedbackService({ metrics: outcomeMetricsStore, taskResolver: (taskId) => store.getTask(taskId) });

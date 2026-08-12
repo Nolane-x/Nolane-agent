@@ -45,9 +45,8 @@ export function classifyCommand(input = {}) {
 
 function actionFor(request, task, grant) {
   const tool = String(request?.tool ?? '');
-  const managed = Boolean(task?.metadata?.worktree?.path);
   if (tool === 'fs.read') return Object.freeze({ kind: 'fs.read', toolGroup: 'read' });
-  if (tool === 'fs.write' || tool === 'fs.patch' || tool === 'fs.patchSet' || tool === 'fs.delete') return Object.freeze({ kind: tool, reversible: managed, toolGroup: 'edit' });
+  if (tool === 'fs.write' || tool === 'fs.patch' || tool === 'fs.patchSet' || tool === 'fs.delete') return Object.freeze({ kind: tool, reversible: false, toolGroup: 'edit' });
   if (tool === 'process.run' || tool === 'process.startManaged') {
     const classified = classifyCommand(request.input);
     const declaredNetwork = grant?.scope?.network ?? 'deny';
@@ -60,25 +59,44 @@ function actionFor(request, task, grant) {
   return Object.freeze({ kind: tool || 'unknown' });
 }
 
+function untrustedEnvironment() {
+  return Object.freeze({ withinWorkspace: false, inManagedWorktree: false, inSandbox: false });
+}
+
+async function environmentFacts(attester, task, request) {
+  const receipt = await attester(Object.freeze({ taskId: task.id, projectId: task.projectId, request }));
+  if (!receipt || typeof receipt !== 'object') return untrustedEnvironment();
+  return Object.freeze({
+    withinWorkspace: receipt.withinWorkspace === true,
+    inManagedWorktree: receipt.inManagedWorktree === true,
+    inSandbox: receipt.inSandbox === true,
+  });
+}
+
 export class AutonomyGuardedBroker {
-  constructor({ broker, policy, store, task } = {}) {
+  constructor({ broker, policy, store, task, environmentAttester = null } = {}) {
     if (!broker?.execute || !policy?.evaluate || !store?.getAutonomyGrant || !task?.projectId) {
       throw new TypeError('AutonomyGuardedBroker broker, policy, store, and task are required');
     }
+    if (environmentAttester !== null && typeof environmentAttester !== 'function') throw new TypeError('environmentAttester must be a function');
     this.broker = broker;
     this.policy = policy;
     this.store = store;
     this.task = task;
+    this.environmentAttester = environmentAttester;
   }
 
   async execute(request, context = {}) {
     const grant = this.store.getAutonomyGrant(this.task.projectId) ?? { profile: 'guided', scope: {} };
     const action = actionFor(request, this.task, grant);
+    const environment = this.environmentAttester
+      ? await environmentFacts(this.environmentAttester, this.task, request)
+      : untrustedEnvironment();
     const evaluation = this.policy.evaluate(action, {
       profile: grant.profile,
-      withinWorkspace: true,
-      inManagedWorktree: Boolean(this.task.metadata?.worktree?.path),
-      inSandbox: this.task.metadata?.sandbox === true,
+      withinWorkspace: environment.withinWorkspace,
+      inManagedWorktree: environment.inManagedWorktree,
+      inSandbox: environment.inSandbox,
       modeId: this.task.metadata?.modeId ?? null,
       modePolicy: this.task.metadata?.modePolicy ?? null,
     });
