@@ -9,7 +9,7 @@ test('external gate workflow uses least privilege and real Windows Linux macOS r
   assert.match(workflow, /pull_request:\s*\n\s+paths:/);
   assert.match(workflow, /- 'native\/\*\*'/);
   assert.match(workflow, /- 'scripts\/\*\*'/);
-  assert.doesNotMatch(workflow, /push:\s*\n\s+branches:\s*\n\s+- codex\/external-gate-evidence/);
+  assert.match(workflow, /push:\s*\n\s+branches:\s*\n\s+- codex\/external-gate-evidence/);
   assert.match(workflow, /ubuntu-latest/);
   assert.match(workflow, /windows-latest/);
   assert.match(workflow, /macos-latest/);
