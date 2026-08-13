@@ -19,6 +19,7 @@ test('Podman driver is fail-closed and builds a bounded no-shell container contr
     return { stdout: '', stderr: '' };
   } });
   assert.equal((await driver.capabilities()).available, true);
+  assert.equal(calls[0]?.options?.timeoutMs, 15_000);
   const result = await driver.create({ id: 'task-1', image: 'node:22-alpine', workspaceRoot: workspace, limits: { cpuPercent: 150, memoryBytes: 536870912, processCount: 64 }, command: ['node', '--version'] });
   assert.equal(result.containerId, 'container-id');
   const args = calls.find((call) => call.args[0] === 'create').args;

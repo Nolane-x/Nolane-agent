@@ -34,7 +34,7 @@ test('real Podman executes the bounded sandbox contract', { skip: !enabled }, as
   let primaryError = null;
   try {
     const capabilities = await driver.capabilities();
-    assert.equal(capabilities.available, true);
+    assert.equal(capabilities.available, true, `Podman capability probe failed: ${capabilities.reason ?? 'unknown'}`);
     const sandbox = await driver.create({
       id: sandboxId(),
       image: 'docker.io/library/busybox:1.36',
