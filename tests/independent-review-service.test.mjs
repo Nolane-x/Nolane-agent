@@ -55,6 +55,23 @@ test('IndependentReviewService deduplicates exact diff reviews and incrementally
   service.close();
 });
 
+test('IndependentReviewService keeps review lineage distinct across executor and commit identity', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-review-lineage-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const requests = [];
+  const service = new IndependentReviewService({ file: path.join(root, 'review.sqlite'), reviewer: async (input) => { requests.push(input); return { findings: [] }; } });
+  const first = await service.review({ projectId: 'p', diff: DIFF, executorId: 'agent-a', reviewerId: 'reviewer', baseSha: 'a', headSha: 'b' });
+  const changedHead = await service.review({ projectId: 'p', diff: DIFF, executorId: 'agent-a', reviewerId: 'reviewer', baseSha: 'a', headSha: 'c' });
+  const changedExecutor = await service.review({ projectId: 'p', diff: DIFF, executorId: 'agent-b', reviewerId: 'reviewer', baseSha: 'a', headSha: 'b' });
+  assert.equal(first.deduplicated, false);
+  assert.equal(changedHead.deduplicated, false);
+  assert.equal(changedExecutor.deduplicated, false);
+  assert.notEqual(first.reviewLineageSha256, changedHead.reviewLineageSha256);
+  assert.notEqual(first.reviewLineageSha256, changedExecutor.reviewLineageSha256);
+  assert.equal(requests.length, 3);
+  service.close();
+});
+
 test('IndependentReviewService incrementally reviews deletion-only diffs', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-review-deletion-'));
   t.after(() => rm(root, { recursive: true, force: true }));
@@ -93,6 +110,7 @@ test('IndependentReviewService migrates legacy review storage with context evide
   const service = new IndependentReviewService({ file, reviewer: async () => ({ findings: [] }) });
   const columns = service.db.prepare('PRAGMA table_info(independent_reviews)').all().map((column) => column.name);
   assert.ok(columns.includes('review_context_sha256'));
+  assert.ok(columns.includes('review_lineage_sha256'));
   service.close();
 });
 

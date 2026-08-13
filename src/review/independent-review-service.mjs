@@ -116,6 +116,10 @@ function normalizeFinding(raw, source = 'reviewer') {
   return Object.freeze({ ...finding, fingerprint: canonicalSha256(finding) });
 }
 
+function reviewLineageSha256({ executorId, baseSha, headSha }) {
+  return canonicalSha256({ executorId: String(executorId), baseSha: baseSha ?? null, headSha: headSha ?? null });
+}
+
 export class IndependentReviewService {
   constructor({ file = ':memory:', reviewer, scanners = [], clock = Date.now, maxDiffBytes = 2_000_000 } = {}) {
     if (typeof reviewer !== 'function') throw new TypeError('independent reviewer function is required');
@@ -138,14 +142,15 @@ export class IndependentReviewService {
         full_diff TEXT NOT NULL,
         reviewed_diff TEXT NOT NULL,
         review_context_sha256 TEXT NOT NULL DEFAULT '',
+        review_lineage_sha256 TEXT NOT NULL,
         findings_json TEXT NOT NULL,
         receipt_sha256 TEXT NOT NULL,
         created_at INTEGER NOT NULL,
-        UNIQUE(project_id,diff_sha256,rules_sha256,reviewer_id)
+        UNIQUE(project_id,diff_sha256,rules_sha256,reviewer_id,review_lineage_sha256)
       );
     `);
     const columns = new Set(this.db.prepare('PRAGMA table_info(independent_reviews)').all().map((column) => String(column.name)));
-    if (!columns.has('review_context_sha256')) this.db.exec("ALTER TABLE independent_reviews ADD COLUMN review_context_sha256 TEXT NOT NULL DEFAULT ''");
+    if (!columns.has('review_lineage_sha256')) this.#migrateLegacyStorage();
   }
 
   async review({ projectId, diff, executorId, reviewerId, rules = [], reviewContext = null, baseSha = null, headSha = null, priorReviewId = null, secretValues = [] } = {}) {
@@ -158,7 +163,8 @@ export class IndependentReviewService {
     const safeReviewContext = normalizeReviewContext(reviewContext);
     const reviewContextSha256 = canonicalSha256(safeReviewContext);
     const diffSha256 = canonicalSha256(fullDiff); const rulesSha256 = canonicalSha256({ rules: safeRules, reviewContextSha256 });
-    const duplicate = this.db.prepare('SELECT * FROM independent_reviews WHERE project_id=? AND diff_sha256=? AND rules_sha256=? AND reviewer_id=?').get(project, diffSha256, rulesSha256, reviewerIdValue);
+    const reviewLineage = reviewLineageSha256({ executorId: executor, baseSha, headSha });
+    const duplicate = this.db.prepare('SELECT * FROM independent_reviews WHERE project_id=? AND diff_sha256=? AND rules_sha256=? AND reviewer_id=? AND review_lineage_sha256=?').get(project, diffSha256, rulesSha256, reviewerIdValue, reviewLineage);
     if (duplicate) return Object.freeze({ ...this.#row(duplicate), deduplicated: true });
 
     let reviewedDiff = fullDiff;
@@ -176,11 +182,11 @@ export class IndependentReviewService {
     }
     const unique = [...new Map(findings.map((finding) => [finding.fingerprint, finding])).values()].sort((left, right) => ['critical', 'high', 'medium', 'low', 'info'].indexOf(left.severity) - ['critical', 'high', 'medium', 'low', 'info'].indexOf(right.severity) || left.path.localeCompare(right.path) || left.line - right.line);
     const reviewId = id('review'); const createdAt = Math.trunc(this.clock());
-    const receiptBase = { schema: 'forge.independent-review-receipt.v2', reviewId, projectId: project, diffSha256, rulesSha256, reviewContextSha256, executorId: executor, reviewerId: reviewerIdValue, baseSha, headSha, priorReviewId, reviewedDiffSha256: canonicalSha256(reviewedDiff), findingFingerprints: unique.map((finding) => finding.fingerprint), createdAt };
+    const receiptBase = { schema: 'forge.independent-review-receipt.v2', reviewId, projectId: project, diffSha256, rulesSha256, reviewContextSha256, reviewLineageSha256: reviewLineage, executorId: executor, reviewerId: reviewerIdValue, baseSha, headSha, priorReviewId, reviewedDiffSha256: canonicalSha256(reviewedDiff), findingFingerprints: unique.map((finding) => finding.fingerprint), createdAt };
     const receiptSha256 = canonicalSha256(receiptBase);
-    this.db.prepare(`INSERT INTO independent_reviews(id,project_id,diff_sha256,rules_sha256,executor_id,reviewer_id,base_sha,head_sha,prior_review_id,full_diff,reviewed_diff,review_context_sha256,findings_json,receipt_sha256,created_at)
-      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(reviewId, project, diffSha256, rulesSha256, executor, reviewerIdValue, baseSha, headSha, priorReviewId, fullDiff, reviewedDiff, reviewContextSha256, JSON.stringify(unique), receiptSha256, createdAt);
-    return Object.freeze({ schema: 'forge.independent-review.v2', reviewId, projectId: project, diffSha256, rulesSha256, reviewContextSha256, executorId: executor, reviewerId: reviewerIdValue, baseSha, headSha, priorReviewId, reviewedDiffSha256: receiptBase.reviewedDiffSha256, findings: Object.freeze(unique), receiptSha256, createdAt, deduplicated: false });
+    this.db.prepare(`INSERT INTO independent_reviews(id,project_id,diff_sha256,rules_sha256,executor_id,reviewer_id,base_sha,head_sha,prior_review_id,full_diff,reviewed_diff,review_context_sha256,review_lineage_sha256,findings_json,receipt_sha256,created_at)
+      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(reviewId, project, diffSha256, rulesSha256, executor, reviewerIdValue, baseSha, headSha, priorReviewId, fullDiff, reviewedDiff, reviewContextSha256, reviewLineage, JSON.stringify(unique), receiptSha256, createdAt);
+    return Object.freeze({ schema: 'forge.independent-review.v2', reviewId, projectId: project, diffSha256, rulesSha256, reviewContextSha256, reviewLineageSha256: reviewLineage, executorId: executor, reviewerId: reviewerIdValue, baseSha, headSha, priorReviewId, reviewedDiffSha256: receiptBase.reviewedDiffSha256, findings: Object.freeze(unique), receiptSha256, createdAt, deduplicated: false });
   }
 
   get(reviewId) {
@@ -196,7 +202,28 @@ export class IndependentReviewService {
   }
 
   #row(row) {
-    return { schema: 'forge.independent-review.v2', reviewId: row.id, projectId: row.project_id, diffSha256: row.diff_sha256, rulesSha256: row.rules_sha256, reviewContextSha256: row.review_context_sha256 || null, executorId: row.executor_id, reviewerId: row.reviewer_id, baseSha: row.base_sha, headSha: row.head_sha, priorReviewId: row.prior_review_id, reviewedDiffSha256: canonicalSha256(row.reviewed_diff), findings: Object.freeze(JSON.parse(row.findings_json)), receiptSha256: row.receipt_sha256, createdAt: Number(row.created_at), deduplicated: false };
+    return { schema: 'forge.independent-review.v2', reviewId: row.id, projectId: row.project_id, diffSha256: row.diff_sha256, rulesSha256: row.rules_sha256, reviewContextSha256: row.review_context_sha256 || null, reviewLineageSha256: row.review_lineage_sha256, executorId: row.executor_id, reviewerId: row.reviewer_id, baseSha: row.base_sha, headSha: row.head_sha, priorReviewId: row.prior_review_id, reviewedDiffSha256: canonicalSha256(row.reviewed_diff), findings: Object.freeze(JSON.parse(row.findings_json)), receiptSha256: row.receipt_sha256, createdAt: Number(row.created_at), deduplicated: false };
+  }
+
+  #migrateLegacyStorage() {
+    const rows = this.db.prepare('SELECT * FROM independent_reviews').all();
+    this.db.exec('BEGIN IMMEDIATE');
+    try {
+      this.db.exec(`CREATE TABLE independent_reviews_rebuild(
+        id TEXT PRIMARY KEY, project_id TEXT NOT NULL, diff_sha256 TEXT NOT NULL, rules_sha256 TEXT NOT NULL,
+        executor_id TEXT NOT NULL, reviewer_id TEXT NOT NULL, base_sha TEXT, head_sha TEXT, prior_review_id TEXT,
+        full_diff TEXT NOT NULL, reviewed_diff TEXT NOT NULL, review_context_sha256 TEXT NOT NULL DEFAULT '',
+        review_lineage_sha256 TEXT NOT NULL, findings_json TEXT NOT NULL, receipt_sha256 TEXT NOT NULL, created_at INTEGER NOT NULL,
+        UNIQUE(project_id,diff_sha256,rules_sha256,reviewer_id,review_lineage_sha256)
+      )`);
+      const insert = this.db.prepare(`INSERT INTO independent_reviews_rebuild(id,project_id,diff_sha256,rules_sha256,executor_id,reviewer_id,base_sha,head_sha,prior_review_id,full_diff,reviewed_diff,review_context_sha256,review_lineage_sha256,findings_json,receipt_sha256,created_at)
+        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+      for (const row of rows) insert.run(row.id, row.project_id, row.diff_sha256, row.rules_sha256, row.executor_id, row.reviewer_id, row.base_sha, row.head_sha, row.prior_review_id, row.full_diff, row.reviewed_diff, row.review_context_sha256 ?? '', reviewLineageSha256({ executorId: row.executor_id, baseSha: row.base_sha, headSha: row.head_sha }), row.findings_json, row.receipt_sha256, row.created_at);
+      this.db.exec('DROP TABLE independent_reviews; ALTER TABLE independent_reviews_rebuild RENAME TO independent_reviews; COMMIT');
+    } catch (error) {
+      this.db.exec('ROLLBACK');
+      throw error;
+    }
   }
 
   close() { this.db.close(); }
