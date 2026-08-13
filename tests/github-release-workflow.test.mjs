@@ -7,7 +7,9 @@ const read = (file) => readFile(new URL(`../${file}`, import.meta.url), 'utf8');
 test('CI workflow runs product validation without publishing or release secrets', async () => {
   const source = await read('.github/workflows/ci.yml');
   assert.match(source, /pull_request:/);
-  assert.match(source, /pull_request:\s*\n\s+paths-ignore:\s*\n\s+- 'docs\/\*\*'\s*\n\s+- 'checkpoints\/\*\*'/);
+  assert.doesNotMatch(source, /pull_request:\s*\n\s+paths-ignore:/);
+  assert.doesNotMatch(source, /paths-ignore:\s*\n[\s\S]*'docs\/\*\*'/);
+  assert.doesNotMatch(source, /paths-ignore:\s*\n[\s\S]*'checkpoints\/\*\*'/);
   assert.match(source, /push:/);
   assert.match(source, /npm (?:run validate|test)/);
   assert.match(source, /npm run test:go/);
