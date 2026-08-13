@@ -83,6 +83,7 @@ import { EvalRunner } from './eval/eval-runner.mjs';
 import { MemoryService } from './memory/memory-service.mjs';
 import { ProjectMemorySidecar } from './memory/project-memory-sidecar.mjs';
 import { IndependentReviewService } from './review/independent-review-service.mjs';
+import { independentReviewerSystemPrompt } from './review/independent-reviewer-prompt.mjs';
 import { DurableAutomationService } from './automations/durable-automation-service.mjs';
 import { DesignContextService } from './design/design-context-service.mjs';
 import { createHttpServer } from './server/http-server.mjs';
@@ -1124,7 +1125,7 @@ const independentReviewer = new IndependentReviewService({
     const provider = router.select({ mode: 'intelligence', task: { kind: 'code-review', complexity: 0.9 }, requiredCapabilities: ['coding'] });
     const completion = await provider.complete({
       messages: [
-        { role: 'system', content: 'You are an independent code reviewer. Return strict JSON only: {"findings":[{"path":"...","line":1,"severity":"info|low|medium|high|critical","category":"...","message":"...","evidence":"...","suggestion":"..."}]}. Review only the supplied diff and rules. Do not claim to have run tests.' },
+        { role: 'system', content: independentReviewerSystemPrompt() },
         { role: 'user', content: JSON.stringify(request) },
       ],
       tools: [],
