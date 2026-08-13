@@ -23,7 +23,7 @@ test('settings switches expose an explicit accessible name', () => {
 });
 
 test('runtime-critical labels use the legible secondary text token', async () => {
-  const [shell, experience, onboarding, home, surfaces, settings, workroom, controlPlane] = await Promise.all([
+  const [shell, experience, onboarding, home, surfaces, settings, workroom, controlPlane, browser] = await Promise.all([
     readFile('ui-v3/styles/layout/app-shell.css', 'utf8'),
     readFile('ui-v3/styles/components/experience-switcher.css', 'utf8'),
     readFile('ui-v3/styles/pages/onboarding.css', 'utf8'),
@@ -32,6 +32,7 @@ test('runtime-critical labels use the legible secondary text token', async () =>
     readFile('ui-v3/styles/pages/settings.css', 'utf8'),
     readFile('ui-v3/styles/pages/workroom.css', 'utf8'),
     readFile('ui-v3/styles/pages/control-plane.css', 'utf8'),
+    readFile('ui-v3/styles/pages/browser.css', 'utf8'),
   ]);
   assert.match(shell, /\.app-topbar__title\{[^}]*color:var\(--text-secondary\)/);
   assert.match(experience, /\.app-topbar__actions>\.experience-switcher>\.experience-pill\{[^}]*color:var\(--text-secondary\)/);
@@ -72,6 +73,10 @@ test('runtime-critical labels use the legible secondary text token', async () =>
   assert.match(controlPlane, /\.cp-adapter-metrics dt\{[^}]*color:var\(--text-secondary\)/);
   assert.match(controlPlane, /\.cp-empty\{[^}]*color:var\(--text-secondary\)/);
   assert.match(controlPlane, /\.cp-adapter-rows small\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(browser, /\.browser-eyebrow\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(browser, /\.browser-empty,\.browser-loading\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(browser, /\.browser-facts dt\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(browser, /\.browser-navigation-field small\{[^}]*color:var\(--text-secondary\)/);
 });
 
 test('project view toggle buttons have localized accessible names', () => {
