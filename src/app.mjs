@@ -1143,17 +1143,27 @@ const automationService = new DurableAutomationService({
       maxTasks: 32,
       mcpAllowedTools: request.mcpServers,
     });
+    await runCoordinator.whenSettled(snapshot.mission.id);
+    const mission = store.getMission(snapshot.mission.id);
+    const output = {
+      schema: 'forge.automation-mission-output.v1',
+      outputPolicy: request.outputPolicy,
+      missionId: snapshot.mission.id,
+      missionStatus: mission?.status ?? 'missing',
+      capabilities: request.capabilities,
+      skills: request.skills,
+    };
+    if (mission?.status !== 'completed') {
+      return {
+        status: 'fail',
+        output,
+        error: `Automated mission ended with ${mission?.status ?? 'missing'} status`,
+      };
+    }
     return {
       status: 'pass',
-      output: {
-        schema: 'forge.automation-mission-output.v1',
-        outputPolicy: request.outputPolicy,
-        missionId: snapshot.mission.id,
-        missionStatus: snapshot.mission.status,
-        capabilities: request.capabilities,
-        skills: request.skills,
-      },
-      memory: `mission:${snapshot.mission.id}:${snapshot.mission.status}`,
+      output,
+      memory: `mission:${mission.id}:completed`,
     };
   },
 });
