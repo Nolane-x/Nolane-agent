@@ -18,7 +18,7 @@
   },
   "product": "Nolane Agent",
   "productVersion": "5.0.0-beta.6",
-  "receiptSha256": "a61f72e7b72ac67479df75313bb49e1ae575338acfcf5fb841a275571b03dda3",
+  "receiptSha256": "fe88cdf550e54f4eb6b51f8267bf192617992f3fe2704dd9185a22aa492ec787",
   "requirements": [
     {
       "acceptance": {
@@ -508,7 +508,7 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/task-graph.mjs": "e3cdf3712474f3e6a653f1bad17b720b1985321cd5eaab4e6977c8e2b5986391",
           "tests/forgeos-v061-integration.test.mjs": "46564f4b429245a5632039b5122dc1a56c70c5e9472b7295a81bcdb98ae9292e",
           "tests/mission-planner-compatibility.test.mjs": "288cdc4c7f48324723803ed4f1e83869f136fab2b2f77bf0707347ede4481e1e",
@@ -3304,7 +3304,7 @@
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
           "src/execution/local-task-handoff-service.mjs": "3095a89b9a0cc563223b6a7c4d5ab64cde0410216ea43fb60019328120a1a8eb",
           "src/execution/task-workspace.mjs": "a30caea321f6a5a377da32c3e6bcb33567b338c5b2f0fa7953798e28c2afde27",
-          "src/server/http-server.mjs": "580a2f353a06f9e097d97d2c2b1377086d82a1c25c20c7a2d9f5ab715222e1ff",
+          "src/server/http-server.mjs": "73286bf9ed8c19a41a67f94417a18788caaa87a64f08f054fda3d0df25e4e66c",
           "src/server/routes.mjs": "ad7efd748c5877f75b46f6fb3f7af5836d045170ec8e38945acc60e5858160d6",
           "tests/git-workspace-governance-contracts.test.mjs": "69ccfea084bf592317367d602d49b5de87c3cefbffa3ecdc7dd1bfdb7d12698f"
         },
@@ -4499,9 +4499,9 @@
       "acceptance": {
         "evidenceHashes": {
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/planning-evidence-governance-service.mjs": "d3da7ed16894e2191e3a68759daf037355170b93495df1f78a90184ce17eab2b",
-          "tests/mission-planner.test.mjs": "f5d4e39f7b3c7d3b59359eddd283ae805e7ff68d8b54412e96754a29d20fadf4",
+          "tests/mission-planner.test.mjs": "fd92da5584510f0ee8bd0527b3a8c0665eb29a753e63ff086d37e6ffff07f05f",
           "tests/planning-evidence-app-wiring.test.mjs": "e5cacb4d4968aa90355280304e11ef2865a6468c3e333b491175c6215179bb9c",
           "tests/planning-evidence-governance-release-gate.test.mjs": "2cb7caf0a8e67dfbba89742e5107f7dc333469901b4176a897ced2d482ea85cf",
           "tests/planning-evidence-governance-service.test.mjs": "196e88405e0d7307c11ca2ff3c4cb22fceffb448c05cae47fdd997865009d24e"
@@ -4668,9 +4668,9 @@
       "acceptance": {
         "evidenceHashes": {
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/planning-evidence-governance-service.mjs": "d3da7ed16894e2191e3a68759daf037355170b93495df1f78a90184ce17eab2b",
-          "tests/mission-planner.test.mjs": "f5d4e39f7b3c7d3b59359eddd283ae805e7ff68d8b54412e96754a29d20fadf4",
+          "tests/mission-planner.test.mjs": "fd92da5584510f0ee8bd0527b3a8c0665eb29a753e63ff086d37e6ffff07f05f",
           "tests/planning-evidence-app-wiring.test.mjs": "e5cacb4d4968aa90355280304e11ef2865a6468c3e333b491175c6215179bb9c",
           "tests/planning-evidence-governance-release-gate.test.mjs": "2cb7caf0a8e67dfbba89742e5107f7dc333469901b4176a897ced2d482ea85cf",
           "tests/planning-evidence-governance-service.test.mjs": "196e88405e0d7307c11ca2ff3c4cb22fceffb448c05cae47fdd997865009d24e"
@@ -6799,9 +6799,9 @@
       "acceptance": {
         "evidenceHashes": {
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/planning-evidence-governance-service.mjs": "d3da7ed16894e2191e3a68759daf037355170b93495df1f78a90184ce17eab2b",
-          "tests/mission-planner.test.mjs": "f5d4e39f7b3c7d3b59359eddd283ae805e7ff68d8b54412e96754a29d20fadf4",
+          "tests/mission-planner.test.mjs": "fd92da5584510f0ee8bd0527b3a8c0665eb29a753e63ff086d37e6ffff07f05f",
           "tests/planning-evidence-app-wiring.test.mjs": "e5cacb4d4968aa90355280304e11ef2865a6468c3e333b491175c6215179bb9c",
           "tests/planning-evidence-governance-release-gate.test.mjs": "2cb7caf0a8e67dfbba89742e5107f7dc333469901b4176a897ced2d482ea85cf",
           "tests/planning-evidence-governance-service.test.mjs": "196e88405e0d7307c11ca2ff3c4cb22fceffb448c05cae47fdd997865009d24e"
@@ -17757,7 +17757,7 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/task-graph.mjs": "e3cdf3712474f3e6a653f1bad17b720b1985321cd5eaab4e6977c8e2b5986391",
           "tests/forgeos-v061-integration.test.mjs": "46564f4b429245a5632039b5122dc1a56c70c5e9472b7295a81bcdb98ae9292e",
           "tests/mission-planner-compatibility.test.mjs": "288cdc4c7f48324723803ed4f1e83869f136fab2b2f77bf0707347ede4481e1e",
@@ -21620,9 +21620,9 @@
       "acceptance": {
         "evidenceHashes": {
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/planning-evidence-governance-service.mjs": "d3da7ed16894e2191e3a68759daf037355170b93495df1f78a90184ce17eab2b",
-          "tests/mission-planner.test.mjs": "f5d4e39f7b3c7d3b59359eddd283ae805e7ff68d8b54412e96754a29d20fadf4",
+          "tests/mission-planner.test.mjs": "fd92da5584510f0ee8bd0527b3a8c0665eb29a753e63ff086d37e6ffff07f05f",
           "tests/planning-evidence-app-wiring.test.mjs": "e5cacb4d4968aa90355280304e11ef2865a6468c3e333b491175c6215179bb9c",
           "tests/planning-evidence-governance-release-gate.test.mjs": "2cb7caf0a8e67dfbba89742e5107f7dc333469901b4176a897ced2d482ea85cf",
           "tests/planning-evidence-governance-service.test.mjs": "196e88405e0d7307c11ca2ff3c4cb22fceffb448c05cae47fdd997865009d24e"
@@ -26267,9 +26267,9 @@
       "acceptance": {
         "evidenceHashes": {
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/planning-evidence-governance-service.mjs": "d3da7ed16894e2191e3a68759daf037355170b93495df1f78a90184ce17eab2b",
-          "tests/mission-planner.test.mjs": "f5d4e39f7b3c7d3b59359eddd283ae805e7ff68d8b54412e96754a29d20fadf4",
+          "tests/mission-planner.test.mjs": "fd92da5584510f0ee8bd0527b3a8c0665eb29a753e63ff086d37e6ffff07f05f",
           "tests/planning-evidence-app-wiring.test.mjs": "e5cacb4d4968aa90355280304e11ef2865a6468c3e333b491175c6215179bb9c",
           "tests/planning-evidence-governance-release-gate.test.mjs": "2cb7caf0a8e67dfbba89742e5107f7dc333469901b4176a897ced2d482ea85cf",
           "tests/planning-evidence-governance-service.test.mjs": "196e88405e0d7307c11ca2ff3c4cb22fceffb448c05cae47fdd997865009d24e"
@@ -26965,9 +26965,9 @@
       "acceptance": {
         "evidenceHashes": {
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/planning-evidence-governance-service.mjs": "d3da7ed16894e2191e3a68759daf037355170b93495df1f78a90184ce17eab2b",
-          "tests/mission-planner.test.mjs": "f5d4e39f7b3c7d3b59359eddd283ae805e7ff68d8b54412e96754a29d20fadf4",
+          "tests/mission-planner.test.mjs": "fd92da5584510f0ee8bd0527b3a8c0665eb29a753e63ff086d37e6ffff07f05f",
           "tests/planning-evidence-app-wiring.test.mjs": "e5cacb4d4968aa90355280304e11ef2865a6468c3e333b491175c6215179bb9c",
           "tests/planning-evidence-governance-release-gate.test.mjs": "2cb7caf0a8e67dfbba89742e5107f7dc333469901b4176a897ced2d482ea85cf",
           "tests/planning-evidence-governance-service.test.mjs": "196e88405e0d7307c11ca2ff3c4cb22fceffb448c05cae47fdd997865009d24e"
@@ -27573,7 +27573,7 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/task-graph.mjs": "e3cdf3712474f3e6a653f1bad17b720b1985321cd5eaab4e6977c8e2b5986391",
           "tests/forgeos-v061-integration.test.mjs": "46564f4b429245a5632039b5122dc1a56c70c5e9472b7295a81bcdb98ae9292e",
           "tests/mission-planner-compatibility.test.mjs": "288cdc4c7f48324723803ed4f1e83869f136fab2b2f77bf0707347ede4481e1e",
@@ -28049,9 +28049,9 @@
       "acceptance": {
         "evidenceHashes": {
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/planning-evidence-governance-service.mjs": "d3da7ed16894e2191e3a68759daf037355170b93495df1f78a90184ce17eab2b",
-          "tests/mission-planner.test.mjs": "f5d4e39f7b3c7d3b59359eddd283ae805e7ff68d8b54412e96754a29d20fadf4",
+          "tests/mission-planner.test.mjs": "fd92da5584510f0ee8bd0527b3a8c0665eb29a753e63ff086d37e6ffff07f05f",
           "tests/planning-evidence-app-wiring.test.mjs": "e5cacb4d4968aa90355280304e11ef2865a6468c3e333b491175c6215179bb9c",
           "tests/planning-evidence-governance-release-gate.test.mjs": "2cb7caf0a8e67dfbba89742e5107f7dc333469901b4176a897ced2d482ea85cf",
           "tests/planning-evidence-governance-service.test.mjs": "196e88405e0d7307c11ca2ff3c4cb22fceffb448c05cae47fdd997865009d24e"
@@ -31648,7 +31648,7 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/task-graph.mjs": "e3cdf3712474f3e6a653f1bad17b720b1985321cd5eaab4e6977c8e2b5986391",
           "tests/forgeos-v061-integration.test.mjs": "46564f4b429245a5632039b5122dc1a56c70c5e9472b7295a81bcdb98ae9292e",
           "tests/mission-planner-compatibility.test.mjs": "288cdc4c7f48324723803ed4f1e83869f136fab2b2f77bf0707347ede4481e1e",
@@ -33883,7 +33883,7 @@
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
           "src/repository/code-relationship-intelligence-service.mjs": "6fb3f122cdb96b61c36985dcd5f4b304fb6611e00a3e731893f2ed85a9b4b4c0",
           "src/repository/typescript-ast-loader.mjs": "0d98f0b51c4e356e23a04662dcef1135638b1a07da5a180a2be672fcff570c6a",
-          "src/server/http-server.mjs": "580a2f353a06f9e097d97d2c2b1377086d82a1c25c20c7a2d9f5ab715222e1ff",
+          "src/server/http-server.mjs": "73286bf9ed8c19a41a67f94417a18788caaa87a64f08f054fda3d0df25e4e66c",
           "src/server/routes.mjs": "ad7efd748c5877f75b46f6fb3f7af5836d045170ec8e38945acc60e5858160d6",
           "tests/code-relationship-app-wiring.test.mjs": "ba62b11f77c7124affcd4a2dadd64d566ee4f99c7b5bfc625305b87be31ebf2c",
           "tests/code-relationship-center-ui.test.mjs": "25058a6f1de81fc2cc7538bb083ddd6c2f1af4751832c3fafffa06a910de1050",
@@ -37825,9 +37825,9 @@
       "acceptance": {
         "evidenceHashes": {
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/planning-evidence-governance-service.mjs": "d3da7ed16894e2191e3a68759daf037355170b93495df1f78a90184ce17eab2b",
-          "tests/mission-planner.test.mjs": "f5d4e39f7b3c7d3b59359eddd283ae805e7ff68d8b54412e96754a29d20fadf4",
+          "tests/mission-planner.test.mjs": "fd92da5584510f0ee8bd0527b3a8c0665eb29a753e63ff086d37e6ffff07f05f",
           "tests/planning-evidence-app-wiring.test.mjs": "e5cacb4d4968aa90355280304e11ef2865a6468c3e333b491175c6215179bb9c",
           "tests/planning-evidence-governance-release-gate.test.mjs": "2cb7caf0a8e67dfbba89742e5107f7dc333469901b4176a897ced2d482ea85cf",
           "tests/planning-evidence-governance-service.test.mjs": "196e88405e0d7307c11ca2ff3c4cb22fceffb448c05cae47fdd997865009d24e"
@@ -41276,7 +41276,7 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/task-graph.mjs": "e3cdf3712474f3e6a653f1bad17b720b1985321cd5eaab4e6977c8e2b5986391",
           "tests/forgeos-v061-integration.test.mjs": "46564f4b429245a5632039b5122dc1a56c70c5e9472b7295a81bcdb98ae9292e",
           "tests/mission-planner-compatibility.test.mjs": "288cdc4c7f48324723803ed4f1e83869f136fab2b2f77bf0707347ede4481e1e",
@@ -47609,9 +47609,9 @@
       "acceptance": {
         "evidenceHashes": {
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/planning-evidence-governance-service.mjs": "d3da7ed16894e2191e3a68759daf037355170b93495df1f78a90184ce17eab2b",
-          "tests/mission-planner.test.mjs": "f5d4e39f7b3c7d3b59359eddd283ae805e7ff68d8b54412e96754a29d20fadf4",
+          "tests/mission-planner.test.mjs": "fd92da5584510f0ee8bd0527b3a8c0665eb29a753e63ff086d37e6ffff07f05f",
           "tests/planning-evidence-app-wiring.test.mjs": "e5cacb4d4968aa90355280304e11ef2865a6468c3e333b491175c6215179bb9c",
           "tests/planning-evidence-governance-release-gate.test.mjs": "2cb7caf0a8e67dfbba89742e5107f7dc333469901b4176a897ced2d482ea85cf",
           "tests/planning-evidence-governance-service.test.mjs": "196e88405e0d7307c11ca2ff3c4cb22fceffb448c05cae47fdd997865009d24e"
@@ -47967,7 +47967,7 @@
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
           "src/execution/local-task-handoff-service.mjs": "3095a89b9a0cc563223b6a7c4d5ab64cde0410216ea43fb60019328120a1a8eb",
           "src/execution/task-workspace.mjs": "a30caea321f6a5a377da32c3e6bcb33567b338c5b2f0fa7953798e28c2afde27",
-          "src/server/http-server.mjs": "580a2f353a06f9e097d97d2c2b1377086d82a1c25c20c7a2d9f5ab715222e1ff",
+          "src/server/http-server.mjs": "73286bf9ed8c19a41a67f94417a18788caaa87a64f08f054fda3d0df25e4e66c",
           "src/server/routes.mjs": "ad7efd748c5877f75b46f6fb3f7af5836d045170ec8e38945acc60e5858160d6",
           "tests/git-workspace-governance-contracts.test.mjs": "69ccfea084bf592317367d602d49b5de87c3cefbffa3ecdc7dd1bfdb7d12698f"
         },
@@ -51265,9 +51265,9 @@
       "acceptance": {
         "evidenceHashes": {
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/planning-evidence-governance-service.mjs": "d3da7ed16894e2191e3a68759daf037355170b93495df1f78a90184ce17eab2b",
-          "tests/mission-planner.test.mjs": "f5d4e39f7b3c7d3b59359eddd283ae805e7ff68d8b54412e96754a29d20fadf4",
+          "tests/mission-planner.test.mjs": "fd92da5584510f0ee8bd0527b3a8c0665eb29a753e63ff086d37e6ffff07f05f",
           "tests/planning-evidence-app-wiring.test.mjs": "e5cacb4d4968aa90355280304e11ef2865a6468c3e333b491175c6215179bb9c",
           "tests/planning-evidence-governance-release-gate.test.mjs": "2cb7caf0a8e67dfbba89742e5107f7dc333469901b4176a897ced2d482ea85cf",
           "tests/planning-evidence-governance-service.test.mjs": "196e88405e0d7307c11ca2ff3c4cb22fceffb448c05cae47fdd997865009d24e"
@@ -51581,9 +51581,9 @@
       "acceptance": {
         "evidenceHashes": {
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/planning-evidence-governance-service.mjs": "d3da7ed16894e2191e3a68759daf037355170b93495df1f78a90184ce17eab2b",
-          "tests/mission-planner.test.mjs": "f5d4e39f7b3c7d3b59359eddd283ae805e7ff68d8b54412e96754a29d20fadf4",
+          "tests/mission-planner.test.mjs": "fd92da5584510f0ee8bd0527b3a8c0665eb29a753e63ff086d37e6ffff07f05f",
           "tests/planning-evidence-app-wiring.test.mjs": "e5cacb4d4968aa90355280304e11ef2865a6468c3e333b491175c6215179bb9c",
           "tests/planning-evidence-governance-release-gate.test.mjs": "2cb7caf0a8e67dfbba89742e5107f7dc333469901b4176a897ced2d482ea85cf",
           "tests/planning-evidence-governance-service.test.mjs": "196e88405e0d7307c11ca2ff3c4cb22fceffb448c05cae47fdd997865009d24e"
@@ -55992,7 +55992,7 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/task-graph.mjs": "e3cdf3712474f3e6a653f1bad17b720b1985321cd5eaab4e6977c8e2b5986391",
           "tests/forgeos-v061-integration.test.mjs": "46564f4b429245a5632039b5122dc1a56c70c5e9472b7295a81bcdb98ae9292e",
           "tests/mission-planner-compatibility.test.mjs": "288cdc4c7f48324723803ed4f1e83869f136fab2b2f77bf0707347ede4481e1e",
@@ -56543,9 +56543,9 @@
       "acceptance": {
         "evidenceHashes": {
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/planning-evidence-governance-service.mjs": "d3da7ed16894e2191e3a68759daf037355170b93495df1f78a90184ce17eab2b",
-          "tests/mission-planner.test.mjs": "f5d4e39f7b3c7d3b59359eddd283ae805e7ff68d8b54412e96754a29d20fadf4",
+          "tests/mission-planner.test.mjs": "fd92da5584510f0ee8bd0527b3a8c0665eb29a753e63ff086d37e6ffff07f05f",
           "tests/planning-evidence-app-wiring.test.mjs": "e5cacb4d4968aa90355280304e11ef2865a6468c3e333b491175c6215179bb9c",
           "tests/planning-evidence-governance-release-gate.test.mjs": "2cb7caf0a8e67dfbba89742e5107f7dc333469901b4176a897ced2d482ea85cf",
           "tests/planning-evidence-governance-service.test.mjs": "196e88405e0d7307c11ca2ff3c4cb22fceffb448c05cae47fdd997865009d24e"
@@ -59410,7 +59410,7 @@
         "evidenceHashes": {
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
           "src/repository/tree-sitter-runtime-service.mjs": "64831a892c69f05b57d4febce9478b2259ae423f98086a9b7bf514a63d5932cf",
-          "src/server/http-server.mjs": "580a2f353a06f9e097d97d2c2b1377086d82a1c25c20c7a2d9f5ab715222e1ff",
+          "src/server/http-server.mjs": "73286bf9ed8c19a41a67f94417a18788caaa87a64f08f054fda3d0df25e4e66c",
           "src/server/routes.mjs": "ad7efd748c5877f75b46f6fb3f7af5836d045170ec8e38945acc60e5858160d6",
           "tests/completion-release-gate.test.mjs": "04d83f34efe092e5e12a8ef989f896de14ac5d93f4a93c073d6a57ef97b737db",
           "tests/completion-runtime-app-wiring.test.mjs": "395111d6b5cafac5c875852abf0750b773ab05d02ec24584709555f000d728c0",
@@ -62705,7 +62705,7 @@
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
           "src/repository/code-relationship-intelligence-service.mjs": "6fb3f122cdb96b61c36985dcd5f4b304fb6611e00a3e731893f2ed85a9b4b4c0",
           "src/repository/typescript-ast-loader.mjs": "0d98f0b51c4e356e23a04662dcef1135638b1a07da5a180a2be672fcff570c6a",
-          "src/server/http-server.mjs": "580a2f353a06f9e097d97d2c2b1377086d82a1c25c20c7a2d9f5ab715222e1ff",
+          "src/server/http-server.mjs": "73286bf9ed8c19a41a67f94417a18788caaa87a64f08f054fda3d0df25e4e66c",
           "src/server/routes.mjs": "ad7efd748c5877f75b46f6fb3f7af5836d045170ec8e38945acc60e5858160d6",
           "tests/code-relationship-app-wiring.test.mjs": "ba62b11f77c7124affcd4a2dadd64d566ee4f99c7b5bfc625305b87be31ebf2c",
           "tests/code-relationship-center-ui.test.mjs": "25058a6f1de81fc2cc7538bb083ddd6c2f1af4751832c3fafffa06a910de1050",
@@ -64256,9 +64256,9 @@
       "acceptance": {
         "evidenceHashes": {
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/planning-evidence-governance-service.mjs": "d3da7ed16894e2191e3a68759daf037355170b93495df1f78a90184ce17eab2b",
-          "tests/mission-planner.test.mjs": "f5d4e39f7b3c7d3b59359eddd283ae805e7ff68d8b54412e96754a29d20fadf4",
+          "tests/mission-planner.test.mjs": "fd92da5584510f0ee8bd0527b3a8c0665eb29a753e63ff086d37e6ffff07f05f",
           "tests/planning-evidence-app-wiring.test.mjs": "e5cacb4d4968aa90355280304e11ef2865a6468c3e333b491175c6215179bb9c",
           "tests/planning-evidence-governance-release-gate.test.mjs": "2cb7caf0a8e67dfbba89742e5107f7dc333469901b4176a897ced2d482ea85cf",
           "tests/planning-evidence-governance-service.test.mjs": "196e88405e0d7307c11ca2ff3c4cb22fceffb448c05cae47fdd997865009d24e"
@@ -67440,8 +67440,8 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "src/server/http-server.mjs": "580a2f353a06f9e097d97d2c2b1377086d82a1c25c20c7a2d9f5ab715222e1ff",
-          "tests/http-boundary-errors.test.mjs": "6e535e6607a675620b728775a0c9f56c102679a47f97938bba9d17d41c38c4f2"
+          "src/server/http-server.mjs": "73286bf9ed8c19a41a67f94417a18788caaa87a64f08f054fda3d0df25e4e66c",
+          "tests/http-boundary-errors.test.mjs": "b888ef0e2b4a4181a0fdfb97bd3c28d76448ac73a390e5f0dc37ca26bec1a900"
         },
         "externalConditions": [],
         "fileExistenceIsProof": false,
@@ -67452,9 +67452,9 @@
         ],
         "productionEntrypoint": "src/server/http-server.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "580a2f353a06f9e097d97d2c2b1377086d82a1c25c20c7a2d9f5ab715222e1ff",
+          "entrypointSha256": "73286bf9ed8c19a41a67f94417a18788caaa87a64f08f054fda3d0df25e4e66c",
           "environment": "node>=22.12",
-          "exactTestSha256": "6e535e6607a675620b728775a0c9f56c102679a47f97938bba9d17d41c38c4f2"
+          "exactTestSha256": "b888ef0e2b4a4181a0fdfb97bd3c28d76448ac73a390e5f0dc37ca26bec1a900"
         },
         "testPaths": [
           "tests/http-boundary-errors.test.mjs"
@@ -68231,7 +68231,7 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/task-graph.mjs": "e3cdf3712474f3e6a653f1bad17b720b1985321cd5eaab4e6977c8e2b5986391",
           "tests/forgeos-v061-integration.test.mjs": "46564f4b429245a5632039b5122dc1a56c70c5e9472b7295a81bcdb98ae9292e",
           "tests/mission-planner-compatibility.test.mjs": "288cdc4c7f48324723803ed4f1e83869f136fab2b2f77bf0707347ede4481e1e",
@@ -68614,7 +68614,7 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/task-graph.mjs": "e3cdf3712474f3e6a653f1bad17b720b1985321cd5eaab4e6977c8e2b5986391",
           "tests/forgeos-v061-integration.test.mjs": "46564f4b429245a5632039b5122dc1a56c70c5e9472b7295a81bcdb98ae9292e",
           "tests/mission-planner-compatibility.test.mjs": "288cdc4c7f48324723803ed4f1e83869f136fab2b2f77bf0707347ede4481e1e",
@@ -71366,7 +71366,7 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/task-graph.mjs": "e3cdf3712474f3e6a653f1bad17b720b1985321cd5eaab4e6977c8e2b5986391",
           "tests/forgeos-v061-integration.test.mjs": "46564f4b429245a5632039b5122dc1a56c70c5e9472b7295a81bcdb98ae9292e",
           "tests/mission-planner-compatibility.test.mjs": "288cdc4c7f48324723803ed4f1e83869f136fab2b2f77bf0707347ede4481e1e",
@@ -72855,7 +72855,7 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/task-graph.mjs": "e3cdf3712474f3e6a653f1bad17b720b1985321cd5eaab4e6977c8e2b5986391",
           "tests/forgeos-v061-integration.test.mjs": "46564f4b429245a5632039b5122dc1a56c70c5e9472b7295a81bcdb98ae9292e",
           "tests/mission-planner-compatibility.test.mjs": "288cdc4c7f48324723803ed4f1e83869f136fab2b2f77bf0707347ede4481e1e",
@@ -73976,7 +73976,7 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/task-graph.mjs": "e3cdf3712474f3e6a653f1bad17b720b1985321cd5eaab4e6977c8e2b5986391",
           "tests/forgeos-v061-integration.test.mjs": "46564f4b429245a5632039b5122dc1a56c70c5e9472b7295a81bcdb98ae9292e",
           "tests/mission-planner-compatibility.test.mjs": "288cdc4c7f48324723803ed4f1e83869f136fab2b2f77bf0707347ede4481e1e",
@@ -86135,9 +86135,9 @@
       "acceptance": {
         "evidenceHashes": {
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/planning-evidence-governance-service.mjs": "d3da7ed16894e2191e3a68759daf037355170b93495df1f78a90184ce17eab2b",
-          "tests/mission-planner.test.mjs": "f5d4e39f7b3c7d3b59359eddd283ae805e7ff68d8b54412e96754a29d20fadf4",
+          "tests/mission-planner.test.mjs": "fd92da5584510f0ee8bd0527b3a8c0665eb29a753e63ff086d37e6ffff07f05f",
           "tests/planning-evidence-app-wiring.test.mjs": "e5cacb4d4968aa90355280304e11ef2865a6468c3e333b491175c6215179bb9c",
           "tests/planning-evidence-governance-release-gate.test.mjs": "2cb7caf0a8e67dfbba89742e5107f7dc333469901b4176a897ced2d482ea85cf",
           "tests/planning-evidence-governance-service.test.mjs": "196e88405e0d7307c11ca2ff3c4cb22fceffb448c05cae47fdd997865009d24e"
@@ -86368,7 +86368,7 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/task-graph.mjs": "e3cdf3712474f3e6a653f1bad17b720b1985321cd5eaab4e6977c8e2b5986391",
           "tests/forgeos-v061-integration.test.mjs": "46564f4b429245a5632039b5122dc1a56c70c5e9472b7295a81bcdb98ae9292e",
           "tests/mission-planner-compatibility.test.mjs": "288cdc4c7f48324723803ed4f1e83869f136fab2b2f77bf0707347ede4481e1e",
@@ -88615,9 +88615,9 @@
       "acceptance": {
         "evidenceHashes": {
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/planning-evidence-governance-service.mjs": "d3da7ed16894e2191e3a68759daf037355170b93495df1f78a90184ce17eab2b",
-          "tests/mission-planner.test.mjs": "f5d4e39f7b3c7d3b59359eddd283ae805e7ff68d8b54412e96754a29d20fadf4",
+          "tests/mission-planner.test.mjs": "fd92da5584510f0ee8bd0527b3a8c0665eb29a753e63ff086d37e6ffff07f05f",
           "tests/planning-evidence-app-wiring.test.mjs": "e5cacb4d4968aa90355280304e11ef2865a6468c3e333b491175c6215179bb9c",
           "tests/planning-evidence-governance-release-gate.test.mjs": "2cb7caf0a8e67dfbba89742e5107f7dc333469901b4176a897ced2d482ea85cf",
           "tests/planning-evidence-governance-service.test.mjs": "196e88405e0d7307c11ca2ff3c4cb22fceffb448c05cae47fdd997865009d24e"
@@ -95890,7 +95890,7 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/task-graph.mjs": "e3cdf3712474f3e6a653f1bad17b720b1985321cd5eaab4e6977c8e2b5986391",
           "tests/forgeos-v061-integration.test.mjs": "46564f4b429245a5632039b5122dc1a56c70c5e9472b7295a81bcdb98ae9292e",
           "tests/mission-planner-compatibility.test.mjs": "288cdc4c7f48324723803ed4f1e83869f136fab2b2f77bf0707347ede4481e1e",
@@ -97188,10 +97188,10 @@
       "acceptance": {
         "evidenceHashes": {
           "src/app.mjs": "46f38123c4066e553b6e7c70c6ebbfd5fde7ee819eb8cf16b96a8a21ea930bae",
-          "src/orchestration/mission-planner.mjs": "4a1ee23ab0a595fc4484a30fe2b11b314ce7a64b07cba4e8081349a2d09081fc",
+          "src/orchestration/mission-planner.mjs": "05eaf954877e5d9359da5762a4e97a6aeaf5f9fea5b33620238150fbf7690260",
           "src/orchestration/planning-evidence-governance-service.mjs": "d3da7ed16894e2191e3a68759daf037355170b93495df1f78a90184ce17eab2b",
           "src/orchestration/verification-runner.mjs": "efb9fe48c761bb24ea8853573ea6c76654943f10d43fc7d50b77315cd83ea72a",
-          "tests/mission-planner.test.mjs": "f5d4e39f7b3c7d3b59359eddd283ae805e7ff68d8b54412e96754a29d20fadf4",
+          "tests/mission-planner.test.mjs": "fd92da5584510f0ee8bd0527b3a8c0665eb29a753e63ff086d37e6ffff07f05f",
           "tests/planning-evidence-app-wiring.test.mjs": "e5cacb4d4968aa90355280304e11ef2865a6468c3e333b491175c6215179bb9c",
           "tests/planning-evidence-governance-release-gate.test.mjs": "2cb7caf0a8e67dfbba89742e5107f7dc333469901b4176a897ced2d482ea85cf",
           "tests/planning-evidence-governance-service.test.mjs": "196e88405e0d7307c11ca2ff3c4cb22fceffb448c05cae47fdd997865009d24e",

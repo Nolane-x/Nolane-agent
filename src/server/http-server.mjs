@@ -41,6 +41,9 @@ export function classifyHttpError(error) {
   if (code === 'PROVIDER_SETUP_REQUIRED') {
     return Object.freeze({ status: 409, body: Object.freeze({ error: 'provider-setup-required', code: 'PROVIDER_SETUP_REQUIRED' }) });
   }
+  if (code === 'SELECTED_MODEL_NOT_READY') {
+    return Object.freeze({ status: 409, body: Object.freeze({ error: 'selected-model-not-ready', code: 'SELECTED_MODEL_NOT_READY' }) });
+  }
   if (code === 'PROVIDER_WORKSPACE_TRUST_REQUIRED' || /not inside a trusted directory|skip-git-repo-check/i.test(message)) {
     return Object.freeze({ status: 409, body: Object.freeze({ error: 'provider-workspace-trust-required', code: 'PROVIDER_WORKSPACE_TRUST_REQUIRED' }) });
   }

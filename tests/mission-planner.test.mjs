@@ -105,3 +105,29 @@ test('MissionPlanner returns evidence-enriched bounded plan metadata when govern
   assert.equal(calls[0][0], 'preflight');
   assert.equal(calls[1][0], 'enrich');
 });
+
+test('MissionPlanner translates unavailable provider routing into a safe composer-facing state', async () => {
+  const unavailable = new Error('No eligible provider. stale-provider: provider authentication required; token=super-secret-value');
+  const planner = new MissionPlanner({ router: { select() { throw unavailable; } } });
+
+  await assert.rejects(() => planner.plan({ projectId: 'p', objective: 'Plan safely' }), (error) => {
+    assert.equal(error.code, 'PROVIDER_SETUP_REQUIRED');
+    assert.equal(error.message, 'No provider is ready for planning');
+    assert.equal(error.cause, unavailable);
+    assert.doesNotMatch(error.message, /secret|stale-provider|authentication/i);
+    return true;
+  });
+});
+
+test('MissionPlanner identifies a stale explicit provider selection without exposing router diagnostics', async () => {
+  const unavailable = new Error('No eligible provider. codex-app-server: provider connection is not healthy');
+  const planner = new MissionPlanner({ router: { select() { throw unavailable; } } });
+
+  await assert.rejects(() => planner.plan({ projectId: 'p', objective: 'Plan safely', providerId: 'codex-app-server' }), (error) => {
+    assert.equal(error.code, 'SELECTED_MODEL_NOT_READY');
+    assert.equal(error.message, 'The selected provider is not ready');
+    assert.equal(error.cause, unavailable);
+    assert.doesNotMatch(error.message, /codex|connection|healthy/i);
+    return true;
+  });
+});

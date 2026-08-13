@@ -67,6 +67,17 @@ export class PlanningInputRequiredError extends Error {
   }
 }
 
+function planningProviderSelectionError(error, providerId) {
+  const detail = String(error?.message ?? '');
+  if (!/^(?:No eligible provider\b|Unknown provider:)/i.test(detail)) return null;
+  const explicitSelection = String(providerId ?? '').trim() && String(providerId).trim() !== 'auto';
+  const message = explicitSelection ? 'The selected provider is not ready' : 'No provider is ready for planning';
+  return Object.assign(new Error(message, { cause: error }), {
+    name: 'ProviderSelectionUnavailableError',
+    code: explicitSelection ? 'SELECTED_MODEL_NOT_READY' : 'PROVIDER_SETUP_REQUIRED',
+  });
+}
+
 export class MissionPlanner {
   constructor({ router, maxAttempts = 2, evidenceGovernance = null } = {}) {
     if (!router?.select) throw new TypeError('MissionPlanner provider router is required');
@@ -80,7 +91,12 @@ export class MissionPlanner {
   async plan({ projectId, objective, providerId = 'auto', modelId = null, effort = null, signal = null, changedPaths = [] } = {}) {
     const preflight = this.evidenceGovernance ? await this.evidenceGovernance.preflight({ projectId, objective, changedPaths }) : null;
     if (preflight?.status === 'needs-input') throw new PlanningInputRequiredError({ inputRequest: preflight.inputRequest, preflightReceiptSha256: preflight.receiptSha256 });
-    const provider = this.router.select({ providerId, requiredCapabilities: ['coding', 'structured-output', 'governed-actions'] });
+    let provider;
+    try { provider = this.router.select({ providerId, requiredCapabilities: ['coding', 'structured-output', 'governed-actions'] }); }
+    catch (error) {
+      const normalized = planningProviderSelectionError(error, providerId);
+      throw normalized ?? error;
+    }
     let lastError;
     let prior = '';
     for (let attempt = 1; attempt <= this.maxAttempts; attempt += 1) {
