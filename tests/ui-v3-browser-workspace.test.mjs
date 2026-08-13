@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { createBrowserWorkspaceController, renderBrowserWorkspace, resolveBrowserWorkspaceProjectId } from '../ui-v3/views/browser/browser-view.mjs';
 
 function createApi(fixtures = {}) {
@@ -199,6 +200,34 @@ test('Browser workspace captures and renders a bounded project-scoped screenshot
   assert.deepEqual(artifactCall.body, { projectId: 'project-a', filename: 'workspace.png' });
   assert.match(html, /data:image\/png;base64,aW1hZ2U=/);
   assert.match(html, /Screenshot/);
+});
+
+test('Browser workspace renders a bounded redacted page map from the agent-readable snapshot without a write grant', async () => {
+  const api = createApi({
+    '/api/browser/runtime': { ready: true },
+    '/api/browser/detect': { available: true },
+    '/api/browser/status?projectId=project-a': { available: true, sessions: [{ name: 'tab-1', url: 'https://example.test', title: 'Example' }] },
+    '/api/browser/tabs': { tabs: [{ id: 'tab-1', url: 'https://example.test', title: 'Example' }] },
+    '/api/permissions/browser?goalId=mission-a': { allowedActions: ['snapshot'], denied: ['open', 'goto', 'click', 'fill', 'type', 'press'] },
+    '/api/browser/snapshot': { output: '### Page\n- textbox "Account"\n- password: amethyst-secret\n- cookie=session-value' },
+  });
+  const controller = createBrowserWorkspaceController({ api, projectId: 'project-a', missionId: 'mission-a' });
+  await controller.load();
+  await controller.capturePageMap();
+
+  const snapshotCall = api.calls.find((call) => call.path === '/api/browser/snapshot');
+  assert.deepEqual(snapshotCall.body, { projectId: 'project-a', depth: 6 });
+  assert.equal(controller.snapshot().pageMap.status, 'ready');
+  const html = renderBrowserWorkspace(controller.snapshot());
+  assert.match(html, /Page map/);
+  assert.match(html, /data-browser-action="snapshot"/);
+  assert.match(html, /\[private value redacted\]/);
+  assert.doesNotMatch(html, /amethyst-secret|session-value|type="password"/i);
+});
+
+test('Browser workspace routes the explicit page-map action to its read-only controller operation', async () => {
+  const source = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
+  assert.match(source, /browserAction\.dataset\.browserAction==='snapshot'\)await browserController\.capturePageMap\(\)/);
 });
 
 test('Browser workspace keeps user-operated screenshots available when an agent goal omits that read action', async () => {

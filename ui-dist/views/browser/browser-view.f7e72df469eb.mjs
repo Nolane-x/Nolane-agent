@@ -1,5 +1,5 @@
-import { renderBrowserInspector } from './browser-inspector.mjs';
-import { defaultBrowserTimeline, renderBrowserTimeline } from './browser-timeline.mjs';
+import { renderBrowserInspector } from './browser-inspector.12b903581977.mjs';
+import { defaultBrowserTimeline, renderBrowserTimeline } from './browser-timeline.a7a3704314c0.mjs';
 
 const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 const languageKey = (value) => String(value ?? 'en').toLowerCase().startsWith('vi') ? 'vi' : 'en';
