@@ -7,6 +7,7 @@ import { EventEmitter } from 'node:events';
 
 import {
   EXTERNAL_GATE_CLASSES,
+  commandProbe,
   collectExternalGateEvidence,
   probeCredentialHelper,
   probeWindowsJobObjectLifecycle,
@@ -76,6 +77,14 @@ test('GitHub runner evidence is bounded to the event actually observed', async (
   assert.equal(report.gates.find((gate) => gate.id === '26.38').observation, 'observed');
   assert.equal(report.gates.find((gate) => gate.id === '2.17').observation, 'not-observed');
   assert.equal(report.gates.find((gate) => gate.id === '1.8').observation, 'observed-on-linux');
+});
+
+test('runtime command evidence removes UTF-16 control bytes before writing a receipt', async () => {
+  const result = await commandProbe(process.execPath, ['-e', "process.stdout.write('Default\\x00Version\\x00: 2\\n')"]);
+
+  assert.equal(result.available, true);
+  assert.equal(result.version, 'Default Version : 2');
+  assert.doesNotMatch(result.version, /[\x00-\x1F\x7F]/);
 });
 
 test('credential helper proof performs a disposable round trip and reports no secret material', async () => {

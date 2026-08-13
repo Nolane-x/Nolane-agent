@@ -96,3 +96,8 @@ test('native selectors inherit the active theme scheme and retain a visible focu
   assert.match(skills, /\.skills-library\{[^}]*color-scheme:inherit/);
   assert.match(skills, /\.skills-library__filter select:focus-visible\{[^}]*outline:2px solid var\(--focus-ring\)/);
 });
+
+test('provider catalog destinations clear the sticky settings toolbar', async () => {
+  const settings = await readFile('ui-v3/styles/pages/settings.css', 'utf8');
+  assert.match(settings, /\.provider-model-group\{[^}]*scroll-margin-top:88px/);
+});

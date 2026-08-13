@@ -29,10 +29,10 @@ export const EXTERNAL_GATE_CLASSES = Object.freeze(Object.fromEntries(
 ));
 
 function bounded(value, limit = 160) {
-  return String(value ?? '').replace(/[\r\n\t]+/g, ' ').trim().slice(0, limit);
+  return String(value ?? '').replace(/[\x00-\x1F\x7F]+/g, ' ').trim().slice(0, limit);
 }
 
-function commandProbe(command, args) {
+export function commandProbe(command, args) {
   return new Promise((resolve) => {
     let stdout = '';
     let stderr = '';
