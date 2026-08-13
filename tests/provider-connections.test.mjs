@@ -98,6 +98,31 @@ test('ProviderConnectionService materializes documented CLI compatibility models
   assert.deepEqual(registry.detection('gemini').modelCatalog, { status: 'compatibility', modelCount: 2, observedAt: '2026-08-13T00:00:00.000Z', error: null });
 });
 
+test('ProviderConnectionService materializes a compatibility catalog when an auth adapter owns CLI detection', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-adapter-compatibility-catalog-'));
+  const store = new StudioStore(path.join(root, 'studio.db'));
+  t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const registry = new ProviderRegistry();
+  registry.register(new CliProvider({ id: 'claude', label: 'Claude Code', executable: process.execPath, modelCatalog: ['sonnet', 'opus'] }));
+  const merged = [];
+  const service = new ProviderConnectionService({
+    store,
+    registry,
+    credentialVault: new CredentialVault({ backend: new MemoryCredentialBackend() }),
+    modelProfiles: { mergeDiscovery(providerId, models) { merged.push({ providerId, models }); } },
+    cliAuthAdapters: { claude: { async status() { return { available: true, authenticated: true, healthy: true, error: null }; } } },
+  });
+
+  await service.refreshAll({ apiProviders: false });
+
+  assert.deepEqual(merged.map(({ providerId, models }) => ({ providerId, modelIds: models.map((model) => model.id) })), [{ providerId: 'claude', modelIds: ['sonnet', 'opus'] }]);
+  assert.equal(registry.detection('claude').modelCatalog.status, 'compatibility');
+  assert.equal(registry.detection('claude').modelCatalog.modelCount, 2);
+  assert.equal(registry.detection('claude').modelCatalog.error, null);
+  assert.match(registry.detection('claude').modelCatalog.observedAt, /^\d{4}-\d{2}-\d{2}T/);
+});
+
 test('ProviderConnectionService stores API keys only in the vault, restores providers, and reports readiness', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-service-'));
   const store = new StudioStore(path.join(root, 'studio.db'));

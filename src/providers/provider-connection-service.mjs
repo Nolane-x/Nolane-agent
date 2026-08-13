@@ -197,7 +197,8 @@ export class ProviderConnectionService {
       tasks.push(async () => {
         try {
           const status = await adapter.status(); const provider = this.registry.get(id);
-          const detection = retainVerifiedCliConnection(this.registry.detection(id), { ...provider.publicView(), ...status });
+          const modelCatalog = await this.#compatibilityCatalog(provider);
+          const detection = retainVerifiedCliConnection(this.registry.detection(id), { ...provider.publicView(), ...status, ...(modelCatalog ? { modelCatalog } : {}) });
           this.registry.setDetection(id, detection);
         }
         catch (error) { const provider = this.registry.get(id); this.registry.setDetection(id, { ...provider.publicView(), available: false, authenticated: false, healthy: false, error: safeError(error) }); }
@@ -220,16 +221,7 @@ export class ProviderConnectionService {
         try {
           const previous = this.registry.detection(provider.id);
           const detected = await (provider.detect?.() ?? { ...provider.publicView(), available: true });
-          let modelCatalog = null;
-          if (provider.publicView?.().modelDiscovery?.mode === 'compatibility-catalog' && typeof provider.discoverModels === 'function') {
-            try {
-              const catalog = await provider.discoverModels();
-              this.modelProfiles?.mergeDiscovery?.(provider.id, catalog.models ?? []);
-              modelCatalog = { status: catalog.status ?? 'compatibility', modelCount: Array.isArray(catalog.models) ? catalog.models.length : 0, observedAt: catalog.observedAt ?? null, error: null };
-            } catch (error) {
-              modelCatalog = { status: 'unavailable', modelCount: 0, observedAt: null, error: safeError(error) };
-            }
-          }
+          const modelCatalog = await this.#compatibilityCatalog(provider);
           const candidate = { ...provider.publicView(), ...detected, ...(modelCatalog ? { modelCatalog } : {}), authenticated: false, healthy: false, error: detected.error ?? (detected.available === false ? 'not-installed' : 'connection-test-required') };
           this.registry.setDetection(provider.id, retainVerifiedCliConnection(previous, candidate));
         } catch (error) {
@@ -239,6 +231,17 @@ export class ProviderConnectionService {
     }
     await refreshWithConcurrency(tasks);
     return this.list();
+  }
+
+  async #compatibilityCatalog(provider) {
+    if (provider?.publicView?.().modelDiscovery?.mode !== 'compatibility-catalog' || typeof provider.discoverModels !== 'function') return null;
+    try {
+      const catalog = await provider.discoverModels();
+      this.modelProfiles?.mergeDiscovery?.(provider.id, catalog.models ?? []);
+      return { status: catalog.status ?? 'compatibility', modelCount: Array.isArray(catalog.models) ? catalog.models.length : 0, observedAt: catalog.observedAt ?? null, error: null };
+    } catch (error) {
+      return { status: 'unavailable', modelCount: 0, observedAt: null, error: safeError(error) };
+    }
   }
 
   async #refreshCodex() {
