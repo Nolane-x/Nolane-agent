@@ -66,6 +66,26 @@ function publicError(error) {
   return { code: String(error?.code ?? 'TERMINAL_ERROR'), message: message.replace(/(?:api[_-]?key|token|secret|password)\s*[:=]\s*\S+/gi, '[redacted]').slice(0, 500) };
 }
 
+function isLoopbackHostname(hostname) {
+  return ['127.0.0.1', '::1', 'localhost'].includes(String(hostname ?? '').toLowerCase());
+}
+
+export function isAllowedTerminalOrigin({ origin, host } = {}) {
+  const receivedOrigin = String(origin ?? '').trim();
+  if (!receivedOrigin) return true;
+  try {
+    const requested = new URL(receivedOrigin);
+    const target = new URL(`http://${String(host ?? '').trim()}`);
+    return requested.protocol === 'http:'
+      && isLoopbackHostname(requested.hostname)
+      && isLoopbackHostname(target.hostname)
+      && requested.hostname === target.hostname
+      && requested.port === target.port;
+  } catch {
+    return false;
+  }
+}
+
 export function attachTerminalWebSocket({ server, token, terminalManager, path = '/terminal', maxFrameBytes = 1024 * 1024, maxQueueBytes = 2 * 1024 * 1024, reconnectGraceMs = 5 * 60_000 } = {}) {
   if (!server || !terminalManager) return { close() {} };
   const peers = new Set(); const ownership = new Map(); const orphanOutput = new Map();
@@ -88,6 +108,7 @@ export function attachTerminalWebSocket({ server, token, terminalManager, path =
   const upgrade = (req, socket, head) => {
     const url = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`);
     if (url.pathname !== path) return httpReject(socket, '404 Not Found', 'not found');
+    if (!isAllowedTerminalOrigin({ origin: req.headers.origin, host: req.headers.host })) return httpReject(socket, '403 Forbidden', 'forbidden origin');
     const actual = localRequestToken(req, { allowTerminalProtocol: true });
     if (!actual || !sameLocalSecret(actual, token)) return httpReject(socket, '401 Unauthorized', 'unauthorized');
     const requestedClientId = String(url.searchParams.get('clientId') ?? '');
