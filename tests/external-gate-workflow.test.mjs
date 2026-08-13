@@ -10,6 +10,7 @@ test('external gate workflow uses least privilege and real Windows Linux macOS r
   assert.match(workflow, /- 'native\/\*\*'/);
   assert.match(workflow, /- 'scripts\/\*\*'/);
   assert.match(workflow, /push:\s*\n\s+branches:\s*\n\s+- codex\/external-gate-evidence/);
+  assert.match(workflow, /runner-evidence:\s*\n\s+if:\s*\$\{\{\s*github\.event_name != 'pull_request' \|\| github\.head_ref != github\.event\.repository\.default_branch\s*\}\}/);
   assert.match(workflow, /ubuntu-latest/);
   assert.match(workflow, /windows-latest/);
   assert.match(workflow, /macos-latest/);

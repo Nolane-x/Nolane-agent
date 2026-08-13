@@ -12,6 +12,7 @@ test('CI workflow runs product validation without publishing or release secrets'
   assert.doesNotMatch(source, /paths-ignore:\s*\n[\s\S]*'checkpoints\/\*\*'/);
   assert.match(source, /push:/);
   assert.match(source, /branches:\s*\[main, master, "release\/\*\*", "feature\/\*\*", "codex\/external-gate-evidence"\]/);
+  assert.equal([...source.matchAll(/if:\s*\$\{\{\s*github\.event_name != 'pull_request' \|\| github\.head_ref != github\.event\.repository\.default_branch\s*\}\}/g)].length, 2);
   assert.match(source, /npm (?:run validate|test)/);
   assert.match(source, /npm run test:go/);
   assert.match(source, /npm run build:vscode/);
