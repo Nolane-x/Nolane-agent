@@ -1249,7 +1249,7 @@ const repositoryFingerprint = async (goal) => {
   return `${String(head.stdout ?? '').trim()}
 ${String(status.stdout ?? '').trim()}`;
 };
-const goalScheduler = new GoalScheduler({ store, goalService, runGoal: async (goal) => { await workspaceTrust.requireTrusted(goal.projectId, 'background'); const result = goalRunService.start(goal.id); return { runId: result.run?.id ?? result.run?.mission?.id ?? null, ...result }; }, repositoryFingerprint, tickEveryMs: 30_000 });
+const goalScheduler = new GoalScheduler({ store, goalService, runGoal: async (goal) => { await workspaceTrust.requireTrusted(goal.projectId, 'background'); const result = await goalRunService.startAndWait(goal.id); return { runId: result.runId, ...result }; }, repositoryFingerprint, tickEveryMs: 30_000 });
 goalScheduler.start();
 const evalRunner = new EvalRunner({ executor: async ({ evalCase, providerId, signal }) => {
   const provider = providers.get(providerId);

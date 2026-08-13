@@ -50,4 +50,15 @@ export class GoalRunService {
     const linked = this.goals.attachMission(goal.id, mission.id, { relation: 'primary' });
     return Object.freeze({ goal: linked, run: Object.freeze({ ...run, mission }) });
   }
+
+  async startAndWait(goalId, options = {}) {
+    if (typeof this.runs.whenSettled !== 'function') throw new TypeError('GoalRunService requires runCoordinator.whenSettled for scheduled runs');
+    const started = this.start(goalId, options);
+    const missionId = String(started?.run?.mission?.id ?? '').trim();
+    if (!missionId) throw new Error('Scheduled goal did not create a mission');
+    await this.runs.whenSettled(missionId);
+    const mission = this.store.getMission(missionId);
+    if (mission?.status !== 'completed') throw Object.assign(new Error(`Scheduled goal mission did not complete: ${mission?.status ?? 'missing'}`), { code: 'GOAL_SCHEDULED_RUN_INCOMPLETE', missionId, missionStatus: mission?.status ?? 'missing' });
+    return Object.freeze({ ...started, runId: missionId, missionStatus: mission.status });
+  }
 }
