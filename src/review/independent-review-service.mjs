@@ -110,10 +110,25 @@ function normalizeFinding(raw, source = 'reviewer') {
     message: String(raw.message ?? '').trim().slice(0, 2_000),
     evidence: String(raw.evidence ?? '').trim().slice(0, 4_000),
     suggestion: raw.suggestion == null ? null : String(raw.suggestion).trim().slice(0, 4_000),
-    source,
   };
   if (!finding.message) throw new TypeError('review finding message is required');
-  return Object.freeze({ ...finding, fingerprint: canonicalSha256(finding) });
+  return Object.freeze({ ...finding, source, sources: Object.freeze([source]), fingerprint: canonicalSha256(finding) });
+}
+
+function mergeFindings(findings) {
+  const merged = new Map();
+  for (const finding of findings) {
+    const existing = merged.get(finding.fingerprint);
+    if (!existing) { merged.set(finding.fingerprint, finding); continue; }
+    const sources = Object.freeze([...new Set([...existing.sources, ...finding.sources])]);
+    merged.set(finding.fingerprint, Object.freeze({ ...existing, sources }));
+  }
+  return [...merged.values()];
+}
+
+function storedFinding(finding) {
+  const sources = Array.isArray(finding.sources) && finding.sources.length ? finding.sources : [finding.source].filter(Boolean);
+  return Object.freeze({ ...finding, sources: Object.freeze(sources) });
 }
 
 function reviewLineageSha256({ executorId, baseSha, headSha }) {
@@ -180,9 +195,9 @@ export class IndependentReviewService {
       if (!scanner?.id || typeof scanner.scan !== 'function') throw new TypeError('review scanner requires id and scan()');
       for (const raw of await scanner.scan({ projectId: project, diff: fullDiff, baseSha, headSha })) findings.push(normalizeFinding(redactSecrets(raw, { secretValues }), `scanner:${scanner.id}`));
     }
-    const unique = [...new Map(findings.map((finding) => [finding.fingerprint, finding])).values()].sort((left, right) => ['critical', 'high', 'medium', 'low', 'info'].indexOf(left.severity) - ['critical', 'high', 'medium', 'low', 'info'].indexOf(right.severity) || left.path.localeCompare(right.path) || left.line - right.line);
+    const unique = mergeFindings(findings).sort((left, right) => ['critical', 'high', 'medium', 'low', 'info'].indexOf(left.severity) - ['critical', 'high', 'medium', 'low', 'info'].indexOf(right.severity) || left.path.localeCompare(right.path) || left.line - right.line);
     const reviewId = id('review'); const createdAt = Math.trunc(this.clock());
-    const receiptBase = { schema: 'forge.independent-review-receipt.v2', reviewId, projectId: project, diffSha256, rulesSha256, reviewContextSha256, reviewLineageSha256: reviewLineage, executorId: executor, reviewerId: reviewerIdValue, baseSha, headSha, priorReviewId, reviewedDiffSha256: canonicalSha256(reviewedDiff), findingFingerprints: unique.map((finding) => finding.fingerprint), createdAt };
+    const receiptBase = { schema: 'forge.independent-review-receipt.v2', reviewId, projectId: project, diffSha256, rulesSha256, reviewContextSha256, reviewLineageSha256: reviewLineage, executorId: executor, reviewerId: reviewerIdValue, baseSha, headSha, priorReviewId, reviewedDiffSha256: canonicalSha256(reviewedDiff), findingFingerprints: unique.map((finding) => finding.fingerprint), findingProvenance: unique.map((finding) => ({ fingerprint: finding.fingerprint, sources: finding.sources })), createdAt };
     const receiptSha256 = canonicalSha256(receiptBase);
     this.db.prepare(`INSERT INTO independent_reviews(id,project_id,diff_sha256,rules_sha256,executor_id,reviewer_id,base_sha,head_sha,prior_review_id,full_diff,reviewed_diff,review_context_sha256,review_lineage_sha256,findings_json,receipt_sha256,created_at)
       VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(reviewId, project, diffSha256, rulesSha256, executor, reviewerIdValue, baseSha, headSha, priorReviewId, fullDiff, reviewedDiff, reviewContextSha256, reviewLineage, JSON.stringify(unique), receiptSha256, createdAt);
@@ -197,12 +212,12 @@ export class IndependentReviewService {
   createRepairHandoff(reviewId, { targetAgentProfile = 'fixer' } = {}) {
     const review = this.get(reviewId);
     if (!review) throw new Error(`Unknown review: ${reviewId}`);
-    const base = { schema: 'forge.review-repair-handoff.v1', reviewId: review.reviewId, projectId: review.projectId, targetAgentProfile: String(targetAgentProfile), baseSha: review.baseSha, headSha: review.headSha, findings: review.findings.map((finding) => ({ fingerprint: finding.fingerprint, path: finding.path, line: finding.line, severity: finding.severity, category: finding.category, message: finding.message, evidence: finding.evidence, suggestion: finding.suggestion })), sourceReceiptSha256: review.receiptSha256 };
+    const base = { schema: 'forge.review-repair-handoff.v1', reviewId: review.reviewId, projectId: review.projectId, targetAgentProfile: String(targetAgentProfile), baseSha: review.baseSha, headSha: review.headSha, findings: review.findings.map((finding) => ({ fingerprint: finding.fingerprint, path: finding.path, line: finding.line, severity: finding.severity, category: finding.category, message: finding.message, evidence: finding.evidence, suggestion: finding.suggestion, sources: finding.sources })), sourceReceiptSha256: review.receiptSha256 };
     return Object.freeze({ ...base, handoffSha256: canonicalSha256(base) });
   }
 
   #row(row) {
-    return { schema: 'forge.independent-review.v2', reviewId: row.id, projectId: row.project_id, diffSha256: row.diff_sha256, rulesSha256: row.rules_sha256, reviewContextSha256: row.review_context_sha256 || null, reviewLineageSha256: row.review_lineage_sha256, executorId: row.executor_id, reviewerId: row.reviewer_id, baseSha: row.base_sha, headSha: row.head_sha, priorReviewId: row.prior_review_id, reviewedDiffSha256: canonicalSha256(row.reviewed_diff), findings: Object.freeze(JSON.parse(row.findings_json)), receiptSha256: row.receipt_sha256, createdAt: Number(row.created_at), deduplicated: false };
+    return { schema: 'forge.independent-review.v2', reviewId: row.id, projectId: row.project_id, diffSha256: row.diff_sha256, rulesSha256: row.rules_sha256, reviewContextSha256: row.review_context_sha256 || null, reviewLineageSha256: row.review_lineage_sha256, executorId: row.executor_id, reviewerId: row.reviewer_id, baseSha: row.base_sha, headSha: row.head_sha, priorReviewId: row.prior_review_id, reviewedDiffSha256: canonicalSha256(row.reviewed_diff), findings: Object.freeze(JSON.parse(row.findings_json).map(storedFinding)), receiptSha256: row.receipt_sha256, createdAt: Number(row.created_at), deduplicated: false };
   }
 
   #migrateLegacyStorage() {
