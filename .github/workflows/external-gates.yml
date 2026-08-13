@@ -43,11 +43,11 @@ jobs:
           - os: windows-latest
             label: Windows
             slug: windows
-            fullSourceSuite: false
+            fullSourceSuite: true
           - os: macos-latest
             label: macOS
             slug: macos
-            fullSourceSuite: false
+            fullSourceSuite: true
 
     steps:
       - uses: actions/checkout@v6

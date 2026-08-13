@@ -18,8 +18,8 @@ test('external gate workflow uses least privilege and real Windows Linux macOS r
   assert.match(workflow, /timeout-minutes:/);
   assert.match(workflow, /node-version:\s*'24'/);
   assert.match(workflow, /os:\s*ubuntu-latest\s*\n\s*label:\s*Linux\s*\n\s*slug:\s*linux\s*\n\s*fullSourceSuite:\s*true/);
-  assert.match(workflow, /os:\s*windows-latest\s*\n\s*label:\s*Windows\s*\n\s*slug:\s*windows\s*\n\s*fullSourceSuite:\s*false/);
-  assert.match(workflow, /os:\s*macos-latest\s*\n\s*label:\s*macOS\s*\n\s*slug:\s*macos\s*\n\s*fullSourceSuite:\s*false/);
+  assert.match(workflow, /os:\s*windows-latest\s*\n\s*label:\s*Windows\s*\n\s*slug:\s*windows\s*\n\s*fullSourceSuite:\s*true/);
+  assert.match(workflow, /os:\s*macos-latest\s*\n\s*label:\s*macOS\s*\n\s*slug:\s*macos\s*\n\s*fullSourceSuite:\s*true/);
   assert.match(workflow, /name:\s*Run the source suite\s*\n\s*if:\s*matrix\.fullSourceSuite\s*\n\s*run:\s*npm run validate/);
   assert.equal([...workflow.matchAll(/npm run validate/g)].length, 1);
   for (const modulePath of ['launcher/go.mod', 'native/pty/go.mod', 'native/credential/go.mod', 'native/job-object/go.mod']) {
