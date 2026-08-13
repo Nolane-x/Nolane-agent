@@ -329,7 +329,7 @@ async function assertSkillsCatalogPicker(page) {
       options: node.querySelectorAll('[role="option"]').length,
     });
   });
-  if (details.role !== 'listbox' || details.alpha < 1 || details.opacity < 1 || details.visibility !== 'visible' || details.options < 3 || !details.selected) throw new Error('skills catalog picker did not render an accessible opaque option menu');
+  if (details.role !== 'listbox' || details.alpha < 1 || details.opacity < 1 || details.visibility !== 'visible' || details.options < 3 || !details.selected) throw new Error(`skills catalog picker did not render an accessible opaque option menu: ${JSON.stringify(details)}`);
 }
 
 async function assertOnboardingRecommendedNavigation(page) {
