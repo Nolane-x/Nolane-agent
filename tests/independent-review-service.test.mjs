@@ -3,6 +3,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
+import { DatabaseSync } from 'node:sqlite';
 
 import { IndependentReviewService } from '../src/review/independent-review-service.mjs';
 
@@ -28,6 +29,9 @@ test('IndependentReviewService requires reviewer separation and supplies only di
   assert.equal(Object.hasOwn(request, 'repository'), false);
   assert.ok(JSON.stringify(request.rules).length < 10_000);
   assert.match(result.receiptSha256, /^[a-f0-9]{64}$/);
+  const stored = service.get(result.reviewId);
+  assert.equal(stored.schema, 'forge.independent-review.v2');
+  assert.equal(stored.reviewContextSha256, result.reviewContextSha256);
   service.close();
 });
 
@@ -71,6 +75,24 @@ index 222..333 100644
   assert.match(requests[1].diff, /@@ -1,3 \+1,2 @@/);
   assert.match(requests[1].diff, /^-  return db\.query/m);
   assert.equal(requests[1].diff.includes('+  return db.query'), false);
+  service.close();
+});
+
+test('IndependentReviewService migrates legacy review storage with context evidence', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-review-schema-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const file = path.join(root, 'review.sqlite');
+  const legacy = new DatabaseSync(file);
+  legacy.exec(`CREATE TABLE independent_reviews(
+    id TEXT PRIMARY KEY, project_id TEXT NOT NULL, diff_sha256 TEXT NOT NULL, rules_sha256 TEXT NOT NULL,
+    executor_id TEXT NOT NULL, reviewer_id TEXT NOT NULL, base_sha TEXT, head_sha TEXT, prior_review_id TEXT,
+    full_diff TEXT NOT NULL, reviewed_diff TEXT NOT NULL, findings_json TEXT NOT NULL, receipt_sha256 TEXT NOT NULL,
+    created_at INTEGER NOT NULL, UNIQUE(project_id,diff_sha256,rules_sha256,reviewer_id)
+  )`);
+  legacy.close();
+  const service = new IndependentReviewService({ file, reviewer: async () => ({ findings: [] }) });
+  const columns = service.db.prepare('PRAGMA table_info(independent_reviews)').all().map((column) => column.name);
+  assert.ok(columns.includes('review_context_sha256'));
   service.close();
 });
 
