@@ -5,8 +5,7 @@ import { initMissionResourceHud } from './mission-resource-fabric.js';
 const SHELL_ROUTES=Object.freeze({mission:'home',work:'task',evidence:'evidenceRuntime'});
 const RUN_ACTION_PATHS = Object.freeze({ pause: '/pause', resume: '/resume', stop: '/stop', retry: '/retry' });
 const query = new URLSearchParams(location.search);
-const token = query.get('token') || sessionStorage.getItem('forgeStudioToken') || '';
-if (token) sessionStorage.setItem('forgeStudioToken', token);
+let token = query.get('token') || sessionStorage.getItem('forgeStudioToken') || '';
 const state = {
 projects: [],
 projectId: localStorage.getItem('forgeProjectId') || null,
@@ -48,6 +47,18 @@ error.payload = payload;
 throw error;
 }
 return payload;
+}
+async function bootstrapLocalSession() {
+if (!token) return false;
+await api('/api/local-session/bootstrap', { method: 'POST', body: '{}' });
+token = '';
+sessionStorage.removeItem('forgeStudioToken');
+const current = new URL(location.href);
+if (current.searchParams.has('token')) {
+current.searchParams.delete('token');
+history.replaceState(history.state, '', `${current.pathname}${current.search}${current.hash}`);
+}
+return true;
 }
 let toastTimer = null;
 function toast(message, error = false) {
@@ -476,8 +487,7 @@ function scheduleRefresh(options = {}) {
 refreshCoalescer.request(options);
 }
 function connectEvents() {
-if (!token) return;
-const source = new EventSource(`/events?token=${encodeURIComponent(token)}`);
+const source = new EventSource('/events');
 source.onopen = () => { $('connection').className = 'connection-dot ok'; $('connection').title = 'Đã kết nối'; };
 source.onerror = () => { $('connection').className = 'connection-dot error'; $('connection').title = 'Mất kết nối, đang thử lại'; };
 source.onmessage = () => scheduleRefresh();
@@ -612,6 +622,7 @@ document.addEventListener('click', (event) => { if (!event.target.closest('.proj
 setInterval(() => { if (state.currentRun) updateRunHeader(state.currentRun); }, 1_000).unref?.();
 async function boot() {
 try {
+await bootstrapLocalSession();
 await loadRuntimePerformance();
 state.resourceHud=initMissionResourceHud({api});
 await state.resourceHud.refresh();

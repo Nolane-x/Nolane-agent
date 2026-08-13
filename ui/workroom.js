@@ -21,8 +21,10 @@ class TerminalSocket {
   async connect() {
     if (this.socket?.readyState === WebSocket.OPEN) return;
     const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const url = `${protocol}//${location.host}/terminal?token=${encodeURIComponent(this.token)}&clientId=${encodeURIComponent(this.clientId)}`;
-    const socket = new WebSocket(url); this.socket = socket;
+    const url = new URL(`${protocol}//${location.host}/terminal`);
+    url.searchParams.set('clientId', this.clientId);
+    const protocols = this.token ? [`nolane-auth.${this.token}`] : undefined;
+    const socket = protocols ? new WebSocket(url.toString(), protocols) : new WebSocket(url.toString()); this.socket = socket;
     socket.onmessage = (event) => {
       const message = JSON.parse(String(event.data));
       if (message.id && this.pending.has(message.id)) {

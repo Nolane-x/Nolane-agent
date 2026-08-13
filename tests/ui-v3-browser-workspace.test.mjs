@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createBrowserWorkspaceController, renderBrowserWorkspace } from '../ui-v3/views/browser/browser-view.mjs';
+import { createBrowserWorkspaceController, renderBrowserWorkspace, resolveBrowserWorkspaceProjectId } from '../ui-v3/views/browser/browser-view.mjs';
 
 function createApi(fixtures = {}) {
   const calls = [];
@@ -26,6 +26,27 @@ function createApi(fixtures = {}) {
     },
   };
 }
+
+test('Browser workspace never infers a project the user has not selected', () => {
+  assert.equal(resolveBrowserWorkspaceProjectId({ selectedProjectId: null }), null);
+  assert.equal(resolveBrowserWorkspaceProjectId({ selectedProjectId: '  project-a  ' }), 'project-a');
+});
+
+test('Browser workspace shows the selected project name while retaining its opaque API id', async () => {
+  const api = createApi({
+    '/api/browser/runtime': { ready: true },
+    '/api/browser/detect': { available: true },
+    '/api/browser/status?projectId=project-a': { sessions: [] },
+    '/api/browser/tabs': { tabs: [] },
+  });
+  const controller = createBrowserWorkspaceController({ api, projectId: 'project-a', projectName: 'Nolane Agent' });
+  await controller.load();
+  const html = renderBrowserWorkspace(controller.snapshot());
+
+  assert.match(html, /Nolane Agent/);
+  assert.doesNotMatch(html, /<dd>project-a<\/dd>/);
+  assert.ok(api.calls.some((call) => call.path === '/api/browser/status?projectId=project-a'));
+});
 
 test('Browser workspace loads bounded runtime, session, tabs, and permission state', async () => {
   const api = createApi({
@@ -68,8 +89,39 @@ test('Browser workspace renders empty and offline states without inventing a ses
   assert.equal(snapshot.status, 'offline');
   assert.equal(snapshot.tabs.length, 0);
   assert.match(html, /Browser runtime unavailable/);
+  assert.match(html, /data-browser-action="install"/);
+  assert.match(html, /Install local browser runtime/);
   assert.match(html, /No active browser session/);
   assert.doesNotMatch(html, /tab-1|example\.test/);
+});
+
+test('Browser workspace installs its missing local runtime only after an explicit action', async () => {
+  const api = createApi({
+    '/api/browser/runtime': { ready: false, reason: 'not-installed' },
+    '/api/browser/detect': { available: false, reason: 'not installed' },
+    '/api/browser/runtime/install': { available: true, installed: true },
+  });
+  const controller = createBrowserWorkspaceController({ api, projectId: 'project-a' });
+  await controller.load();
+  await controller.installRuntime();
+
+  assert.deepEqual(api.calls.find((call) => call.path === '/api/browser/runtime/install')?.body, { force: true });
+  assert.equal(controller.snapshot().status, 'offline');
+});
+
+test('Browser workspace keeps navigation disabled until its selected goal grants it', async () => {
+  const api = createApi({
+    '/api/browser/runtime': { ready: true },
+    '/api/browser/detect': { available: true },
+    '/api/browser/status?projectId=project-a': { available: true, sessions: [] },
+    '/api/browser/tabs': { available: true, tabs: [] },
+  });
+  const controller = createBrowserWorkspaceController({ api, projectId: 'project-a' });
+  await controller.load();
+  const html = renderBrowserWorkspace(controller.snapshot());
+  assert.match(html, /A goal must explicitly allow navigation before this browser can open a site/);
+  assert.match(html, /data-browser-action="open" disabled/);
+  assert.match(html, /data-browser-action="goto" disabled/);
 });
 
 test('Browser workspace close action is explicit and scoped to the selected project', async () => {
@@ -104,7 +156,7 @@ test('Browser workspace starts a visible project session and keeps sensitive URL
   await controller.open();
 
   const openCall = api.calls.find((call) => call.path === '/api/browser/open');
-  assert.deepEqual(openCall.body, { projectId: 'project-a', url: 'https://example.test/work?view=overview', headed: true, persistent: true });
+  assert.deepEqual(openCall.body, { projectId: 'project-a', goalId: 'mission-a', url: 'https://example.test/work?view=overview', headed: true, persistent: true });
   const html = renderBrowserWorkspace(controller.snapshot());
   assert.match(html, /Open browser/);
   assert.match(html, /Go to URL/);

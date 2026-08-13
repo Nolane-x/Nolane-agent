@@ -5,7 +5,7 @@ import { GLOBAL_DESTINATIONS, createAppShellModel, localizeRouteTitle, renderApp
 
 test('Nolane Agent rail contains exactly the approved top-level destinations', () => {
   assert.deepEqual(GLOBAL_DESTINATIONS.map((item) => item.id), [
-    'home', 'missions', 'projects', 'review', 'workroom', 'control-plane', 'search', 'settings',
+    'home', 'missions', 'projects', 'review', 'workroom', 'browser', 'control-plane', 'search', 'settings',
   ]);
   const forbidden = ['runtime', 'sandbox', 'secrets', 'repository-intelligence', 'context-memory', 'trace-evidence'];
   assert.equal(GLOBAL_DESTINATIONS.some((item) => forbidden.includes(item.id)), false);
@@ -20,6 +20,13 @@ test('AppShell keeps rail and sidebar identities stable across route changes', (
   assert.equal(next.railInstanceId, initial.railInstanceId);
   assert.equal(next.sidebarInstanceId, initial.sidebarInstanceId);
   assert.equal(next.activePath, '/missions');
+});
+
+test('browser workspace is a visible expert destination rather than a hidden control-plane deep link', () => {
+  const browser = GLOBAL_DESTINATIONS.find((item) => item.id === 'browser');
+  assert.deepEqual(browser && { path: browser.path, minExperience: browser.minExperience, icon: browser.icon }, {
+    path: '/browser', minExperience: 'expert', icon: 'globe',
+  });
 });
 
 test('AppShell localizes the onboarding route title before setup is completed', () => {

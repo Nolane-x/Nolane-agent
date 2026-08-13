@@ -8,6 +8,7 @@ export const GLOBAL_DESTINATIONS = Object.freeze([
   { id: 'projects', path: '/projects', label: 'Projects', labelKey: 'nav.projects', icon: 'projects', minExperience: 'everyday' },
   { id: 'review', path: '/review', label: 'Review Queue', labelKey: 'nav.review', icon: 'review', minExperience: 'workspace' },
   { id: 'workroom', path: '/workroom', label: 'Workroom', labelKey: 'nav.workroom', icon: 'studio', minExperience: 'studio' },
+  { id: 'browser', path: '/browser', label: 'Browser', labelKey: 'nav.browser', icon: 'globe', minExperience: 'expert' },
   { id: 'control-plane', path: '/control-plane', label: 'Control Plane', labelKey: 'nav.control', icon: 'control', minExperience: 'expert' },
   { id: 'search', path: '/search', label: 'Search', labelKey: 'nav.search', icon: 'search', minExperience: 'everyday' },
   { id: 'settings', path: '/settings', label: 'Settings', labelKey: 'nav.settings', icon: 'settings', minExperience: 'everyday' },

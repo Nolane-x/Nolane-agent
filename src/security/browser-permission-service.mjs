@@ -1,5 +1,5 @@
-const READ_ACTIONS = Object.freeze(['open', 'goto', 'snapshot', 'find', 'tabs', 'screenshot', 'close', 'status']);
-const WRITE_ACTIONS = Object.freeze(['click', 'fill', 'type', 'press']);
+const READ_ACTIONS = Object.freeze(['snapshot', 'find', 'tabs', 'screenshot', 'close', 'status']);
+const WRITE_ACTIONS = Object.freeze(['open', 'goto', 'click', 'fill', 'type', 'press']);
 const ALL = new Set([...READ_ACTIONS, ...WRITE_ACTIONS]);
 
 function uniqueActions(value, { writeOnly = false } = {}) {
