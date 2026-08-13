@@ -22,6 +22,7 @@ const STATES = Object.freeze([
   Object.freeze({ id: 'settings-model-catalog', route: '/settings', selector: '.settings-center', prepare: assertSettingsModelCatalog }),
   Object.freeze({ id: 'workroom', route: '/workroom', selector: '.workroom-view' }),
   Object.freeze({ id: 'control-plane', route: '/control-plane', selector: '#workspace' }),
+  Object.freeze({ id: 'browser', route: '/browser', selector: '.browser-workspace', prepare: assertBrowserWorkspaceBoundary }),
 ]);
 
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
@@ -250,6 +251,14 @@ async function assertExperienceMenuOpaque(page) {
   });
   if (result.alpha < 1 || result.opacity < 1 || result.visibility !== 'visible') throw new Error('experience menu background is not opaque');
   if (!result.occupiesTopLayer) throw new Error('experience menu did not occupy the top stacking position');
+}
+
+async function assertBrowserWorkspaceBoundary(page) {
+  const open = page.locator('[data-browser-action="open"]');
+  const screenshot = page.locator('[data-browser-action="screenshot"]');
+  if (!await open.isDisabled() || !await screenshot.isDisabled()) throw new Error('Browser workspace exposed navigation without a selected project');
+  const leakedToken = await page.locator('body').innerText().then((text) => String(text).includes('nolane-ui-runtime-evidence-token'));
+  if (leakedToken) throw new Error('Browser workspace exposed a local authentication token');
 }
 
 async function assertForgeSkillInstallPreview(page) {

@@ -37,7 +37,7 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.doesNotMatch(workflow, /^ {4}env:\n(?: {6}[^\n]+\n)* {6}NOLANE_(?:AGENT_DATA_DIR|UI_VISUAL_OUTPUT):\s*\$\{\{\s*runner\.temp/m);
   assert.doesNotMatch(workflow, /electron-builder|build:electron|smoke:packaged|release:matrix/);
 
-  for (const state of ['onboarding', 'home', 'home-experience-menu', 'home-compact', 'home-nocturne', 'projects', 'skills', 'skills-forge-preview', 'settings', 'settings-language-roundtrip', 'settings-model-catalog', 'workroom', 'control-plane']) {
+  for (const state of ['onboarding', 'home', 'home-experience-menu', 'home-compact', 'home-nocturne', 'projects', 'skills', 'skills-forge-preview', 'settings', 'settings-language-roundtrip', 'settings-model-catalog', 'workroom', 'control-plane', 'browser']) {
     assert.match(capturer, new RegExp(`id: '${state}'`));
   }
   assert.match(workflow, /appearance"\s*:\s*\{\s*"theme"\s*:\s*"nocturne"/);
@@ -82,15 +82,18 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(capturer, /assertExperienceMenuOpaque/);
   assert.match(capturer, /experience menu background is not opaque/);
   assert.match(capturer, /experience menu did not occupy the top stacking position/);
+  assert.match(capturer, /async function assertBrowserWorkspaceBoundary/);
+  assert.match(capturer, /Browser workspace exposed navigation without a selected project/);
+  assert.match(capturer, /Browser workspace exposed a local authentication token/);
   assert.match(capturer, /skills Forge OS preview did not expose an installation action/);
   assert.match(capturer, /page\.locator\('\[data-skills-catalog\]'\)\.selectOption\('v2'\)/);
-  assert.match(workflow, /NOLANE_UI_VISUAL_STATES=home,home-experience-menu,home-compact,projects,skills,skills-forge-preview,settings,settings-language-roundtrip,settings-model-catalog,workroom,control-plane/);
+  assert.match(workflow, /NOLANE_UI_VISUAL_STATES=home,home-experience-menu,home-compact,projects,skills,skills-forge-preview,settings,settings-language-roundtrip,settings-model-catalog,workroom,control-plane,browser/);
   assert.match(capturer, /AxeBuilder/);
   assert.match(capturer, /reported serious or critical accessibility violations/);
   assert.match(capturer, /violation\.nodes/);
   assert.match(capturer, /violation\.nodes\.slice\(0, 10\)/);
   assert.match(capturer, /node\.target/);
   assert.match(capturer, /viewport: Object\.freeze\(\{ width: 640, height: 900 \}\)/);
-  assert.match(workflow, /NOLANE_UI_VISUAL_STATES=home,home-experience-menu,home-compact,projects,skills,skills-forge-preview,settings,settings-language-roundtrip,settings-model-catalog,workroom,control-plane/);
+  assert.match(workflow, /NOLANE_UI_VISUAL_STATES=home,home-experience-menu,home-compact,projects,skills,skills-forge-preview,settings,settings-language-roundtrip,settings-model-catalog,workroom,control-plane,browser/);
   assert.doesNotMatch(capturer, /token\s*:\s*(credential|token)/);
 });
