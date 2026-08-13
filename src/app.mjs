@@ -1244,8 +1244,8 @@ const repositoryFingerprint = async (goal) => {
   const project = store.getProject(goal.projectId);
   if (!project) throw new Error(`Unknown project: ${goal.projectId}`);
   const broker = new ToolBroker({ workspaceRoot: project.workspaceRoot, allowedPaths: ['**'], deniedPaths: [], allowedCommands: ['git'], maxOutputBytes: 256_000, managedProcessRegistry: managedProcesses });
-  const head = await broker.execute({ kind: 'process.run', executable: 'git', args: ['rev-parse', 'HEAD'], cwd: '.', timeoutMs: 10_000, networkPolicy: 'deny' }).catch(() => ({ stdout: 'no-head' }));
-  const status = await broker.execute({ kind: 'process.run', executable: 'git', args: ['status', '--porcelain=v1', '-uno'], cwd: '.', timeoutMs: 10_000, networkPolicy: 'deny' }).catch(() => ({ stdout: 'no-status' }));
+  const head = await broker.execute({ tool: 'process.run', input: { executable: 'git', args: ['rev-parse', 'HEAD'], cwd: '.', timeoutMs: 10_000, networkPolicy: 'deny' } }).catch(() => ({ stdout: 'no-head' }));
+  const status = await broker.execute({ tool: 'process.run', input: { executable: 'git', args: ['status', '--porcelain=v1', '-uno'], cwd: '.', timeoutMs: 10_000, networkPolicy: 'deny' } }).catch(() => ({ stdout: 'no-status' }));
   return `${String(head.stdout ?? '').trim()}
 ${String(status.stdout ?? '').trim()}`;
 };
