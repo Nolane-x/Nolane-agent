@@ -31,6 +31,10 @@ test('HTTP error classification maps invalid input and workspace boundaries with
   assert.equal(typedProviderFailure.status, 502);
   assert.deepEqual(typedProviderFailure.body, { error: 'provider-error', code: 'PROVIDER_EXECUTION_FAILED' });
 
+  const providerSetup = classifyHttpError(Object.assign(new Error('Provider credential is unavailable'), { code: 'PROVIDER_SETUP_REQUIRED' }));
+  assert.equal(providerSetup.status, 409);
+  assert.deepEqual(providerSetup.body, { error: 'provider-setup-required', code: 'PROVIDER_SETUP_REQUIRED' });
+
   const runtimeAdmission = classifyHttpError(Object.assign(new Error('provider admission blocked in brownout state'), { code: 'RUNTIME_LEASE_ADMISSION_BLOCKED' }));
   assert.equal(runtimeAdmission.status, 503);
   assert.deepEqual(runtimeAdmission.body, { error: 'Runtime is temporarily conserving resources. Try again shortly.', code: 'RUNTIME_ADMISSION_BLOCKED', retryable: true });

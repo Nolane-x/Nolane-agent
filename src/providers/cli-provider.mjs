@@ -69,6 +69,13 @@ function estimateTokens(value) {
   return Math.max(1, Math.min(10_000_000, Math.ceil(bytes / 4)));
 }
 
+function cliExecutionError(error) {
+  if (error?.code === 'PROVIDER_EXECUTION_FAILED' || error?.code === 'PROVIDER_SETUP_REQUIRED' || error?.code === 'PROVIDER_WORKSPACE_TRUST_REQUIRED') return error;
+  const wrapped = Object.assign(new Error('CLI provider execution failed'), { code: 'PROVIDER_EXECUTION_FAILED' });
+  wrapped.cause = error;
+  return wrapped;
+}
+
 function isNonAssistantCompletedEvent(item) {
   if (item?.type !== 'item.completed') return false;
   const type = String(item?.item?.type ?? '').toLowerCase();
@@ -201,28 +208,32 @@ export class CliProvider {
   }
 
   async complete({ messages = [], tools = [], model = null, signal = null, timeoutMs = this.timeoutMs, cwd = this.cwd } = {}) {
-    const prompt = buildForgeActionPrompt(messages, tools);
-    const result = await this.invoke({ prompt, model, signal, timeoutMs, cwd });
-    if (result.timedOut) throw new Error(`${this.label} timed out`);
-    if (result.aborted) throw new Error(`${this.label} cancelled`);
-    if (result.exitCode !== 0) throw new Error(`${this.label} exited with ${result.exitCode}: ${result.stderr.slice(0, 1000)}`);
-    const lines = result.stdout.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-    let outputText = '';
-    for (const line of lines) {
-      try {
-        const item = JSON.parse(line);
-        if (isNonAssistantCompletedEvent(item)) continue;
-        const candidate = item.result ?? item.response ?? item.text ?? item.output ?? item.message?.content ?? item.item?.text ?? item.item?.content;
-        if (typeof candidate === 'string') outputText = candidate;
-        else if (item.type === 'item.completed' && typeof item.item?.text === 'string') outputText = item.item.text;
-        else if (!outputText) outputText = JSON.stringify(item);
-      } catch { if (!outputText) outputText = line; else outputText += `\n${line}`; }
+    try {
+      const prompt = buildForgeActionPrompt(messages, tools);
+      const result = await this.invoke({ prompt, model, signal, timeoutMs, cwd });
+      if (result.timedOut) throw new Error(`${this.label} timed out`);
+      if (result.aborted) throw new Error(`${this.label} cancelled`);
+      if (result.exitCode !== 0) throw new Error(`${this.label} exited with ${result.exitCode}: ${result.stderr.slice(0, 1000)}`);
+      const lines = result.stdout.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+      let outputText = '';
+      for (const line of lines) {
+        try {
+          const item = JSON.parse(line);
+          if (isNonAssistantCompletedEvent(item)) continue;
+          const candidate = item.result ?? item.response ?? item.text ?? item.output ?? item.message?.content ?? item.item?.text ?? item.item?.content;
+          if (typeof candidate === 'string') outputText = candidate;
+          else if (item.type === 'item.completed' && typeof item.item?.text === 'string') outputText = item.item.text;
+          else if (!outputText) outputText = JSON.stringify(item);
+        } catch { if (!outputText) outputText = line; else outputText += `\n${line}`; }
+      }
+      const envelope = parseForgeActionEnvelope(outputText || result.stdout, tools);
+      const finalText = envelope ? envelope.text : (outputText || result.stdout);
+      const promptTokens = estimateTokens(prompt);
+      const completionTokens = estimateTokens(finalText);
+      return Object.freeze({ providerId: this.id, model: model && !['auto', 'cli-selected'].includes(String(model)) ? String(model) : this.id, text: finalText, toolCalls: envelope?.toolCalls ?? Object.freeze([]), finishReason: 'stop', usage: Object.freeze({ promptTokens, completionTokens, totalTokens: promptTokens + completionTokens, estimated: true }), raw: result });
+    } catch (error) {
+      throw cliExecutionError(error);
     }
-    const envelope = parseForgeActionEnvelope(outputText || result.stdout, tools);
-    const finalText = envelope ? envelope.text : (outputText || result.stdout);
-    const promptTokens = estimateTokens(prompt);
-    const completionTokens = estimateTokens(finalText);
-    return Object.freeze({ providerId: this.id, model: model && !['auto', 'cli-selected'].includes(String(model)) ? String(model) : this.id, text: finalText, toolCalls: envelope?.toolCalls ?? Object.freeze([]), finishReason: 'stop', usage: Object.freeze({ promptTokens, completionTokens, totalTokens: promptTokens + completionTokens, estimated: true }), raw: result });
   }
 
   async invoke({ prompt = '', model = null, args = [], cwd = this.cwd, env = {}, timeoutMs = this.timeoutMs, signal = null } = {}) {

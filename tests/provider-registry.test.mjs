@@ -147,6 +147,19 @@ test('CliProvider enforces timeout and cancellation', async (t) => {
   assert.equal(aborted.aborted, true);
 });
 
+test('CliProvider exposes a stable provider failure code for any CLI label', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-provider-failure-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const script = path.join(root, 'failing-cli.mjs');
+  await writeFile(script, "console.error('apiKey=private-value'); process.exit(7);\n");
+  const provider = new CliProvider({ id: 'github-copilot', label: 'GitHub Copilot CLI', executable: process.execPath, baseArgs: [script] });
+
+  await assert.rejects(
+    () => provider.complete({ messages: [{ role: 'user', content: 'Plan safely.' }] }),
+    (error) => error?.code === 'PROVIDER_EXECUTION_FAILED' && error?.message === 'CLI provider execution failed' && /private-value/.test(String(error?.cause?.message)),
+  );
+});
+
 test('ProviderRegistry exposes secret-free public views and built-in official CLI definitions', async (t) => {
   const fake = await fakeCli(t);
   const registry = new ProviderRegistry();

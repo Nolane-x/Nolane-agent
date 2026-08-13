@@ -64,3 +64,20 @@ test('Gemini GenerateContent provider normalizes functionCall and usage metadata
   assert.equal(body.tools[0].functionDeclarations[0].name, 'fs_read');
   assert.match(body.systemInstruction.parts[0].text, /Stay bounded/);
 });
+
+test('Direct API providers expose stable setup and execution errors without returning credentials', async () => {
+  const missingCredential = new OpenAIResponsesProvider({ id: 'missing', model: 'gpt-5' });
+  await assert.rejects(
+    () => missingCredential.complete({ messages: [{ role: 'user', content: 'x' }] }),
+    (error) => error?.code === 'PROVIDER_SETUP_REQUIRED' && error?.message === 'Provider credential is unavailable',
+  );
+
+  const failedRequest = new AnthropicMessagesProvider({
+    id: 'failed-request', model: 'claude-sonnet-4-5', apiKey: 'sk-ant-private',
+    fetchImpl: async () => { throw new Error('network rejected sk-ant-private'); },
+  });
+  await assert.rejects(
+    () => failedRequest.complete({ messages: [{ role: 'user', content: 'x' }] }),
+    (error) => error?.code === 'PROVIDER_EXECUTION_FAILED' && error?.message === 'Provider request failed' && !String(error.message).includes('sk-ant-private'),
+  );
+});

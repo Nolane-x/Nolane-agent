@@ -1,5 +1,6 @@
 import { repairToolArguments, sanitizeMessages } from '../agent/message-sanitization.mjs';
 import { redactSecrets } from '../security/redaction.mjs';
+import { providerFailure } from './http-provider-utils.mjs';
 
 function required(value, label) {
   const text = String(value ?? '').trim();
@@ -41,8 +42,10 @@ export class OpenAICompatibleProvider {
     if (tools?.length) body.tools = tools;
     if (toolChoice !== undefined) body.tool_choice = toolChoice;
     if (temperature !== undefined) body.temperature = temperature;
-    const resolvedApiKey = this.secretRef ? await this.credentialResolver(this.secretRef) : this.apiKey;
-    if (this.secretRef && !resolvedApiKey) throw new Error(`Credential is not available: ${this.secretRef.service}/${this.secretRef.account}`);
+    let resolvedApiKey;
+    try { resolvedApiKey = this.secretRef ? await this.credentialResolver(this.secretRef) : this.apiKey; }
+    catch (error) { throw providerFailure('Provider credential is unavailable', { code: 'PROVIDER_SETUP_REQUIRED', cause: error }); }
+    if (this.secretRef && !resolvedApiKey) throw providerFailure('Provider credential is unavailable', { code: 'PROVIDER_SETUP_REQUIRED' });
     const requestSecrets = [resolvedApiKey].filter(Boolean).map(String);
     let response;
     try {
@@ -58,10 +61,10 @@ export class OpenAICompatibleProvider {
         signal: controller.signal,
       });
     } catch (error) {
-      if (timedOut) throw new Error(`Model request timed out after ${this.timeoutMs}ms`, { cause: error });
-      if (signal?.aborted) throw new Error('Model request cancelled', { cause: error });
+      if (timedOut) throw providerFailure('Provider request timed out', { cause: error });
+      if (signal?.aborted) throw providerFailure('Provider request cancelled', { cause: error });
       const safe = redactSecrets(String(error?.message ?? error), { secretValues: requestSecrets });
-      throw new Error(safe, { cause: error });
+      throw providerFailure('Provider request failed', { cause: new Error(safe) });
     } finally {
       clearTimeout(timer);
       signal?.removeEventListener?.('abort', onAbort);
@@ -69,16 +72,21 @@ export class OpenAICompatibleProvider {
     const raw = await response.text();
     let payload;
     try { payload = raw ? JSON.parse(raw) : {}; }
-    catch { throw new Error(`Model returned invalid JSON with HTTP ${response.status}`); }
-    if (!response.ok) throw new Error(redactSecrets(`Model HTTP ${response.status}: ${payload?.error?.message ?? raw.slice(0, 500)}`, { secretValues: requestSecrets }));
+    catch { throw providerFailure('Provider returned an invalid response'); }
+    if (!response.ok) throw providerFailure('Provider request was rejected', { cause: new Error(redactSecrets(`Model HTTP ${response.status}: ${payload?.error?.message ?? raw.slice(0, 500)}`, { secretValues: requestSecrets })) });
     const choice = payload.choices?.[0];
-    if (!choice?.message) throw new Error('Model response is missing choices[0].message');
-    const toolCalls = (choice.message.tool_calls ?? []).map((call, index) => ({
-      id: String(call.id ?? `call_${index + 1}`),
-      name: required(call.function?.name, 'tool call name'),
-      arguments: repairToolArguments(call.function?.arguments ?? '{}'),
-      rawArguments: String(call.function?.arguments ?? '{}'),
-    }));
+    if (!choice?.message) throw providerFailure('Provider returned an invalid response');
+    let toolCalls;
+    try {
+      toolCalls = (choice.message.tool_calls ?? []).map((call, index) => ({
+        id: String(call.id ?? `call_${index + 1}`),
+        name: required(call.function?.name, 'tool call name'),
+        arguments: repairToolArguments(call.function?.arguments ?? '{}'),
+        rawArguments: String(call.function?.arguments ?? '{}'),
+      }));
+    } catch (error) {
+      throw providerFailure('Provider returned an invalid response', { cause: error });
+    }
     const usage = {
       promptTokens: Number(payload.usage?.prompt_tokens ?? 0),
       completionTokens: Number(payload.usage?.completion_tokens ?? 0),
