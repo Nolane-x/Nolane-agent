@@ -38,7 +38,9 @@ export async function verifyPlanningEvidenceGovernance({ rootDirectory = process
   requirePattern(service, /(?=[\s\S]*maxSteps)(?=[\s\S]*ambiguous or vague)(?=[\s\S]*Plan detail must contain)/, 'bounded non-vague plan validation', failures);
   requirePattern(service, /(?=[\s\S]*recordRevision)(?=[\s\S]*plan revision reason)(?=[\s\S]*planning\.plan\.revised)(?=[\s\S]*receiptSha256)/, 'replanning reason and durable receipt', failures);
   requirePattern(planner, /(?=[\s\S]*evidenceGovernance\.preflight)(?=[\s\S]*PLANNING_INPUT_REQUIRED)(?=[\s\S]*router\.select)(?=[\s\S]*evidenceGovernance\.enrichPlan)/, 'MissionPlanner preflight and enrichment integration', failures);
-  if (planner.indexOf('evidenceGovernance.preflight') > planner.indexOf('const provider = this.router.select')) failures.push('planning preflight must run before provider selection');
+  const preflightIndex = planner.indexOf('evidenceGovernance.preflight');
+  const providerSelectionIndex = planner.indexOf('this.router.select');
+  if (preflightIndex < 0 || providerSelectionIndex < 0 || preflightIndex > providerSelectionIndex) failures.push('planning preflight must run before provider selection');
   requirePattern(app, /new PlanningEvidenceGovernanceService\(\{ store, repositoryIndex \}\)[\s\S]*new MissionPlanner\(\{ router, evidenceGovernance: planningEvidenceGovernance \}\)/, 'application wiring', failures);
   requirePattern(auditSource, /planningEvidenceGovernance[\s\S]*Phát hiện thông tin thiếu[\s\S]*Tóm tắt kết quả/, 'item-level planning evidence audit rules', failures);
   requirePattern(matrix, /id:\s*'planning-evidence-governance'[\s\S]*scripts\/verify-planning-evidence-governance\.mjs/, 'full release matrix planning evidence gate', failures);
