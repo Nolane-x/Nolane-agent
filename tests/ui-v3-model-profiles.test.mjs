@@ -19,6 +19,13 @@ test('model catalog auxiliary copy uses the contrast-safe secondary text token',
   }
 });
 
+test('provider catalog cards preserve their full name and status instead of clipping either in a narrow card', async () => {
+  const css = await readFile(new URL('../ui-v3/styles/pages/settings.css', import.meta.url), 'utf8');
+  assert.match(css, /\.provider-catalog__list a\{[^}]*flex-direction:column/);
+  assert.match(css, /\.provider-catalog__meta\{[^}]*width:100%[^}]*flex-direction:row[^}]*justify-content:space-between/);
+  assert.match(css, /\.provider-catalog__meta strong\{[^}]*max-width:none[^}]*overflow:visible[^}]*text-overflow:clip[^}]*white-space:normal/);
+});
+
 test('model profile panel distinguishes unknown capabilities and exposes discovery and probes', async () => {
   const html=renderModelProfilesPanel({models:[{key:'p/m',providerId:'p',modelId:'m',displayName:'Model M',lifecycle:'unknown',capabilities:{tools:'unknown',vision:false,text:true},context:{inputTokens:1000},metadata:{}}],providers:[{id:'p',label:'Provider P',configured:true}]},{experience:'research'});
   assert.match(html,/Model M/); assert.match(html,/Unknown/); assert.match(html,/Discover models/); assert.match(html,/Probe/); assert.match(html,/Routing diagnostics/); assert.match(html,/data-model-action="configure"/); assert.match(html,/name="apiKey"/);
