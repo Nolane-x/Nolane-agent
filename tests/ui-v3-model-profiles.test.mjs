@@ -4,6 +4,21 @@ import { readFile } from 'node:fs/promises';
 import { renderModelProfilesPanel } from '../ui-v3/views/settings/model-profiles-panel.mjs';
 import { createSettingsController } from '../ui-v3/views/settings/settings-controller.mjs';
 
+test('model catalog auxiliary copy uses the contrast-safe secondary text token', async () => {
+  const css = await readFile(new URL('../ui-v3/styles/pages/settings.css', import.meta.url), 'utf8');
+  for (const selector of [
+    '.setting-number span',
+    '.model-profiles-intro .eyebrow',
+    '.model-profile-count,.summary-count',
+    '.provider-catalog__counts li',
+    '.provider-catalog__meta',
+    '.provider-catalog__meta strong[data-provider-catalog-state="not-installed"]',
+  ]) {
+    const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    assert.match(css, new RegExp(`${escaped}\\{[^}]*color:var\\(--text-secondary\\)`));
+  }
+});
+
 test('model profile panel distinguishes unknown capabilities and exposes discovery and probes', async () => {
   const html=renderModelProfilesPanel({models:[{key:'p/m',providerId:'p',modelId:'m',displayName:'Model M',lifecycle:'unknown',capabilities:{tools:'unknown',vision:false,text:true},context:{inputTokens:1000},metadata:{}}],providers:[{id:'p',label:'Provider P',configured:true}]},{experience:'research'});
   assert.match(html,/Model M/); assert.match(html,/Unknown/); assert.match(html,/Discover models/); assert.match(html,/Probe/); assert.match(html,/Routing diagnostics/); assert.match(html,/data-model-action="configure"/); assert.match(html,/name="apiKey"/);
