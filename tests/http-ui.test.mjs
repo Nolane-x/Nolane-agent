@@ -349,6 +349,10 @@ test('terminal WebSocket requires authentication and forwards bounded terminal p
     const socket = new WebSocket(`${f.url.replace('http:', 'ws:')}/terminal`);
     await new Promise((resolve, reject) => { socket.onopen = resolve; socket.onerror = () => reject(new Error('unauthorized')); });
   }, /unauthorized/);
+  await assert.rejects(async () => {
+    const socket = new WebSocket(`${f.url.replace('http:', 'ws:')}/terminal?token=test-token`);
+    await new Promise((resolve, reject) => { socket.onopen = resolve; socket.onerror = () => reject(new Error('unauthorized')); });
+  }, /unauthorized/);
 
   const socket = new WebSocket(`${f.url.replace('http:', 'ws:')}/terminal`, ['nolane-auth.test-token']);
   t.after(() => socket.close());

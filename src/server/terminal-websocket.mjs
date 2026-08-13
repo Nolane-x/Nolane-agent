@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { localRequestToken, terminalAuthProtocol } from './local-session-auth.mjs';
+import { localRequestToken, sameLocalSecret, terminalAuthProtocol } from './local-session-auth.mjs';
 
 const WS_GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 
@@ -89,7 +89,7 @@ export function attachTerminalWebSocket({ server, token, terminalManager, path =
     const url = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`);
     if (url.pathname !== path) return httpReject(socket, '404 Not Found', 'not found');
     const actual = localRequestToken(req, { allowTerminalProtocol: true });
-    if (!actual || actual !== token) return httpReject(socket, '401 Unauthorized', 'unauthorized');
+    if (!actual || !sameLocalSecret(actual, token)) return httpReject(socket, '401 Unauthorized', 'unauthorized');
     const requestedClientId = String(url.searchParams.get('clientId') ?? '');
     const clientId = /^[A-Za-z0-9._:-]{1,128}$/.test(requestedClientId) ? requestedClientId : `ephemeral-${Math.random().toString(36).slice(2)}`;
     if (String(req.headers.upgrade ?? '').toLowerCase() !== 'websocket' || String(req.headers['sec-websocket-version'] ?? '') !== '13') return httpReject(socket, '426 Upgrade Required', 'websocket version 13 required');

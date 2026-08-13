@@ -1,3 +1,5 @@
+import { timingSafeEqual } from 'node:crypto';
+
 const BEARER = /^Bearer\s+(.+)$/i;
 
 function headerValue(headers, name) {
@@ -22,6 +24,12 @@ export function terminalAuthProtocol(value) {
     if (match) return protocol.trim();
   }
   return null;
+}
+
+export function sameLocalSecret(actual, expected) {
+  const received = Buffer.from(String(actual ?? ''));
+  const configured = Buffer.from(String(expected ?? ''));
+  return received.length === configured.length && timingSafeEqual(received, configured);
 }
 
 export function localRequestToken(req, { allowTerminalProtocol = false } = {}) {

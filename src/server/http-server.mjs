@@ -1,18 +1,16 @@
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
-import { randomBytes, timingSafeEqual } from 'node:crypto';
+import { randomBytes } from 'node:crypto';
 
 import { eventToSse } from '../protocol/events.mjs';
 import { createRoutes, json } from './routes.mjs';
 import { attachTerminalWebSocket } from './terminal-websocket.mjs';
-import { localRequestToken } from './local-session-auth.mjs';
+import { localRequestToken, sameLocalSecret } from './local-session-auth.mjs';
 import { VERSION } from '../version.mjs';
 
 const MIME = Object.freeze({ '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.json': 'application/json; charset=utf-8', '.wasm': 'application/wasm', '.ttf': 'font/ttf', '.woff': 'font/woff', '.woff2': 'font/woff2' });
 const CSP = "default-src 'self'; img-src 'self' data:; font-src 'self' data:; style-src 'self'; script-src 'self'; worker-src 'self' blob:; connect-src 'self' ws:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'";
-function sameSecret(actual, expected) { const a = Buffer.from(String(actual ?? '')); const b = Buffer.from(String(expected ?? '')); return a.length === b.length && timingSafeEqual(a, b); }
-
 const FORBIDDEN_PATH_CODES = new Set(['PATH_ESCAPE', 'PATH_SYMLINK_ESCAPE', 'PATH_SCOPE_DENIED', 'PATH_DENIED']);
 const BAD_INPUT_PATH_CODES = new Set(['INVALID_PATH', 'PATH_REQUIRED']);
 
@@ -78,7 +76,7 @@ export async function createHttpServer({ config, store, providers, missionRunner
         const handled = await oidcHttp.handle(req, res, url);
         if (handled) return;
       }
-      const localAuthorized = sameSecret(localRequestToken(req), token);
+      const localAuthorized = sameLocalSecret(localRequestToken(req), token);
       const principal = localAuthorized
         ? Object.freeze({ subject: 'local-admin', organizationId: 'local', roles: Object.freeze(['owner']), groups: Object.freeze([]), kind: 'local-token' })
         : (oidcHttp?.authenticateRequest ? await oidcHttp.authenticateRequest(req) : null);
