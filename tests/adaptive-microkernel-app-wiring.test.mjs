@@ -49,6 +49,9 @@ test('local startup does not create enterprise or cloud databases before first u
     cwd: path.resolve('.'), stdio: ['ignore', 'pipe', 'pipe'],
     env: { ...process.env, TERM: 'dumb', FORGE_STUDIO_PORT: '0', FORGE_STUDIO_DATA_DIR: data, FORGE_STUDIO_WORKSPACE: root, FORGE_STUDIO_RUNTIME_FILE: runtimeFile, FORGE_STUDIO_PERFORMANCE_PROFILE: 'lite' },
   });
+  let stdout = '';
+  child.stdout.setEncoding('utf8');
+  child.stdout.on('data', (chunk) => { stdout += chunk; });
   let exited = false;
   child.once('exit', () => { exited = true; });
   t.after(async () => {
@@ -62,6 +65,11 @@ test('local startup does not create enterprise or cloud databases before first u
   // pool. Wait for the actual handoff and retain child diagnostics instead of
   // turning a slow startup into an opaque ENOENT assertion.
   const runtime = await waitForRuntime(child, runtimeFile);
+  for (let attempts = 0; !stdout.trim() && attempts < 40; attempts += 1) await sleep(25);
+  const announcement = JSON.parse(stdout.trim());
+  assert.equal(announcement.tokenConfigured, true);
+  assert.equal(Object.hasOwn(announcement, 'token'), false);
+  assert.doesNotMatch(stdout, new RegExp(runtime.token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   let names = await readdir(data);
   for (const name of ['enterprise.db', 'enterprise-sessions.db', 'scim.db', 'cloud-queue.db', 'cloud-sandboxes.db']) assert.equal(names.includes(name), false, `${name} must remain unloaded`);
   const response = await fetch(`${runtime.url}/api/enterprise/audit?organizationId=local`, { headers: { authorization: `Bearer ${runtime.token}` } });

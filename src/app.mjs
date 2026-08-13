@@ -1327,7 +1327,7 @@ if (runtimeFile) {
   await writeFile(temporary, JSON.stringify({ url: service.url, token: service.token, pid: process.pid, startedAt: new Date().toISOString() }), { mode: 0o600 });
   await rename(temporary, path.resolve(runtimeFile));
 }
-console.log(JSON.stringify({ product: PRODUCT_NAME, version: VERSION, url: service.url, token: service.token, pid: process.pid }));
+console.log(JSON.stringify({ product: PRODUCT_NAME, version: VERSION, url: service.url, tokenConfigured: Boolean(service.token), pid: process.pid }));
 
 let closing = false;
 async function shutdown(signal) {
