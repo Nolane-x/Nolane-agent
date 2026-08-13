@@ -88,8 +88,9 @@ test('project view toggle buttons have localized accessible names', () => {
   assert.match(vietnamese, /aria-label="Chế độ hoạt động dự án"/);
 });
 
-test('native selectors inherit the active theme scheme and retain a visible focus ring', async () => {
-  const [settings, skills, semantic] = await Promise.all([
+test('option pickers inherit the active theme and replace native popup controls', async () => {
+  const [pickerContexts, settings, skills, semantic] = await Promise.all([
+    readFile('ui-v3/styles/components/option-picker-contexts.css', 'utf8'),
     readFile('ui-v3/styles/pages/settings.css', 'utf8'),
     readFile('ui-v3/styles/pages/skills.css', 'utf8'),
     readFile('ui-v3/styles/tokens/semantic.css', 'utf8'),
@@ -97,9 +98,17 @@ test('native selectors inherit the active theme scheme and retain a visible focu
   assert.match(semantic, /:root\{\s*color-scheme:dark/);
   assert.match(semantic, /\[data-theme=\"snow\"\],\[data-theme=\"light\"\]\{color-scheme:light/);
   assert.match(settings, /\.settings-content\{[^}]*color-scheme:inherit/);
-  assert.match(settings, /\.settings-content select:focus-visible\{[^}]*outline:2px solid var\(--focus-ring\)/);
+  assert.match(pickerContexts, /\.settings-content \.option-picker__trigger\{[^}]*width:min\(280px,34vw\)/);
   assert.match(skills, /\.skills-library\{[^}]*color-scheme:inherit/);
-  assert.match(skills, /\.skills-library__filter select:focus-visible\{[^}]*outline:2px solid var\(--focus-ring\)/);
+  assert.match(skills, /\.skills-library__filter \.option-picker__trigger\{[^}]*min-height:42px/);
+});
+
+test('settings field and layer selectors use accessible option pickers', () => {
+  const state={status:'ready',experience:'standard',query:'',draft:{general:{language:'system'}},provenance:{},warnings:[],errors:[],visibleCategories:[{id:'general',title:'General',description:'Core',fields:[{path:'general.language',title:'Language',type:'select',options:['system','en'],scope:['user'],level:'standard'}]}],models:{models:[]},providers:[]};
+  const html=renderSettingsView(state);
+  assert.match(html,/data-option-picker="setting-general\.language"/);
+  assert.match(html,/data-option-picker="settings-layer"/);
+  assert.doesNotMatch(html,/<select/);
 });
 
 test('provider catalog destinations clear the sticky settings toolbar', async () => {

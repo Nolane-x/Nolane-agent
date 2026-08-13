@@ -29,6 +29,10 @@ test('catalogue filters locally and previews only the selected safe catalog entr
   assert.doesNotMatch(html, /Git review/);
   assert.match(html, /Inspect pages safely\./);
   assert.match(html, /aria-pressed="true"/);
+  assert.match(html, /data-option-picker="skills-catalog"/);
+  assert.match(html, /data-option-picker-toggle/);
+  assert.match(html, /data-option-picker-option="native"/);
+  assert.doesNotMatch(html, /<select data-skills-catalog/);
   assert.deepEqual(calls, ['/api/skills/catalog/v2%3Abrowser/load']);
   controller.setQuery('');
   controller.setCatalog('native');
@@ -68,7 +72,7 @@ test('local Agent Skills show their distinct catalog and supply-chain metadata s
   assert.match(html, /MIT/);
   assert.match(html, /aaaaaaaaaaaa/);
   assert.match(html, /example\.test\/skills\/browser-audit/);
-  assert.match(html, /<option value="local" selected>Local skills<\/option>/);
+  assert.match(html, /data-option-picker-option="local"[^>]*aria-selected="true"/);
   assert.match(html, /href="#\/\?skill=browser-audit" data-route="\/\?skill=browser-audit"/);
   assert.match(html, /Use in next mission/);
 });
@@ -114,6 +118,8 @@ test('skill library is discoverable from Home without expanding the frozen globa
   assert.doesNotMatch(rail, /id: 'skills'/);
   assert.ok(app.includes("router.register({ id: 'skills', pattern: /^\\/skills"));
   assert.match(app, /views\/skills\/skills-view\.mjs/);
+  assert.match(app, /data-option-picker-toggle/);
+  assert.match(app, /data-option-picker-option/);
   assert.match(home, /href="#\/skills" data-route="\/skills"/);
 });
 

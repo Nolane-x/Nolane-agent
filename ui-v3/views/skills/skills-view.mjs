@@ -1,4 +1,5 @@
 import { icon } from '../../core/icon.mjs';
+import { renderOptionPicker } from '../../components/option-picker.mjs';
 
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 const asList = (value) => Array.isArray(value) ? value : Array.isArray(value?.skills) ? value.skills : Array.isArray(value?.items) ? value.items : [];
@@ -146,12 +147,22 @@ function renderInstallation(state, preview, text) {
   return `<div class="skills-library__install"><button type="button" data-action="install-skill"${installed || installing ? ' disabled' : ''}>${installed ? text.installed : installing ? text.installing : text.install}</button><small>${text.installDetail}</small>${installed ? `<p role="status">${text.installedDetail}</p>` : ''}${state.installError ? `<p class="skills-library__install-error" role="alert">${text.installError}: ${esc(state.installError)}</p>` : ''}</div>`;
 }
 
+function catalogOptions(text) {
+  return [
+    { value: '', label: text.allCatalogs },
+    { value: 'local', label: text.local },
+    { value: 'native', label: text.native },
+    { value: 'v2', label: text.v2 },
+    { value: 'legacy', label: text.legacy },
+  ];
+}
+
 export function renderSkillsLibrary(state = {}) {
   const text = copy(state.language);
   const skills = visibleSkills({ ...state, skills: Array.isArray(state.skills) ? state.skills : [] });
   const selectedId = state.preview?.id ?? '';
   const preview = state.preview;
-  const controls = `<div class="skills-library__controls"><label class="skills-library__search"><span class="sr-only">${text.search}</span>${icon('search',{size:16})}<input type="search" data-skills-search value="${esc(state.query ?? '')}" placeholder="${esc(text.searchPlaceholder)}"></label><label class="skills-library__filter"><span>${text.catalog}</span><select data-skills-catalog><option value=""${!state.catalog ? ' selected' : ''}>${text.allCatalogs}</option><option value="local"${state.catalog === 'local' ? ' selected' : ''}>${text.local}</option><option value="native"${state.catalog === 'native' ? ' selected' : ''}>${text.native}</option><option value="v2"${state.catalog === 'v2' ? ' selected' : ''}>${text.v2}</option><option value="legacy"${state.catalog === 'legacy' ? ' selected' : ''}>${text.legacy}</option></select></label></div>`;
+  const controls = `<div class="skills-library__controls"><label class="skills-library__search"><span class="sr-only">${text.search}</span>${icon('search',{size:16})}<input type="search" data-skills-search value="${esc(state.query ?? '')}" placeholder="${esc(text.searchPlaceholder)}"></label><div class="skills-library__filter"><span>${text.catalog}</span>${renderOptionPicker({ id: 'skills-catalog', label: text.catalog, selected: state.catalog, options: catalogOptions(text), valueDataAttribute: 'data-skills-catalog' })}</div></div>`;
   let body;
   if (state.status === 'loading') body = `<div class="page-loading skills-library__loading" role="status"><span class="spinner"></span>${text.loading}</div>`;
   else if (state.status === 'error' && !state.skills?.length) body = `<div class="page-error skills-library__error" role="alert">${icon('warning',{size:18})}<span>${esc(text.error)}: ${esc(state.error)}</span></div>`;

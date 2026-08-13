@@ -1,3 +1,5 @@
+import { renderOptionPicker } from '../../components/option-picker.mjs';
+
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[character]);
 const CAPABILITY_LABELS = Object.freeze({ text: ['Text', 'Văn bản'], tools: ['Tools', 'Công cụ'], parallelTools: ['Parallel tools', 'Công cụ song song'], structuredOutput: ['Structured output', 'Đầu ra có cấu trúc'], streaming: ['Streaming', 'Phát trực tiếp'], vision: ['Vision', 'Hình ảnh'], audio: ['Audio', 'Âm thanh'], reasoning: ['Reasoning', 'Suy luận'], cancellation: ['Cancellation', 'Hủy'] });
 const DISCOVERABLE_KINDS = new Set(['openai-responses', 'anthropic-messages', 'gemini-generate-content', 'openai-compatible', 'cli']);
@@ -84,7 +86,7 @@ function providerSetup(lang = 'en') {
   return `<form class="model-provider-setup" data-model-provider-setup autocomplete="off" novalidate>
     <div class="model-provider-setup__intro"><div><p class="eyebrow">${vi ? 'Kết nối API' : 'API connection'}</p><h3>${vi ? 'Thêm provider API' : 'Add an API provider'}</h3><p>${vi ? 'Lưu credential trước để Nolane khám phá model thực của tài khoản, sau đó mới chọn model mặc định.' : 'Save credentials first so Nolane can discover the models your account can use, then choose a default.'}</p></div><span class="model-provider-setup__secure">${vi ? 'Khóa được lưu trong vault' : 'Keys stay in the vault'}</span></div>
     <div class="model-provider-setup__grid">
-      <label><span>${vi ? 'Loại provider' : 'Provider type'}</span><select name="kind" data-model-provider-kind>${API_PROVIDER_KINDS.map(([value, label]) => `<option value="${value}">${vi ? API_PROVIDER_LABELS_VI[value] : label}</option>`).join('')}</select></label>
+      <label><span>${vi ? 'Loại provider' : 'Provider type'}</span>${renderOptionPicker({ id: 'model-provider-kind', label: vi ? 'Loại provider' : 'Provider type', selected: API_PROVIDER_KINDS[0][0], options: API_PROVIDER_KINDS.map(([value, label]) => ({ value, label: vi ? API_PROVIDER_LABELS_VI[value] : label })), className: 'model-provider-kind-picker', valueDataAttribute: 'data-model-provider-kind', name: 'kind' })}</label>
       <label><span>${vi ? 'ID provider' : 'Provider ID'}</span><input name="id" value="openai-api" placeholder="openai-api" pattern="[A-Za-z0-9][A-Za-z0-9._:-]{0,127}" required></label>
       <label><span>${vi ? 'Model mặc định (không bắt buộc)' : 'Default model (optional)'}</span><input name="model" placeholder="gpt-5.2"></label>
       <label class="model-provider-setup__wide"><span>${vi ? 'Base URL (để trống để dùng mặc định)' : 'Base URL (leave blank for provider default)'}</span><input name="baseUrl" placeholder="https://api.openai.com/v1" inputmode="url" autocomplete="url"></label>

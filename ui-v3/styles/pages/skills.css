@@ -5,7 +5,7 @@
 .skills-library__search input{width:100%;min-width:0;min-height:40px;border:0;outline:0;background:transparent;color:var(--text-primary)}
 .skills-library__search input::placeholder{color:var(--text-faint)}
 .skills-library__filter{display:grid;gap:5px;color:var(--text-secondary);font-size:11px;font-weight:650}
-.skills-library__filter select{min-height:42px;padding:0 34px 0 12px;border:1px solid var(--border-default);border-radius:10px;background:var(--surface-raised);color:var(--text-primary)}.skills-library__filter select:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+.skills-library__filter .option-picker__trigger{min-height:42px}
 .skills-library__body{display:grid;grid-template-columns:minmax(260px,.82fr) minmax(0,1.18fr);gap:16px;align-items:stretch}
 .skills-library__catalog,.skills-library__preview{min-width:0;border:1px solid var(--border-subtle);border-radius:14px;background:var(--surface-panel);box-shadow:var(--shadow-xs)}
 .skills-library__catalog{padding:8px;max-height:calc(100dvh - 250px);overflow:auto}

@@ -2,6 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { renderModelProfilesPanel } from '../ui-v3/views/settings/model-profiles-panel.mjs';
+
+test('API provider setup uses a themed picker that remains part of submitted form data', () => {
+  const html = renderModelProfilesPanel({}, { lang: 'en' });
+  assert.match(html, /data-option-picker="model-provider-kind"/);
+  assert.match(html, /data-model-provider-kind/);
+  assert.match(html, /name="kind"/);
+  assert.doesNotMatch(html, /<select name="kind"/);
+});
 import { createSettingsController } from '../ui-v3/views/settings/settings-controller.mjs';
 
 test('model catalog auxiliary copy uses the contrast-safe secondary text token', async () => {

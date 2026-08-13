@@ -16,11 +16,28 @@ import { routeFromHash, scrubBootstrapToken } from './core/route-auth.mjs';
 import { settingsSectionFromRoute } from './core/settings-route.mjs';
 import { localizeRouteTitle, renderAppShell } from './shell/app-shell.mjs';
 import { renderUpdateNotice } from './components/update-notice/update-notice.mjs';
+import { closeOptionPickers, handleOptionPickerKeydown, selectOptionPicker, toggleOptionPicker } from './components/option-picker.mjs';
 import { createSessionSidebarModel } from './shell/session-sidebar.mjs';
 import { projectNameFromPath } from './shell/project-picker.mjs';
 import { openProjectCreateDialog } from './components/project-create-dialog.mjs';
 import { createOutputSummaryController, renderOutputSummary } from './views/summary/output-summary.mjs';
 import { BACKEND_ATLAS } from './generated/backend-atlas.mjs';
+
+document.addEventListener('click', (event) => {
+  const toggle = event.target.closest?.('[data-option-picker-toggle]');
+  if (toggle) { toggleOptionPicker(document, toggle); return; }
+  const option = event.target.closest?.('[data-option-picker-option]');
+  if (option) {
+    const selection = selectOptionPicker(document, option);
+    if (!selection) return;
+    const valueInput = option.closest('[data-option-picker]')?.querySelector('[data-option-picker-value]');
+    valueInput?.dispatchEvent(new Event('input', { bubbles: true }));
+    valueInput?.dispatchEvent(new Event('change', { bubbles: true }));
+    return;
+  }
+  if (!event.target.closest?.('[data-option-picker]')) closeOptionPickers(document);
+});
+document.addEventListener('keydown', (event) => { handleOptionPickerKeydown(document, event); });
 
 const store = createUiStore({ route: '/', ready: false });
 const bus = createUiBus();

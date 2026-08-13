@@ -16,8 +16,10 @@ const STATES = Object.freeze([
   Object.freeze({ id: 'home-nocturne', route: '/', selector: '.home-view' }),
   Object.freeze({ id: 'projects', route: '/projects', selector: '.projects-page' }),
   Object.freeze({ id: 'skills', route: '/skills', selector: '.skills-library' }),
+  Object.freeze({ id: 'skills-catalog-picker', route: '/skills', selector: '.skills-library', prepare: assertSkillsCatalogPicker }),
   Object.freeze({ id: 'skills-forge-preview', route: '/skills', selector: '.skills-library', prepare: assertForgeSkillInstallPreview }),
   Object.freeze({ id: 'settings', route: '/settings', selector: '#workspace' }),
+  Object.freeze({ id: 'settings-option-picker', route: '/settings', selector: '.settings-center', prepare: assertSettingsOptionPicker }),
   Object.freeze({ id: 'settings-language-roundtrip', route: '/settings', selector: '.settings-center', prepare: assertSettingsLanguageRoundtrip }),
   Object.freeze({ id: 'settings-model-catalog', route: '/settings', selector: '.settings-center', prepare: assertSettingsModelCatalog }),
   Object.freeze({ id: 'workroom', route: '/workroom', selector: '.workroom-view' }),
@@ -184,6 +186,33 @@ async function assertSettingsLanguageRoundtrip(page) {
   if (String(shellLabel ?? '').trim() !== 'Cuộc trò chuyện mới') throw new Error('chat shell still rendered English after saving Vietnamese');
 }
 
+async function assertSettingsOptionPicker(page) {
+  const pickerId = 'setting-general.defaultIntent';
+  const picker = page.locator(`[data-option-picker="${pickerId}"]`);
+  const trigger = picker.locator('[data-option-picker-toggle]');
+  await trigger.waitFor({ state: 'visible', timeout: 10_000 });
+  const before = await trigger.evaluate((node) => {
+    const scroller = document.querySelector('[data-scroll-key="settings-content"]');
+    if (!scroller) return { error: 'settings scroll container is missing' };
+    const scrollerBox = scroller.getBoundingClientRect();
+    const box = node.getBoundingClientRect();
+    const contentTop = scroller.scrollTop + box.top - scrollerBox.top;
+    const top = Math.min(480, Math.max(0, scroller.scrollHeight - scroller.clientHeight), Math.max(0, contentTop - 24));
+    if (top < 1) return { error: 'settings option picker cannot remain visible at a nonzero scroll position' };
+    scroller.scrollTop = top;
+    return { top };
+  });
+  if (before.error) throw new Error(before.error);
+  await trigger.click();
+  const next = picker.locator('[data-option-picker-option][aria-selected="false"]:not([disabled])').first();
+  await next.waitFor({ state: 'visible', timeout: 10_000 });
+  const value = await next.getAttribute('data-option-picker-option');
+  await next.click();
+  await page.waitForFunction(({ pickerId, value }) => document.querySelector(`[data-option-picker="${pickerId}"] [data-option-picker-value]`)?.value === value, { pickerId, value }, { timeout: 10_000 });
+  const after = await page.locator('[data-scroll-key="settings-content"]').evaluate((node) => node.scrollTop);
+  if (after == null || Math.abs(after - before.top) > 2) throw new Error(`settings option picker did not preserve scroll position: ${before.top} -> ${after}`);
+}
+
 async function assertSettingsModelCatalog(page) {
   await page.locator('[data-settings-category-link="models"]').click();
   const modelsSection = page.locator('#settings-models');
@@ -262,13 +291,38 @@ async function assertBrowserWorkspaceBoundary(page) {
 }
 
 async function assertForgeSkillInstallPreview(page) {
-  await page.locator('[data-skills-catalog]').selectOption('v2');
+  await chooseOptionPickerValue(page, 'skills-catalog', 'v2');
   const forgeSkill = page.locator('[data-skill-library-select^="forgeos:"]').first();
   await forgeSkill.waitFor({ state: 'visible', timeout: 10_000 });
   await forgeSkill.click();
   const install = page.locator('[data-action="install-skill"]');
   await install.waitFor({ state: 'visible', timeout: 10_000 });
   if (await install.isDisabled()) throw new Error('skills Forge OS preview did not expose an installation action');
+}
+
+async function chooseOptionPickerValue(page, pickerId, value) {
+  const picker = page.locator(`[data-option-picker="${pickerId}"]`);
+  const trigger = picker.locator('[data-option-picker-toggle]');
+  const option = picker.locator(`[data-option-picker-option="${value}"]`);
+  await trigger.click();
+  await option.waitFor({ state: 'visible', timeout: 10_000 });
+  await option.click();
+}
+
+async function assertSkillsCatalogPicker(page) {
+  const picker = page.locator('[data-option-picker="skills-catalog"]');
+  const trigger = picker.locator('[data-option-picker-toggle]');
+  const menu = picker.locator('[data-option-picker-menu]');
+  await trigger.focus();
+  await page.keyboard.press('ArrowDown');
+  await menu.waitFor({ state: 'visible', timeout: 10_000 });
+  const details = await menu.evaluate((node) => Object.freeze({
+    role: node.getAttribute('role'),
+    opaque: Number.parseFloat(getComputedStyle(node).backgroundColor.match(/[\\d.]+/g)?.at(-1) ?? '0') > 0,
+    selected: node.querySelector('[role="option"][aria-selected="true"]')?.getAttribute('data-option-picker-option'),
+    options: node.querySelectorAll('[role="option"]').length,
+  }));
+  if (details.role !== 'listbox' || !details.opaque || details.options < 3 || !details.selected) throw new Error('skills catalog picker did not render an accessible opaque option menu');
 }
 
 async function assertOnboardingRecommendedNavigation(page) {

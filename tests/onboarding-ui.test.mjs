@@ -32,6 +32,12 @@ test('onboarding controller restores progress and sends explicit completion', as
   assert.equal(calls.at(-1)[1].source,'guided');
 });
 
+test('onboarding appearance options use the themed option picker instead of native select menus', () => {
+  const html = renderOnboardingView({ status: 'ready', required: true, step: 2, answers: { language: 'en', theme: 'nocturne', accent: 'violet', density: 'comfortable', motion: 'system' } });
+  for (const id of ['onboarding-theme', 'onboarding-accent', 'onboarding-density', 'onboarding-motion']) assert.match(html, new RegExp(`data-option-picker="${id}"`));
+  assert.doesNotMatch(html, /<select[^>]*data-onboarding-select/);
+});
+
 test('onboarding skip preserves a deliberately selected interface language', async () => {
   const calls=[];
   const api={
