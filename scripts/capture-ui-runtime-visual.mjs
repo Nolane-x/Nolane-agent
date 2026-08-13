@@ -18,6 +18,7 @@ const STATES = Object.freeze([
   Object.freeze({ id: 'skills', route: '/skills', selector: '.skills-library' }),
   Object.freeze({ id: 'skills-forge-preview', route: '/skills', selector: '.skills-library', prepare: assertForgeSkillInstallPreview }),
   Object.freeze({ id: 'settings', route: '/settings', selector: '#workspace' }),
+  Object.freeze({ id: 'settings-language-roundtrip', route: '/settings', selector: '.settings-center', prepare: assertSettingsLanguageRoundtrip }),
   Object.freeze({ id: 'workroom', route: '/workroom', selector: '.workroom-view' }),
   Object.freeze({ id: 'control-plane', route: '/control-plane', selector: '#workspace' }),
 ]);
@@ -152,6 +153,33 @@ async function assertSettingsScrollPreserved(page) {
   await languageChoice.click();
   await page.waitForFunction(({ nextLanguage, expectedTop }) => document.documentElement.dataset.language === nextLanguage && document.querySelector(`[data-setting-choice][data-setting-path="general.language"][data-setting-value="${nextLanguage}"][aria-pressed="true"]`) && Math.abs((document.querySelector('[data-scroll-key="settings-content"]')?.scrollTop ?? 0) - expectedTop) <= 2, { nextLanguage: language, expectedTop: beforeLanguage.before }, { timeout: 10_000 });
   await assertScroll(beforeLanguage.before, 'settings language choice');
+}
+
+async function assertSettingsLanguageRoundtrip(page) {
+  const vietnameseChoice = page.locator('[data-setting-choice][data-setting-path="general.language"][data-setting-value="vi"]');
+  await vietnameseChoice.click();
+  await page.waitForFunction(() => document.documentElement.dataset.language === 'vi'
+    && document.querySelector('[data-setting-choice][data-setting-path="general.language"][data-setting-value="vi"]')?.getAttribute('aria-pressed') === 'true', { timeout: 10_000 });
+  const previewLabel = await page.locator('[data-command="new-mission"] span').textContent();
+  if (String(previewLabel ?? '').trim() !== 'Cuộc trò chuyện mới') throw new Error('language choice did not update the rendered interface to Vietnamese');
+
+  const save = page.locator('[data-settings-action="save"]');
+  await save.click();
+  try {
+    await page.waitForFunction(async () => {
+      const response = await fetch('/api/settings/effective');
+      if (!response.ok) return false;
+      const effective = await response.json();
+      return effective?.value?.general?.language === 'vi';
+    }, { timeout: 10_000 });
+  } catch {
+    throw new Error('language save did not persist Vietnamese before leaving settings');
+  }
+
+  await page.evaluate(() => { location.hash = '/'; });
+  await page.locator('.home-view').waitFor({ state: 'visible', timeout: 10_000 });
+  const shellLabel = await page.locator('[data-command="new-mission"] span').textContent();
+  if (String(shellLabel ?? '').trim() !== 'Cuộc trò chuyện mới') throw new Error('chat shell still rendered English after saving Vietnamese');
 }
 
 async function assertResponsiveLayout(page, state) {
