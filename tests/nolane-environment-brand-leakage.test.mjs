@@ -36,3 +36,10 @@ test('application bootstrap reads canonical environment through the migration re
   assert.match(source, /createNolaneEnvironment/);
   assert.doesNotMatch(source, /process\.env\.FORGE_STUDIO_[A-Z0-9_]+/);
 });
+
+test('application bootstrap uses the same explicit grant for remote config and HTTP binding', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const source = await readFile('src/app.mjs', 'utf8');
+  assert.match(source, /authToken: nolaneEnvironment\.get\('TOKEN'\),\s*allowRemote: nolaneEnvironment\.get\('ALLOW_REMOTE_BINDING'\) === 'true',/);
+  assert.match(source, /allowRemoteBinding: nolaneEnvironment\.get\('ALLOW_REMOTE_BINDING'\) === 'true'/);
+});

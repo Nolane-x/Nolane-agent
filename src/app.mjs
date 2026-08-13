@@ -173,6 +173,7 @@ const config = loadConfig({
   workspaceRoot: nolaneEnvironment.get('WORKSPACE'),
   forgeOsRoot: path.join(appRoot, 'vendor', 'forge-os'),
   authToken: nolaneEnvironment.get('TOKEN'),
+  allowRemote: nolaneEnvironment.get('ALLOW_REMOTE_BINDING') === 'true',
 });
 await mkdir(config.dataDir, { recursive: true });
 const eventHub = new DurableEventHub({ maxSubscribers: 256 });
