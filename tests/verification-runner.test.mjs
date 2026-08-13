@@ -58,6 +58,17 @@ test('VerificationRunner reports a failed verification command without manufactu
   assert.equal(report.evidence.some((item) => item.status === 'pass' && item.kind === 'verification-command'), false);
 });
 
+test('VerificationRunner rejects a candidate diff when the governed broker retained only a prefix', async (t) => {
+  const f = await fixture(t);
+  await writeFile(path.join(f.root, 'src', 'a.mjs'), `export const value = '${'x'.repeat(1_024)}';\n`);
+  const runner = new VerificationRunner({
+    store: f.store,
+    brokerFactory: () => new ToolBroker({ workspaceRoot: f.root, allowedPaths: ['**'], allowedCommands: ['git', process.execPath], maxOutputBytes: 256 }),
+  });
+
+  await assert.rejects(() => runner.runTask(f.task.id), /candidate diff.*truncated/i);
+});
+
 test('VerificationRunner binds required environment health receipts to the candidate verification report', async (t) => {
   const f = await fixture(t);
   f.store.updateTask(f.task.id, { metadata: { ...f.task.metadata, environmentRequirements: [{ id: 'web', allowedStates: ['healthy'] }] } });

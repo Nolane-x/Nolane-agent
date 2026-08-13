@@ -110,6 +110,7 @@ export class VerificationRunner {
 
     const diff = await broker.execute({ tool: 'process.run', input: { command: 'git', args: ['diff', '--binary', 'HEAD'], cwd: '.', maxOutputBytes: undefined } }, context);
     if (diff.status !== 'pass') throw new Error('Unable to capture the candidate diff');
+    if (diff.output?.truncated === true) throw new Error('Candidate diff was truncated; complete diff evidence is required');
     const artifactSha256 = canonicalSha256(diff.output.stdout);
     const evidence = [];
     const criterionReceipts = [];
