@@ -100,6 +100,18 @@ test('ToolBroker process runner uses argv, filters env, truncates output, and re
   await assert.rejects(() => broker.execute({ tool: 'process.run', input: { command: 'rm', args: ['-rf', '.'] } }), /allowlisted/i);
 });
 
+test('ToolBroker honors a stricter per-command output limit', async (t) => {
+  const { broker } = await fixture(t);
+  const result = await broker.execute({
+    tool: 'process.run',
+    input: { command: process.execPath, args: ['-e', "process.stdout.write('x'.repeat(1024))"], maxOutputBytes: 256 },
+  });
+
+  assert.equal(result.status, 'pass');
+  assert.equal(result.output.truncated, true);
+  assert.equal(Buffer.byteLength(result.output.stdout), 256);
+});
+
 test('ToolBroker times out and kills a long-running process', async (t) => {
   const { broker } = await fixture(t);
   const result = await broker.execute({ tool: 'process.run', input: { command: process.execPath, args: ['-e', 'setTimeout(()=>{}, 10000)'], timeoutMs: 50 } });
