@@ -8,6 +8,17 @@ export function isRetryableCodexError(error) {
   return Number(error?.code) === -32001 || /overloaded|retry later|temporar|timeout|rate limit/i.test(String(error?.message ?? error));
 }
 
+function codexExecutionError(error) {
+  if (error?.code === 'PROVIDER_EXECUTION_FAILED' || error?.code === 'PROVIDER_WORKSPACE_TRUST_REQUIRED') return error;
+  const message = String(error?.message ?? error ?? 'unknown Codex app-server failure');
+  const code = /not inside a trusted directory|skip-git-repo-check/i.test(message)
+    ? 'PROVIDER_WORKSPACE_TRUST_REQUIRED'
+    : 'PROVIDER_EXECUTION_FAILED';
+  const wrapped = Object.assign(new Error('Codex app server execution failed'), { code });
+  wrapped.cause = error;
+  return wrapped;
+}
+
 function versionOf(value) { return String(value ?? '').match(/\b(\d+\.\d+(?:\.\d+)?(?:[-+][\w.-]+)?)\b/)?.[1] ?? null; }
 
 function normalizeThreadSandbox(policy) {
@@ -198,16 +209,24 @@ export class CodexAppServerClient {
     const threadId = String(session?.threadId ?? session?.id ?? '').trim();
     if (!threadId) throw new TypeError('session threadId is required');
     const prompt = buildForgeActionPrompt(messages, tools);
-    const result = await this.startTurn({ threadId, input: prompt, cwd: cwd ?? session?.cwd ?? this.cwd, model, effort, signal });
-    const envelope = parseForgeActionEnvelope(result.text, tools);
-    return Object.freeze({ providerId: this.id, model: model ?? 'codex-subscription', text: envelope ? envelope.text : result.text, toolCalls: envelope?.toolCalls ?? Object.freeze([]), finishReason: result.status === 'completed' ? 'stop' : result.status, usage: result.usage, raw: Object.freeze({ ...result, prompt }) });
+    try {
+      const result = await this.startTurn({ threadId, input: prompt, cwd: cwd ?? session?.cwd ?? this.cwd, model, effort, signal });
+      const envelope = parseForgeActionEnvelope(result.text, tools);
+      return Object.freeze({ providerId: this.id, model: model ?? 'codex-subscription', text: envelope ? envelope.text : result.text, toolCalls: envelope?.toolCalls ?? Object.freeze([]), finishReason: result.status === 'completed' ? 'stop' : result.status, usage: result.usage, raw: Object.freeze({ ...result, prompt }) });
+    } catch (error) {
+      throw codexExecutionError(error);
+    }
   }
 
   async closeSession(_session, _options = {}) { return Object.freeze({ closed: true, processRetained: this.state === 'ready' }); }
 
   async complete({ messages = [], tools = [], signal = null, model = undefined, effort = undefined, cwd = this.cwd } = {}) {
-    const thread = await this.startThread({ cwd, ephemeral: true, sandboxPolicy: { type: 'read-only' }, approvalPolicy: 'untrusted' });
-    return this.completeInSession({ id: thread.id, threadId: thread.id, cwd }, { messages, tools, signal, model, effort, cwd });
+    try {
+      const thread = await this.startThread({ cwd, ephemeral: true, sandboxPolicy: { type: 'read-only' }, approvalPolicy: 'untrusted' });
+      return await this.completeInSession({ id: thread.id, threadId: thread.id, cwd }, { messages, tools, signal, model, effort, cwd });
+    } catch (error) {
+      throw codexExecutionError(error);
+    }
   }
 
   async close() { await this.rpc.close(); this.state = 'closed'; }

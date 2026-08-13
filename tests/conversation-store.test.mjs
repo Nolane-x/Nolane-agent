@@ -20,6 +20,7 @@ test('StudioStore persists ordered conversation messages without exposing privat
   const { store, project, mission } = await fixture(t);
 
   const first = store.createMessage({
+    id: 'message_z_first',
     projectId: project.id,
     missionId: mission.id,
     role: 'user',
@@ -27,6 +28,7 @@ test('StudioStore persists ordered conversation messages without exposing privat
     metadata: { clientMessageId: 'msg-client-1', secret: 'must-not-be-returned' },
   });
   const second = store.createMessage({
+    id: 'message_a_second',
     projectId: project.id,
     missionId: mission.id,
     role: 'assistant',
@@ -34,6 +36,9 @@ test('StudioStore persists ordered conversation messages without exposing privat
     status: 'streaming',
     metadata: { providerId: 'codex', private: { apiKey: 'sk-secret' } },
   });
+
+  store.db.prepare('UPDATE conversation_messages SET created_at=? WHERE id IN (?,?)')
+    .run('2026-08-13T17:37:59.000Z', first.id, second.id);
 
   const messages = store.listMessages({ missionId: mission.id });
   assert.deepEqual(messages.map((item) => item.id), [first.id, second.id]);

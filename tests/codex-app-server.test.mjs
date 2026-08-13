@@ -91,6 +91,17 @@ test('CodexAppServerClient complete() preserves the selected project working dir
   assert.equal(calls[1][1].cwd, cwd);
 });
 
+test('CodexAppServerClient marks opaque app-server failures as provider failures', async (t) => {
+  const codex = client();
+  t.after(() => codex.close());
+  codex.startTurn = async () => { throw new Error('JSON-RPC request timed out: turn/start'); };
+
+  await assert.rejects(
+    () => codex.completeInSession({ id: 'thr_timeout' }, { messages: [{ role: 'user', content: 'Plan safely' }] }),
+    (error) => error?.code === 'PROVIDER_EXECUTION_FAILED' && error?.message === 'Codex app server execution failed' && /JSON-RPC request timed out/.test(String(error?.cause?.message)),
+  );
+});
+
 test('CodexAppServerClient imports the app-server model catalog without inventing capabilities', async (t) => {
   const codex = client();
   t.after(() => codex.close());

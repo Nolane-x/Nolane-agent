@@ -38,10 +38,10 @@ export function classifyHttpError(error) {
   if (code === 'RUNTIME_LEASE_ADMISSION_BLOCKED' || /(?:admission blocked in|activation is denied during) (?:pressure|brownout|emergency)/i.test(message)) {
     return Object.freeze({ status: 503, body: Object.freeze({ error: 'Runtime is temporarily conserving resources. Try again shortly.', code: 'RUNTIME_ADMISSION_BLOCKED', retryable: true }) });
   }
-  if (/not inside a trusted directory|skip-git-repo-check/i.test(message)) {
+  if (code === 'PROVIDER_WORKSPACE_TRUST_REQUIRED' || /not inside a trusted directory|skip-git-repo-check/i.test(message)) {
     return Object.freeze({ status: 409, body: Object.freeze({ error: 'provider-workspace-trust-required', code: 'PROVIDER_WORKSPACE_TRUST_REQUIRED' }) });
   }
-  if (/(?:provider|codex|claude|gemini|opencode).*?(?:exited with|timed out|cancelled)/i.test(message)) {
+  if (code === 'PROVIDER_EXECUTION_FAILED' || /(?:provider|codex|claude|gemini|opencode).*?(?:exited with|timed out|cancelled)/i.test(message)) {
     return Object.freeze({ status: 502, body: Object.freeze({ error: 'provider-error', code: 'PROVIDER_EXECUTION_FAILED' }) });
   }
   return Object.freeze({ status: 500, body: Object.freeze({ error: 'internal-error' }) });
