@@ -64,12 +64,13 @@ test('CliProvider classifies a non-zero CLI configuration failure without exposi
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-config-'));
   t.after(() => rm(root, { recursive: true, force: true }));
   const script = path.join(root, 'config-cli.mjs');
-  await writeFile(script, "console.error('Invalid configuration: apiKey=sk-private-test'); process.exit(7);\n");
+  await writeFile(script, "console.error('Invalid configuration: apiKey=sk-private-test rt_prefix=refresh-prefix-private'); process.exit(7);\n");
   const provider = new CliProvider({ id: 'config-cli', label: 'Config CLI', executable: process.execPath, versionArgs: [script, '--version'] });
   const detection = await provider.detect();
   assert.equal(detection.available, false);
   assert.equal(detection.error, 'configuration-error');
   assert.equal(JSON.stringify(detection).includes('sk-private-test'), false);
+  assert.equal(JSON.stringify(detection).includes('refresh-prefix-private'), false);
 });
 
 test('CliProvider allows a slow CLI startup to report its version truthfully', async (t) => {
@@ -158,7 +159,7 @@ test('ProviderRegistry exposes secret-free public views and built-in official CL
   assert.doesNotMatch(publicJson, /super-secret|API_KEY/);
 
   const builtIns = createBuiltInCliProviders();
-  assert.deepEqual([...builtIns].map((item) => item.id), ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'cursor-agent', 'kiro-cli', 'factory-droid', 'auggie', 'amp', 'amazon-q', 'crush', 'roo-code', 'qwen-code', 'continue-cli', 'cline', 'mistral-vibe-code', 'aider', 'goose']);
+  assert.deepEqual([...builtIns].map((item) => item.id), ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'cursor-agent', 'grok-build', 'kiro-cli', 'factory-droid', 'auggie', 'amp', 'amazon-q', 'crush', 'roo-code', 'qwen-code', 'continue-cli', 'cline', 'mistral-vibe-code', 'aider', 'goose']);
   assert.ok([...builtIns].every((item) => item.credentialOwner === 'official-cli'));
   assert.ok(builtIns.filter((item) => ['codex', 'claude', 'gemini'].includes(item.id)).every((item) => item.profile.capabilities.includes('governed-actions')));
   assert.ok(builtIns.find((item) => item.id === 'codex').baseArgs.includes('read-only'));
@@ -178,12 +179,22 @@ test('ProviderRegistry exposes secret-free public views and built-in official CL
   assert.ok(copilot.baseArgs.includes('--sandbox'));
   assert.ok(copilot.baseArgs.includes('--no-remote'));
   const cursor = builtIns.find((item) => item.id === 'cursor-agent');
+  assert.equal(cursor.executable, 'cursor-agent');
   assert.equal(cursor.publicView().executionSafety, 'verified');
   assert.deepEqual(cursor.baseArgs, ['-p', '--output-format', 'json']);
   assert.equal(cursor.baseArgs.includes('--force'), false);
   assert.equal(cursor.baseArgs.includes('--yolo'), false);
   assert.equal(cursor.modelFlag, '--model');
   assert.equal(cursor.publicView().modelSelection.mode, 'forwarded');
+  const grok = builtIns.find((item) => item.id === 'grok-build');
+  assert.equal(grok.executable, 'agent');
+  assert.equal(grok.publicView().executionSafety, 'verified');
+  assert.deepEqual(grok.baseArgs, ['--permission-mode', 'plan', '--output-format', 'json']);
+  assert.equal(grok.promptMode, 'arg');
+  assert.equal(grok.promptFlag, '-p');
+  assert.equal(grok.modelFlag, '--model');
+  assert.deepEqual(grok.modelDiscoveryArgs, ['models']);
+  assert.equal(grok.publicView().modelDiscovery.live, true);
   const kiro = builtIns.find((item) => item.id === 'kiro-cli');
   assert.equal(kiro.publicView().executionSafety, 'verified');
   assert.deepEqual(kiro.baseArgs, ['chat', '--no-interactive', '--trust-tools=read,grep']);

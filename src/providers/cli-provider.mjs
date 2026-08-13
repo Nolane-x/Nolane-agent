@@ -55,7 +55,7 @@ function discoveryModel(providerId, modelId, source, observedAt) {
 }
 
 function diagnostic(output) {
-  return String(output ?? '').replace(ANSI_ESCAPE, '').replace(/(?:sk|key|token)-[A-Za-z0-9._-]+/gi, '[REDACTED]').replace(/(api[_-]?key|authorization|password|secret)\s*[:=]\s*\S+/gi, '$1=[REDACTED]').trim().slice(0, 500);
+  return String(output ?? '').replace(ANSI_ESCAPE, '').replace(/(?:sk|key|token)-[A-Za-z0-9._-]+/gi, '[REDACTED]').replace(/\b(api[_-]?key|authorization|password|secret|(?:refresh[_-]?)?token|rt_prefix)\b\s*[:=]\s*\S+/gi, '$1=[REDACTED]').trim().slice(0, 500);
 }
 
 function detectError(result) {
