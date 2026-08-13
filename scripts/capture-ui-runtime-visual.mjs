@@ -19,6 +19,7 @@ const STATES = Object.freeze([
   Object.freeze({ id: 'skills-forge-preview', route: '/skills', selector: '.skills-library', prepare: assertForgeSkillInstallPreview }),
   Object.freeze({ id: 'settings', route: '/settings', selector: '#workspace' }),
   Object.freeze({ id: 'settings-language-roundtrip', route: '/settings', selector: '.settings-center', prepare: assertSettingsLanguageRoundtrip }),
+  Object.freeze({ id: 'settings-model-catalog', route: '/settings', selector: '.settings-center', prepare: assertSettingsModelCatalog }),
   Object.freeze({ id: 'workroom', route: '/workroom', selector: '.workroom-view' }),
   Object.freeze({ id: 'control-plane', route: '/control-plane', selector: '#workspace' }),
 ]);
@@ -180,6 +181,22 @@ async function assertSettingsLanguageRoundtrip(page) {
   await page.locator('.home-view').waitFor({ state: 'visible', timeout: 10_000 });
   const shellLabel = await page.locator('[data-command="new-mission"] span').textContent();
   if (String(shellLabel ?? '').trim() !== 'Cuộc trò chuyện mới') throw new Error('chat shell still rendered English after saving Vietnamese');
+}
+
+async function assertSettingsModelCatalog(page) {
+  await page.locator('[data-settings-category-link="models"]').click();
+  const modelsSection = page.locator('#settings-models');
+  await modelsSection.scrollIntoViewIfNeeded();
+  const catalog = modelsSection.locator('.provider-catalog');
+  await catalog.waitFor({ state: 'visible', timeout: 10_000 });
+  const providers = await modelsSection.locator('.provider-model-group').evaluateAll((nodes) => nodes.map((node) => node.dataset.providerId));
+  const requiredProviders = ['codex', 'claude', 'gemini', 'opencode'];
+  const missing = requiredProviders.filter((id) => !providers.includes(id));
+  if (missing.length) throw new Error(`provider catalog omitted required agent entries: ${missing.join(', ')}`);
+
+  const claudeCatalog = await modelsSection.locator('#provider-claude').innerText();
+  if (!/sonnet/i.test(claudeCatalog) || !/opus/i.test(claudeCatalog)) throw new Error('Claude compatibility models were not rendered');
+  if (await modelsSection.locator('[data-model-provider-setup] input[data-model-api-key]').count() !== 1) throw new Error('API provider setup form did not render an API key field');
 }
 
 async function assertResponsiveLayout(page, state) {
