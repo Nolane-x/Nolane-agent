@@ -1,4 +1,5 @@
 const ROLES = new Set(['coordinator', 'scout', 'builder', 'reviewer', 'integrator']);
+const SYSTEM_DENIED_PATHS = Object.freeze(['.env', '.env.*', '**/*.pem', '**/*.key']);
 
 function extractJson(text) {
   const source = String(text ?? '').trim();
@@ -11,6 +12,10 @@ function extractJson(text) {
 function strings(value, label) {
   if (!Array.isArray(value) || value.some((item) => typeof item !== 'string')) throw new Error(`${label} must be an array of strings`);
   return [...value];
+}
+
+function deniedPaths(value, label) {
+  return [...new Set([...SYSTEM_DENIED_PATHS, ...strings(value ?? [], label)])];
 }
 
 function validate(value) {
@@ -30,8 +35,8 @@ function validate(value) {
     return {
       id, title, objective, role,
       dependencies: strings(task.dependencies ?? [], `${id}.dependencies`),
-      allowedPaths: strings(task.allowedPaths ?? ['**'], `${id}.allowedPaths`),
-      deniedPaths: strings(task.deniedPaths ?? ['.env', '.env.*', '**/*.pem', '**/*.key'], `${id}.deniedPaths`),
+      allowedPaths: strings(task.allowedPaths ?? [], `${id}.allowedPaths`),
+      deniedPaths: deniedPaths(task.deniedPaths, `${id}.deniedPaths`),
       metadata: task.metadata && typeof task.metadata === 'object' ? structuredClone(task.metadata) : {},
     };
   });

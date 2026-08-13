@@ -10,11 +10,17 @@ const DEFAULT_LIMITS = Object.freeze({
   maxEstimatedTokens: 240_000,
   maxElapsedMs: 20 * 60_000,
 });
+const MAXIMUM_LIMITS = Object.freeze({
+  maxTurns: 96,
+  maxToolCalls: 256,
+  maxEstimatedTokens: 960_000,
+  maxElapsedMs: 120 * 60_000,
+});
 
 function positive(value, fallback, label) {
   const result = value === undefined ? fallback : Number(value);
   if (!Number.isFinite(result) || result <= 0) throw new TypeError(`${label} must be a positive number`);
-  return Math.floor(result);
+  return Math.min(Math.floor(result), MAXIMUM_LIMITS[label]);
 }
 
 export function buildTaskGovernanceEnvelope({ role, resourceLimits = {} } = {}) {

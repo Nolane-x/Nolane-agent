@@ -2201,22 +2201,11 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
         : plannerService
           ? async (input) => plannerService.plan({ ...input, providerId: planningProviderId, ...(planningModelId ? { modelId: planningModelId } : {}), ...(requestedPlanningEffort ? { effort: requestedPlanningEffort } : {}) })
           : async (input) => defaultPlanner(input);
-      const planner = async (input) => {
-        const plan = await basePlanner(input);
-        if (!requestedMcpTools.length) return plan;
-        return {
-          ...plan,
-          tasks: plan.tasks.map((task) => ({
-            ...task,
-            metadata: { ...(task.metadata ?? {}), mcpAllowedTools: requestedMcpTools },
-          })),
-        };
-      };
       const result = await missionRunner.plan({
         projectId,
         objective,
-        planner,
-        planningMetadata: { planningProviderId, ...(planningModelId ? { planningModelId } : {}), ...(requestedPlanningEffort ? { planningEffort: requestedPlanningEffort } : {}), ...(selectedSkills.length ? { selectedSkills } : {}) },
+        planner: basePlanner,
+        planningMetadata: { planningProviderId, ...(planningModelId ? { planningModelId } : {}), ...(requestedPlanningEffort ? { planningEffort: requestedPlanningEffort } : {}), ...(requestedMcpTools.length ? { mcpAllowedTools: requestedMcpTools } : {}), ...(selectedSkills.length ? { selectedSkills } : {}) },
       });
       return json(res, 201, result);
     }

@@ -25,5 +25,5 @@ The NolaneNative rows are inventory-derived behavior candidates. Their status is
 
 Exact-title duplicates are represented as aliases under one canonical requirement. Similar but non-identical requirements remain separate to avoid hiding work through fuzzy matching.
 
-Ledger receipt SHA-256: `02eb0d25f8362ffc2a4238c1fd1b4740f6f265881696b3343f621332a832a622`
+Ledger receipt SHA-256: `539964bbd40745babe39fb0471e8c780063c45b58d467d548930efd3a4aa9dc9`
 

@@ -57,6 +57,18 @@ test('MissionPlanner rejects plans outside the role and task-count safety envelo
   await assert.rejects(() => planner.plan({ projectId: 'p', objective: 'Build' }), /role|planner/i);
 });
 
+test('MissionPlanner defaults omitted write scope to no paths and retains non-negotiable secret denials', async () => {
+  const planWithoutScope = structuredClone(validPlan);
+  delete planWithoutScope.tasks[1].allowedPaths;
+  planWithoutScope.tasks[1].deniedPaths = [];
+  const provider = { id: 'planner', async complete() { return { text: JSON.stringify(planWithoutScope) }; } };
+  const planner = new MissionPlanner({ router: { select: () => provider } });
+  const result = await planner.plan({ projectId: 'p', objective: 'Build' });
+  assert.deepEqual(result.tasks[1].allowedPaths, []);
+  assert.ok(result.tasks[1].deniedPaths.includes('.env'));
+  assert.ok(result.tasks[1].deniedPaths.includes('**/*.key'));
+});
+
 test('MissionPlanner requests user input before provider execution when planning evidence is ambiguous', async () => {
   let providerCalls = 0;
   const evidenceGovernance = {

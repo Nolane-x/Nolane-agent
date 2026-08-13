@@ -257,8 +257,8 @@ test('mission planning uses the intelligent planner with explicit provider routi
   assert.equal(response.status, 201);
   const mission = await response.json();
   assert.equal(mission.metadata.planningEffort, 'high');
+  assert.deepEqual(mission.metadata.mcpAllowedTools, ['docs__search']);
   assert.equal(mission.tasks[0].role, 'reviewer');
-  assert.deepEqual(mission.tasks[0].metadata.mcpAllowedTools, ['docs__search']);
   assert.deepEqual(f.calls.filter((item) => item[0] === 'intelligentPlan')[0], ['intelligentPlan', 'fake', 'fake-model-v2', 'high']);
 });
 
