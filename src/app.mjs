@@ -83,7 +83,6 @@ import { EvalRunner } from './eval/eval-runner.mjs';
 import { MemoryService } from './memory/memory-service.mjs';
 import { ProjectMemorySidecar } from './memory/project-memory-sidecar.mjs';
 import { IndependentReviewService } from './review/independent-review-service.mjs';
-import { independentReviewerSystemPrompt } from './review/independent-reviewer-prompt.mjs';
 import { DurableAutomationService } from './automations/durable-automation-service.mjs';
 import { DesignContextService } from './design/design-context-service.mjs';
 import { createHttpServer } from './server/http-server.mjs';
@@ -1122,6 +1121,7 @@ const parseReviewResult = (text) => {
 const independentReviewer = new IndependentReviewService({
   file: path.join(config.dataDir, 'independent-reviews.db'),
   reviewer: async (request) => {
+    const { independentReviewerSystemPrompt } = await import('./review/independent-reviewer-prompt.mjs');
     const provider = router.select({ mode: 'intelligence', task: { kind: 'code-review', complexity: 0.9 }, requiredCapabilities: ['coding'] });
     const completion = await provider.complete({
       messages: [
