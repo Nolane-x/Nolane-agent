@@ -197,6 +197,11 @@ async function assertSettingsModelCatalog(page) {
   const claudeCatalog = await modelsSection.locator('#provider-claude').innerText();
   if (!/sonnet/i.test(claudeCatalog) || !/opus/i.test(claudeCatalog)) throw new Error('Claude compatibility models were not rendered');
   if (await modelsSection.locator('[data-model-provider-setup] input[data-model-api-key]').count() !== 1) throw new Error('API provider setup form did not render an API key field');
+  const clippedCatalogCopy = await catalog.locator('.provider-catalog__name,.provider-catalog__meta strong').evaluateAll((nodes) => nodes
+    .filter((node) => node.scrollWidth > node.clientWidth + 1)
+    .map((node) => node.textContent?.trim())
+    .filter(Boolean));
+  if (clippedCatalogCopy.length) throw new Error(`provider catalog clips text at desktop width: ${clippedCatalogCopy.join(', ')}`);
 }
 
 async function assertResponsiveLayout(page, state) {

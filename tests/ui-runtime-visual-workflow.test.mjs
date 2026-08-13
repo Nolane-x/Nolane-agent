@@ -72,6 +72,8 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(capturer, /provider catalog omitted required agent entries/);
   assert.match(capturer, /Claude compatibility models were not rendered/);
   assert.match(capturer, /API provider setup form did not render an API key field/);
+  assert.match(capturer, /provider catalog clips text at desktop width/);
+  assert.match(capturer, /node\.scrollWidth > node\.clientWidth \+ 1/);
   assert.match(capturer, /assertResponsiveLayout/);
   assert.match(capturer, /responsive layout overflows horizontally/);
   assert.match(capturer, /assertProjectPickerKeyboard/);
