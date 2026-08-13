@@ -18,6 +18,9 @@ test('UI v3 settings route mounts the real API controller and applies preference
   assert.match(app, /captureViewState\(mountedRoot\)/);
   assert.match(app, /restoreViewState\(mountedRoot,viewState\)/);
   assert.match(app, /focus\(\{preventScroll:true\}\)/);
+  assert.match(app, /settingsSectionFromRoute/);
+  assert.match(app, /\/settings\?section=notifications/);
+  assert.match(app, /\/settings\?section=shortcuts/);
   assert.match(view, /data-scroll-key="settings-content"/);
 });
 

@@ -9,6 +9,7 @@
   },
   "scripts": {
     "start": "node src/app.mjs",
+    "dev:browser": "node scripts/start-source-browser.mjs",
     "test": "node scripts/run-node-test-suite.mjs",
     "validate": "npm run audit:evidence-freshness && npm test && node --check src/app.mjs",
     "smoke": "node scripts/smoke.mjs",

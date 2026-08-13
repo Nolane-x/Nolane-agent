@@ -72,12 +72,14 @@ test('provider cards expose execution, model-selection, and catalog semantics be
     providers: [
       { id: 'kiro-cli', kind: 'cli', label: 'Kiro CLI', available: true, authenticated: false, executionSafety: 'verified', modelSelection: { mode: 'cli-config' }, modelDiscovery: { supported: true, live: true } },
       { id: 'cursor-agent', kind: 'cli', label: 'Cursor Agent CLI', available: true, authenticated: false, executionSafety: 'verified', modelSelection: { mode: 'forwarded' }, modelDiscovery: { supported: false, live: false } },
+      { id: 'gemini', kind: 'cli', label: 'Gemini CLI', available: true, authenticated: false, executionSafety: 'verified', modelSelection: { mode: 'forwarded' }, modelDiscovery: { supported: true, mode: 'compatibility-catalog', live: false } },
       { id: 'qwen-code', kind: 'cli', label: 'Qwen Code', available: true, authenticated: false, executionSafety: 'external-plan-config-required', modelSelection: { mode: 'forwarded' }, modelDiscovery: { supported: false, live: false } },
     ],
   });
 
   assert.match(html, /data-provider-fact="execution">Guarded, read-only/);
   assert.match(html, /data-provider-fact="models">Live model catalog/);
+  assert.match(html, /data-provider-fact="models">Compatibility model catalog/);
   assert.match(html, /data-provider-fact="models">Add models manually/);
   assert.match(html, /data-provider-fact="execution">Safe plan configuration required/);
   assert.match(renderModelProfilesPanel({ models: [], providers: [{ id: 'kiro-cli', kind: 'cli', label: 'Kiro CLI', executionSafety: 'verified', modelSelection: { mode: 'cli-config' }, modelDiscovery: { supported: true, live: true } }] }, { lang: 'vi' }), /Được bảo vệ, chỉ đọc/);

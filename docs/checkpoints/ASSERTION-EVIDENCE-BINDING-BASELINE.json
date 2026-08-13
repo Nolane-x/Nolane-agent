@@ -228,10 +228,10 @@
         "src/server/http-server.mjs"
       ],
       "productionEntrypointSha256": [
-        "ca1f57ac8536e1657de5a3b64361784fb4114c08b5788b4b804f0d68af12c3ad"
+        "34456ff195c426ff9f8041dd79699fbab6a5e5394e12e44a5679942a3b902183"
       ],
       "testFile": "tests/http-boundary-errors.test.mjs",
-      "testFileSha256": "7c66745e41503e66416b8e704a6b0886888bc05411961dbaa8b1c06bcbf1e068",
+      "testFileSha256": "351dbcf0d62e666c9c4e64834ccb8aeb6f916d7581822d7868e8db30bdcc2335",
       "namedTests": [
         "HTTP error classification maps invalid input and workspace boundaries without leaking internal details",
         "workroom API returns 403 for path escape and sanitized 500 for unexpected failures"
@@ -248,6 +248,8 @@
         "assert.deepEqual(providerFailure.body, { error: 'provider-error', code: 'PROVIDER_EXECUTION_FAILED' })",
         "assert.equal(runtimeAdmission.status, 503)",
         "assert.deepEqual(runtimeAdmission.body, { error: 'Runtime is temporarily conserving resources. Try again shortly.', code: 'RUNTIME_ADMISSION_BLOCKED', retryable: true })",
+        "assert.equal(optionalModuleEmergency.status, 503)",
+        "assert.deepEqual(optionalModuleEmergency.body, { error: 'Runtime is temporarily conserving resources. Try again shortly.', code: 'RUNTIME_ADMISSION_BLOCKED', retryable: true })",
         "assert.equal(forbidden.status, 403)",
         "assert.deepEqual(forbidden.body, { error: 'forbidden', code: 'PATH_SYMLINK_ESCAPE' })",
         "assert.doesNotMatch(JSON.stringify(forbidden.body), /private|target|detail/i)",
@@ -259,7 +261,7 @@
         "assert.deepEqual(missing.body, { error: 'bad-request', code: 'INVALID_INPUT' })",
         "named-test-negative:HTTP error classification maps invalid input and workspace boundaries without leaking internal details"
       ],
-      "receiptSha256": "c60cbb2cfa0250acb4cd22cce2c90a218e21132310e9878bef9cee80e627de82",
+      "receiptSha256": "ef448bdf60da39a7e6e08fd37fe1f7ae8e1382ae9d7d0095626c467eb1329244",
       "environment": "node>=22.12",
       "external": false
     },
@@ -2503,5 +2505,5 @@
     "overBroadEvidence": [],
     "certifiable": true
   },
-  "receiptSha256": "a1225019b91745f0befb627dd6e8e544c3cef750f07772c11917852bc71e497a"
+  "receiptSha256": "9b2f77c938cb612f84ad395a869a59e3e134ea6a3f3732e69d8c07f9ace7b229"
 }

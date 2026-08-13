@@ -74,6 +74,30 @@ test('ProviderConnectionService refreshes independent CLI detections concurrentl
   await refresh;
 });
 
+test('ProviderConnectionService materializes documented CLI compatibility models during refresh', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-compatibility-catalog-'));
+  const store = new StudioStore(path.join(root, 'studio.db'));
+  t.after(() => store.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const registry = new ProviderRegistry();
+  registry.register({
+    id: 'gemini', kind: 'cli',
+    publicView: () => ({ id: 'gemini', kind: 'cli', label: 'Gemini CLI', modelDiscovery: { supported: true, mode: 'compatibility-catalog', live: false } }),
+    async detect() { return { id: 'gemini', available: true, version: 'test' }; },
+    async discoverModels() { return { status: 'compatibility', observedAt: '2026-08-13T00:00:00.000Z', models: [{ id: 'auto', providerId: 'gemini' }, { id: 'pro', providerId: 'gemini' }] }; },
+  });
+  const merged = [];
+  const service = new ProviderConnectionService({
+    store, registry, credentialVault: new CredentialVault({ backend: new MemoryCredentialBackend() }),
+    modelProfiles: { mergeDiscovery(providerId, models) { merged.push({ providerId, models }); } },
+  });
+
+  await service.refreshAll({ apiProviders: false });
+
+  assert.deepEqual(merged, [{ providerId: 'gemini', models: [{ id: 'auto', providerId: 'gemini' }, { id: 'pro', providerId: 'gemini' }] }]);
+  assert.deepEqual(registry.detection('gemini').modelCatalog, { status: 'compatibility', modelCount: 2, observedAt: '2026-08-13T00:00:00.000Z', error: null });
+});
+
 test('ProviderConnectionService stores API keys only in the vault, restores providers, and reports readiness', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-service-'));
   const store = new StudioStore(path.join(root, 'studio.db'));

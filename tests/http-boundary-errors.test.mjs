@@ -30,6 +30,10 @@ test('HTTP error classification maps invalid input and workspace boundaries with
   const runtimeAdmission = classifyHttpError(Object.assign(new Error('provider admission blocked in brownout state'), { code: 'RUNTIME_LEASE_ADMISSION_BLOCKED' }));
   assert.equal(runtimeAdmission.status, 503);
   assert.deepEqual(runtimeAdmission.body, { error: 'Runtime is temporarily conserving resources. Try again shortly.', code: 'RUNTIME_ADMISSION_BLOCKED', retryable: true });
+
+  const optionalModuleEmergency = classifyHttpError(new Error('Module enterprise-cloud activation is denied during emergency'));
+  assert.equal(optionalModuleEmergency.status, 503);
+  assert.deepEqual(optionalModuleEmergency.body, { error: 'Runtime is temporarily conserving resources. Try again shortly.', code: 'RUNTIME_ADMISSION_BLOCKED', retryable: true });
 });
 
 test('workroom API returns 403 for path escape and sanitized 500 for unexpected failures', async (t) => {

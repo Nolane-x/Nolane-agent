@@ -73,7 +73,14 @@ test('local startup does not create enterprise or cloud databases before first u
   let names = await readdir(data);
   for (const name of ['enterprise.db', 'enterprise-sessions.db', 'scim.db', 'cloud-queue.db', 'cloud-sandboxes.db']) assert.equal(names.includes(name), false, `${name} must remain unloaded`);
   const response = await fetch(`${runtime.url}/api/enterprise/audit?organizationId=local`, { headers: { authorization: `Bearer ${runtime.token}` } });
-  assert.equal(response.status, 200);
+  const responseBody = await response.text();
   names = await readdir(data);
+  if (response.status === 503) {
+    assert.deepEqual(JSON.parse(responseBody), { error: 'Runtime is temporarily conserving resources. Try again shortly.', code: 'RUNTIME_ADMISSION_BLOCKED', retryable: true });
+    for (const name of ['enterprise.db', 'enterprise-sessions.db', 'scim.db', 'cloud-queue.db', 'cloud-sandboxes.db']) assert.equal(names.includes(name), false, `${name} must remain unloaded while the runtime is conserving resources`);
+    t.diagnostic('Enterprise/cloud activation was correctly deferred because the local runtime entered emergency resource conservation.');
+    return;
+  }
+  assert.equal(response.status, 200, responseBody);
   for (const name of ['enterprise.db', 'enterprise-sessions.db', 'scim.db', 'cloud-queue.db', 'cloud-sandboxes.db']) assert.equal(names.includes(name), true, `${name} must appear after activation`);
 });

@@ -35,7 +35,7 @@ export function classifyHttpError(error) {
   if (code === 'PLANNING_INPUT_REQUIRED' || error?.name === 'PlanningInputRequiredError') {
     return Object.freeze({ status: 422, body: Object.freeze({ error: 'Planning requires additional user input', code: 'PLANNING_INPUT_REQUIRED', inputRequest: error?.inputRequest ?? null, preflightReceiptSha256: error?.preflightReceiptSha256 ?? null }) });
   }
-  if (code === 'RUNTIME_LEASE_ADMISSION_BLOCKED' || /admission blocked in (?:pressure|brownout|emergency) state/i.test(message)) {
+  if (code === 'RUNTIME_LEASE_ADMISSION_BLOCKED' || /(?:admission blocked in|activation is denied during) (?:pressure|brownout|emergency)/i.test(message)) {
     return Object.freeze({ status: 503, body: Object.freeze({ error: 'Runtime is temporarily conserving resources. Try again shortly.', code: 'RUNTIME_ADMISSION_BLOCKED', retryable: true }) });
   }
   if (/not inside a trusted directory|skip-git-repo-check/i.test(message)) {

@@ -98,7 +98,9 @@ test('CliProvider discovers model ids through an explicit argv-only command', as
   `);
   const provider = new CliProvider({
     id: 'model-cli', label: 'Model CLI', executable: process.execPath,
-    modelDiscoveryArgs: [script, '--models'], timeoutMs: 1000,
+    // This verifies argv-only discovery rather than a cold Node-process startup budget.
+    // Keep it above the explicit slow-start test so a parallel suite cannot make it flaky.
+    modelDiscoveryArgs: [script, '--models'], timeoutMs: 5_000,
   });
 
   const result = await provider.discoverModels();
@@ -166,15 +168,18 @@ test('ProviderRegistry exposes secret-free public views and built-in official CL
   assert.ok(builtIns.find((item) => item.id === 'codex').baseArgs.includes('--skip-git-repo-check'));
   assert.ok(builtIns.find((item) => item.id === 'gemini').baseArgs.includes('plan'));
   // Codex gets its live account catalogue from the authenticated App Server.
-  // Claude and Gemini accept --model but do not expose a documented headless
-  // account-model listing command, so no static list may masquerade as one.
-  assert.ok(builtIns.filter((item) => ['codex', 'claude', 'gemini'].includes(item.id)).every((item) => item.modelCatalog.length === 0));
+  // The other compatibility catalogs are documented CLI selectors, never a
+  // claim about which models the connected account can actually use.
+  assert.equal(builtIns.find((item) => item.id === 'codex').modelCatalog.length, 0);
+  assert.deepEqual(builtIns.find((item) => item.id === 'claude').modelCatalog, ['sonnet', 'opus']);
+  assert.deepEqual(builtIns.find((item) => item.id === 'gemini').modelCatalog, ['auto', 'pro', 'flash', 'flash-lite']);
   assert.equal(builtIns.find((item) => item.id === 'codex').publicView().modelDiscovery.mode, 'unsupported');
   assert.equal(builtIns.find((item) => item.id === 'opencode').publicView().modelDiscovery.mode, 'command');
   assert.equal(builtIns.find((item) => item.id === 'opencode').publicView().modelDiscovery.live, true);
   assert.deepEqual(builtIns.find((item) => item.id === 'opencode').modelDiscoveryArgs, ['models', '--refresh']);
   const copilot = builtIns.find((item) => item.id === 'github-copilot');
-  assert.equal(copilot.publicView().modelDiscovery.mode, 'unsupported');
+  assert.deepEqual(copilot.modelCatalog, ['claude-sonnet-4.6', 'gpt-5.4', 'claude-haiku-4.5', 'gpt-5.3-codex', 'gemini-3.1-pro-preview', 'gemini-3.5-flash', 'gemini-3.6-flash', 'mai-code-1-flash']);
+  assert.equal(copilot.publicView().modelDiscovery.mode, 'compatibility-catalog');
   assert.ok(copilot.baseArgs.includes('plan'));
   assert.ok(copilot.baseArgs.includes('--sandbox'));
   assert.ok(copilot.baseArgs.includes('--no-remote'));

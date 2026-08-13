@@ -220,7 +220,17 @@ export class ProviderConnectionService {
         try {
           const previous = this.registry.detection(provider.id);
           const detected = await (provider.detect?.() ?? { ...provider.publicView(), available: true });
-          const candidate = { ...provider.publicView(), ...detected, authenticated: false, healthy: false, error: detected.error ?? (detected.available === false ? 'not-installed' : 'connection-test-required') };
+          let modelCatalog = null;
+          if (provider.publicView?.().modelDiscovery?.mode === 'compatibility-catalog' && typeof provider.discoverModels === 'function') {
+            try {
+              const catalog = await provider.discoverModels();
+              this.modelProfiles?.mergeDiscovery?.(provider.id, catalog.models ?? []);
+              modelCatalog = { status: catalog.status ?? 'compatibility', modelCount: Array.isArray(catalog.models) ? catalog.models.length : 0, observedAt: catalog.observedAt ?? null, error: null };
+            } catch (error) {
+              modelCatalog = { status: 'unavailable', modelCount: 0, observedAt: null, error: safeError(error) };
+            }
+          }
+          const candidate = { ...provider.publicView(), ...detected, ...(modelCatalog ? { modelCatalog } : {}), authenticated: false, healthy: false, error: detected.error ?? (detected.available === false ? 'not-installed' : 'connection-test-required') };
           this.registry.setDetection(provider.id, retainVerifiedCliConnection(previous, candidate));
         } catch (error) {
           this.registry.setDetection(provider.id, { ...provider.publicView(), available: false, authenticated: false, healthy: false, error: safeError(error) });
