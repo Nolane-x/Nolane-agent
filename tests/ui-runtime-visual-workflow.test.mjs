@@ -90,6 +90,10 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(capturer, /skills Forge OS preview did not expose an installation action/);
   assert.match(capturer, /async function assertSkillsCatalogPicker/);
   assert.match(capturer, /data-option-picker="skills-catalog"/);
+  const skillsCatalogAssertion = capturer.slice(capturer.indexOf('async function assertSkillsCatalogPicker'), capturer.indexOf('async function assertOnboardingRecommendedNavigation'));
+  assert.match(skillsCatalogAssertion, /const alpha = color\.startsWith\('rgba\('\)/);
+  assert.match(skillsCatalogAssertion, /alpha < 1/);
+  assert.doesNotMatch(skillsCatalogAssertion, /Number\.parseFloat/);
   assert.match(capturer, /chooseOptionPickerValue\(page, 'skills-catalog', 'v2'\)/);
   assert.match(workflow, /NOLANE_UI_VISUAL_STATES=home,home-experience-menu,home-compact,projects,skills,skills-catalog-picker,skills-forge-preview,settings,settings-option-picker,settings-language-roundtrip,settings-model-catalog,workroom,control-plane,browser/);
   assert.match(capturer, /AxeBuilder/);

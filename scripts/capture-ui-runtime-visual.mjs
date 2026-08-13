@@ -316,13 +316,20 @@ async function assertSkillsCatalogPicker(page) {
   await trigger.focus();
   await page.keyboard.press('ArrowDown');
   await menu.waitFor({ state: 'visible', timeout: 10_000 });
-  const details = await menu.evaluate((node) => Object.freeze({
-    role: node.getAttribute('role'),
-    opaque: Number.parseFloat(getComputedStyle(node).backgroundColor.match(/[\\d.]+/g)?.at(-1) ?? '0') > 0,
-    selected: node.querySelector('[role="option"][aria-selected="true"]')?.getAttribute('data-option-picker-option'),
-    options: node.querySelectorAll('[role="option"]').length,
-  }));
-  if (details.role !== 'listbox' || !details.opaque || details.options < 3 || !details.selected) throw new Error('skills catalog picker did not render an accessible opaque option menu');
+  const details = await menu.evaluate((node) => {
+    const computed = getComputedStyle(node);
+    const color = computed.backgroundColor;
+    const alpha = color.startsWith('rgba(') ? Number(color.slice(color.lastIndexOf(',') + 1, -1).trim()) : 1;
+    return Object.freeze({
+      role: node.getAttribute('role'),
+      alpha,
+      opacity: Number(computed.opacity),
+      visibility: computed.visibility,
+      selected: node.querySelector('[role="option"][aria-selected="true"]')?.getAttribute('data-option-picker-option'),
+      options: node.querySelectorAll('[role="option"]').length,
+    });
+  });
+  if (details.role !== 'listbox' || details.alpha < 1 || details.opacity < 1 || details.visibility !== 'visible' || details.options < 3 || !details.selected) throw new Error('skills catalog picker did not render an accessible opaque option menu');
 }
 
 async function assertOnboardingRecommendedNavigation(page) {
