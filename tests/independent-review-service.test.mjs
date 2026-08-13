@@ -51,6 +51,29 @@ test('IndependentReviewService deduplicates exact diff reviews and incrementally
   service.close();
 });
 
+test('IndependentReviewService incrementally reviews deletion-only diffs', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-review-deletion-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const requests = [];
+  const service = new IndependentReviewService({ file: path.join(root, 'review.sqlite'), reviewer: async (input) => { requests.push(input); return { findings: [] }; } });
+  const first = await service.review({ projectId: 'p', diff: DIFF, executorId: 'agent', reviewerId: 'reviewer' });
+  const deletionOnly = `diff --git a/src/auth.js b/src/auth.js
+index 222..333 100644
+--- a/src/auth.js
++++ b/src/auth.js
+@@ -1,3 +1,2 @@
+ export function login(user) {
+-  return db.query('SELECT * FROM users WHERE name=' + user);
+ }
+`;
+  await service.review({ projectId: 'p', diff: deletionOnly, executorId: 'agent', reviewerId: 'reviewer', priorReviewId: first.reviewId });
+  assert.equal(requests.length, 2);
+  assert.match(requests[1].diff, /@@ -1,3 \+1,2 @@/);
+  assert.match(requests[1].diff, /^-  return db\.query/m);
+  assert.equal(requests[1].diff.includes('+  return db.query'), false);
+  service.close();
+});
+
 test('IndependentReviewService merges deterministic scanners and creates a repair handoff', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-review-handoff-'));
   t.after(() => rm(root, { recursive: true, force: true }));

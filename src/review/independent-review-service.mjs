@@ -57,27 +57,28 @@ function normalizeReviewContext(value) {
   });
 }
 
-function additions(diff) {
+function changedLines(diff) {
   const result = [];
-  let currentPath = null;
+  let currentPath = null; let currentHunk = null;
   for (const line of String(diff).split(/\r?\n/)) {
     if (line.startsWith('diff --git ')) {
       const match = line.match(/^diff --git a\/(.+?) b\/(.+)$/);
-      currentPath = match?.[2] ?? null;
+      currentPath = match?.[2] ?? null; currentHunk = null;
     } else if (line.startsWith('+++ b/')) currentPath = line.slice(6);
-    else if (line.startsWith('+') && !line.startsWith('+++')) result.push({ path: currentPath, line });
+    else if (line.startsWith('@@ ')) currentHunk = line;
+    else if ((line.startsWith('+') && !line.startsWith('+++')) || (line.startsWith('-') && !line.startsWith('---'))) result.push({ path: currentPath, hunk: currentHunk, line });
   }
   return result;
 }
 
 function incrementalDiff(previous, next) {
   const prior = new Map();
-  for (const item of additions(previous)) {
+  for (const item of changedLines(previous)) {
     const key = `${item.path ?? ''}\0${item.line}`;
     prior.set(key, (prior.get(key) ?? 0) + 1);
   }
   const selected = [];
-  for (const item of additions(next)) {
+  for (const item of changedLines(next)) {
     const key = `${item.path ?? ''}\0${item.line}`;
     const count = prior.get(key) ?? 0;
     if (count > 0) { prior.set(key, count - 1); continue; }
@@ -85,12 +86,14 @@ function incrementalDiff(previous, next) {
   }
   if (selected.length === 0) return '';
   const output = [];
-  let activePath = null;
+  let activePath = null; let activeHunk = null;
   for (const item of selected) {
     if (item.path !== activePath) {
       activePath = item.path;
-      output.push(`diff --git a/${activePath ?? 'unknown'} b/${activePath ?? 'unknown'}`, `+++ b/${activePath ?? 'unknown'}`);
+      activeHunk = null;
+      output.push(`diff --git a/${activePath ?? 'unknown'} b/${activePath ?? 'unknown'}`, `--- a/${activePath ?? 'unknown'}`, `+++ b/${activePath ?? 'unknown'}`);
     }
+    if (item.hunk && item.hunk !== activeHunk) { output.push(item.hunk); activeHunk = item.hunk; }
     output.push(item.line);
   }
   return `${output.join('\n')}\n`;
