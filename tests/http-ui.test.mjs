@@ -18,7 +18,7 @@ async function fixture(t, { host = '127.0.0.1', allowRemoteBinding = false } = {
   const calls = [];
   const projectService = { create(input) { calls.push(['createProject', input.name]); return store.createProject(input); } };
   const missionRunner = {
-    async plan({ projectId, objective, planner }) { const planned = await planner({ projectId, objective }); calls.push(['plan', projectId, objective, planned.summary]); const mission = store.createMission({ projectId, objective, status: 'running' }); return { ...mission, tasks: planned.tasks ?? [] }; },
+    async plan({ projectId, objective, planner, planningMetadata = {} }) { const planned = await planner({ projectId, objective }); calls.push(['plan', projectId, objective, planned.summary]); const mission = store.createMission({ projectId, objective, status: 'running', metadata: planningMetadata }); return { ...mission, tasks: planned.tasks ?? [] }; },
     async runNext(input) { calls.push(['runNext', input.missionId]); return { task: { id: 'task-1', status: 'review' }, result: { state: 'awaiting-verification' } }; },
     stop(id, reason) { calls.push(['stop', id, reason]); return store.updateMission(id, { status: 'stopped' }); },
     resume(id) { calls.push(['resume', id]); return store.updateMission(id, { status: 'running' }); },
@@ -40,7 +40,7 @@ async function fixture(t, { host = '127.0.0.1', allowRemoteBinding = false } = {
   const evalRunner = { async runSuite(suite, options) { calls.push(['eval', suite.id, options.providerIds[0]]); return { suiteId: suite.id, reportSha256: 'e'.repeat(64), providers: { fake: { passRate: 1 } }, cases: [] }; } };
   const verificationRunner = { async runTask(taskId) { calls.push(['autoVerify', taskId]); return { taskId, status: 'pass', evidence: [{ kind: 'diff-check', status: 'pass', commit: 'abc', artifactSha256: 'a'.repeat(64), receiptSha256: 'b'.repeat(64) }] }; } };
   const autopilot = { async run(input) { calls.push(['autopilot', input.missionId, input.providerId, input.modelId ?? null, input.maxTasks]); return { missionId: input.missionId, status: 'completed', completedTasks: 3, reports: [] }; } };
-  const plannerService = { async plan(input) { calls.push(['intelligentPlan', input.providerId, input.modelId ?? null]); return { summary: 'AI plan', tasks: [{ id: 'review', title: 'Review', objective: input.objective, role: 'reviewer', dependencies: [], allowedPaths: ['**'], deniedPaths: ['.env'] }] }; } };
+  const plannerService = { async plan(input) { calls.push(['intelligentPlan', input.providerId, input.modelId ?? null, input.effort ?? null]); return { summary: 'AI plan', tasks: [{ id: 'review', title: 'Review', objective: input.objective, role: 'reviewer', dependencies: [], allowedPaths: ['**'], deniedPaths: ['.env'] }] }; } };
   const gitInspector = {
     async snapshot(input) {
       const projectId = String(input.projectId ?? '').trim();
@@ -253,12 +253,22 @@ test('automatic verification endpoint runs checks and passes generated evidence 
 test('mission planning uses the intelligent planner with explicit provider routing', async (t) => {
   const f = await fixture(t);
   const project = await (await fetch(`${f.url}/api/projects`, auth({ method: 'POST', body: JSON.stringify({ name: 'Plan', workspaceRoot: f.root }) }))).json();
-  const response = await fetch(`${f.url}/api/missions/plan`, auth({ method: 'POST', body: JSON.stringify({ projectId: project.id, objective: 'Refactor router', planningProviderId: 'fake', planningModelId: 'fake-model-v2', mcpAllowedTools: ['docs__search'] }) }));
+  const response = await fetch(`${f.url}/api/missions/plan`, auth({ method: 'POST', body: JSON.stringify({ projectId: project.id, objective: 'Refactor router', planningProviderId: 'fake', planningModelId: 'fake-model-v2', planningEffort: 'high', mcpAllowedTools: ['docs__search'] }) }));
   assert.equal(response.status, 201);
   const mission = await response.json();
+  assert.equal(mission.metadata.planningEffort, 'high');
   assert.equal(mission.tasks[0].role, 'reviewer');
   assert.deepEqual(mission.tasks[0].metadata.mcpAllowedTools, ['docs__search']);
-  assert.deepEqual(f.calls.filter((item) => item[0] === 'intelligentPlan')[0], ['intelligentPlan', 'fake', 'fake-model-v2']);
+  assert.deepEqual(f.calls.filter((item) => item[0] === 'intelligentPlan')[0], ['intelligentPlan', 'fake', 'fake-model-v2', 'high']);
+});
+
+test('mission planning rejects an unsupported effort before invoking a provider', async (t) => {
+  const f = await fixture(t);
+  const project = await (await fetch(`${f.url}/api/projects`, auth({ method: 'POST', body: JSON.stringify({ name: 'Plan validation', workspaceRoot: f.root }) }))).json();
+  const response = await fetch(`${f.url}/api/missions/plan`, auth({ method: 'POST', body: JSON.stringify({ projectId: project.id, objective: 'Refactor router', planningEffort: 'unbounded' }) }));
+  assert.equal(response.status, 400);
+  assert.equal((await response.json()).code, 'PLANNING_EFFORT_INVALID');
+  assert.equal(f.calls.some((item) => item[0] === 'intelligentPlan'), false);
 });
 
 

@@ -11,7 +11,7 @@ rl.on('line', async (line) => {
   if (message.method === 'initialize') return send({ id: message.id, result: { userAgent: 'fixture', codexHome: '/tmp/codex', platformFamily: 'unix', platformOs: 'linux' } });
   if (message.method === 'initialized') return;
   if (message.method === 'account/read') return send({ id: message.id, result: { account, requiresOpenaiAuth: true } });
-  if (message.method === 'model/list') return send({ id: message.id, result: { data: [{ id: 'gpt-5.6-codex', displayName: 'GPT-5.6 Codex', defaultReasoningEffort: 'medium', supportedReasoningEfforts: ['low', 'medium', 'high'], additionalSpeedTiers: ['standard', 'fast'], serviceTiers: ['default', 'flex'], defaultServiceTier: 'default', modelSpecialty: 'coding', hidden: false }], nextCursor: null } });
+  if (message.method === 'model/list') return send({ id: message.id, result: { data: [{ id: 'gpt-5.6-codex', displayName: 'GPT-5.6 Codex', defaultReasoningEffort: 'medium', supportedReasoningEfforts: [{ reasoningEffort: 'low' }, { reasoningEffort: 'medium' }, { reasoningEffort: 'high' }], additionalSpeedTiers: ['standard', 'fast'], serviceTiers: ['default', 'flex'], defaultServiceTier: 'default', modelSpecialty: 'coding', hidden: false }], nextCursor: null } });
   if (message.method === 'account/login/start') {
     if (message.params.type === 'chatgpt') return send({ id: message.id, result: { type: 'chatgpt', loginId: 'login_1', authUrl: 'https://chatgpt.com/auth/test' } });
     if (message.params.type === 'chatgptDeviceCode') return send({ id: message.id, result: { type: 'chatgptDeviceCode', loginId: 'login_2', verificationUrl: 'https://auth.openai.com/codex/device', userCode: 'ABCD-1234' } });
@@ -28,6 +28,7 @@ rl.on('line', async (line) => {
   if (message.method === 'turn/interrupt') { send({ id: message.id, result: {} }); send({ method: 'turn/completed', params: { threadId: message.params.threadId, turn: { id: message.params.turnId, status: 'interrupted', items: [] } } }); return; }
   if (message.method === 'turn/start') {
     if (message.params?.sandboxPolicy?.type !== 'readOnly') return send({ id: message.id, error: { code: -32602, message: 'sandboxPolicy.type must be readOnly' } });
+    if ((message.params.input ?? []).some((item) => item.text === 'verify high effort') && message.params?.effort !== 'high') return send({ id: message.id, error: { code: -32602, message: 'effort must be forwarded' } });
     const turn = { id: `turn_${++turnCounter}`, status: 'inProgress', items: [] };
     send({ id: message.id, result: { turn } });
     send({ method: 'turn/started', params: { threadId: message.params.threadId, turn } });

@@ -881,10 +881,10 @@
         "ui-v3/views/home/home-view.mjs"
       ],
       "productionEntrypointSha256": [
-        "df5b5830b9d20cb9adbe07a1a276ed464303eb12c0b1980b3b34de618fb85928"
+        "98091a2ca7f03dd3858585b651ebac1b07f86c52703151a4b99a339933fb0722"
       ],
       "testFile": "tests/ui-v3-home.test.mjs",
-      "testFileSha256": "c67d27474a4fcbf3cd83b721f5e442ce85fad16b5c9b74065a989c15b5dd5a1a",
+      "testFileSha256": "21bf4bb841b532e17b0ea4dcbeb46fe8587cefd01ebdf6eb9024e39d9f3133c1",
       "namedTests": [
         "four intent presets map to enforceable backend boundaries",
         "mission request validates objective, project and provider availability",
@@ -896,6 +896,7 @@
         "home composer explains when a preserved model is unavailable",
         "home uses a compact task-first composition instead of an oversized generic hero",
         "home composer sends provider and model separately for the selected deployment",
+        "home composer exposes and submits only catalog-advertised Codex reasoning effort",
         "home composer uses the persisted routing default until the user chooses another model",
         "home composer turns an explicit Skill selection into a removable mission context receipt request",
         "home composer rejects an unavailable selected model before making a mission request",
@@ -941,6 +942,9 @@
         "assert.match(styles, /font-size:clamp\\(32px,3\\.6vw,52px\\)/)",
         "assert.doesNotMatch(styles, /font-size:clamp\\(38px,5\\.2vw,72px\\)/)",
         "assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Plan this', planningProviderId: 'codex-app-server', planningModelId: 'gpt-5.6-sol', deploymentKey: 'codex-app-server/gpt-5.6-sol', mcpAllowedTools: [] }]])",
+        "assert.match(html, /data-composer-picker=\"planningEffort\"/)",
+        "assert.match(html, /data-picker-value=\"high\"/)",
+        "assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Use careful reasoning', planningProviderId: 'codex-app-server', planningModelId: 'gpt-5.6-codex', deploymentKey: 'codex-app-server/gpt-5.6-codex', planningEffort: 'high', mcpAllowedTools: [] }]])",
         "assert.equal(controller.snapshot().selectedModel, 'codex/gpt-5.6-codex')",
         "assert.match(renderHomeView(controller.snapshot()), /<input type=\"hidden\" name=\"modelChoice\" value=\"codex\\/gpt-5\\.6-codex\"/)",
         "assert.equal(controller.snapshot().selectedModel, 'auto')",
@@ -984,6 +988,7 @@
         "named-test-pass:home composer explains when a preserved model is unavailable",
         "named-test-pass:home uses a compact task-first composition instead of an oversized generic hero",
         "named-test-pass:home composer sends provider and model separately for the selected deployment",
+        "named-test-pass:home composer exposes and submits only catalog-advertised Codex reasoning effort",
         "named-test-pass:home composer uses the persisted routing default until the user chooses another model",
         "named-test-pass:home composer turns an explicit Skill selection into a removable mission context receipt request",
         "named-test-pass:English home keeps composer menus free of Vietnamese copy",
@@ -1016,7 +1021,7 @@
         "named-test-negative:Vietnamese home renders composer labels without leftover English copy",
         "named-test-negative:composer explains a temporary runtime admission block"
       ],
-      "receiptSha256": "39f8e6058c8c693a10b06b82ad1adfa9bfde8714f0e93ec2e001603dbafa269e",
+      "receiptSha256": "940a57b3488358e455987dffa290447c1678f89c998aac7b1f24877c00629ef3",
       "environment": "node>=22.12",
       "external": false
     },
@@ -2498,5 +2503,5 @@
     "overBroadEvidence": [],
     "certifiable": true
   },
-  "receiptSha256": "ebb7d4512169a5483d70a8ef00e5af01ac43621c51fe29421917456698ec4282"
+  "receiptSha256": "a1225019b91745f0befb627dd6e8e544c3cef750f07772c11917852bc71e497a"
 }

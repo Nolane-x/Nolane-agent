@@ -29,6 +29,14 @@ test('CodexAppServerClient sends the thread sandbox enum and turn sandboxPolicy 
   assert.deepEqual(result.approvals.map((item) => item.decision), ['accept']);
 });
 
+test('CodexAppServerClient forwards a documented per-turn reasoning effort', async (t) => {
+  const codex = client();
+  t.after(() => codex.close());
+  const thread = await codex.startThread({ cwd: process.cwd(), ephemeral: true });
+  const result = await codex.startTurn({ threadId: thread.id, input: 'verify high effort', model: 'gpt-5.6-codex', effort: 'high' });
+  assert.equal(result.status, 'completed');
+});
+
 test('CodexAppServerClient complete() preserves method-specific sandbox shapes and retry classification', async (t) => {
   const codex = client();
   t.after(() => codex.close());

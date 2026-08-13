@@ -52,6 +52,27 @@ function selectedDeployment(models, selection) {
   return providerId ? { providerId, modelId: rest.join('/') || 'default', deploymentKey: selection } : null;
 }
 
+function selectedModelProfile(models, selection) {
+  return (models ?? []).find((item) => modelDeploymentKey(item) === selection) ?? null;
+}
+
+function reasoningEfforts(profile) {
+  if (String(profile?.providerId ?? profile?.provider ?? '') !== 'codex-app-server') return [];
+  const values = Array.isArray(profile?.metadata?.supportedReasoningEfforts) ? profile.metadata.supportedReasoningEfforts : [];
+  return [...new Set(values.map((item) => String(typeof item === 'object' ? item?.reasoningEffort : item).trim().toLowerCase()).filter(Boolean))];
+}
+
+function defaultReasoningEffort(profile, efforts) {
+  const preferred = String(profile?.metadata?.defaultReasoningEffort ?? '').trim().toLowerCase();
+  return efforts.includes(preferred) ? preferred : (efforts[0] ?? null);
+}
+
+function normalizedReasoningEffort(models, selectedModel, requestedEffort) {
+  const efforts = reasoningEfforts(selectedModelProfile(models, selectedModel));
+  const selected = String(requestedEffort ?? '').trim().toLowerCase();
+  return efforts.includes(selected) ? selected : defaultReasoningEffort(selectedModelProfile(models, selectedModel), efforts);
+}
+
 function providerIsReady(provider) {
   if (!provider || provider.executionSafety === 'external-plan-config-required') return false;
   return (provider.available === true && provider.authenticated === true && provider.healthy === true)
@@ -64,7 +85,7 @@ function readyModelProfiles(models, providers) {
   return models.filter((model) => providerIsReady(byProvider.get(String(model?.providerId ?? model?.provider ?? ''))));
 }
 
-export function buildHomeViewModel({ repositoryState = 'unknown', suggestions = [], project = null, projects = [], missions = [], providers = [], models = [], tools = [], commands = [], skills = [], plugins = [], language = 'en', loading = false, error = null, menu = null, intent = 'ask', selectedProjectId = null, selectedModel = 'auto', selectedSkillIds: requestedSkillIds = [], submitting = false, projectMenuOpen = false, projectQuery = '' } = {}) {
+export function buildHomeViewModel({ repositoryState = 'unknown', suggestions = [], project = null, projects = [], missions = [], providers = [], models = [], tools = [], commands = [], skills = [], plugins = [], language = 'en', loading = false, error = null, menu = null, intent = 'ask', selectedProjectId = null, selectedModel = 'auto', selectedEffort = null, selectedSkillIds: requestedSkillIds = [], submitting = false, projectMenuOpen = false, projectQuery = '' } = {}) {
   const evidenceBacked = repositoryState === 'ready'
     ? suggestions.filter((item) => Array.isArray(item.evidenceIds) && item.evidenceIds.length > 0).slice(0, 3).map((item) => Object.freeze({ ...item }))
     : [];
@@ -76,7 +97,7 @@ export function buildHomeViewModel({ repositoryState = 'unknown', suggestions = 
   return Object.freeze({
     product: 'Nolane Agent', title: t('home.title',language), subtitle:t('home.subtitle',language), project,
     repositoryState, repositoryMessage: repositoryState === 'indexing' ? (language === 'vi' ? 'Nolane đang đọc dự án này…' : 'Nolane is reading this project…') : null,
-    suggestions: Object.freeze(evidenceBacked), projects:Object.freeze(projects), missions:Object.freeze(missions), providers:Object.freeze(providers), models:Object.freeze(models), tools:Object.freeze(tools), commands:Object.freeze(commands), skills:Object.freeze(skills), selectedSkillIds: normalizedSkillIds, selectedSkills, plugins:Object.freeze(plugins), language, loading, error, menu, intent, selectedProjectId:selectedProjectId ?? projects[0]?.id ?? '', selectedModel, submitting, projectMenuOpen, projectQuery,
+    suggestions: Object.freeze(evidenceBacked), projects:Object.freeze(projects), missions:Object.freeze(missions), providers:Object.freeze(providers), models:Object.freeze(models), tools:Object.freeze(tools), commands:Object.freeze(commands), skills:Object.freeze(skills), selectedSkillIds: normalizedSkillIds, selectedSkills, plugins:Object.freeze(plugins), language, loading, error, menu, intent, selectedProjectId:selectedProjectId ?? projects[0]?.id ?? '', selectedModel, selectedEffort: normalizedReasoningEffort(models, selectedModel, selectedEffort), submitting, projectMenuOpen, projectQuery,
   });
 }
 
@@ -156,6 +177,20 @@ function modelPickerOptions(model) {
   }];
 }
 
+function reasoningEffortOptions(model) {
+  const profile = selectedModelProfile(model.models, model.selectedModel);
+  const values = reasoningEfforts(profile);
+  const labels = {
+    none: model.language === 'vi' ? 'Không suy luận' : 'No reasoning',
+    minimal: model.language === 'vi' ? 'Tối thiểu' : 'Minimal',
+    low: model.language === 'vi' ? 'Thấp' : 'Low',
+    medium: model.language === 'vi' ? 'Trung bình' : 'Medium',
+    high: model.language === 'vi' ? 'Cao' : 'High',
+    xhigh: model.language === 'vi' ? 'Rất cao' : 'Extra high',
+  };
+  return values.map((value) => ({ value, label: labels[value] ?? value, detail: model.language === 'vi' ? 'Mức suy luận của Codex cho lượt này' : 'Codex reasoning effort for this turn' }));
+}
+
 function renderComposerPicker({ name, ariaLabel, iconName, selected, options, className = '', searchable = false, searchLabel = '' }) {
   const chosen = options.find((item) => item.value === selected) ?? options[0];
   const menuId = `composer-${name}-menu`;
@@ -187,6 +222,7 @@ export function renderHomeView(model = buildHomeViewModel()) {
   const recent = model.missions.slice(0,6);
   const providersReady = model.providers.filter(providerIsReady).length;
   const modelOptions = modelPickerOptions(model);
+  const effortOptions = reasoningEffortOptions(model);
   const selectedModelReady = model.selectedModel === 'auto' || readyModelProfiles(model.models, model.providers).some((item) => modelDeploymentKey(item) === model.selectedModel);
   const providerStatus = providersReady ? (model.language === 'vi' ? `${providersReady} provider sẵn sàng` : `${providersReady} provider${providersReady===1?'':'s'} ready`) : t('home.providerRequired',model.language);
   const runtimeStatus = selectedModelReady ? providerStatus : (model.language === 'vi' ? 'Model đã chọn chưa sẵn sàng. Hãy chọn model khác hoặc đăng nhập provider đó.' : 'Selected model is not ready. Choose another model or sign in to its provider.');
@@ -201,7 +237,7 @@ export function renderHomeView(model = buildHomeViewModel()) {
       <form id="mission-composer" class="mission-composer" autocomplete="off">
         <div class="composer-context-row"><div class="composer-project-control" aria-label="${t('home.project',model.language)}">${renderProjectPicker({ id:'home-project-picker', projects:model.projects, selectedProjectId:model.selectedProjectId, language:model.language, open:model.projectMenuOpen, query:model.projectQuery, mode:'composer', name:'projectId' })}</div><span class="composer-runtime" data-state="${providersReady&&selectedModelReady?'ready':'limited'}" role="status" aria-live="polite"><i data-state="${providersReady&&selectedModelReady?'ready':'limited'}"></i>${runtimeStatus}</span></div>${renderSelectedSkills(model)}
         <label class="composer-input"><span class="sr-only">${t('home.objective',model.language)}</span><textarea id="objective" name="objective" rows="3" placeholder="${esc(t('home.placeholder',model.language))}" required></textarea>${renderMenu(model)}</label>
-        <div class="composer-footer"><div class="composer-tools"><button type="button" data-action="attach" aria-label="${t('home.attach',model.language)}">${icon('paperclip',{size:17})}<span>${t('home.attach',model.language)}</span></button><button type="button" data-action="open-context" aria-label="${model.language==='vi'?'Thêm ngữ cảnh':'Add context'}">@</button><button type="button" data-action="open-commands" aria-label="${model.language==='vi'?'Mở danh sách lệnh':'Open commands'}">/</button></div><div class="composer-send">${renderComposerPicker({ name:'intent', ariaLabel:t('home.intent',model.language), iconName:'spark', selected:model.intent, options:intentOptions(model) })}${renderComposerPicker({ name:'modelChoice', ariaLabel:t('common.model',model.language), iconName:'model', selected:model.selectedModel, options:modelOptions, className:'composer-select--model', searchable:modelOptions.length>12, searchLabel:model.language==='vi'?'Tìm model…':'Search models…' })}<button class="composer-submit" type="submit"${model.submitting||!model.projects.length||!providersReady||!selectedModelReady?' disabled':''}>${model.submitting?'<span class="spinner"></span>':icon('send',{size:17})}<span>${t('home.send',model.language)}</span></button></div></div>
+        <div class="composer-footer"><div class="composer-tools"><button type="button" data-action="attach" aria-label="${t('home.attach',model.language)}">${icon('paperclip',{size:17})}<span>${t('home.attach',model.language)}</span></button><button type="button" data-action="open-context" aria-label="${model.language==='vi'?'Thêm ngữ cảnh':'Add context'}">@</button><button type="button" data-action="open-commands" aria-label="${model.language==='vi'?'Mở danh sách lệnh':'Open commands'}">/</button></div><div class="composer-send">${renderComposerPicker({ name:'intent', ariaLabel:t('home.intent',model.language), iconName:'spark', selected:model.intent, options:intentOptions(model) })}${renderComposerPicker({ name:'modelChoice', ariaLabel:t('common.model',model.language), iconName:'model', selected:model.selectedModel, options:modelOptions, className:'composer-select--model', searchable:modelOptions.length>12, searchLabel:model.language==='vi'?'Tìm model…':'Search models…' })}${effortOptions.length ? renderComposerPicker({ name:'planningEffort', ariaLabel:model.language==='vi'?'Mức suy luận':'Reasoning effort', iconName:'activity', selected:model.selectedEffort, options:effortOptions, className:'composer-select--effort' }) : ''}<button class="composer-submit" type="submit"${model.submitting||!model.projects.length||!providersReady||!selectedModelReady?' disabled':''}>${model.submitting?'<span class="spinner"></span>':icon('send',{size:17})}<span>${t('home.send',model.language)}</span></button></div></div>
       </form>${model.error?`<div class="home-error" role="alert">${icon('warning',{size:16})}<span>${esc(model.error)}</span></div>`:''}
     </div>
     <div class="home-content"><section class="home-section"><header><div><p class="eyebrow">${t('home.quick',model.language)}</p><h2>${model.language==='vi'?'Bạn muốn bắt đầu thế nào?':'Choose a starting point'}</h2></div><div class="home-section__actions"><a href="#/skills" data-route="/skills">${model.language==='vi'?'Kho skill':'Skill library'} ${icon('arrow',{size:14})}</a><a href="#/settings" data-route="/settings">${model.language==='vi'?'Tùy chỉnh':'Customize'} ${icon('arrow',{size:14})}</a></div></header><div class="capability-grid">${quick.map((item)=>`<button type="button" class="capability-card" data-quick-intent="${item.intent}" data-quick-text="${esc(item.title)}"><span>${icon(item.icon,{size:19})}</span><strong>${esc(item.title)}</strong><small>${esc(item.text)}</small>${icon('arrow',{size:15,className:'capability-card__arrow'})}</button>`).join('')}</div></section>
@@ -220,9 +256,9 @@ export function createHomeController({ api, language = 'en' } = {}) {
     async load(){ patch({loading:true,error:null}); const results=await Promise.allSettled([api.get('/api/projects'),api.get('/api/missions'),api.get('/api/provider-connections'),api.get('/api/model-profiles'),api.get('/api/mcp/tools'),api.get('/api/commands'),api.get('/api/skills/catalog?limit=120'),api.get('/api/plugins'),api.get('/api/settings/effective')]);
       const [projects,missions,providers,models,tools,commands,skills,plugins,effectiveSettings]=results.map((r)=>r.status==='fulfilled'?r.value:null); const errors=results.filter((r)=>r.status==='rejected'); const routingDefault=String(effectiveSettings?.value?.agent?.model??'').trim()||'auto';
       return patch({loading:false,projects:arr(projects,['projects']),missions:arr(missions,['missions']),providers:arr(providers,['providers']),models:arr(models,['models']),tools:arr(tools,['tools']),commands:arr(commands,['commands']),skills:arr(skills,['skills']),plugins:arr(plugins,['plugins']),selectedModel:modelChosenInComposer?state.selectedModel:routingDefault,repositoryState:'ready',error:errors.length===results.length?'Nolane runtime could not be reached.':null}); },
-    setMenu(menu){ return patch({menu}); }, setIntent(intent){ return patch({intent}); }, setProject(id){ return patch({selectedProjectId:String(id ?? ''),projectMenuOpen:false,projectQuery:''}); }, setProjectMenu(open){ return patch({projectMenuOpen:Boolean(open)}); }, setProjectQuery(query){ return patch({projectQuery:String(query ?? '')}); }, setModel(id){ modelChosenInComposer=true; return patch({selectedModel:id}); }, addSkill(id){ return patch({selectedSkillIds:selectedSkillIds([...state.selectedSkillIds,id],state.skills)}); }, removeSkill(id){ return patch({selectedSkillIds:selectedSkillIds(state.selectedSkillIds.filter((item) => item !== String(id ?? '')),state.skills)}); }, setLanguage(next){ language=next; return patch({language:next}); },
+    setMenu(menu){ return patch({menu}); }, setIntent(intent){ return patch({intent}); }, setProject(id){ return patch({selectedProjectId:String(id ?? ''),projectMenuOpen:false,projectQuery:''}); }, setProjectMenu(open){ return patch({projectMenuOpen:Boolean(open)}); }, setProjectQuery(query){ return patch({projectQuery:String(query ?? '')}); }, setModel(id){ modelChosenInComposer=true; return patch({selectedModel:id,selectedEffort:null}); }, setEffort(effort){ return patch({selectedEffort:effort}); }, addSkill(id){ return patch({selectedSkillIds:selectedSkillIds([...state.selectedSkillIds,id],state.skills)}); }, removeSkill(id){ return patch({selectedSkillIds:selectedSkillIds(state.selectedSkillIds.filter((item) => item !== String(id ?? '')),state.skills)}); }, setLanguage(next){ language=next; return patch({language:next}); },
     async refreshProjects(){ const payload=await api.get('/api/projects'); const next=arr(payload,['projects']); const selected=state.selectedProjectId && next.some((item)=>String(item.id)===String(state.selectedProjectId))?state.selectedProjectId:(next[0]?.id??''); return patch({projects:next,selectedProjectId:selected}); },
     async createProject(input={}){ const project=await api.post('/api/projects',input); await this.refreshProjects(); patch({selectedProjectId:project?.id??state.selectedProjectId,projectMenuOpen:false,projectQuery:''}); return project; },
-    async submit({objective,projectId,intent='ask',modelChoice='auto',mcpAllowedTools=[],skillIds: requestedSkillIds=state.selectedSkillIds}={}){ const text=String(objective??'').trim(); if(!text) throw new Error(language==='vi'?'Hãy nhập mục tiêu nhiệm vụ trước khi gửi.':'Mission objective is required'); if(!projectId) throw new Error(language==='vi'?'Hãy chọn một dự án trước khi gửi nhiệm vụ.':'Choose a project first'); const reject = (code) => { const error=Object.assign(new Error(missionErrorMessage({payload:{code}},language)),{payload:{code}}); patch({submitting:false,error:error.message}); throw error; }; const deployment=selectedDeployment(state.models,modelChoice); const skillIds=selectedSkillIds(requestedSkillIds,state.skills); if(modelChoice!=='auto'){ const selected=state.models.find((model)=>modelDeploymentKey(model)===modelChoice); const provider=selected&&state.providers.find((item)=>String(item?.id??'')===String(selected.providerId??selected.provider??'')); if(!selected||!providerIsReady(provider)) return reject('SELECTED_MODEL_NOT_READY'); } if(!state.providers.some(providerIsReady)) return reject('PROVIDER_SETUP_REQUIRED'); patch({submitting:true,error:null,menu:null,intent,selectedProjectId:projectId,selectedModel:modelChoice,selectedSkillIds:skillIds}); try{ const result=await api.post('/api/missions/plan',{projectId,objective:text,planningProviderId:deployment?.providerId??'auto',...(deployment?.modelId?{planningModelId:deployment.modelId}:{}) ,...(deployment?{deploymentKey:deployment.deploymentKey}:{}) ,mcpAllowedTools,...(skillIds.length?{skillIds}:{})}); const mission=result?.mission??result; const next=[mission,...state.missions.filter((item)=>item.id!==mission?.id)]; patch({submitting:false,missions:next}); return mission; }catch(error){ patch({submitting:false,error:missionErrorMessage(error,language)}); throw error; } },
+    async submit({objective,projectId,intent='ask',modelChoice='auto',planningEffort=state.selectedEffort,mcpAllowedTools=[],skillIds: requestedSkillIds=state.selectedSkillIds}={}){ const text=String(objective??'').trim(); if(!text) throw new Error(language==='vi'?'Hãy nhập mục tiêu nhiệm vụ trước khi gửi.':'Mission objective is required'); if(!projectId) throw new Error(language==='vi'?'Hãy chọn một dự án trước khi gửi nhiệm vụ.':'Choose a project first'); const reject = (code) => { const error=Object.assign(new Error(missionErrorMessage({payload:{code}},language)),{payload:{code}}); patch({submitting:false,error:error.message}); throw error; }; const deployment=selectedDeployment(state.models,modelChoice); const skillIds=selectedSkillIds(requestedSkillIds,state.skills); const effort=normalizedReasoningEffort(state.models,modelChoice,planningEffort); if(modelChoice!=='auto'){ const selected=state.models.find((model)=>modelDeploymentKey(model)===modelChoice); const provider=selected&&state.providers.find((item)=>String(item?.id??'')===String(selected.providerId??selected.provider??'')); if(!selected||!providerIsReady(provider)) return reject('SELECTED_MODEL_NOT_READY'); } if(!state.providers.some(providerIsReady)) return reject('PROVIDER_SETUP_REQUIRED'); patch({submitting:true,error:null,menu:null,intent,selectedProjectId:projectId,selectedModel:modelChoice,selectedEffort:effort,selectedSkillIds:skillIds}); try{ const result=await api.post('/api/missions/plan',{projectId,objective:text,planningProviderId:deployment?.providerId??'auto',...(deployment?.modelId?{planningModelId:deployment.modelId}:{}) ,...(deployment?{deploymentKey:deployment.deploymentKey}:{}) ,...(effort?{planningEffort:effort}:{}) ,mcpAllowedTools,...(skillIds.length?{skillIds}:{})}); const mission=result?.mission??result; const next=[mission,...state.missions.filter((item)=>item.id!==mission?.id)]; patch({submitting:false,missions:next}); return mission; }catch(error){ patch({submitting:false,error:missionErrorMessage(error,language)}); throw error; } },
   });
 }

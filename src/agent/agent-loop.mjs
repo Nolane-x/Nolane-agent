@@ -246,7 +246,7 @@ export class AgentLoop {
 
   #event(type, payload, refs) { return this.store.appendEvent(createEvent(type, payload, refs)); }
 
-  async run(task, { providerId, signal = null, budgets = {}, retryDelaysMs = [250, 1_000], tools = CORE_TOOL_SCHEMAS, model = undefined } = {}) {
+  async run(task, { providerId, signal = null, budgets = {}, retryDelaysMs = [250, 1_000], tools = CORE_TOOL_SCHEMAS, model = undefined, effort = undefined } = {}) {
     const budget = new RunBudget({ ...budgets, signal });
     budget.assertActive();
     const providerOptions = {
@@ -621,11 +621,11 @@ ${JSON.stringify(dependency.metadata.handoff).slice(0, 12_000)}`,
             ? this.harnessComposer.compose({ provider, messages, tools: activeTools, task, failure: lastHarnessFailure })
             : Object.freeze({ messages, tools: activeTools, profileId: null, profileRevision: null, profileSha256: null, harnessFamily: provider.harnessFamily ?? null, receiptSha256: null });
           activeHarness = composed;
-          if (attempt === 0) this.#event('agent.model.requested', { turn, providerId: provider.id, harnessFamily: composed.harnessFamily, harnessProfileId: composed.profileId, harnessRevision: composed.profileRevision, harnessProfileSha256: composed.profileSha256, harnessReceiptSha256: composed.receiptSha256 }, refs);
+          if (attempt === 0) this.#event('agent.model.requested', { turn, providerId: provider.id, ...(model ? { model } : {}), ...(effort ? { effort } : {}), harnessFamily: composed.harnessFamily, harnessProfileId: composed.profileId, harnessRevision: composed.profileRevision, harnessProfileSha256: composed.profileSha256, harnessReceiptSha256: composed.receiptSha256 }, refs);
           await runHook('BeforeModel', { turn, providerId: provider.id, messageCount: composed.messages.length, harnessProfileId: composed.profileId, harnessRevision: composed.profileRevision });
           const requestStartedAt = performance.now();
           try {
-            response = await provider.complete({ messages: composed.messages, tools: composed.tools, cwd: projectRoot, ...(model ? { model } : {}), signal, leaseContext: { missionId: task.missionId, taskId: task.id, role: task.role ?? 'executor', harnessProfileId: composed.profileId, harnessRevision: composed.profileRevision } });
+            response = await provider.complete({ messages: composed.messages, tools: composed.tools, cwd: projectRoot, ...(model ? { model } : {}), ...(effort ? { effort } : {}), signal, leaseContext: { missionId: task.missionId, taskId: task.id, role: task.role ?? 'executor', harnessProfileId: composed.profileId, harnessRevision: composed.profileRevision } });
             this.router?.recordSuccess(provider.id);
             try {
               const usage = response?.usage ?? {};

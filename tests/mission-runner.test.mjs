@@ -61,6 +61,22 @@ test('MissionRunner carries explicitly selected skill receipts into every planne
   assert.ok(mission.tasks.every((task) => JSON.stringify(task.metadata.selectedSkills) === JSON.stringify(selectedSkills)));
 });
 
+test('MissionRunner preserves an explicit provider, model, and effort from planning through task execution', async (t) => {
+  let request;
+  const f = await fixture(t, { async run(_task, input) { request = input; return { runId: 'run-explicit-model', state: 'awaiting-verification', output: 'candidate', receipts: [] }; } });
+  const mission = await f.runner.plan({
+    projectId: f.project.id,
+    objective: 'Use the selected Codex deployment',
+    planner: async () => plan,
+    planningMetadata: { planningProviderId: 'codex-app-server', planningModelId: 'gpt-5.6-codex', planningEffort: 'high' },
+  });
+
+  await f.runner.runNext({ missionId: mission.id, workerId: 'worker-explicit-model', providerId: 'auto' });
+  assert.equal(request.providerId, 'codex-app-server');
+  assert.equal(request.model, 'gpt-5.6-codex');
+  assert.equal(request.effort, 'high');
+});
+
 test('MissionRunner runs leased work and blocks completion without passing commit-bound evidence', async (t) => {
   const f = await fixture(t);
   const mission = await f.runner.plan({ projectId: f.project.id, objective: 'Build feature', planner: async () => plan });

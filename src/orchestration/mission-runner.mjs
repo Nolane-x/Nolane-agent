@@ -123,8 +123,10 @@ export class MissionRunner {
     const combined = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal;
     this.#event('mission.task.started', { workerId, fencingToken: activeLease.fencingToken, role: preparedTask.role, executionWorkspace: preparedTask.metadata?.executionWorkspace ?? null }, { projectId: preparedTask.projectId, missionId, taskId: preparedTask.id });
     try {
+      const selectedProviderId = providerId && providerId !== 'auto' ? providerId : (mission.metadata?.planningProviderId ?? providerId ?? 'auto');
       const selectedModelId = modelId ?? mission.metadata?.planningModelId ?? undefined;
-      const result = await this.agentLoop.run(preparedTask, { providerId, ...(selectedModelId ? { model: selectedModelId } : {}), signal: combined, budgets: { ...(preparedTask.metadata?.resourceLimits ?? {}), ...(budgets ?? {}) } });
+      const selectedEffort = mission.metadata?.planningEffort ?? undefined;
+      const result = await this.agentLoop.run(preparedTask, { providerId: selectedProviderId, ...(selectedModelId ? { model: selectedModelId } : {}), ...(selectedEffort ? { effort: selectedEffort } : {}), signal: combined, budgets: { ...(preparedTask.metadata?.resourceLimits ?? {}), ...(budgets ?? {}) } });
       const handoffBase = {
         schema: 'forge.task.handoff.v1',
         taskId: preparedTask.id,

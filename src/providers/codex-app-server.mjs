@@ -44,6 +44,11 @@ function boundedStringList(value, limit = 32) {
   return Object.freeze([...new Set(value.map((item) => String(item ?? '').trim()).filter(Boolean))].slice(0, limit));
 }
 
+function boundedReasoningEfforts(value, limit = 32) {
+  if (!Array.isArray(value)) return Object.freeze([]);
+  return Object.freeze([...new Set(value.map((item) => String(typeof item === 'object' ? item?.reasoningEffort : item).trim()).filter(Boolean))].slice(0, limit));
+}
+
 function catalogEntries(result) {
   if (Array.isArray(result?.data)) return result.data;
   if (Array.isArray(result?.models)) return result.models;
@@ -62,7 +67,7 @@ function normalizeCatalogModel(model, observedAt) {
       source: 'codex-app-server',
       hidden: model?.hidden === true,
       defaultReasoningEffort: model?.defaultReasoningEffort == null ? null : String(model.defaultReasoningEffort),
-      supportedReasoningEfforts: boundedStringList(model?.supportedReasoningEfforts),
+      supportedReasoningEfforts: boundedReasoningEfforts(model?.supportedReasoningEfforts),
       additionalSpeedTiers: boundedStringList(model?.additionalSpeedTiers),
       serviceTiers: boundedStringList(model?.serviceTiers),
       defaultServiceTier: model?.defaultServiceTier == null ? null : String(model.defaultServiceTier),
@@ -160,11 +165,11 @@ export class CodexAppServerClient {
     return Object.freeze(result.thread ?? result);
   }
 
-  async startTurn({ threadId, input, cwd = this.cwd, model = undefined, sandboxPolicy = undefined, approvalPolicy = undefined, signal = null } = {}) {
+  async startTurn({ threadId, input, cwd = this.cwd, model = undefined, effort = undefined, sandboxPolicy = undefined, approvalPolicy = undefined, signal = null } = {}) {
     await this.connect();
     if (!String(threadId ?? '').trim()) throw new TypeError('threadId is required');
     const text = typeof input === 'string' ? input : JSON.stringify(input ?? '');
-    const params = { threadId: String(threadId), input: [{ type: 'text', text }], ...(cwd ? { cwd } : {}), ...(model ? { model } : {}), sandboxPolicy: normalizeTurnSandboxPolicy(sandboxPolicy), ...(approvalPolicy ? { approvalPolicy } : {}) };
+    const params = { threadId: String(threadId), input: [{ type: 'text', text }], ...(cwd ? { cwd } : {}), ...(model ? { model } : {}), ...(effort ? { effort: String(effort) } : {}), sandboxPolicy: normalizeTurnSandboxPolicy(sandboxPolicy), ...(approvalPolicy ? { approvalPolicy } : {}) };
     const started = await this.rpc.request('turn/start', params, { signal, timeoutMs: this.timeoutMs });
     const turn = started.turn ?? started;
     const state = this.#turnState(threadId, turn.id);
@@ -189,20 +194,20 @@ export class CodexAppServerClient {
     return Object.freeze({ id: thread.id, threadId: thread.id, cwd: scope.cwd ?? this.cwd, openedFor: Object.freeze({ projectId: scope.projectId ?? null, missionId: scope.missionId ?? null, repositoryId: scope.repositoryId ?? null }), signalBound: Boolean(signal) });
   }
 
-  async completeInSession(session, { messages = [], tools = [], signal = null, model = undefined, cwd = undefined } = {}) {
+  async completeInSession(session, { messages = [], tools = [], signal = null, model = undefined, effort = undefined, cwd = undefined } = {}) {
     const threadId = String(session?.threadId ?? session?.id ?? '').trim();
     if (!threadId) throw new TypeError('session threadId is required');
     const prompt = buildForgeActionPrompt(messages, tools);
-    const result = await this.startTurn({ threadId, input: prompt, cwd: cwd ?? session?.cwd ?? this.cwd, model, signal });
+    const result = await this.startTurn({ threadId, input: prompt, cwd: cwd ?? session?.cwd ?? this.cwd, model, effort, signal });
     const envelope = parseForgeActionEnvelope(result.text, tools);
     return Object.freeze({ providerId: this.id, model: model ?? 'codex-subscription', text: envelope ? envelope.text : result.text, toolCalls: envelope?.toolCalls ?? Object.freeze([]), finishReason: result.status === 'completed' ? 'stop' : result.status, usage: result.usage, raw: Object.freeze({ ...result, prompt }) });
   }
 
   async closeSession(_session, _options = {}) { return Object.freeze({ closed: true, processRetained: this.state === 'ready' }); }
 
-  async complete({ messages = [], tools = [], signal = null, model = undefined, cwd = this.cwd } = {}) {
+  async complete({ messages = [], tools = [], signal = null, model = undefined, effort = undefined, cwd = this.cwd } = {}) {
     const thread = await this.startThread({ cwd, ephemeral: true, sandboxPolicy: { type: 'read-only' }, approvalPolicy: 'untrusted' });
-    return this.completeInSession({ id: thread.id, threadId: thread.id, cwd }, { messages, tools, signal, model, cwd });
+    return this.completeInSession({ id: thread.id, threadId: thread.id, cwd }, { messages, tools, signal, model, effort, cwd });
   }
 
   async close() { await this.rpc.close(); this.state = 'closed'; }

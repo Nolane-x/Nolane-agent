@@ -2194,10 +2194,12 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
         : [];
       const planningProviderId = String(body.planningProviderId ?? 'auto').trim() || 'auto';
       const planningModelId = String(body.planningModelId ?? body.deployment?.modelId ?? '').trim() || null;
+      const requestedPlanningEffort = String(body.planningEffort ?? '').trim().toLowerCase() || null;
+      if (requestedPlanningEffort && !new Set(['none', 'minimal', 'low', 'medium', 'high', 'xhigh']).has(requestedPlanningEffort)) throw Object.assign(new TypeError('planningEffort is invalid'), { statusCode: 400, code: 'PLANNING_EFFORT_INVALID' });
       const basePlanner = body.plan
         ? async () => body.plan
         : plannerService
-          ? async (input) => plannerService.plan({ ...input, providerId: planningProviderId, ...(planningModelId ? { modelId: planningModelId } : {}) })
+          ? async (input) => plannerService.plan({ ...input, providerId: planningProviderId, ...(planningModelId ? { modelId: planningModelId } : {}), ...(requestedPlanningEffort ? { effort: requestedPlanningEffort } : {}) })
           : async (input) => defaultPlanner(input);
       const planner = async (input) => {
         const plan = await basePlanner(input);
@@ -2214,7 +2216,7 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
         projectId,
         objective,
         planner,
-        planningMetadata: { planningProviderId, ...(planningModelId ? { planningModelId } : {}), ...(selectedSkills.length ? { selectedSkills } : {}) },
+        planningMetadata: { planningProviderId, ...(planningModelId ? { planningModelId } : {}), ...(requestedPlanningEffort ? { planningEffort: requestedPlanningEffort } : {}), ...(selectedSkills.length ? { selectedSkills } : {}) },
       });
       return json(res, 201, result);
     }
