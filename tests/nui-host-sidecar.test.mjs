@@ -99,7 +99,7 @@ test('flagship envelope compiles auditable routing, omissions, capability bounda
   assert.equal(envelope.task_profile_checksum_sha256, profile.checksum_sha256);
   assert.equal(envelope.authority.host_authoritative, true);
   assert.equal(envelope.authority.authority_escalation, false);
-  assert.deepEqual(envelope.authority.allowed_capabilities.sort(), ['browser', 'filesystem', 'image', 'shell'].sort());
+  assert.deepEqual([...envelope.authority.allowed_capabilities].sort(), ['browser', 'filesystem', 'image', 'shell'].sort());
   assert.equal(envelope.capability_evidence.screenReader, 'UNKNOWN');
   assert.equal(envelope.capability_evidence.performanceTrace, 'UNKNOWN');
   assert.equal(envelope.capability_evidence.screenshots, 'AVAILABLE');
