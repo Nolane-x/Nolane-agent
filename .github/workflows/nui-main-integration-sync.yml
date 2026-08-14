@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - codex/nui-main-integration-repair
+      - codex/nui-flagship-integration
   workflow_dispatch:
 
 permissions:
@@ -80,4 +81,4 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'chore(evidence): sync canonical NUI integration artifacts'
-          git push origin HEAD:codex/nui-main-integration-repair
+          git push origin HEAD:"$GITHUB_REF_NAME"
