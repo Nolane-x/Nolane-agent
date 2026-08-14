@@ -21,6 +21,11 @@ test('runtime performance evidence uses the canonical UI budgets and remains can
   assert.match(source, /\/api\/onboarding\/recommended/);
   assert.match(source, /primaryUse:\s*'software'/);
   assert.match(source, /setup:\s*onboardingSetup/);
+  assert.match(source, /coldPageToHomeMs/);
+  assert.match(source, /\.locator\('\.app-shell'\)\.waitFor/);
+  assert.match(source, /window\.__nolaneLongTasks\s*=\s*\[\]/);
+  assert.match(source, /startupLongTaskMaxMs/);
+  assert.match(source, /homeInteractive:\s*'source_shell_visible_proxy_not_electron_window_show'/);
   assert.match(source, /nolane\.ui\.performance-runtime-failure\.v1/);
   assert.match(source, /writeFile\(path\.join\(root, 'failure\.json'\)/);
   assert.match(source, /candidate_unverified/);
