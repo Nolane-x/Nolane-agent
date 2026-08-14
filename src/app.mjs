@@ -398,7 +398,7 @@ const providers = new ProviderRegistry({ executionPool: providerRuntimePool, ses
 const providerSandboxRoot = path.join(config.dataDir, 'provider-sandboxes');
 await mkdir(providerSandboxRoot, { recursive: true });
 const providerOverrides = {};
-for (const id of ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'cursor-agent', 'kiro-cli', 'factory-droid', 'auggie', 'amp', 'amazon-q', 'crush', 'roo-code', 'qwen-code', 'continue-cli', 'cline', 'mistral-vibe-code', 'aider', 'goose']) {
+for (const id of ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'cursor-agent', 'grok-build', 'kiro-cli', 'factory-droid', 'auggie', 'amp', 'amazon-q', 'crush', 'roo-code', 'qwen-code', 'continue-cli', 'cline', 'mistral-vibe-code', 'aider', 'goose', 'qoder', 'pi', 'kilo']) {
   const cwd = path.join(providerSandboxRoot, id); await mkdir(cwd, { recursive: true }); providerOverrides[id] = { cwd };
 }
 for (const provider of createBuiltInCliProviders(providerOverrides)) providers.register(provider);
@@ -462,6 +462,30 @@ const providerConnections = new ProviderConnectionService({
       statusArgs: ['--version'],
       loginArgs: { augment: ['login'] },
       cwd: path.join(providerSandboxRoot, 'auggie'),
+    }),
+    qoder: createAvailabilityOnlyCliAuthAdapter({
+      id: 'qoder',
+      label: 'Qoder CLI',
+      executable: 'qodercli',
+      statusArgs: ['--version'],
+      loginArgs: { interactive: [] },
+      cwd: path.join(providerSandboxRoot, 'qoder'),
+    }),
+    pi: createAvailabilityOnlyCliAuthAdapter({
+      id: 'pi',
+      label: 'Pi Coding Agent',
+      executable: 'pi',
+      statusArgs: ['--version'],
+      loginArgs: { interactive: [] },
+      cwd: path.join(providerSandboxRoot, 'pi'),
+    }),
+    kilo: createAvailabilityOnlyCliAuthAdapter({
+      id: 'kilo',
+      label: 'Kilo Code CLI',
+      executable: 'kilo',
+      statusArgs: ['--version'],
+      loginArgs: { interactive: [] },
+      cwd: path.join(providerSandboxRoot, 'kilo'),
     }),
   },
 });

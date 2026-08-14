@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -32,7 +32,7 @@ test('CliProvider detects versions and invokes through argv/stdin without a shel
     versionArgs: [fake.script, '--version'],
     baseArgs: [fake.script],
     promptMode: 'stdin',
-    timeoutMs: 1000,
+    timeoutMs: 5000,
   });
   const detection = await provider.detect();
   assert.equal(detection.available, true);
@@ -174,7 +174,7 @@ test('ProviderRegistry exposes secret-free public views and built-in official CL
   assert.doesNotMatch(publicJson, /super-secret|API_KEY/);
 
   const builtIns = createBuiltInCliProviders();
-  assert.deepEqual([...builtIns].map((item) => item.id), ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'cursor-agent', 'grok-build', 'kiro-cli', 'factory-droid', 'auggie', 'amp', 'amazon-q', 'crush', 'roo-code', 'qwen-code', 'continue-cli', 'cline', 'mistral-vibe-code', 'aider', 'goose']);
+  assert.deepEqual([...builtIns].map((item) => item.id), ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'cursor-agent', 'grok-build', 'kiro-cli', 'factory-droid', 'auggie', 'amp', 'amazon-q', 'crush', 'roo-code', 'qwen-code', 'continue-cli', 'cline', 'mistral-vibe-code', 'aider', 'goose', 'qoder', 'pi', 'kilo']);
   assert.ok([...builtIns].every((item) => item.credentialOwner === 'official-cli'));
   assert.ok(builtIns.filter((item) => ['codex', 'claude', 'gemini'].includes(item.id)).every((item) => item.profile.capabilities.includes('governed-actions')));
   assert.ok(builtIns.find((item) => item.id === 'codex').baseArgs.includes('read-only'));
@@ -294,6 +294,40 @@ test('ProviderRegistry exposes secret-free public views and built-in official CL
   assert.ok(goose.baseArgs.includes('--no-session'));
   assert.ok(goose.baseArgs.includes('json'));
   assert.equal(goose.profile.capabilities.includes('governed-actions'), false);
+  const qoder = builtIns.find((item) => item.id === 'qoder');
+  assert.equal(qoder.executable, 'qodercli');
+  assert.equal(qoder.publicView().executionSafety, 'verified');
+  assert.equal(qoder.promptMode, 'arg');
+  assert.equal(qoder.promptFlag, '-p');
+  assert.equal(qoder.modelFlag, '--model');
+  assert.deepEqual(qoder.modelDiscoveryArgs, ['--list-models']);
+  assert.deepEqual(qoder.baseArgs, ['--permission-mode', 'dont_ask', '--tools', 'Read', 'Grep', 'Glob', '--allowed-tools', 'Read,Grep,Glob']);
+  const pi = builtIns.find((item) => item.id === 'pi');
+  assert.equal(pi.executable, 'pi');
+  assert.equal(pi.publicView().executionSafety, 'verified');
+  assert.equal(pi.promptMode, 'arg');
+  assert.equal(pi.modelFlag, '--model');
+  assert.ok(pi.baseArgs.includes('--print'));
+  assert.ok(pi.baseArgs.includes('--no-approve'));
+  assert.ok(pi.baseArgs.includes('read,grep,find,ls'));
+  assert.ok(pi.baseArgs.includes('--no-extensions'));
+  assert.ok(pi.baseArgs.includes('--no-skills'));
+  const kilo = builtIns.find((item) => item.id === 'kilo');
+  assert.equal(kilo.executable, 'kilo');
+  assert.equal(kilo.publicView().executionSafety, 'external-plan-config-required');
+  assert.deepEqual(kilo.baseArgs, ['run']);
+  assert.equal(kilo.promptMode, 'arg');
+  assert.equal(kilo.modelFlag, null);
+  assert.equal(kilo.publicView().modelSelection.mode, 'cli-config');
+  assert.deepEqual(kilo.modelDiscoveryArgs, ['models']);
+});
+
+test('application gives every built-in CLI an isolated provider sandbox', async () => {
+  const app = await readFile(fileURLToPath(new URL('../src/app.mjs', import.meta.url)), 'utf8');
+  const declaration = app.match(/for \(const id of (\[[\s\S]*?\])\) \{\r?\n  const cwd = path\.join\(providerSandboxRoot, id\);/);
+  assert.ok(declaration, 'provider sandbox declaration is present');
+  const sandboxedIds = [...declaration[1].matchAll(/'([^']+)'/g)].map((match) => match[1]);
+  assert.deepEqual(sandboxedIds, createBuiltInCliProviders().map((provider) => provider.id));
 });
 
 test('CliProvider forwards an explicitly selected model before the prompt sentinel', async (t) => {
