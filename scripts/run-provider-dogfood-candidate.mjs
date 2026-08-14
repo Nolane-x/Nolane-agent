@@ -4,9 +4,15 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import { ProviderRegistry, createBuiltInCliProviders } from '../src/providers/provider-registry.mjs';
-import { runProviderDogfoodCandidate } from '../src/providers/provider-dogfood-candidate-runner.mjs';
+import {
+  PROVIDER_DOGFOOD_PROFILE_V1,
+  providerDogfoodProfileDescriptor,
+  runProviderDogfoodCandidate,
+  sha256Text,
+} from '../src/providers/provider-dogfood-candidate-runner.mjs';
 
 const FORBIDDEN_CANDIDATE_KEYS = new Set(['prompt', 'output', 'stdout', 'stderr', 'transcript', 'messages', 'pass', 'passed']);
+const HASH_PATTERN = /^[0-9a-f]{64}$/;
 
 function dogfoodError(code, message) {
   return Object.assign(new Error(message), { code });
@@ -61,6 +67,43 @@ function walkCandidate(value, visit) {
   }
 }
 
+function exactProfile(candidateProfile) {
+  if (!candidateProfile || typeof candidateProfile !== 'object' || Array.isArray(candidateProfile)) throw new Error('profile descriptor required');
+  const expected = providerDogfoodProfileDescriptor();
+  for (const key of ['version', 'sha256', 'total_cases', 'behavioral_cases', 'adversarial_probes']) {
+    if (candidateProfile[key] !== expected[key]) throw new Error(`profile ${key} mismatch`);
+  }
+  if (!HASH_PATTERN.test(String(candidateProfile.sha256))) throw new Error('profile hash invalid');
+}
+
+function validateCases(candidateCases) {
+  if (!Array.isArray(candidateCases)) throw new Error('candidate cases required');
+  if (candidateCases.length !== PROVIDER_DOGFOOD_PROFILE_V1.cases.length) throw new Error('candidate case count mismatch');
+
+  for (let index = 0; index < PROVIDER_DOGFOOD_PROFILE_V1.cases.length; index += 1) {
+    const expected = PROVIDER_DOGFOOD_PROFILE_V1.cases[index];
+    const item = candidateCases[index];
+    if (!item || typeof item !== 'object' || Array.isArray(item)) throw new Error(`candidate case ${index + 1} invalid`);
+    if (item.id !== expected.id) throw new Error(`candidate case ${index + 1} id mismatch`);
+    if (item.kind !== expected.kind) throw new Error(`candidate case ${index + 1} kind mismatch`);
+    if (item.input_sha256 !== sha256Text(expected.prompt)) throw new Error(`candidate case ${index + 1} input hash mismatch`);
+    if (!HASH_PATTERN.test(String(item.output_sha256 ?? ''))) throw new Error(`candidate case ${index + 1} result hash invalid`);
+    if (!Number.isInteger(item.output_bytes) || item.output_bytes < 0) throw new Error(`candidate case ${index + 1} result byte count invalid`);
+    if (!['completed', 'failed'].includes(item.status)) throw new Error(`candidate case ${index + 1} status invalid`);
+    if (item.status === 'failed' && !String(item.error_code ?? '').trim()) throw new Error(`candidate case ${index + 1} failure code required`);
+  }
+}
+
+function validateSummary(summary, cases) {
+  if (!summary || typeof summary !== 'object' || Array.isArray(summary)) throw new Error('candidate summary required');
+  const failed = cases.filter((item) => item.status !== 'completed').length;
+  if (summary.total !== cases.length) throw new Error('candidate summary total mismatch');
+  // completed means the case execution reached a terminal outcome, including a
+  // provider-level failure; failed is the subset with a non-completed status.
+  if (summary.completed !== cases.length) throw new Error('candidate summary completed mismatch');
+  if (summary.failed !== failed) throw new Error('candidate summary failed mismatch');
+}
+
 export function validateProviderDogfoodCandidate(candidate) {
   try {
     if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate)) throw new Error('candidate object required');
@@ -68,15 +111,14 @@ export function validateProviderDogfoodCandidate(candidate) {
     if (candidate.evidence_kind !== 'provider_real_dogfood_candidate') throw new Error('candidate evidence kind mismatch');
     if (candidate.certification_state !== 'candidate_unverified') throw new Error('candidate cannot self-certify');
     if (candidate.final_decision !== 'external_gate') throw new Error('candidate cannot decide pass');
+    if (!candidate.provider || typeof candidate.provider !== 'object' || Array.isArray(candidate.provider)) throw new Error('candidate provider metadata required');
+    if (candidate.provider.execution_safety !== 'verified') throw new Error('candidate provider execution safety is not verified');
     walkCandidate(candidate, (key) => {
       if (FORBIDDEN_CANDIDATE_KEYS.has(String(key).toLowerCase())) throw new Error(`forbidden candidate field: ${key}`);
     });
-    if (candidate.profile?.sha256 != null && !/^[0-9a-f]{64}$/.test(String(candidate.profile.sha256))) throw new Error('profile hash invalid');
-    for (const item of Array.isArray(candidate.cases) ? candidate.cases : []) {
-      if (!/^[0-9a-f]{64}$/.test(String(item.input_sha256 ?? ''))) throw new Error('input hash invalid');
-      if (!/^[0-9a-f]{64}$/.test(String(item.output_sha256 ?? ''))) throw new Error('result hash invalid');
-      if (!Number.isInteger(item.output_bytes) || item.output_bytes < 0) throw new Error('result byte count invalid');
-    }
+    exactProfile(candidate.profile);
+    validateCases(candidate.cases);
+    validateSummary(candidate.summary, candidate.cases);
     return candidate;
   } catch (error) {
     throw dogfoodError('DOGFOOD_CANDIDATE_INVALID', `Provider dogfood candidate rejected: ${String(error?.message ?? 'invalid candidate').slice(0, 180)}`);
