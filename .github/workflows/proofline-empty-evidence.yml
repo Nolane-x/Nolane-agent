@@ -1,0 +1,106 @@
+name: Proofline empty runtime evidence
+
+on:
+  pull_request:
+    paths:
+      - 'ui-v3/**'
+      - 'src/**'
+      - 'scripts/capture-proofline-empty-evidence.mjs'
+      - 'tests/nui-proofline-empty-runtime-evidence.test.mjs'
+      - '.github/workflows/proofline-empty-evidence.yml'
+      - 'package.json'
+      - 'package-lock.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  empty-runtime-evidence:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    env:
+      NOLANE_AGENT_HOST: 127.0.0.1
+      NOLANE_AGENT_PORT: 4175
+      NOLANE_AGENT_TOKEN: nolane-proofline-empty-evidence-token
+      NOLANE_UI_RUNTIME_URL: http://127.0.0.1:4175
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install locked source dependencies
+        run: npm ci --ignore-scripts
+      - name: Build and verify committed UI distribution
+        shell: pwsh
+        run: |
+          npm run build:ui-v3
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --exit-code -- ui-dist
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Install Chromium and accessibility runtime on Linux
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.58.2 @axe-core/playwright@4.12.1
+          npx playwright install --with-deps chromium
+      - name: Install Chromium and accessibility runtime on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.58.2 @axe-core/playwright@4.12.1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npx playwright install chromium
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Start authenticated source runtime
+        shell: pwsh
+        run: |
+          $dataDir = Join-Path $env:RUNNER_TEMP 'nolane-proofline-empty-data'
+          $output = Join-Path $env:RUNNER_TEMP 'nolane-proofline-empty-evidence'
+          $stdout = Join-Path $env:RUNNER_TEMP 'nolane-proofline-empty.stdout.log'
+          $stderr = Join-Path $env:RUNNER_TEMP 'nolane-proofline-empty.stderr.log'
+          $env:NOLANE_AGENT_DATA_DIR = $dataDir
+          "NOLANE_AGENT_DATA_DIR=$dataDir" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "NOLANE_UI_EMPTY_OUTPUT=$output" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          $runtime = Start-Process -FilePath node -ArgumentList 'src/app.mjs' -RedirectStandardOutput $stdout -RedirectStandardError $stderr -PassThru
+          "NOLANE_PROOFLINE_EMPTY_PID=$($runtime.Id)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          $healthy = $false
+          for ($attempt = 1; $attempt -le 60; $attempt += 1) {
+            try {
+              Invoke-WebRequest -Uri "$env:NOLANE_UI_RUNTIME_URL/health" -UseBasicParsing -ErrorAction Stop | Out-Null
+              $healthy = $true
+              break
+            } catch {
+              Start-Sleep -Seconds 1
+            }
+          }
+          if (!$healthy) {
+            Get-Content -LiteralPath $stdout -ErrorAction SilentlyContinue
+            Get-Content -LiteralPath $stderr -ErrorAction SilentlyContinue
+            throw 'Proofline empty-state runtime did not become healthy within 60 seconds'
+          }
+      - name: Capture unselected Proofline evidence
+        shell: pwsh
+        run: |
+          node scripts/capture-proofline-empty-evidence.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Upload Proofline empty-state evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: proofline-empty-runtime-${{ runner.os }}
+          path: ${{ runner.temp }}/nolane-proofline-empty-evidence
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Stop source runtime
+        if: always()
+        shell: pwsh
+        run: |
+          if ($env:NOLANE_PROOFLINE_EMPTY_PID) {
+            Stop-Process -Id ([int]$env:NOLANE_PROOFLINE_EMPTY_PID) -Force -ErrorAction SilentlyContinue
+          }
