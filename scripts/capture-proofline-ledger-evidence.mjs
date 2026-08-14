@@ -9,6 +9,7 @@ import { chromium } from 'playwright';
 const STATES = Object.freeze([
   Object.freeze({ id: 'mission-proofline-ledger', viewport: Object.freeze({ width: 1440, height: 1000 }) }),
   Object.freeze({ id: 'mission-proofline-ledger-compact', viewport: Object.freeze({ width: 820, height: 1000 }) }),
+  Object.freeze({ id: 'mission-proofline-ledger-nocturne', viewport: Object.freeze({ width: 1440, height: 1000 }), theme: 'nocturne' }),
 ]);
 const WCAG_TAGS = Object.freeze(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']);
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
@@ -103,6 +104,17 @@ async function createFixture(root, credential) {
   });
 }
 
+async function applyStateAppearance(root, credential, state) {
+  if (!state.theme) return;
+  await apiRequest(root, credential, '/api/settings', {
+    method: 'PUT',
+    body: {
+      layer: 'user',
+      patch: { appearance: { theme: state.theme, accent: 'emerald' } },
+    },
+  });
+}
+
 async function assertLedgerEvidence(page, state) {
   const ledger = page.locator('.activity-filament');
   await ledger.waitFor({ state: 'visible', timeout: 20_000 });
@@ -170,6 +182,7 @@ export async function captureProoflineLedgerEvidence({ baseUrl, token, outputDir
   const captures = [];
   try {
     for (const state of STATES) {
+      await applyStateAppearance(root, credential, state);
       const context = await browser.newContext({ viewport: state.viewport, deviceScaleFactor: 1 });
       const page = await context.newPage();
       const pageErrors = [];
@@ -180,6 +193,9 @@ export async function captureProoflineLedgerEvidence({ baseUrl, token, outputDir
         const mission = document.querySelector('.mission-spotlight');
         return location.hash.includes(encodeURIComponent(missionId)) && mission?.textContent?.includes(objective);
       }, { missionId: fixture.missionId, objective: fixture.objective }, { timeout: 20_000 });
+      if (state.theme) {
+        await page.waitForFunction((theme) => document.documentElement.dataset.theme === theme, state.theme, { timeout: 10_000 });
+      }
 
       const runtimeAssertions = await assertLedgerEvidence(page, state);
       if (pageErrors.length) throw new Error(`${state.id} emitted page errors: ${pageErrors.join(' | ')}`);
@@ -191,6 +207,7 @@ export async function captureProoflineLedgerEvidence({ baseUrl, token, outputDir
         id: state.id,
         route: '/missions',
         viewport: Object.freeze({ ...state.viewport, deviceScaleFactor: 1 }),
+        appearance: Object.freeze({ theme: state.theme ?? 'default' }),
         file: filename,
         bytes: body.length,
         sha256: sha256(body),
@@ -209,6 +226,7 @@ export async function captureProoflineLedgerEvidence({ baseUrl, token, outputDir
     claims: Object.freeze({
       ledgerViewportEvidence: true,
       receiptDiscoverabilityObserved: true,
+      nocturneObserved: true,
       generatorSelfCertification: false,
       independentScreenReaderEvidence: 'UNKNOWN',
     }),
