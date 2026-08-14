@@ -7,7 +7,10 @@
 .session-sidebar__groups section h2,
 .session-sidebar__projects > header h2,
 .session-row small,
-.recent-mission__copy small,
-.recent-mission__badge {
+.recent-mission__copy small {
   color: var(--text-secondary);
+}
+
+.recent-mission__badge[data-tone="neutral"] {
+  color: var(--text-primary);
 }
