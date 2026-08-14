@@ -174,7 +174,7 @@ test('ProviderRegistry exposes secret-free public views and built-in official CL
   assert.doesNotMatch(publicJson, /super-secret|API_KEY/);
 
   const builtIns = createBuiltInCliProviders();
-  assert.deepEqual([...builtIns].map((item) => item.id), ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'cursor-agent', 'grok-build', 'kiro-cli', 'factory-droid', 'auggie', 'amp', 'amazon-q', 'crush', 'roo-code', 'qwen-code', 'continue-cli', 'cline', 'mistral-vibe-code', 'aider', 'goose', 'qoder', 'pi', 'kilo']);
+  assert.deepEqual([...builtIns].map((item) => item.id), ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'cursor-agent', 'grok-build', 'kiro-cli', 'factory-droid', 'auggie', 'amp', 'amazon-q', 'crush', 'roo-code', 'qwen-code', 'continue-cli', 'cline', 'mistral-vibe-code', 'aider', 'goose', 'qoder', 'pi', 'kilo', 'kimi-code']);
   assert.ok([...builtIns].every((item) => item.credentialOwner === 'official-cli'));
   assert.ok(builtIns.filter((item) => ['codex', 'claude', 'gemini'].includes(item.id)).every((item) => item.profile.capabilities.includes('governed-actions')));
   assert.ok(builtIns.find((item) => item.id === 'codex').baseArgs.includes('read-only'));
@@ -190,6 +190,17 @@ test('ProviderRegistry exposes secret-free public views and built-in official CL
   assert.equal(builtIns.find((item) => item.id === 'opencode').publicView().modelDiscovery.mode, 'command');
   assert.equal(builtIns.find((item) => item.id === 'opencode').publicView().modelDiscovery.live, true);
   assert.deepEqual(builtIns.find((item) => item.id === 'opencode').modelDiscoveryArgs, ['models', '--refresh']);
+  const kimi = builtIns.find((item) => item.id === 'kimi-code');
+  assert.equal(kimi.executable, 'kimi');
+  assert.deepEqual(kimi.baseArgs, ['--output-format', 'stream-json']);
+  assert.equal(kimi.promptMode, 'arg');
+  assert.equal(kimi.promptFlag, '--prompt');
+  assert.equal(kimi.modelFlag, '--model');
+  assert.equal(kimi.publicView().modelDiscovery.supported, false);
+  assert.equal(kimi.publicView().executionSafety, 'external-plan-config-required');
+  assert.equal(kimi.profile.capabilities.includes('governed-actions'), false);
+  assert.ok(!kimi.baseArgs.includes('--yolo'));
+  assert.ok(!kimi.baseArgs.includes('--auto'));
   const copilot = builtIns.find((item) => item.id === 'github-copilot');
   assert.deepEqual(copilot.modelCatalog, ['claude-sonnet-4.6', 'gpt-5.4', 'claude-haiku-4.5', 'gpt-5.3-codex', 'gemini-3.1-pro-preview', 'gemini-3.5-flash', 'gemini-3.6-flash', 'mai-code-1-flash']);
   assert.equal(copilot.publicView().modelDiscovery.mode, 'compatibility-catalog');
@@ -328,6 +339,7 @@ test('application gives every built-in CLI an isolated provider sandbox', async 
   assert.ok(declaration, 'provider sandbox declaration is present');
   const sandboxedIds = [...declaration[1].matchAll(/'([^']+)'/g)].map((match) => match[1]);
   assert.deepEqual(sandboxedIds, createBuiltInCliProviders().map((provider) => provider.id));
+  assert.match(app, /'kimi-code': createAvailabilityOnlyCliAuthAdapter\(\{[\s\S]*?executable: 'kimi',[\s\S]*?loginArgs: \{ device: \['login'\] \}/);
 });
 
 test('CliProvider forwards an explicitly selected model before the prompt sentinel', async (t) => {
