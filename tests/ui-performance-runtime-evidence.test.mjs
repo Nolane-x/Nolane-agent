@@ -16,6 +16,9 @@ test('runtime performance evidence uses the canonical UI budgets and remains can
   assert.match(source, /TaskDuration/);
   assert.match(source, /JSHeapUsedSize/);
   assert.match(source, /PerformanceObserver/);
+  assert.match(source, /__nolanePerfPhase/);
+  assert.match(source, /longTaskRecords/);
+  assert.match(source, /phase:\s*window\.__nolanePerfPhase/);
   assert.match(source, /warmRoute/);
   assert.match(source, /\/api\/onboarding\/status/);
   assert.match(source, /\/api\/onboarding\/recommended/);
