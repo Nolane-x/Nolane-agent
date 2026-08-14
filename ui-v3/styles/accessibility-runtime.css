@@ -1,7 +1,7 @@
 /*
  * Cross-surface runtime accessibility corrections discovered by the visual gate.
  * These overrides preserve the existing hierarchy while keeping compact shell
- * metadata and neutral mission state readable against the current surfaces.
+ * metadata and compact mission state readable against the current surfaces.
  */
 
 .session-sidebar__groups section h2,
@@ -12,5 +12,9 @@
 }
 
 .recent-mission__badge[data-tone="neutral"] {
+  color: var(--text-primary);
+}
+
+.recent-mission__badge[data-tone="active"] {
   color: var(--text-primary);
 }
