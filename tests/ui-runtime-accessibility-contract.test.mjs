@@ -32,6 +32,11 @@ test('runtime accessibility corrections remain a late semantic layer before host
       `the tiny ${tone} mission badge needs primary text contrast while its background preserves state`,
     );
   }
+  assert.match(
+    css,
+    /button\[data-workroom-directory\]\s*>\s*strong\s*\{[^}]*color:\s*var\(--text-primary\)/s,
+    'workroom directory labels need primary text contrast while the directory icon retains accent semantics',
+  );
   assert.doesNotMatch(
     css,
     /\.recent-mission__badge\s*\{[^}]*color:/s,
