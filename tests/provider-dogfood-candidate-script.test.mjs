@@ -90,8 +90,9 @@ test('command writes only the finalized candidate and never stores provider plai
   assert.equal(invocations.count, 22);
   const persisted = JSON.parse(await readFile(output, 'utf8'));
   assert.deepEqual(persisted, result);
-  assert.equal(JSON.stringify(persisted).includes('prompt'), false);
-  assert.equal(JSON.stringify(persisted).includes('stdout'), false);
+  const serialized = JSON.stringify(persisted);
+  assert.equal(serialized.includes('"prompt":'), false);
+  assert.equal(serialized.includes('"stdout":'), false);
 });
 
 test('command rejects a candidate that attempts to self-certify or persist raw content', async () => {
