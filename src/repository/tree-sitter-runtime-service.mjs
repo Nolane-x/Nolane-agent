@@ -7,6 +7,7 @@ import { canonicalSha256 } from '../../vendor/forge-os/src/core/canonical-json.m
 
 const execFileAsync = promisify(execFile);
 const SOURCE_EXTENSIONS = new Set(['.js', '.mjs', '.cjs', '.jsx', '.ts', '.mts', '.cts', '.tsx', '.json', '.py', '.go', '.rs', '.java', '.c', '.h', '.cc', '.cpp', '.hpp', '.cs', '.rb', '.php', '.swift', '.kt', '.kts']);
+const DEFAULT_PARSE_TIMEOUT_MS = 30_000;
 
 function coded(code, message, statusCode = 400) { return Object.assign(new Error(message), { code, statusCode }); }
 function required(value, label) { const text = String(value ?? '').trim(); if (!text) throw new TypeError(`${label} is required`); return text; }
@@ -18,23 +19,23 @@ function quoteWindowsCommandArgument(value) {
 function defaultRunner(command, args, options = {}) {
   if (process.platform === 'win32' && command === 'tree-sitter') {
     const commandLine = ['tree-sitter.cmd', ...args.map(quoteWindowsCommandArgument)].join(' ');
-    return execFileAsync(process.env.ComSpec ?? 'cmd.exe', ['/d', '/s', '/c', commandLine], { cwd: options.cwd, windowsHide: true, windowsVerbatimArguments: true, timeout: options.timeoutMs ?? 15_000, maxBuffer: options.maxOutputBytes ?? 2_000_000 });
+    return execFileAsync(process.env.ComSpec ?? 'cmd.exe', ['/d', '/s', '/c', commandLine], { cwd: options.cwd, windowsHide: true, windowsVerbatimArguments: true, timeout: options.timeoutMs ?? DEFAULT_PARSE_TIMEOUT_MS, maxBuffer: options.maxOutputBytes ?? 2_000_000 });
   }
-  return execFileAsync(command, args, { cwd: options.cwd, windowsHide: true, timeout: options.timeoutMs ?? 15_000, maxBuffer: options.maxOutputBytes ?? 2_000_000 });
+  return execFileAsync(command, args, { cwd: options.cwd, windowsHide: true, timeout: options.timeoutMs ?? DEFAULT_PARSE_TIMEOUT_MS, maxBuffer: options.maxOutputBytes ?? 2_000_000 });
 }
 function within(root, target) { const relative = path.relative(root, target); return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative)); }
 function versionFrom(stdout) { return String(stdout ?? '').match(/tree-sitter\s+v?([0-9]+(?:\.[0-9]+){1,3})/i)?.[1] ?? null; }
 function freeze(value) { if (!value || typeof value !== 'object') return value; if (Array.isArray(value)) { value.forEach(freeze); return Object.freeze(value); } Object.values(value).forEach(freeze); return Object.freeze(value); }
 
 export class TreeSitterRuntimeService {
-  constructor({ projectResolver, runner = defaultRunner, command = 'tree-sitter', expectedVersion = null, configPath = null, timeoutMs = 15_000, maxOutputBytes = 2_000_000 } = {}) {
+  constructor({ projectResolver, runner = defaultRunner, command = 'tree-sitter', expectedVersion = null, configPath = null, timeoutMs = DEFAULT_PARSE_TIMEOUT_MS, maxOutputBytes = 2_000_000 } = {}) {
     if (typeof projectResolver !== 'function') throw new TypeError('projectResolver is required');
     this.projectResolver = projectResolver;
     this.runner = runner;
     this.command = required(command, 'tree-sitter command');
     this.expectedVersion = expectedVersion ? String(expectedVersion) : null;
     this.configPath = configPath ? path.resolve(required(configPath, 'tree-sitter config path')) : null;
-    this.timeoutMs = Number(timeoutMs) || 15_000;
+    this.timeoutMs = Number(timeoutMs) || DEFAULT_PARSE_TIMEOUT_MS;
     this.maxOutputBytes = Number(maxOutputBytes) || 2_000_000;
   }
 
