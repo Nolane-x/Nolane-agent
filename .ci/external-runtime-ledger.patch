@@ -1,0 +1,227 @@
+--- a/src/requirements/master-ledger.mjs
++++ b/src/requirements/master-ledger.mjs
+@@ -3,6 +3,7 @@
+ import path from 'node:path';
+ import { migrateMasterLedgerEvidence } from '../forensics/evidence-path-migrations.mjs';
+ import { evidenceFileSha256 } from '../release/evidence-file-hash.mjs';
++import { BOUNDED_EXTERNAL_RUNTIME_GATE_IDS } from '../release/external-gate-certification.mjs';
+ 
+ const STATUS_ORDER = Object.freeze({
+   verified: 0,
+@@ -58,26 +59,47 @@
+   return { source, id, title, group, status, acceptance, metadata };
+ }
+ 
+-function collectAliases({ legacyAudit, nolaneV5, nolane_nativeInventory, nativeConformance, releaseMatrix }) {
++function validateExternalCertificationResult(result) {
++  if (result == null) return null;
++  if (result.schema !== 'nolane.agent.external-gate-certification-verification.v1' || result.status !== 'pass') throw new Error('invalid external gate certification verification result');
++  if (!/^[a-f0-9]{40}$/.test(String(result.sourceCommitSha ?? ''))) throw new Error('external certification source commit is invalid');
++  if (!/^\d+$/.test(String(result.workflowRunId ?? ''))) throw new Error('external certification workflow run id is invalid');
++  if (!/^[a-f0-9]{64}$/.test(String(result.receiptSha256 ?? ''))) throw new Error('external certification receipt hash is invalid');
++  const allowed = new Set(BOUNDED_EXTERNAL_RUNTIME_GATE_IDS);
++  const ids = [...new Set(result.verifiedLegacyGateIds ?? [])].sort();
++  if (!ids.length || ids.some((id) => !allowed.has(id))) throw new Error('external certification contains an unsupported legacy gate');
++  return Object.freeze({ ...result, verifiedLegacyGateIds: Object.freeze(ids) });
++}
++
++function collectAliases({ legacyAudit, nolaneV5, nolane_nativeInventory, nativeConformance, releaseMatrix, externalCertification = null }) {
+   const aliases = [];
++  const certifiedLegacyGateIds = new Set(externalCertification?.verifiedLegacyGateIds ?? []);
+   const conformanceMappings = new Map((nativeConformance?.candidateMappings ?? []).map((entry) => [entry.candidateId, entry]));
+   const conformanceEvidence = new Map((nativeConformance?.evidence ?? []).map((entry) => [entry.id, entry]));
+   for (const section of legacyAudit.sections ?? []) {
+     for (const item of section.items ?? []) {
+       const evidence = Array.isArray(item.evidence) ? item.evidence : [];
++      const externallyVerified = item.status === 'external_gate' && certifiedLegacyGateIds.has(item.id);
+       aliases.push(sourceAlias({
+         source: 'legacy',
+         id: item.id,
+         title: item.text,
+         group: section.title,
+-        status: legacyStatus(item.status),
++        status: externallyVerified ? 'verified' : legacyStatus(item.status),
+         acceptance: {
+           productionEntryPoints: evidence.filter((entry) => !isTestPath(entry)),
+           testPaths: evidence.filter(isTestPath),
+-          externalCondition: item.status === 'external_gate' ? item.note ?? item.text : null,
++          externalCondition: item.status === 'external_gate' && !externallyVerified ? item.note ?? item.text : null,
++          externalReceipts: externallyVerified ? [{
++            schema: 'nolane.agent.external-gate-certification-lineage.v1',
++            gateId: item.id,
++            sourceCommitSha: externalCertification.sourceCommitSha,
++            workflowRunId: externalCertification.workflowRunId,
++            certificationReceiptSha256: externalCertification.receiptSha256,
++          }] : [],
+           fileExistenceIsProof: false,
+         },
+-        metadata: { section: section.number, sourceStatus: item.status, note: item.note ?? null },
++        metadata: { section: section.number, sourceStatus: item.status, note: item.note ?? null, externallyVerified },
+       }));
+     }
+   }
+@@ -199,6 +221,8 @@
+   const negativeTestPaths = [...new Set(aliases.flatMap((alias) => alias.acceptance.negativeTestPaths ?? []))].sort();
+   const externalConditions = [...new Set(aliases.map((alias) => alias.acceptance.externalCondition).filter(Boolean))].sort();
+   const suppliedHashes = Object.assign({}, ...aliases.map((alias) => alias.acceptance.suppliedHashes ?? {}));
++  const externalReceipts = [...new Map(aliases.flatMap((alias) => alias.acceptance.externalReceipts ?? []).map((entry) => [`${entry.gateId}\0${entry.certificationReceiptSha256}`, entry])).values()]
++    .sort((a, b) => `${a.gateId}:${a.certificationReceiptSha256}`.localeCompare(`${b.gateId}:${b.certificationReceiptSha256}`));
+   const upstreamBehaviorSources = [...new Map(
+     aliases.flatMap((alias) => alias.acceptance.upstreamBehaviorSources ?? [])
+       .map((entry) => [`${entry.candidateId ?? ''}\0${entry.path}\0${entry.sha256 ?? ''}`, entry]),
+@@ -212,6 +236,7 @@
+     externalConditions,
+     evidenceHashes: {},
+     suppliedHashes,
++    externalReceipts,
+     upstreamBehaviorSources,
+   };
+ }
+@@ -220,10 +245,11 @@
+   return aliases.reduce((selected, alias) => STATUS_ORDER[alias.status] > STATUS_ORDER[selected] ? alias.status : selected, 'verified');
+ }
+ 
+-export function generateMasterLedger({ legacyAudit, nolaneV5, nolane_nativeInventory, nativeConformance = null, releaseMatrix = null } = {}) {
++export function generateMasterLedger({ legacyAudit, nolaneV5, nolane_nativeInventory, nativeConformance = null, releaseMatrix = null, externalCertification = null } = {}) {
+   if (!legacyAudit || !nolaneV5 || !nolane_nativeInventory) throw new Error('legacyAudit, nolaneV5 and nolane_nativeInventory are required');
+   if (nativeConformance && nativeConformance.schema !== 'nolane.native-core.conformance-receipt.v1') throw new Error('invalid native conformance receipt schema');
+-  const aliases = collectAliases({ legacyAudit, nolaneV5, nolane_nativeInventory, nativeConformance, releaseMatrix });
++  const certification = validateExternalCertificationResult(externalCertification);
++  const aliases = collectAliases({ legacyAudit, nolaneV5, nolane_nativeInventory, nativeConformance, releaseMatrix, externalCertification: certification });
+   const groups = new Map();
+   for (const alias of aliases) {
+     const normalizedTitle = normalizeRequirementTitle(alias.title);
+@@ -259,6 +285,7 @@
+       nolane_nativeTreeSha256: nolane_nativeInventory.sourceSnapshot?.treeSha256,
+       nolane_nativeInventoryReceiptSha256: nolane_nativeInventory.receiptSha256,
+       nativeConformanceReceiptSha256: nativeConformance?.receiptSha256 ?? null,
++      externalCertificationReceiptSha256: certification?.receiptSha256 ?? null,
+     },
+     sources: {
+       legacy: { inputItems: (legacyAudit.sections ?? []).flatMap((section) => section.items ?? []).length },
+@@ -270,8 +297,9 @@
+         upstreamCandidateFiles: (nolane_nativeInventory.contracts ?? []).length,
+       },
+       releaseGate: { inputItems: (releaseMatrix?.gates ?? []).length },
++      externalCertification: { verifiedLegacyGates: certification?.verifiedLegacyGateIds.length ?? 0 },
+     },
+-    evidencePolicy: { requireFreshHashes: false, fileExistenceIsProof: false },
++    evidencePolicy: { requireFreshHashes: false, fileExistenceIsProof: false, externalReceiptRequiredForPromotion: true },
+     summary: {
+       inputItems: aliases.length,
+       canonicalItems: requirements.length,
+@@ -328,6 +356,11 @@
+     ids.add(requirement.id);
+     if (!(requirement.status in STATUS_ORDER)) throw new Error(`invalid master requirement status: ${requirement.status}`);
+     if (requirement.acceptance.fileExistenceIsProof !== false) throw new Error(`file existence cannot prove ${requirement.id}`);
++    for (const receipt of requirement.acceptance.externalReceipts ?? []) {
++      if (receipt.schema !== 'nolane.agent.external-gate-certification-lineage.v1') throw new Error(`invalid external certification lineage: ${requirement.id}`);
++      if (!BOUNDED_EXTERNAL_RUNTIME_GATE_IDS.includes(receipt.gateId)) throw new Error(`unsupported external certification gate lineage: ${requirement.id}`);
++      if (!/^[a-f0-9]{40}$/.test(String(receipt.sourceCommitSha ?? '')) || !/^\d+$/.test(String(receipt.workflowRunId ?? '')) || !/^[a-f0-9]{64}$/.test(String(receipt.certificationReceiptSha256 ?? ''))) throw new Error(`invalid external certification lineage fields: ${requirement.id}`);
++    }
+     if (requirement.status === 'verified') {
+       if (!requirement.acceptance.productionEntryPoints.length) throw new Error(`verified requirement lacks production entrypoint evidence: ${requirement.id}`);
+       if (!requirement.acceptance.testPaths.length) throw new Error(`verified requirement lacks direct test evidence: ${requirement.id}`);
+--- a/scripts/generate-master-acceptance-ledger.mjs
++++ b/scripts/generate-master-acceptance-ledger.mjs
+@@ -7,6 +7,7 @@
+   hydrateMasterLedgerEvidence,
+   validateMasterLedger,
+ } from '../src/requirements/master-ledger.mjs';
++import { verifyExternalGateCertificationFreshness } from '../src/release/external-gate-certification.mjs';
+ 
+ function canonical(value) {
+   if (Array.isArray(value)) return value.map(canonical);
+@@ -54,13 +55,22 @@
+   return JSON.parse(await readFile(relativePath, 'utf8'));
+ }
+ 
++async function loadExternalCertification(rootDirectory) {
++  const relativePath = 'requirements/external-gate-certification.json';
++  let certificationSet;
++  try { certificationSet = await loadJson(relativePath); }
++  catch (error) { if (error?.code === 'ENOENT') return null; throw error; }
++  return verifyExternalGateCertificationFreshness(certificationSet, { rootDirectory });
++}
++
+ async function main() {
+   const rootDirectory = process.cwd();
+   const legacyAudit = await loadJson('docs/feature-audit-4.0.0.json');
+   const nolaneV5 = await loadJson('requirements/nolane-agent-v5-requirements.json');
+   const nolane_nativeInventory = await loadJson('requirements/nolane-native-core-inventory.json');
+   const nativeConformance = await loadJson('requirements/nolane-native-core-conformance.json');
+-  const initial = generateMasterLedger({ legacyAudit, nolaneV5, nolane_nativeInventory, nativeConformance });
++  const externalCertification = await loadExternalCertification(rootDirectory);
++  const initial = generateMasterLedger({ legacyAudit, nolaneV5, nolane_nativeInventory, nativeConformance, externalCertification });
+   const ledger = await hydrateMasterLedgerEvidence(initial, { rootDirectory });
+   validateMasterLedger(ledger);
+   await writeFile('requirements/master-acceptance-ledger.json', `${JSON.stringify(canonical(ledger), null, 2)}\n`);
+--- a/tests/master-acceptance-ledger.test.mjs
++++ b/tests/master-acceptance-ledger.test.mjs
+@@ -171,3 +171,66 @@
+   assert.equal(ledger.summary.deduplicatedAliases, 3);
+   assert.equal(validateMasterLedger(ledger).status, 'pass');
+ });
++
++test('master ledger promotes a certified legacy external runtime gate while preserving certification lineage', () => {
++  const legacy = structuredClone(legacyFixture);
++  legacy.sections[0].items[2] = {
++    id: '13.27',
++    text: 'Hỗ trợ tree-sitter',
++    status: 'external_gate',
++    evidence: ['src/repository/tree-sitter-runtime-service.mjs', 'tests/tree-sitter-runtime-evidence.test.mjs'],
++    note: 'Requires an externally observed pinned Tree-sitter runtime.',
++  };
++  const certification = {
++    schema: 'nolane.agent.external-gate-certification-verification.v1',
++    status: 'pass',
++    sourceCommitSha: 'a'.repeat(40),
++    workflowRunId: '31820000000',
++    verifiedLegacyGateIds: ['13.27'],
++    receiptSha256: '9'.repeat(64),
++  };
++  const ledger = generateMasterLedger({
++    legacyAudit: legacy,
++    nolaneV5: nolaneFixture,
++    nolane_nativeInventory: nolane_nativeFixture,
++    externalCertification: certification,
++  });
++  const requirement = ledger.requirements.find((entry) => entry.aliases.some((alias) => alias.id === '13.27'));
++  assert.equal(requirement.status, 'verified');
++  assert.deepEqual(requirement.acceptance.externalReceipts, [{
++    schema: 'nolane.agent.external-gate-certification-lineage.v1',
++    gateId: '13.27',
++    sourceCommitSha: 'a'.repeat(40),
++    workflowRunId: '31820000000',
++    certificationReceiptSha256: '9'.repeat(64),
++  }]);
++  assert.equal(ledger.sourceSnapshots.externalCertificationReceiptSha256, '9'.repeat(64));
++});
++
++test('master ledger does not promote unrelated legacy external gates from a bounded certification result', () => {
++  const certification = {
++    schema: 'nolane.agent.external-gate-certification-verification.v1',
++    status: 'pass',
++    sourceCommitSha: 'a'.repeat(40),
++    workflowRunId: '31820000000',
++    verifiedLegacyGateIds: ['13.27'],
++    receiptSha256: '9'.repeat(64),
++  };
++  const ledger = generateMasterLedger({
++    legacyAudit: legacyFixture,
++    nolaneV5: nolaneFixture,
++    nolane_nativeInventory: nolane_nativeFixture,
++    externalCertification: certification,
++  });
++  const windows = ledger.requirements.find((entry) => entry.aliases.some((alias) => alias.id === '1.3'));
++  assert.equal(windows.status, 'external_gate');
++  assert.deepEqual(windows.acceptance.externalReceipts ?? [], []);
++});
++
++test('official master-ledger generator verifies optional committed external certification freshness before promotion', async () => {
++  const source = await readFile('scripts/generate-master-acceptance-ledger.mjs', 'utf8');
++  assert.match(source, /verifyExternalGateCertificationFreshness/);
++  assert.match(source, /requirements\/external-gate-certification\.json/);
++  assert.match(source, /externalCertification/);
++  assert.match(source, /ENOENT/);
++});
