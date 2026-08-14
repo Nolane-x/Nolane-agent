@@ -5,7 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { captureUiRuntimeVisual } from './capture-ui-runtime-visual.mjs';
 
-const WIDTHS = Object.freeze([640, 900, 1180, 1440, 1600]);
+const WIDTHS = Object.freeze([640, 900, 979, 980, 1180, 1440, 1600]);
 const SURFACES = Object.freeze([
   Object.freeze({ id: 'home', route: '/', selector: '.home-view' }),
   Object.freeze({ id: 'projects', route: '/projects', selector: '.projects-page' }),
@@ -30,7 +30,7 @@ function responsiveStates() {
   return SURFACES.flatMap((surface) => WIDTHS.map((width) => Object.freeze({
     ...surface,
     id: `responsive-${surface.id}-${width}`,
-    viewport: Object.freeze({ width, height: width <= 900 ? 900 : 1000 }),
+    viewport: Object.freeze({ width, height: width <= 980 ? 900 : 1000 }),
   })));
 }
 
