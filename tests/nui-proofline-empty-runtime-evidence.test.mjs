@@ -34,7 +34,21 @@ test('Proofline critique cycle 2 captures the unselected mission state instead o
   assert.match(workflow, /git diff --exit-code -- ui-dist/);
   assert.match(workflow, /playwright@1\.58\.2/);
   assert.match(workflow, /@axe-core\/playwright@4\.12\.1/);
-  assert.match(workflow, /capture-proofline-empty-evidence\.mjs/);
   assert.match(workflow, /actions\/upload-artifact@v6/);
   assert.match(workflow, /retention-days:\s*14/);
+
+  const liveCaptureStart = workflow.indexOf('- name: Capture unselected Proofline evidence with live runtime');
+  const uploadStart = workflow.indexOf('- name: Upload Proofline empty-state evidence');
+  assert.ok(liveCaptureStart >= 0 && uploadStart > liveCaptureStart,
+    'the runtime lifecycle and capture must be a single step before artifact upload');
+  const liveCapture = workflow.slice(liveCaptureStart, uploadStart);
+  assert.match(liveCapture, /Start-Process -FilePath node/);
+  assert.match(liveCapture, /try\s*\{/);
+  assert.match(liveCapture, /node scripts\/capture-proofline-empty-evidence\.mjs/);
+  assert.match(liveCapture, /finally\s*\{/);
+  assert.match(liveCapture, /Stop-Process -Id/);
+  assert.doesNotMatch(workflow, /- name: Start authenticated source runtime/,
+    'Windows hosted runners may terminate the child process at a step boundary');
+  assert.doesNotMatch(workflow, /- name: Stop source runtime/,
+    'runtime teardown belongs in the same try/finally step as capture');
 });
