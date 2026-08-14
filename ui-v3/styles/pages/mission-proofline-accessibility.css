@@ -9,10 +9,16 @@
 .execution-story__metrics small,
 .execution-story__phases p,
 .time-travel > header .eyebrow,
-.time-travel > header > div > p:last-child {
+.time-travel > header > div > p:last-child,
+.time-travel__rail small,
+.time-travel__controls details,
+.time-travel__controls details > summary,
+.time-travel__comparison > header span,
+.activity-toolbar .segmented-control button {
   color: var(--text-secondary);
 }
 
-.execution-story > header > span[data-tone="active"] {
+.execution-story > header > span[data-tone="active"],
+.activity-toolbar .segmented-control button[aria-pressed="true"] {
   color: var(--text-primary);
 }
