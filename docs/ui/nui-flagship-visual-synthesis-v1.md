@@ -103,7 +103,9 @@ Medium/compact (≤980 px): the system becomes a single reading order: mission �
 
 Small (≤640 px): task cards become one column, mission controls stack, progress metadata wraps, the Proofline node shrinks, and filters remain horizontally scrollable. This is a structural reflow, not a scaled-down desktop screenshot.
 
-The runtime evidence harness is now required to capture both the selected desktop architecture at 1440×1000 and the 820×1000 pressure point below the 980 px structural breakpoint. The harness creates a real mission through the application API, exercises Time Travel when the host can create a checkpoint, asserts the semantic Proofline regions, checks keyboard focus on a recovery control, rejects horizontal overflow, runs Axe for serious/critical findings, and records unsupported screen-reader evidence as `UNKNOWN`. These obligations are implementation contracts until the corresponding runtime receipt and screenshots are observed.
+The runtime evidence harness captures both the selected desktop architecture at 1440×1000 and the 820×1000 pressure point below the 980 px structural breakpoint. The harness creates a real mission through the application API, exercises Time Travel when the host can create a checkpoint, asserts the semantic Proofline regions, checks keyboard focus on a recovery control, rejects horizontal overflow, runs Axe for serious/critical findings, and records unsupported screen-reader evidence as `UNKNOWN`.
+
+Dedicated evidence gates additionally force the Proofline ledger into the viewport, open a real evidence receipt, exercise default/compact/nocturne rendering, and capture the unselected mission state independently on Ubuntu and Windows rather than inferring it from source CSS.
 
 ## Critique cycle 1 — pre-render challenge
 
@@ -111,7 +113,7 @@ The runtime evidence harness is now required to capture both the selected deskto
 
 **Correction.** The recovery deck is bounded with a clamped width, the main lane remains `minmax(0, 1fr)`, and the entire architecture collapses at 980 px. Empty/unselected mission states explicitly allow toolbar and activity content to span the full width instead of leaving a dead recovery column.
 
-**State.** Closed at specification level; runtime observation is still required.
+**State.** Closed at specification level and subsequently exercised by runtime evidence.
 
 ## Critique cycle 2 — post-render challenge
 
@@ -119,10 +121,19 @@ The runtime evidence harness is now required to capture both the selected deskto
 
 **Correction rule.** Any observed failure reopens the earliest affected architecture or system decision. Do not merely hide the evidence in CSS or call the screenshot acceptable.
 
-**Evidence contract now wired.** `mission-proofline` and `mission-proofline-compact` are required Chromium states on Ubuntu and Windows. Their receipt records semantic hooks, checkpoint evidence availability, keyboard-focus observation, Axe serious/critical result, horizontal-overflow result, and the explicit `UNKNOWN` screen-reader boundary.
+**Observed evidence and corrections.**
 
-**State.** OPEN until post-change Chromium/Axe/screenshot evidence exists and the generated artifacts have been inspected. Therefore the work remains below `VERIFIED`.
+- Main Chromium runtime visual evidence on run `31808894665` passed on Ubuntu and Windows after canonical `ui-dist` parity. Desktop and compact Proofline states retained objective-first hierarchy, bounded recovery, keyboard-focus evidence, no horizontal overflow, and no serious/critical Axe finding.
+- The first general screenshots did not force the internally scrolling Proofline ledger into view. That gap reopened the evidence design instead of being accepted by inference. A dedicated ledger gate now scrolls `.activity-filament` into the viewport, opens an evidence receipt, checks event/receipt discoverability and overflow, and captures desktop, compact and nocturne states. Run `31808894675` passed after low-contrast evidence text was corrected through semantic tokens while event-state color remained structural rather than decorative.
+- The empty/unselected mission state was also not accepted from CSS alone. A dedicated cross-platform gate now asserts that no mission spotlight or recovery deck is fabricated, that toolbar and ledger span the full activity lane, that the state has no horizontal overflow, and that Axe has no serious/critical finding. Run `31808894687` passed on Ubuntu and Windows. Linux artifact digest: `sha256:4ada202bd6366a29e8b60db9060690b78aae65733b4359da9f08db8c8a7e6bf3`; Windows artifact digest: `sha256:55557b70f048f34286ed5ac8ffedf6e080b12ee20fa4233752668b54cf7fad58`.
+- Manual inspection of the emitted runtime images found the selected mission objective remains the dominant authority, the recovery lane stays secondary, compact mode preserves the intended reading order, receipts remain legible when opened, the nocturne state keeps sparse semantic accent rather than becoming a neon telemetry dashboard, and the unselected state removes the dead recovery column instead of leaving an empty two-lane shell.
+
+**Bounded verification record.** Canonical sync run `31808889885` passed with 2639 tests across 894/894 Node test files, deterministic UI regeneration, native-core conformance regeneration, requirement evidence regeneration, master-ledger regeneration and mutation whitelist enforcement. At that checkpoint the master acceptance ledger contained 1460 canonical items: 1372 `verified` and 88 `external_gate`; native-core conformance contained 115 contracts: 100 verified and 15 external, with `completeParityClaimAllowed: false`.
+
+**State.** CLOSED as a post-render critique cycle. The selected flagship architecture has reached the NUI `CRITIQUED` evidence ceiling for this producer. This closure does **not** self-transition the work to `VERIFIED`, does not close release gates, and does not establish empirical superiority.
 
 ## Completion boundary
 
-A passing source test proves the architecture contract is represented in code. A passing Chromium/Axe screenshot gate proves bounded runtime properties. Neither permits the generator to self-certify NUI effectiveness. Independent screen-reader evidence remains `UNKNOWN`, and release state remains blocked until the applicable completion gate is independently satisfied.
+A passing source test proves the architecture contract is represented in code. Passing Chromium/Axe/screenshot gates prove bounded runtime properties. They do not authorize generator self-certification.
+
+Independent screen-reader evidence remains `UNKNOWN`. macOS-native assistive-technology behavior and human empirical preference validation remain unobserved. The master ledger still carries external gates and native-core parity explicitly disallows a complete-parity claim. Release state therefore remains governed by the independent completion and external-gate system rather than by this UI critique document.
