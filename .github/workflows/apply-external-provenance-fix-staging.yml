@@ -40,22 +40,19 @@ jobs:
           tests/external-gate-certification-builder.test.mjs
           tests/external-gate-certification-workflow.test.mjs
 
-      - name: Commit clean staging tree
+      - name: Commit source and test migration only
         shell: bash
         run: |
           set -euo pipefail
-          rm .ci/apply-external-provenance-fix.py .github/workflows/apply-external-provenance-fix-staging.yml
+          git checkout -- .github/workflows/external-gates.yml
           git add \
             src/release/external-gate-evidence.mjs \
             src/release/external-gate-certification.mjs \
             scripts/build-external-gate-certification.mjs \
-            .github/workflows/external-gates.yml \
             tests/external-gate-evidence.test.mjs \
             tests/external-gate-certification.test.mjs \
             tests/external-gate-certification-builder.test.mjs \
-            tests/external-gate-certification-workflow.test.mjs \
-            .ci/apply-external-provenance-fix.py \
-            .github/workflows/apply-external-provenance-fix-staging.yml
+            tests/external-gate-certification-workflow.test.mjs
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'fix(evidence): bind certification to PR head and tested tree'
