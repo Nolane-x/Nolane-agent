@@ -7,6 +7,8 @@ import { renderActivityView } from '../ui-v3/views/activity/activity-view.mjs';
 const indexUrl = new URL('../ui-v3/styles/index.css', import.meta.url);
 const prooflineUrl = new URL('../ui-v3/styles/pages/mission-proofline.css', import.meta.url);
 const synthesisUrl = new URL('../docs/ui/nui-flagship-visual-synthesis-v1.md', import.meta.url);
+const runtimeCaptureUrl = new URL('../scripts/capture-ui-runtime-visual.mjs', import.meta.url);
+const runtimeWorkflowUrl = new URL('../.github/workflows/ui-runtime-visual.yml', import.meta.url);
 
 function fixtureState() {
   return {
@@ -100,6 +102,26 @@ test('flagship synthesis packet contains three materially divergent directions a
     'Generic-transfer resistance',
     'Responsive structural evidence',
   ]) assert.match(packet, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-  assert.match(packet, /719981b7a2cf0e8406672d20ce1840e7a26ef5b8/);
+  assert.match(packet, /46780cdd58e41bea8338b2d27269d339c95e28e7/);
   assert.match(packet, /generator[^\n]*cannot[^\n]*VERIFIED/i);
+});
+
+test('runtime visual evidence renders the selected Proofline architecture at desktop and compact pressure points', async () => {
+  const capturer = await readFile(runtimeCaptureUrl, 'utf8');
+  const workflow = await readFile(runtimeWorkflowUrl, 'utf8');
+  assert.match(capturer, /id: 'mission-proofline'/);
+  assert.match(capturer, /id: 'mission-proofline-compact'/);
+  assert.match(capturer, /viewport:\s*Object\.freeze\(\{ width: 820, height: 1000 \}\)/);
+  assert.match(capturer, /async function prepareProoflineMission/);
+  assert.match(capturer, /\/api\/projects/);
+  assert.match(capturer, /\/api\/missions\/plan/);
+  assert.match(capturer, /\/api\/time-travel\/checkpoints/);
+  assert.match(capturer, /\.mission-spotlight/);
+  assert.match(capturer, /\.execution-story/);
+  assert.match(capturer, /\.time-travel/);
+  assert.match(capturer, /\.activity-filament/);
+  assert.match(capturer, /async function assertProoflineRecoveryKeyboard/);
+  assert.match(capturer, /Proofline recovery control did not expose visible keyboard focus/);
+  assert.match(capturer, /responsive layout overflows horizontally/);
+  assert.match(workflow, /mission-proofline,mission-proofline-compact/);
 });
