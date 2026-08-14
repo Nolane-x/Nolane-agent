@@ -36,8 +36,8 @@ function flagshipProfile(overrides = {}) {
   });
 }
 
-test('NUI bridge pins the exact reviewed v10 revision and accepts only the thin generic-cli projection', () => {
-  assert.equal(NUI_V10_REVISION, '719981b7a2cf0e8406672d20ce1840e7a26ef5b8');
+test('NUI bridge pins the exact reviewed current v10 revision and accepts only the thin generic-cli projection', () => {
+  assert.equal(NUI_V10_REVISION, '46780cdd58e41bea8338b2d27269d339c95e28e7');
   assert.equal(validateNuiInstallPlan(GENERIC_CLI_PLAN).valid, true);
   assert.throws(
     () => validateNuiInstallPlan({ ...GENERIC_CLI_PLAN, permission_boundary: 'adapter may enable shell and browser' }),
