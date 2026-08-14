@@ -9,9 +9,11 @@ test('Proofline critique cycle 2 has dedicated ledger-in-viewport runtime eviden
   const capturer = await readFile(captureUrl, 'utf8');
   const workflow = await readFile(workflowUrl, 'utf8');
 
-  for (const state of ['mission-proofline-ledger', 'mission-proofline-ledger-compact']) {
+  for (const state of ['mission-proofline-ledger', 'mission-proofline-ledger-compact', 'mission-proofline-ledger-nocturne']) {
     assert.match(capturer, new RegExp(`id: '${state}'`));
   }
+  assert.match(capturer, /theme:\s*'nocturne'/);
+  assert.match(capturer, /\/api\/settings/);
   assert.match(capturer, /\.activity-filament/);
   assert.match(capturer, /scrollIntoViewIfNeeded/);
   assert.match(capturer, /ledger did not enter the viewport/);
