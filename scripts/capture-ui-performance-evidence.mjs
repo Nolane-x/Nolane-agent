@@ -115,13 +115,19 @@ async function cdpSnapshot(session) {
 }
 
 async function warmRoute(page, route) {
-  await page.evaluate((target) => { location.hash = target; }, route.route);
+  await page.evaluate(({ target, id }) => {
+    window.__nolanePerfPhase = `warmup:${id}`;
+    location.hash = target;
+  }, { target: route.route, id: route.id });
   await page.locator(route.selector).waitFor({ state: 'visible', timeout: 10_000 });
 }
 
 async function measureRouteSwitch(page, route) {
   const started = performance.now();
-  await page.evaluate((target) => { location.hash = target; }, route.route);
+  await page.evaluate(({ target, id }) => {
+    window.__nolanePerfPhase = `route:${id}`;
+    location.hash = target;
+  }, { target: route.route, id: route.id });
   await page.locator(route.selector).waitFor({ state: 'visible', timeout: 10_000 });
   return performance.now() - started;
 }
@@ -162,10 +168,17 @@ export async function captureUiPerformanceEvidence({ baseUrl, token, outputDirec
     const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, reducedMotion: 'reduce' });
     await context.addInitScript(() => {
       window.__nolaneLongTasks = [];
+      window.__nolanePerfPhase = 'startup';
       if ('PerformanceObserver' in window) {
         try {
           const observer = new PerformanceObserver((list) => {
-            for (const entry of list.getEntries()) window.__nolaneLongTasks.push(entry.duration);
+            for (const entry of list.getEntries()) {
+              window.__nolaneLongTasks.push({
+                duration: entry.duration,
+                startTime: entry.startTime,
+                phase: window.__nolanePerfPhase,
+              });
+            }
           });
           observer.observe({ type: 'longtask', buffered: true });
         } catch {}
@@ -183,19 +196,21 @@ export async function captureUiPerformanceEvidence({ baseUrl, token, outputDirec
     const homeVisibleAt = performance.now();
     const coldPageToHomeMs = homeVisibleAt - coldStarted;
     const homeInteractiveMs = homeVisibleAt - shellVisibleAt;
-    const startupLongTasks = await page.evaluate(() => Array.isArray(window.__nolaneLongTasks) ? [...window.__nolaneLongTasks] : []);
-    const startupLongTaskMaxMs = startupLongTasks.length ? Math.max(...startupLongTasks) : 0;
+    const startupLongTaskRecords = await page.evaluate(() => Array.isArray(window.__nolaneLongTasks) ? [...window.__nolaneLongTasks] : []);
+    const startupLongTaskMaxMs = startupLongTaskRecords.length ? Math.max(...startupLongTaskRecords.map((item) => Number(item.duration) || 0)) : 0;
     const homeSnapshot = await cdpSnapshot(session);
 
     for (const route of ROUTES) await warmRoute(page, route);
-    await page.evaluate(() => { window.__nolaneLongTasks = []; });
+    await page.evaluate(() => { window.__nolaneLongTasks = []; window.__nolanePerfPhase = 'interaction-ready'; });
     const routeSwitchSamplesMs = [];
     for (let round = 0; round < 3; round += 1) {
       for (const route of ROUTES) routeSwitchSamplesMs.push(await measureRouteSwitch(page, route));
     }
     const routeSwitchP95Ms = percentile(routeSwitchSamplesMs, 0.95);
+    const routeLongTaskRecords = await page.evaluate(() => Array.isArray(window.__nolaneLongTasks) ? [...window.__nolaneLongTasks] : []);
 
     await warmRoute(page, ROUTES[0]);
+    await page.evaluate(() => { window.__nolaneLongTasks = []; window.__nolanePerfPhase = 'idle'; });
     const idleBefore = await cdpSnapshot(session);
     const idleStarted = performance.now();
     await page.waitForTimeout(idleWindowMs);
@@ -203,9 +218,11 @@ export async function captureUiPerformanceEvidence({ baseUrl, token, outputDirec
     const idleElapsedSeconds = Math.max((performance.now() - idleStarted) / 1000, 0.001);
     const idleTaskSeconds = Math.max(0, idleAfter.taskDurationSeconds - idleBefore.taskDurationSeconds);
     const idleCpuEstimatePercent = (idleTaskSeconds / idleElapsedSeconds) * 100;
+    const idleLongTaskRecords = await page.evaluate(() => Array.isArray(window.__nolaneLongTasks) ? [...window.__nolaneLongTasks] : []);
 
-    const interactionLongTasks = await page.evaluate(() => Array.isArray(window.__nolaneLongTasks) ? [...window.__nolaneLongTasks] : []);
-    const longTaskMaxMs = interactionLongTasks.length ? Math.max(...interactionLongTasks) : 0;
+    const longTaskRecords = [...routeLongTaskRecords, ...idleLongTaskRecords];
+    const longTaskDurationsMs = longTaskRecords.map((item) => Number(item.duration) || 0);
+    const longTaskMaxMs = longTaskDurationsMs.length ? Math.max(...longTaskDurationsMs) : 0;
     const metrics = Object.freeze({
       readyToShowMs: null,
       coldPageToHomeMs,
@@ -216,12 +233,13 @@ export async function captureUiPerformanceEvidence({ baseUrl, token, outputDirec
       homeDomNodes: homeSnapshot.domNodes,
       homeDocuments: homeSnapshot.documents,
       homeJsEventListeners: homeSnapshot.jsEventListeners,
-      startupLongTaskCount: startupLongTasks.length,
+      startupLongTaskCount: startupLongTaskRecords.length,
       startupLongTaskMaxMs,
-      startupLongTaskDurationsMs: Object.freeze(startupLongTasks),
-      longTaskCount: interactionLongTasks.length,
+      startupLongTaskRecords: Object.freeze(startupLongTaskRecords),
+      longTaskCount: longTaskRecords.length,
       longTaskMaxMs,
-      longTaskDurationsMs: Object.freeze(interactionLongTasks),
+      longTaskDurationsMs: Object.freeze(longTaskDurationsMs),
+      longTaskRecords: Object.freeze(longTaskRecords),
       idleCpuEstimatePercent,
       idleWindowMs,
     });
