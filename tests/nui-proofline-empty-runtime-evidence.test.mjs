@@ -22,6 +22,11 @@ test('Proofline critique cycle 2 captures the unselected mission state instead o
   assert.match(capturer, /horizontalOverflow: 'PASS'/);
   assert.match(capturer, /screenReader: 'UNKNOWN'/);
 
+  assert.match(capturer, /context\.request\.post/,
+    'onboarding preparation must use Playwright request context so Windows evidence shares the browser network stack');
+  assert.doesNotMatch(capturer, /await completeOnboarding\(root, credential\)/,
+    'the cross-platform evidence path must not depend on Node global fetch before the browser context exists');
+
   assert.match(workflow, /ubuntu-latest/);
   assert.match(workflow, /windows-latest/);
   assert.match(workflow, /node-version:\s*'24'/);
