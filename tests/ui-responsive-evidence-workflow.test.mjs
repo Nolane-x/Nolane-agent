@@ -4,10 +4,10 @@ import { readFile } from 'node:fs/promises';
 
 test('UI runtime evidence includes a multi-width responsive render matrix without replacing external certification', async () => {
   const workflow = await readFile('.github/workflows/ui-runtime-visual.yml', 'utf8');
-  const capturer = await readFile('scripts/capture-ui-runtime-visual.mjs', 'utf8');
   const responsive = await readFile('scripts/capture-ui-responsive-evidence.mjs', 'utf8');
 
   assert.match(workflow, /- 'scripts\/capture-ui-responsive-evidence\.mjs'/);
+  assert.match(workflow, /- 'tests\/ui-responsive-evidence-workflow\.test\.mjs'/);
   assert.equal([...workflow.matchAll(/node scripts\/capture-ui-responsive-evidence\.mjs/g)].length, 2);
   assert.match(workflow, /NOLANE_UI_VISUAL_OUTPUT/);
 
@@ -20,13 +20,13 @@ test('UI runtime evidence includes a multi-width responsive render matrix withou
   assert.match(responsive, /captureUiRuntimeVisual/);
   assert.match(responsive, /responsive-\$\{surface\.id\}-\$\{width\}/);
   assert.match(responsive, /Object\.freeze\(\{ width, height:/);
-
-  assert.match(capturer, /const orderedIds =/);
-  assert.match(capturer, /\.\.\.STATES\.map\(\(state\) => state\.id\)/);
-  assert.match(capturer, /\.\.\.prior\.map\(\(capture\) => capture\.id\)/);
-  assert.match(capturer, /\.\.\.captures\.map\(\(capture\) => capture\.id\)/);
-  assert.match(capturer, /orderedIds\.flatMap/);
+  assert.match(responsive, /nolane\.ui\.responsive-runtime-evidence\.v1/);
+  assert.match(responsive, /certificationState:\s*'candidate_unverified'/);
+  assert.match(responsive, /finalDecision:\s*'external_gate'/);
+  assert.match(responsive, /'NOL-UI-031':\s*'external_gate'/);
+  assert.match(responsive, /captures:\s*Object\.freeze\(result\.captures\)/);
+  assert.match(responsive, /writeFile\(path\.join\(result\.output, 'receipt\.json'\)/);
 
   // This harness creates evidence only; it must not self-certify the external UI requirements.
-  assert.doesNotMatch(responsive, /verified_source_test|wcag22AaCertified\s*:\s*true|windowsCertified\s*:\s*true/);
+  assert.doesNotMatch(responsive, /verified_source_test|wcag22AaCertified\s*:\s*true|windowsCertified\s*:\s*true|responsiveCertified\s*:\s*true/);
 });
