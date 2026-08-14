@@ -17,6 +17,12 @@ test('runtime performance evidence uses the canonical UI budgets and remains can
   assert.match(source, /JSHeapUsedSize/);
   assert.match(source, /PerformanceObserver/);
   assert.match(source, /warmRoute/);
+  assert.match(source, /\/api\/onboarding\/status/);
+  assert.match(source, /\/api\/onboarding\/recommended/);
+  assert.match(source, /primaryUse:\s*'software'/);
+  assert.match(source, /setup:\s*onboardingSetup/);
+  assert.match(source, /nolane\.ui\.performance-runtime-failure\.v1/);
+  assert.match(source, /writeFile\(path\.join\(root, 'failure\.json'\)/);
   assert.match(source, /candidate_unverified/);
   assert.match(source, /finalDecision:\s*'external_gate'/);
   assert.match(source, /'NOL-UI-032':\s*'external_gate'/);
