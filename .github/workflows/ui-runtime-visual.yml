@@ -136,7 +136,7 @@ jobs:
           $output = Join-Path $env:RUNNER_TEMP 'nolane-windows-ui-runtime-visual'
           $env:NOLANE_AGENT_DATA_DIR = Join-Path $env:RUNNER_TEMP 'nolane-windows-ui-runtime-data'
           $env:NOLANE_UI_VISUAL_OUTPUT = $output
-          $env:NOLANE_UI_VISUAL_STATES = 'home,home-compact,settings,settings-model-catalog,skills,workroom,browser'
+          $env:NOLANE_UI_VISUAL_STATES = 'onboarding,home,home-compact,settings,settings-model-catalog,skills,workroom,browser'
           $stdout = Join-Path $env:RUNNER_TEMP 'nolane-windows-ui-runtime.stdout.log'
           $stderr = Join-Path $env:RUNNER_TEMP 'nolane-windows-ui-runtime.stderr.log'
           $runtime = Start-Process -FilePath node -ArgumentList 'src/app.mjs' -RedirectStandardOutput $stdout -RedirectStandardError $stderr -PassThru -WindowStyle Hidden
@@ -166,7 +166,7 @@ jobs:
               availablePhysicalMemoryBytes = [int64]$operatingSystem.FreePhysicalMemory * 1KB
               runtimeWorkingSetBytes = [int64]$liveRuntime.WorkingSet64
               runtimePrivateMemoryBytes = [int64]$liveRuntime.PrivateMemorySize64
-              visualStateIds = @('home', 'home-compact', 'settings', 'settings-model-catalog', 'skills', 'workroom', 'browser')
+              visualStateIds = @('onboarding', 'home', 'home-compact', 'settings', 'settings-model-catalog', 'skills', 'workroom', 'browser')
             } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $output 'windows-runner-baseline.json') -Encoding utf8
             $completed = $true
           } finally {

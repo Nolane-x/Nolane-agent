@@ -32,6 +32,7 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(windowsWorkflow, /Stop-Process -Id/);
   assert.doesNotMatch(windowsWorkflow, /NOLANE_UI_RUNTIME_PID=/);
   assert.doesNotMatch(windowsWorkflow, /- name: Start an authenticated source runtime/);
+  assert.match(windowsWorkflow, /NOLANE_UI_VISUAL_STATES = 'onboarding,home,home-compact,settings,settings-model-catalog,skills,workroom,browser'/);
   assert.match(workflow, /node-version:\s*'24'/);
   assert.match(workflow, /npm run build:ui-v3/);
   assert.match(workflow, /git diff --exit-code -- ui-dist/);
