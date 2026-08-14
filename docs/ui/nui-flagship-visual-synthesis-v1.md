@@ -1,6 +1,6 @@
 # NUI Flagship Visual Synthesis v1 — Nolane Agent
 
-Upstream cognition source: `Nolane-x/Nolane-UI-Intelligence@719981b7a2cf0e8406672d20ce1840e7a26ef5b8`.
+Upstream cognition source: `Nolane-x/Nolane-UI-Intelligence@46780cdd58e41bea8338b2d27269d339c95e28e7`.
 
 Evidence class: `ARTIFACT_WORK`. Materiality: `material`. Visual ambition: `flagship`.
 
@@ -103,6 +103,8 @@ Medium/compact (≤980 px): the system becomes a single reading order: mission �
 
 Small (≤640 px): task cards become one column, mission controls stack, progress metadata wraps, the Proofline node shrinks, and filters remain horizontally scrollable. This is a structural reflow, not a scaled-down desktop screenshot.
 
+The runtime evidence harness is now required to capture both the selected desktop architecture at 1440×1000 and the 820×1000 pressure point below the 980 px structural breakpoint. The harness creates a real mission through the application API, exercises Time Travel when the host can create a checkpoint, asserts the semantic Proofline regions, checks keyboard focus on a recovery control, rejects horizontal overflow, runs Axe for serious/critical findings, and records unsupported screen-reader evidence as `UNKNOWN`. These obligations are implementation contracts until the corresponding runtime receipt and screenshots are observed.
+
 ## Critique cycle 1 — pre-render challenge
 
 **Observed problem.** The initial Flight Deck concept over-weighted a persistent recovery rail. On widths near 1000 px it would reduce the Proofline to a narrow telemetry column and make evidence harder to read.
@@ -117,7 +119,9 @@ Small (≤640 px): task cards become one column, mission controls stack, progres
 
 **Correction rule.** Any observed failure reopens the earliest affected architecture or system decision. Do not merely hide the evidence in CSS or call the screenshot acceptable.
 
-**State.** OPEN until post-change Chromium/Axe/screenshot evidence exists. Therefore the work remains below `VERIFIED`.
+**Evidence contract now wired.** `mission-proofline` and `mission-proofline-compact` are required Chromium states on Ubuntu and Windows. Their receipt records semantic hooks, checkpoint evidence availability, keyboard-focus observation, Axe serious/critical result, horizontal-overflow result, and the explicit `UNKNOWN` screen-reader boundary.
+
+**State.** OPEN until post-change Chromium/Axe/screenshot evidence exists and the generated artifacts have been inspected. Therefore the work remains below `VERIFIED`.
 
 ## Completion boundary
 
