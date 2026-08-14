@@ -30,6 +30,19 @@ const required = (value, name) => {
   if (!normalized) throw new TypeError(`${name} is required`);
   return normalized;
 };
+const redact = (value) => String(value ?? '')
+  .replace(/([?&](?:token|authorization)=)[^&\s#]+/gi, '$1[redacted]')
+  .replace(/(Bearer\s+)[A-Za-z0-9._~+/=-]+/gi, '$1[redacted]');
+
+function machineSnapshot() {
+  return Object.freeze({
+    os: process.platform,
+    arch: process.arch,
+    ramGb: Number((os.totalmem() / 1024 ** 3).toFixed(2)),
+    logicalCpuCount: os.cpus().length,
+    cpuModel: os.cpus()[0]?.model ?? 'unknown',
+  });
+}
 
 function stateUrl(baseUrl, token, route) {
   const root = new URL(baseUrl);
@@ -37,6 +50,42 @@ function stateUrl(baseUrl, token, route) {
   routeUrl.searchParams.set('token', token);
   root.hash = `${routeUrl.pathname}${routeUrl.search}`;
   return root.toString();
+}
+
+async function apiJson(baseUrl, token, pathname, { method = 'GET', body = null } = {}) {
+  const headers = { authorization: `Bearer ${token}` };
+  if (body !== null) headers['content-type'] = 'application/json';
+  const response = await fetch(new URL(pathname, baseUrl), {
+    method,
+    headers,
+    body: body === null ? undefined : JSON.stringify(body),
+  });
+  const text = await response.text();
+  let payload = null;
+  try { payload = text ? JSON.parse(text) : null; } catch {}
+  if (!response.ok) throw new Error(`Onboarding API ${method} ${pathname} failed with HTTP ${response.status}`);
+  return payload;
+}
+
+async function prepareOnboarding(baseUrl, token) {
+  const initial = await apiJson(baseUrl, token, '/api/onboarding/status');
+  let action = 'already-complete';
+  if (initial?.required === true) {
+    await apiJson(baseUrl, token, '/api/onboarding/recommended', {
+      method: 'POST',
+      body: { primaryUse: 'software' },
+    });
+    action = 'recommended-defaults';
+  }
+  const final = await apiJson(baseUrl, token, '/api/onboarding/status');
+  if (final?.required === true) throw new Error('Supported onboarding preparation did not reach a completed state');
+  return Object.freeze({
+    schema: 'nolane.ui.performance-onboarding-setup.v1',
+    initialRequired: initial?.required === true,
+    action,
+    finalRequired: final?.required === true,
+    completionSource: typeof final?.state?.source === 'string' ? final.state.source : null,
+  });
 }
 
 function percentile(values, ratio) {
@@ -100,10 +149,16 @@ export function evaluatePerformanceCandidate(metrics) {
 
 export async function captureUiPerformanceEvidence({ baseUrl, token, outputDirectory, idleWindowMs = 3000 } = {}) {
   const root = path.resolve(required(outputDirectory, 'outputDirectory'));
+  const runtimeUrl = required(baseUrl, 'baseUrl');
+  const credential = required(token, 'token');
+  const machine = machineSnapshot();
   await mkdir(root, { recursive: true });
-  const { chromium } = await import('playwright');
-  const browser = await chromium.launch({ headless: true, args: ['--enable-precise-memory-info'] });
+  let browser = null;
+  let onboardingSetup = null;
   try {
+    onboardingSetup = await prepareOnboarding(runtimeUrl, credential);
+    const { chromium } = await import('playwright');
+    browser = await chromium.launch({ headless: true, args: ['--enable-precise-memory-info'] });
     const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, reducedMotion: 'reduce' });
     await context.addInitScript(() => {
       window.__nolaneLongTasks = [];
@@ -121,7 +176,7 @@ export async function captureUiPerformanceEvidence({ baseUrl, token, outputDirec
     await session.send('Performance.enable');
 
     const homeStarted = performance.now();
-    await page.goto(stateUrl(required(baseUrl, 'baseUrl'), required(token, 'token'), '/'), { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    await page.goto(stateUrl(runtimeUrl, credential, '/'), { waitUntil: 'domcontentloaded', timeout: 30_000 });
     await page.locator('.home-view').waitFor({ state: 'visible', timeout: 10_000 });
     const homeInteractiveMs = performance.now() - homeStarted;
     const homeSnapshot = await cdpSnapshot(session);
@@ -144,13 +199,6 @@ export async function captureUiPerformanceEvidence({ baseUrl, token, outputDirec
 
     const longTasks = await page.evaluate(() => Array.isArray(window.__nolaneLongTasks) ? [...window.__nolaneLongTasks] : []);
     const longTaskMaxMs = longTasks.length ? Math.max(...longTasks) : 0;
-    const machine = Object.freeze({
-      os: process.platform,
-      arch: process.arch,
-      ramGb: Number((os.totalmem() / 1024 ** 3).toFixed(2)),
-      logicalCpuCount: os.cpus().length,
-      cpuModel: os.cpus()[0]?.model ?? 'unknown',
-    });
     const metrics = Object.freeze({
       readyToShowMs: null,
       homeInteractiveMs,
@@ -173,6 +221,7 @@ export async function captureUiPerformanceEvidence({ baseUrl, token, outputDirec
       finalDecision: 'external_gate',
       requirementProjection: Object.freeze({ 'NOL-UI-032': 'external_gate', 'NOL-UI-002': 'external_gate' }),
       machine,
+      setup: onboardingSetup,
       budgets: PERFORMANCE_BUDGETS,
       metrics,
       budgetObservations: evaluatePerformanceCandidate(metrics),
@@ -188,8 +237,23 @@ export async function captureUiPerformanceEvidence({ baseUrl, token, outputDirec
     const receiptSha256 = sha256(JSON.stringify(payload));
     await writeFile(path.join(root, 'receipt.json'), `${JSON.stringify({ ...payload, receiptSha256 }, null, 2)}\n`);
     return Object.freeze({ output: root, receiptSha256, metrics, budgetObservations: payload.budgetObservations });
+  } catch (error) {
+    const message = redact(error?.message ?? error);
+    const failure = Object.freeze({
+      schema: 'nolane.ui.performance-runtime-failure.v1',
+      evidenceClass: 'runtime_candidate',
+      certificationState: 'candidate_unverified',
+      finalDecision: 'external_gate',
+      requirementProjection: Object.freeze({ 'NOL-UI-032': 'external_gate', 'NOL-UI-002': 'external_gate' }),
+      machine,
+      setup: onboardingSetup,
+      message,
+    });
+    const receiptSha256 = sha256(JSON.stringify(failure));
+    await writeFile(path.join(root, 'failure.json'), `${JSON.stringify({ ...failure, receiptSha256 }, null, 2)}\n`);
+    throw new Error(message);
   } finally {
-    await browser.close();
+    await browser?.close().catch(() => {});
   }
 }
 
