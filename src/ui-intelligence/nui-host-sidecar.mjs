@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-export const NUI_V10_REVISION = '719981b7a2cf0e8406672d20ce1840e7a26ef5b8';
+export const NUI_V10_REVISION = '46780cdd58e41bea8338b2d27269d339c95e28e7';
 export const NUI_REPOSITORY = 'Nolane-x/Nolane-UI-Intelligence';
 
 const ACTION_CAPABILITIES = Object.freeze(['shell', 'filesystem', 'browser', 'network', 'mcp', 'image']);
