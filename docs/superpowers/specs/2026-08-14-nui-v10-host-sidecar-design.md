@@ -4,7 +4,7 @@
 
 Integrate Nolane UI Intelligence into Nolane-agent as a cognition/control contract without copying NUI's canonical skill graph and without giving NUI authority over host sandbox, approvals, tool policy, filesystem, browser, network, MCP or image permissions.
 
-The reviewed upstream is `Nolane-x/Nolane-UI-Intelligence@719981b7a2cf0e8406672d20ce1840e7a26ef5b8`. The host projection is NUI's `generic-cli` bridge. This matches the upstream rule that one canonical cognition graph is projected through thin host surfaces.
+The reviewed upstream is `Nolane-x/Nolane-UI-Intelligence@46780cdd58e41bea8338b2d27269d339c95e28e7`. The previously reviewed `719981b7a2cf0e8406672d20ce1840e7a26ef5b8..46780cdd58e41bea8338b2d27269d339c95e28e7` range has zero net file delta, so this provenance advance does not alter the reviewed canonical cognition content. The host projection remains NUI's `generic-cli` bridge. This matches the upstream rule that one canonical cognition graph is projected through thin host surfaces.
 
 ## Boundary
 
