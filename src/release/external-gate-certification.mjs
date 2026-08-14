@@ -29,7 +29,7 @@ function canonicalReceiptHash(value) {
   return canonicalSha256(withoutReceipt);
 }
 
-function verifyRunnerReceipt(receipt, { sourceCommitSha, runId, platformLabel }) {
+function verifyRunnerReceipt(receipt, { sourceCommitSha, testedCommitSha, runId, platformLabel }) {
   assert(receipt?.schema === 'nolane.agent.external-gate-evidence.v1', `invalid ${platformLabel} runner receipt schema`);
   assert(/^[a-f0-9]{64}$/.test(String(receipt.receiptSha256 ?? '')), `${platformLabel} runner receipt hash is missing`);
   assert(receipt.receiptSha256 === canonicalReceiptHash(receipt), `${platformLabel} runner receipt hash mismatch`);
@@ -41,7 +41,8 @@ function verifyRunnerReceipt(receipt, { sourceCommitSha, runId, platformLabel })
   assert(environment.githubActions === true, `${platformLabel} receipt was not produced by GitHub Actions`);
   assert(environment.githubRepository === REPOSITORY, `${platformLabel} receipt repository mismatch`);
   assert(environment.githubEventName === 'pull_request', `${platformLabel} receipt must come from a pull_request run`);
-  assert(environment.githubSha === sourceCommitSha, `${platformLabel} runner source commit mismatch`);
+  assert(environment.githubHeadSha === sourceCommitSha, `${platformLabel} runner PR head commit mismatch`);
+  assert(environment.githubSha === testedCommitSha, `${platformLabel} runner tested merge commit mismatch`);
   assert(String(environment.githubRunId ?? '') === String(runId), `${platformLabel} runner workflow run mismatch`);
   assert(environment.githubWorkflow === WORKFLOW, `${platformLabel} runner workflow name mismatch`);
   assert(String(environment.githubWorkflowRef ?? '').includes(`${REPOSITORY}/${WORKFLOW_PATH}@`), `${platformLabel} runner workflow ref mismatch`);
@@ -102,6 +103,9 @@ export function verifyExternalGateCertificationSet(set, { expectedSourceSha = nu
   assert(workflow.event === 'pull_request' && workflow.conclusion === 'success', 'certification workflow must be a successful pull_request run');
   assert(String(workflow.runId ?? '').match(/^\d+$/), 'certification workflow run id is invalid');
   assert(workflow.headSha === set.sourceCommitSha, 'certification workflow head/source commit mismatch');
+  assert(/^[a-f0-9]{40}$/.test(String(workflow.testedSha ?? '')), 'certification tested merge commit SHA is invalid');
+  assert(/^[a-f0-9]{40}$/.test(String(workflow.sourceTreeSha ?? '')) && /^[a-f0-9]{40}$/.test(String(workflow.testedTreeSha ?? '')), 'certification tree provenance is invalid');
+  assert(workflow.sourceTreeSha === workflow.testedTreeSha, 'certification tested tree/source tree mismatch');
   assert(set.claimPolicy?.scope === 'bounded-external-runtime', 'certification claim scope mismatch');
   assert(set.claimPolicy?.producerMaySelfCertify === false, 'certification producer self-certification must remain disabled');
   assert(set.claimPolicy?.completeParityClaimAllowed === false, 'bounded certification cannot enable complete parity');
@@ -119,7 +123,7 @@ export function verifyExternalGateCertificationSet(set, { expectedSourceSha = nu
     assert(!receipts[label], `duplicate certification artifact platform: ${label}`);
     assert(Number.isInteger(artifact.artifactId) && artifact.artifactId > 0, `${label} artifact id is invalid`);
     assert(/^sha256:[a-f0-9]{64}$/.test(String(artifact.artifactDigest ?? '')), `${label} artifact digest is invalid`);
-    receipts[label] = verifyRunnerReceipt(artifact.receipt, { sourceCommitSha: set.sourceCommitSha, runId: workflow.runId, platformLabel: label });
+    receipts[label] = verifyRunnerReceipt(artifact.receipt, { sourceCommitSha: set.sourceCommitSha, testedCommitSha: workflow.testedSha, runId: workflow.runId, platformLabel: label });
   }
   for (const label of Object.keys(PLATFORM_CONTRACT)) assert(receipts[label], `certification is missing ${label} operating-system receipt`);
 
@@ -136,6 +140,8 @@ export function verifyExternalGateCertificationSet(set, { expectedSourceSha = nu
     status: 'pass',
     sourceCommitSha: set.sourceCommitSha,
     workflowRunId: String(workflow.runId),
+    testedCommitSha: workflow.testedSha,
+    sourceTreeSha: workflow.sourceTreeSha,
     verifiedLegacyGateIds: Object.freeze(requested),
     receiptSha256: set.receiptSha256,
   });

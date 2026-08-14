@@ -6,6 +6,8 @@ import { evidenceFileSha256 } from '../src/release/evidence-file-hash.mjs';
 import { verifyExternalGateCertificationSet } from '../src/release/external-gate-certification.mjs';
 
 const SOURCE_SHA = 'a'.repeat(40);
+const TESTED_SHA = 'b'.repeat(40);
+const TREE_SHA = 'c'.repeat(40);
 const RUN_ID = '31820000000';
 const WORKFLOW = 'External gate evidence';
 const WORKFLOW_REF = 'Nolane-x/Nolane-agent/.github/workflows/external-gates.yml@refs/pull/7/merge';
@@ -40,7 +42,7 @@ function receipt(platform) {
     environment: {
       platform, arch: platform === 'darwin' ? 'arm64' : 'x64', node: 'v24.19.0', githubActions: true,
       githubEventName: 'pull_request', githubRepository: 'Nolane-x/Nolane-agent', githubRef: 'refs/pull/7/merge',
-      githubSha: SOURCE_SHA, githubRunId: RUN_ID, githubWorkflow: WORKFLOW, githubWorkflowRef: WORKFLOW_REF,
+      githubSha: TESTED_SHA, githubHeadSha: SOURCE_SHA, githubRunId: RUN_ID, githubWorkflow: WORKFLOW, githubWorkflowRef: WORKFLOW_REF,
       githubIssueLinked: false, runnerOs,
     },
     probes: capabilities,
@@ -61,7 +63,7 @@ function certification(overrides = {}) {
     sourceCommitSha: SOURCE_SHA,
     workflow: {
       repository: 'Nolane-x/Nolane-agent', name: WORKFLOW, path: '.github/workflows/external-gates.yml',
-      runId: RUN_ID, event: 'pull_request', conclusion: 'success', headSha: SOURCE_SHA,
+      runId: RUN_ID, event: 'pull_request', conclusion: 'success', headSha: SOURCE_SHA, testedSha: TESTED_SHA, sourceTreeSha: TREE_SHA, testedTreeSha: TREE_SHA,
     },
     artifacts,
     requestedLegacyGateIds: ['13.27', '21.4', '21.6', '21.7'],
@@ -77,6 +79,8 @@ test('certification verifier promotes only the four explicitly bounded native ru
   assert.equal(result.status, 'pass');
   assert.deepEqual(result.verifiedLegacyGateIds, ['13.27', '21.4', '21.6', '21.7']);
   assert.equal(result.sourceCommitSha, SOURCE_SHA);
+  assert.equal(result.testedCommitSha, TESTED_SHA);
+  assert.equal(result.sourceTreeSha, TREE_SHA);
   assert.equal(result.workflowRunId, RUN_ID);
 });
 
@@ -136,4 +140,13 @@ test('certification freshness fails when a certified production or runtime-test 
     () => verifyExternalGateCertificationFreshness(base, { rootDirectory: root, expectedSourceSha: SOURCE_SHA }),
     /stale|hash mismatch|21\.4/i,
   );
+});
+
+
+test('certification verifier rejects a candidate when tested merge tree and PR head tree differ', () => {
+  const set = certification();
+  set.workflow.testedTreeSha = 'd'.repeat(40);
+  const { receiptSha256: _old, ...base } = set;
+  base.receiptSha256 = canonicalSha256(base);
+  assert.throws(() => verifyExternalGateCertificationSet(base, { expectedSourceSha: SOURCE_SHA }), /tree.*mismatch|tested.*tree|source.*tree/i);
 });

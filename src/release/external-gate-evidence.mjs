@@ -213,6 +213,7 @@ function currentEnvironment() {
     githubRepository: bounded(process.env.GITHUB_REPOSITORY, 160),
     githubRef: bounded(process.env.GITHUB_REF, 320),
     githubSha: bounded(process.env.GITHUB_SHA, 64),
+    githubHeadSha: bounded(process.env.NOLANE_GITHUB_HEAD_SHA || process.env.GITHUB_SHA, 64),
     githubRunId: bounded(process.env.GITHUB_RUN_ID, 32),
     githubWorkflow: bounded(process.env.GITHUB_WORKFLOW, 160),
     githubWorkflowRef: bounded(process.env.GITHUB_WORKFLOW_REF, 320),

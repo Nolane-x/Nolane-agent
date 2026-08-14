@@ -132,7 +132,7 @@ test('Windows Job Object proof creates, attaches, terminates, and observes dispo
 });
 
 test('GitHub Actions receipts bind immutable workflow provenance from the runner environment', async (t) => {
-  const names = ['GITHUB_ACTIONS', 'GITHUB_EVENT_NAME', 'GITHUB_REPOSITORY', 'GITHUB_REF', 'GITHUB_SHA', 'GITHUB_RUN_ID', 'GITHUB_WORKFLOW', 'GITHUB_WORKFLOW_REF', 'RUNNER_OS'];
+  const names = ['GITHUB_ACTIONS', 'GITHUB_EVENT_NAME', 'GITHUB_REPOSITORY', 'GITHUB_REF', 'GITHUB_SHA', 'NOLANE_GITHUB_HEAD_SHA', 'GITHUB_RUN_ID', 'GITHUB_WORKFLOW', 'GITHUB_WORKFLOW_REF', 'RUNNER_OS'];
   const before = Object.fromEntries(names.map((name) => [name, process.env[name]]));
   t.after(() => {
     for (const name of names) {
@@ -145,6 +145,7 @@ test('GitHub Actions receipts bind immutable workflow provenance from the runner
     GITHUB_REPOSITORY: 'Nolane-x/Nolane-agent',
     GITHUB_REF: 'refs/pull/7/merge',
     GITHUB_SHA: 'a'.repeat(40),
+    NOLANE_GITHUB_HEAD_SHA: 'b'.repeat(40),
     GITHUB_RUN_ID: '31810000000',
     GITHUB_WORKFLOW: 'External gate evidence',
     GITHUB_WORKFLOW_REF: 'Nolane-x/Nolane-agent/.github/workflows/external-gates.yml@refs/pull/7/merge',
@@ -166,6 +167,7 @@ test('GitHub Actions receipts bind immutable workflow provenance from the runner
   });
 
   assert.equal(report.environment.githubSha, 'a'.repeat(40));
+  assert.equal(report.environment.githubHeadSha, 'b'.repeat(40));
   assert.equal(report.environment.githubRunId, '31810000000');
   assert.equal(report.environment.githubWorkflow, 'External gate evidence');
   assert.equal(report.environment.githubWorkflowRef, 'Nolane-x/Nolane-agent/.github/workflows/external-gates.yml@refs/pull/7/merge');

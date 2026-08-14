@@ -9,6 +9,8 @@ import { BOUNDED_EXTERNAL_RUNTIME_GATE_EVIDENCE_PATHS, verifyExternalGateCertifi
 import { buildExternalGateCertificationSet } from '../scripts/build-external-gate-certification.mjs';
 
 const SOURCE_SHA = 'b'.repeat(40);
+const TESTED_SHA = 'c'.repeat(40);
+const SOURCE_TREE_SHA = 'd'.repeat(40);
 const RUN_ID = '31830000000';
 
 function nativeGate(id, capability) {
@@ -31,7 +33,7 @@ function makeReceipt(platform) {
     environment: {
       platform, arch: platform === 'darwin' ? 'arm64' : 'x64', node: 'v24.19.0', githubActions: true,
       githubEventName: 'pull_request', githubRepository: 'Nolane-x/Nolane-agent', githubRef: 'refs/pull/7/merge',
-      githubSha: SOURCE_SHA, githubRunId: RUN_ID, githubWorkflow: 'External gate evidence',
+      githubSha: TESTED_SHA, githubHeadSha: SOURCE_SHA, githubRunId: RUN_ID, githubWorkflow: 'External gate evidence',
       githubWorkflowRef: 'Nolane-x/Nolane-agent/.github/workflows/external-gates.yml@refs/pull/7/merge', githubIssueLinked: false, runnerOs: label,
     },
     probes: { treeSitter: tree, podman, windowsJobObjects: windows, macOsSandbox: mac, docker: { available: false }, wsl: { available: false }, osKeychain: { available: false } },
@@ -57,13 +59,16 @@ test('builder derives a freshness-bound four-gate certification candidate from o
   const root = await prepareRoot(t);
   const receipts = { linux: makeReceipt('linux'), windows: makeReceipt('win32'), macos: makeReceipt('darwin') };
   const artifacts = [
-    { id: 201, name: 'external-gates-linux', digest: `sha256:${'1'.repeat(64)}`, workflow_run: { id: Number(RUN_ID) } },
-    { id: 202, name: 'external-gates-windows', digest: `sha256:${'2'.repeat(64)}`, workflow_run: { id: Number(RUN_ID) } },
-    { id: 203, name: 'external-gates-macos', digest: `sha256:${'3'.repeat(64)}`, workflow_run: { id: Number(RUN_ID) } },
+    { id: 201, name: 'external-gates-linux', digest: `sha256:${'1'.repeat(64)}`, workflow_run: { id: Number(RUN_ID), head_sha: SOURCE_SHA } },
+    { id: 202, name: 'external-gates-windows', digest: `sha256:${'2'.repeat(64)}`, workflow_run: { id: Number(RUN_ID), head_sha: SOURCE_SHA } },
+    { id: 203, name: 'external-gates-macos', digest: `sha256:${'3'.repeat(64)}`, workflow_run: { id: Number(RUN_ID), head_sha: SOURCE_SHA } },
   ];
-  const set = await buildExternalGateCertificationSet({ rootDirectory: root, receipts, artifacts, workflowConclusion: 'success' });
+  const set = await buildExternalGateCertificationSet({ rootDirectory: root, receipts, artifacts, workflowConclusion: 'success', gitTreeResolver: async () => ({ sourceTreeSha: SOURCE_TREE_SHA, testedTreeSha: SOURCE_TREE_SHA }) });
   assert.deepEqual(set.requestedLegacyGateIds, ['13.27', '21.4', '21.6', '21.7']);
   assert.equal(set.sourceCommitSha, SOURCE_SHA);
+  assert.equal(set.workflow.testedSha, TESTED_SHA);
+  assert.equal(set.workflow.sourceTreeSha, SOURCE_TREE_SHA);
+  assert.equal(set.workflow.testedTreeSha, SOURCE_TREE_SHA);
   assert.equal(set.workflow.runId, RUN_ID);
   assert.equal(set.artifacts.length, 3);
   assert.ok(set.gateEvidence['21.6'].files.some((entry) => entry.path === 'src/sandbox/windows-job-object-driver.mjs'));
@@ -78,9 +83,27 @@ test('builder refuses to combine receipts from different workflow runs', async (
   const { receiptSha256: _old, ...without } = receipts.windows;
   receipts.windows.receiptSha256 = canonicalSha256(without);
   const artifacts = [
-    { id: 201, name: 'external-gates-linux', digest: `sha256:${'1'.repeat(64)}`, workflow_run: { id: Number(RUN_ID) } },
-    { id: 202, name: 'external-gates-windows', digest: `sha256:${'2'.repeat(64)}`, workflow_run: { id: Number(RUN_ID) } },
-    { id: 203, name: 'external-gates-macos', digest: `sha256:${'3'.repeat(64)}`, workflow_run: { id: Number(RUN_ID) } },
+    { id: 201, name: 'external-gates-linux', digest: `sha256:${'1'.repeat(64)}`, workflow_run: { id: Number(RUN_ID), head_sha: SOURCE_SHA } },
+    { id: 202, name: 'external-gates-windows', digest: `sha256:${'2'.repeat(64)}`, workflow_run: { id: Number(RUN_ID), head_sha: SOURCE_SHA } },
+    { id: 203, name: 'external-gates-macos', digest: `sha256:${'3'.repeat(64)}`, workflow_run: { id: Number(RUN_ID), head_sha: SOURCE_SHA } },
   ];
-  await assert.rejects(() => buildExternalGateCertificationSet({ rootDirectory: root, receipts, artifacts, workflowConclusion: 'success' }), /workflow run|run mismatch/i);
+  await assert.rejects(() => buildExternalGateCertificationSet({ rootDirectory: root, receipts, artifacts, workflowConclusion: 'success', gitTreeResolver: async () => ({ sourceTreeSha: SOURCE_TREE_SHA, testedTreeSha: SOURCE_TREE_SHA }) }), /workflow run|run mismatch/i);
+});
+
+
+test('builder fails closed when the tested pull-request merge tree differs from the immutable PR head tree', async (t) => {
+  const root = await prepareRoot(t);
+  const receipts = { linux: makeReceipt('linux'), windows: makeReceipt('win32'), macos: makeReceipt('darwin') };
+  const artifacts = [
+    { id: 301, name: 'external-gates-linux', digest: `sha256:${'4'.repeat(64)}`, workflow_run: { id: Number(RUN_ID), head_sha: SOURCE_SHA } },
+    { id: 302, name: 'external-gates-windows', digest: `sha256:${'5'.repeat(64)}`, workflow_run: { id: Number(RUN_ID), head_sha: SOURCE_SHA } },
+    { id: 303, name: 'external-gates-macos', digest: `sha256:${'6'.repeat(64)}`, workflow_run: { id: Number(RUN_ID), head_sha: SOURCE_SHA } },
+  ];
+  await assert.rejects(
+    () => buildExternalGateCertificationSet({
+      rootDirectory: root, receipts, artifacts, workflowConclusion: 'success',
+      gitTreeResolver: async () => ({ sourceTreeSha: SOURCE_TREE_SHA, testedTreeSha: 'e'.repeat(40) }),
+    }),
+    /tree.*mismatch|tested.*tree|source.*tree/i,
+  );
 });

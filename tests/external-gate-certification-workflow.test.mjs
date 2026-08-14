@@ -5,6 +5,8 @@ import { readFile } from 'node:fs/promises';
 test('external gate workflow aggregates three runner receipts into a read-only certification candidate artifact', async () => {
   const workflow = await readFile('.github/workflows/external-gates.yml', 'utf8');
   assert.match(workflow, /permissions:\s*\n\s+contents:\s*read\s*\n\s+actions:\s*read/);
+  assert.match(workflow, /NOLANE_GITHUB_HEAD_SHA:/);
+  assert.match(workflow, /github\.event\.pull_request\.head\.sha/);
   assert.match(workflow, /certification-candidate:/);
   assert.match(workflow, /needs:\s*runner-evidence/);
   assert.match(workflow, /actions\/download-artifact@v6/);
