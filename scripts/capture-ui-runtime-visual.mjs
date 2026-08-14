@@ -24,10 +24,13 @@ const STATES = Object.freeze([
   Object.freeze({ id: 'settings-model-catalog', route: '/settings', selector: '.settings-center', prepare: assertSettingsModelCatalog }),
   Object.freeze({ id: 'workroom', route: '/workroom', selector: '.workroom-view' }),
   Object.freeze({ id: 'control-plane', route: '/control-plane', selector: '#workspace' }),
+  Object.freeze({ id: 'mission-proofline', route: '/missions', selector: '.activity-page', viewport: Object.freeze({ width: 1440, height: 1000 }), prepare: prepareProoflineMission }),
+  Object.freeze({ id: 'mission-proofline-compact', route: '/missions', selector: '.activity-page', viewport: Object.freeze({ width: 820, height: 1000 }), prepare: prepareProoflineMission }),
   Object.freeze({ id: 'browser', route: '/browser', selector: '.browser-workspace', prepare: assertBrowserWorkspaceBoundary }),
 ]);
 
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
+let prooflineFixture = null;
 
 function required(value, name) {
   const normalized = String(value ?? '').trim();
@@ -190,7 +193,6 @@ async function assertSettingsOptionPicker(page) {
   const pickerId = 'setting-general.defaultIntent';
   const picker = page.locator(`[data-option-picker="${pickerId}"]`);
   const trigger = picker.locator('[data-option-picker-toggle]');
-  await trigger.waitFor({ state: 'visible', timeout: 10_000 });
   const before = await trigger.evaluate((node) => {
     const scroller = document.querySelector('[data-scroll-key="settings-content"]');
     if (!scroller) return { error: 'settings scroll container is missing' };
@@ -341,6 +343,90 @@ async function assertOnboardingRecommendedNavigation(page) {
   }
 }
 
+async function prepareProoflineMission(page) {
+  if (!prooflineFixture) {
+    prooflineFixture = await page.evaluate(async ({ workspaceRoot }) => {
+      const request = async (pathname, { method = 'GET', body = null, tolerateFailure = false } = {}) => {
+        const response = await fetch(pathname, {
+          method,
+          headers: body == null ? undefined : { 'content-type': 'application/json' },
+          body: body == null ? undefined : JSON.stringify(body),
+        });
+        const text = await response.text();
+        let payload = null;
+        try { payload = text ? JSON.parse(text) : null; } catch { payload = text; }
+        if (!response.ok && !tolerateFailure) throw new Error(`${method} ${pathname} failed with ${response.status}: ${typeof payload === 'string' ? payload : JSON.stringify(payload)}`);
+        return { ok: response.ok, status: response.status, payload };
+      };
+
+      const projectResult = await request('/api/projects', {
+        method: 'POST',
+        body: { name: 'NUI Proofline Runtime Fixture', workspaceRoot, metadata: { evidenceFixture: 'mission-proofline-runtime-v1' } },
+      });
+      const project = projectResult.payload;
+      const objective = 'Ship a trustworthy provider integration while preserving evidence lineage and safe recovery';
+      const missionResult = await request('/api/missions/plan', {
+        method: 'POST',
+        body: {
+          projectId: project.id,
+          objective,
+          plan: {
+            summary: 'Contract the boundary, implement the bounded adapter, then require independent verification.',
+            tasks: [
+              { id: 'inspect', title: 'Inspect trust boundary', objective: 'Map provider authority, evidence lineage, and recovery constraints.', role: 'scout', dependencies: [], allowedPaths: ['src/**', 'tests/**'], deniedPaths: ['.env', '.env.*'] },
+              { id: 'build', title: 'Implement bounded adapter', objective: 'Implement the integration without expanding provider or host authority.', role: 'builder', dependencies: ['inspect'], allowedPaths: ['src/**', 'tests/**'], deniedPaths: ['.env', '.env.*'] },
+              { id: 'verify', title: 'Independently verify evidence', objective: 'Review runtime evidence and preserve unresolved external gates as unknown.', role: 'reviewer', dependencies: ['build'], allowedPaths: ['**'], deniedPaths: ['.env', '.env.*'] },
+            ],
+          },
+        },
+      });
+      const mission = missionResult.payload;
+
+      const trust = await request(`/api/workspace-trust/${encodeURIComponent(project.id)}`, {
+        method: 'PUT',
+        body: { reason: 'Ephemeral CI runtime visual evidence fixture' },
+        tolerateFailure: true,
+      });
+      let checkpoint = null;
+      if (trust.ok) {
+        const checkpointResult = await request('/api/time-travel/checkpoints', {
+          method: 'POST',
+          body: { missionId: mission.id, label: 'Before Proofline runtime evidence' },
+          tolerateFailure: true,
+        });
+        if (checkpointResult.ok) checkpoint = checkpointResult.payload;
+      }
+      return Object.freeze({ projectId: project.id, missionId: mission.id, objective, checkpointId: checkpoint?.id ?? null, checkpointEvidence: checkpoint ? 'AVAILABLE' : 'UNKNOWN' });
+    }, { workspaceRoot: process.cwd() });
+  }
+
+  await page.evaluate(({ missionId }) => { location.hash = `/missions?id=${encodeURIComponent(missionId)}`; }, prooflineFixture);
+  for (const selector of ['.mission-spotlight', '.execution-story', '.time-travel', '.activity-filament']) {
+    await page.locator(selector).waitFor({ state: 'visible', timeout: 20_000 });
+  }
+  await page.waitForFunction(({ missionId, objective }) => {
+    const mission = document.querySelector('.mission-spotlight');
+    return location.hash.includes(encodeURIComponent(missionId)) && mission?.textContent?.includes(objective);
+  }, { missionId: prooflineFixture.missionId, objective: prooflineFixture.objective }, { timeout: 20_000 });
+  return Object.freeze({
+    fixture: Object.freeze({ ...prooflineFixture }),
+    semanticHooks: Object.freeze(['mission-spotlight', 'execution-story', 'time-travel', 'activity-filament']),
+  });
+}
+
+async function assertProoflineRecoveryKeyboard(page) {
+  const control = page.locator('.time-travel [data-time-travel-action="create"]').first();
+  await control.waitFor({ state: 'visible', timeout: 10_000 });
+  await control.focus();
+  const focus = await control.evaluate((node) => {
+    const computed = getComputedStyle(node);
+    const visibleIndicator = computed.outlineStyle !== 'none' || computed.boxShadow !== 'none' || computed.borderColor !== 'transparent';
+    return Object.freeze({ focused: document.activeElement === node, visibleIndicator });
+  });
+  if (!focus.focused || !focus.visibleIndicator) throw new Error('Proofline recovery control did not expose visible keyboard focus');
+  return Object.freeze({ keyboardFocus: 'PASS', screenReader: 'UNKNOWN' });
+}
+
 async function assertAccessibility(page, state) {
   const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
   const blocking = result.violations.filter((violation) => ['serious', 'critical'].includes(String(violation.impact)));
@@ -373,9 +459,10 @@ export async function captureUiRuntimeVisual({ baseUrl, token, outputDirectory, 
         throw new Error(`UI state did not render: ${state.id}; diagnostic=${JSON.stringify(diagnostic)}`, { cause: error });
       }
       await page.waitForTimeout(400);
-      if (state.prepare) await state.prepare(page);
+      const preparation = state.prepare ? await state.prepare(page) : null;
       if (state.id === 'settings') await assertSettingsScrollPreserved(page);
       if (state.id === 'home') await assertProjectPickerKeyboard(page);
+      const prooflineKeyboard = state.id.startsWith('mission-proofline') ? await assertProoflineRecoveryKeyboard(page) : null;
       await assertResponsiveLayout(page, state);
       if (state.id !== 'home-nocturne') await assertAccessibility(page, state);
       if (pageErrors.length) throw new Error(`${state.id} emitted page errors: ${pageErrors.join(' | ')}`);
@@ -383,7 +470,24 @@ export async function captureUiRuntimeVisual({ baseUrl, token, outputDirectory, 
       const file = path.join(output, filename);
       await page.screenshot({ path: file, fullPage: true, animations: 'disabled' });
       const body = await readFile(file);
-      captures.push(Object.freeze({ id: state.id, route: state.route, viewport: Object.freeze({ ...viewport, deviceScaleFactor: 1 }), file: filename, bytes: body.length, sha256: sha256(body) }));
+      captures.push(Object.freeze({
+        id: state.id,
+        route: state.route,
+        viewport: Object.freeze({ ...viewport, deviceScaleFactor: 1 }),
+        file: filename,
+        bytes: body.length,
+        sha256: sha256(body),
+        ...(state.id.startsWith('mission-proofline') ? {
+          runtimeAssertions: Object.freeze({
+            semanticHooks: preparation?.semanticHooks ?? [],
+            checkpointEvidence: preparation?.fixture?.checkpointEvidence ?? 'UNKNOWN',
+            keyboardFocus: prooflineKeyboard?.keyboardFocus ?? 'UNKNOWN',
+            axeSeriousCritical: 'PASS',
+            horizontalOverflow: 'PASS',
+            screenReader: 'UNKNOWN',
+          }),
+        } : {}),
+      }));
       if (state.afterCapture) await state.afterCapture(page);
       await context.close();
     }
