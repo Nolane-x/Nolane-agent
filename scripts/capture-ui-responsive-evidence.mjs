@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { createHash } from 'node:crypto';
-import { writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { captureUiRuntimeVisual } from './capture-ui-runtime-visual.mjs';
@@ -22,6 +22,9 @@ const required = (value, name) => {
   if (!normalized) throw new TypeError(`${name} is required`);
   return normalized;
 };
+const redact = (value) => String(value ?? '')
+  .replace(/([?&](?:token|authorization)=)[^&\s#]+/gi, '$1[redacted]')
+  .replace(/(Bearer\s+)[A-Za-z0-9._~+/=-]+/gi, '$1[redacted]');
 
 function responsiveStates() {
   return SURFACES.flatMap((surface) => WIDTHS.map((width) => Object.freeze({
@@ -34,12 +37,29 @@ function responsiveStates() {
 export async function captureUiResponsiveEvidence({ baseUrl, token, outputDirectory } = {}) {
   const root = path.resolve(required(outputDirectory, 'outputDirectory'), 'responsive');
   const states = responsiveStates();
-  const result = await captureUiRuntimeVisual({
-    baseUrl: required(baseUrl, 'baseUrl'),
-    token: required(token, 'token'),
-    outputDirectory: root,
-    states,
-  });
+  await mkdir(root, { recursive: true });
+  let result;
+  try {
+    result = await captureUiRuntimeVisual({
+      baseUrl: required(baseUrl, 'baseUrl'),
+      token: required(token, 'token'),
+      outputDirectory: root,
+      states,
+    });
+  } catch (error) {
+    const message = redact(error?.message ?? error);
+    const failure = Object.freeze({
+      schema: 'nolane.ui.responsive-runtime-failure.v1',
+      evidenceClass: 'runtime_candidate',
+      certificationState: 'candidate_unverified',
+      finalDecision: 'external_gate',
+      requirementProjection: Object.freeze({ 'NOL-UI-031': 'external_gate' }),
+      message,
+    });
+    const receiptSha256 = sha256(JSON.stringify(failure));
+    await writeFile(path.join(root, 'failure.json'), `${JSON.stringify({ ...failure, receiptSha256 }, null, 2)}\n`);
+    throw new Error(message);
+  }
   if (result.captures.length !== states.length) {
     throw new Error(`Responsive evidence capture count mismatch: ${result.captures.length}/${states.length}`);
   }
