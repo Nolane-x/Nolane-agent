@@ -1,6 +1,13 @@
 name: UI distribution snapshot
 
 on:
+  push:
+    branches:
+      - codex/ui-runtime-certification-evidence
+    paths:
+      - 'ui-v3/**'
+      - 'scripts/build-ui-v3.mjs'
+      - '.github/workflows/ui-dist-snapshot.yml'
   pull_request:
     paths:
       - 'ui-v3/**'
