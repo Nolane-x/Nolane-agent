@@ -9,6 +9,7 @@ import {
   parseProviderDogfoodArgs,
   runProviderDogfoodCommand,
 } from '../scripts/run-provider-dogfood-candidate.mjs';
+import { runProviderDogfoodCandidate } from '../src/providers/provider-dogfood-candidate-runner.mjs';
 
 function safeFakeProvider(invocations) {
   return {
@@ -72,25 +73,23 @@ test('command writes only the finalized candidate and never stores provider plai
   const invocations = { count: 0 };
   const provider = safeFakeProvider(invocations);
   const registry = { get(id) { if (id !== provider.id) throw new Error('unknown'); return provider; } };
-  const candidate = {
-    schema_version: 'nolane.provider-dogfood-candidate.v1',
-    evidence_kind: 'provider_real_dogfood_candidate',
-    certification_state: 'candidate_unverified',
-    final_decision: 'external_gate',
-    provider: { id: provider.id, executable: 'fixture', public_args: ['--plan'], execution_safety: 'verified' },
-    profile: { version: 'provider-real-dogfood.v1', sha256: 'a'.repeat(64), total_cases: 22, behavioral_cases: 10, adversarial_probes: 12 },
-    summary: { total: 22, completed: 22, failed: 0 },
-    cases: [],
-  };
 
   const result = await runProviderDogfoodCommand({
     argv: ['--provider', provider.id, '--workspace', root, '--output', output, '--acknowledge-real-provider-run'],
     env: { NOLANE_PROVIDER_DOGFOOD_ALLOW_REAL_RUN: '1', GITHUB_EVENT_NAME: 'workflow_dispatch' },
-    deps: { registry, runCandidate: async ({ provider: selected }) => { assert.equal(selected, provider); return candidate; } },
+    deps: {
+      registry,
+      runCandidate: async ({ provider: selected, workspace, model, machineLabel }) => {
+        assert.equal(selected, provider);
+        return runProviderDogfoodCandidate({ provider: selected, workspace, model, machineLabel });
+      },
+    },
   });
   assert.equal(result.final_decision, 'external_gate');
+  assert.equal(result.cases.length, 22);
+  assert.equal(invocations.count, 22);
   const persisted = JSON.parse(await readFile(output, 'utf8'));
-  assert.deepEqual(persisted, candidate);
+  assert.deepEqual(persisted, result);
   assert.equal(JSON.stringify(persisted).includes('prompt'), false);
   assert.equal(JSON.stringify(persisted).includes('stdout'), false);
 });
