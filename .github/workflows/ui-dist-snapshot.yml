@@ -1,0 +1,38 @@
+name: UI distribution snapshot
+
+on:
+  pull_request:
+    paths:
+      - 'ui-v3/**'
+      - 'scripts/build-ui-v3.mjs'
+      - '.github/workflows/ui-dist-snapshot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-dist-snapshot-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install locked source dependencies
+        run: npm ci --ignore-scripts
+      - name: Build deterministic UI distribution
+        run: npm run build:ui-v3
+      - name: Upload generated UI distribution
+        uses: actions/upload-artifact@v6
+        with:
+          name: ui-dist-snapshot-${{ github.sha }}
+          path: ui-dist
+          if-no-files-found: error
+          retention-days: 3
