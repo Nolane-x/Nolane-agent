@@ -25,6 +25,13 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(workflow, /windows-ui-runtime-evidence/);
   assert.match(workflow, /Get-CimInstance Win32_ComputerSystem/);
   assert.match(workflow, /nolane-windows-ui-runtime-visual/);
+  const windowsWorkflow = workflow.slice(workflow.indexOf('windows-ui-runtime-evidence:'));
+  assert.match(windowsWorkflow, /Start-Process -FilePath node/);
+  assert.match(windowsWorkflow, /try\s*\{/);
+  assert.match(windowsWorkflow, /finally\s*\{/);
+  assert.match(windowsWorkflow, /Stop-Process -Id/);
+  assert.doesNotMatch(windowsWorkflow, /NOLANE_UI_RUNTIME_PID=/);
+  assert.doesNotMatch(windowsWorkflow, /- name: Start an authenticated source runtime/);
   assert.match(workflow, /node-version:\s*'24'/);
   assert.match(workflow, /npm run build:ui-v3/);
   assert.match(workflow, /git diff --exit-code -- ui-dist/);
