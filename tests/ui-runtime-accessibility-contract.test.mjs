@@ -25,15 +25,17 @@ test('runtime accessibility corrections remain a late semantic layer before host
     assert.ok(css.includes(selector), `missing runtime accessibility selector: ${selector}`);
   }
   assert.match(css, /color:\s*var\(--text-secondary\)/);
-  assert.match(
-    css,
-    /\.recent-mission__badge\[data-tone="neutral"\]\s*\{[^}]*color:\s*var\(--text-primary\)/s,
-    'the tiny neutral mission badge needs primary text contrast against its raised surface',
-  );
+  for (const tone of ['neutral', 'active']) {
+    assert.match(
+      css,
+      new RegExp(`\\.recent-mission__badge\\[data-tone="${tone}"\\]\\s*\\{[^}]*color:\\s*var\\(--text-primary\\)`, 's'),
+      `the tiny ${tone} mission badge needs primary text contrast while its background preserves state`,
+    );
+  }
   assert.doesNotMatch(
     css,
     /\.recent-mission__badge\s*\{[^}]*color:/s,
-    'the late accessibility layer must not flatten active, success, or danger badge semantics',
+    'the late accessibility layer must not flatten success or danger badge semantics',
   );
   assert.doesNotMatch(css, /#[0-9a-f]{3,8}\b/i, 'runtime contrast repair must use semantic tokens, not hard-coded colors');
 });
