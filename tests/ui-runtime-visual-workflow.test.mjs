@@ -19,6 +19,7 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(workflow, /pull_request:\s*\n\s+paths:/);
   assert.match(workflow, /- 'ui-v3\/\*\*'/);
   assert.match(workflow, /- 'scripts\/capture-ui-runtime-visual\.mjs'/);
+  assert.match(workflow, /- 'tests\/nui-proofline-mission-cockpit\.test\.mjs'/);
   assert.doesNotMatch(workflow, /push:\s*\n\s+branches:\s*\n\s+- codex\/external-gate-evidence/);
   assert.match(workflow, /ubuntu-latest/);
   assert.match(workflow, /windows-latest/);
@@ -32,7 +33,7 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(windowsWorkflow, /Stop-Process -Id/);
   assert.doesNotMatch(windowsWorkflow, /NOLANE_UI_RUNTIME_PID=/);
   assert.doesNotMatch(windowsWorkflow, /- name: Start an authenticated source runtime/);
-  assert.match(windowsWorkflow, /NOLANE_UI_VISUAL_STATES = 'onboarding,home,home-compact,settings,settings-model-catalog,skills,workroom,browser'/);
+  assert.match(windowsWorkflow, /NOLANE_UI_VISUAL_STATES = 'onboarding,home,home-compact,settings,settings-model-catalog,skills,workroom,mission-proofline,mission-proofline-compact,browser'/);
   assert.match(workflow, /node-version:\s*'24'/);
   assert.match(workflow, /npm run build:ui-v3/);
   assert.match(workflow, /git diff --exit-code -- ui-dist/);
@@ -49,7 +50,7 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.doesNotMatch(workflow, /^ {4}env:\n(?: {6}[^\n]+\n)* {6}NOLANE_(?:AGENT_DATA_DIR|UI_VISUAL_OUTPUT):\s*\$\{\{\s*runner\.temp/m);
   assert.doesNotMatch(workflow, /electron-builder|build:electron|smoke:packaged|release:matrix/);
 
-  for (const state of ['onboarding', 'home', 'home-experience-menu', 'home-compact', 'home-nocturne', 'projects', 'skills', 'skills-catalog-picker', 'skills-forge-preview', 'settings', 'settings-option-picker', 'settings-language-roundtrip', 'settings-model-catalog', 'workroom', 'control-plane', 'browser']) {
+  for (const state of ['onboarding', 'home', 'home-experience-menu', 'home-compact', 'home-nocturne', 'projects', 'skills', 'skills-catalog-picker', 'skills-forge-preview', 'settings', 'settings-option-picker', 'settings-language-roundtrip', 'settings-model-catalog', 'workroom', 'control-plane', 'mission-proofline', 'mission-proofline-compact', 'browser']) {
     assert.match(capturer, new RegExp(`id: '${state}'`));
   }
   assert.match(workflow, /appearance"\s*:\s*\{\s*"theme"\s*:\s*"nocturne"/);
@@ -110,13 +111,21 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(skillsCatalogAssertion, /details\.selected === null/);
   assert.doesNotMatch(skillsCatalogAssertion, /\|\| !details\.selected/);
   assert.match(capturer, /chooseOptionPickerValue\(page, 'skills-catalog', 'v2'\)/);
-  assert.match(workflow, /NOLANE_UI_VISUAL_STATES=home,home-experience-menu,home-compact,projects,skills,skills-catalog-picker,skills-forge-preview,settings,settings-option-picker,settings-language-roundtrip,settings-model-catalog,workroom,control-plane,browser/);
+  assert.match(capturer, /async function prepareProoflineMission/);
+  assert.match(capturer, /mission-proofline-runtime-v1/);
+  assert.match(capturer, /\/api\/missions\/plan/);
+  assert.match(capturer, /\/api\/time-travel\/checkpoints/);
+  assert.match(capturer, /checkpointEvidence: checkpoint \? 'AVAILABLE' : 'UNKNOWN'/);
+  assert.match(capturer, /async function assertProoflineRecoveryKeyboard/);
+  assert.match(capturer, /keyboardFocus: 'PASS'/);
+  assert.match(capturer, /screenReader: 'UNKNOWN'/);
+  assert.match(workflow, /NOLANE_UI_VISUAL_STATES=home,home-experience-menu,home-compact,projects,skills,skills-catalog-picker,skills-forge-preview,settings,settings-option-picker,settings-language-roundtrip,settings-model-catalog,workroom,control-plane,mission-proofline,mission-proofline-compact,browser/);
   assert.match(capturer, /AxeBuilder/);
   assert.match(capturer, /reported serious or critical accessibility violations/);
   assert.match(capturer, /violation\.nodes/);
   assert.match(capturer, /violation\.nodes\.slice\(0, 10\)/);
   assert.match(capturer, /node\.target/);
   assert.match(capturer, /viewport: Object\.freeze\(\{ width: 640, height: 900 \}\)/);
-  assert.match(workflow, /NOLANE_UI_VISUAL_STATES=home,home-experience-menu,home-compact,projects,skills,skills-catalog-picker,skills-forge-preview,settings,settings-option-picker,settings-language-roundtrip,settings-model-catalog,workroom,control-plane,browser/);
+  assert.match(capturer, /viewport: Object\.freeze\(\{ width: 820, height: 1000 \}\)/);
   assert.doesNotMatch(capturer, /token\s*:\s*(credential|token)/);
 });
