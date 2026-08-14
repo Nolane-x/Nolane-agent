@@ -21,6 +21,10 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(workflow, /- 'scripts\/capture-ui-runtime-visual\.mjs'/);
   assert.doesNotMatch(workflow, /push:\s*\n\s+branches:\s*\n\s+- codex\/external-gate-evidence/);
   assert.match(workflow, /ubuntu-latest/);
+  assert.match(workflow, /windows-latest/);
+  assert.match(workflow, /windows-ui-runtime-evidence/);
+  assert.match(workflow, /Get-CimInstance Win32_ComputerSystem/);
+  assert.match(workflow, /nolane-windows-ui-runtime-visual/);
   assert.match(workflow, /node-version:\s*'24'/);
   assert.match(workflow, /npm run build:ui-v3/);
   assert.match(workflow, /git diff --exit-code -- ui-dist/);
