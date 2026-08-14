@@ -171,3 +171,66 @@ test('repository master ledger reconciles legacy, Nolane V5 and full NolaneNativ
   assert.equal(ledger.summary.deduplicatedAliases, 3);
   assert.equal(validateMasterLedger(ledger).status, 'pass');
 });
+
+test('master ledger promotes a certified legacy external runtime gate while preserving certification lineage', () => {
+  const legacy = structuredClone(legacyFixture);
+  legacy.sections[0].items[2] = {
+    id: '13.27',
+    text: 'Hỗ trợ tree-sitter',
+    status: 'external_gate',
+    evidence: ['src/repository/tree-sitter-runtime-service.mjs', 'tests/tree-sitter-runtime-evidence.test.mjs'],
+    note: 'Requires an externally observed pinned Tree-sitter runtime.',
+  };
+  const certification = {
+    schema: 'nolane.agent.external-gate-certification-verification.v1',
+    status: 'pass',
+    sourceCommitSha: 'a'.repeat(40),
+    workflowRunId: '31820000000',
+    verifiedLegacyGateIds: ['13.27'],
+    receiptSha256: '9'.repeat(64),
+  };
+  const ledger = generateMasterLedger({
+    legacyAudit: legacy,
+    nolaneV5: nolaneFixture,
+    nolane_nativeInventory: nolane_nativeFixture,
+    externalCertification: certification,
+  });
+  const requirement = ledger.requirements.find((entry) => entry.aliases.some((alias) => alias.id === '13.27'));
+  assert.equal(requirement.status, 'verified');
+  assert.deepEqual(requirement.acceptance.externalReceipts, [{
+    schema: 'nolane.agent.external-gate-certification-lineage.v1',
+    gateId: '13.27',
+    sourceCommitSha: 'a'.repeat(40),
+    workflowRunId: '31820000000',
+    certificationReceiptSha256: '9'.repeat(64),
+  }]);
+  assert.equal(ledger.sourceSnapshots.externalCertificationReceiptSha256, '9'.repeat(64));
+});
+
+test('master ledger does not promote unrelated legacy external gates from a bounded certification result', () => {
+  const certification = {
+    schema: 'nolane.agent.external-gate-certification-verification.v1',
+    status: 'pass',
+    sourceCommitSha: 'a'.repeat(40),
+    workflowRunId: '31820000000',
+    verifiedLegacyGateIds: ['13.27'],
+    receiptSha256: '9'.repeat(64),
+  };
+  const ledger = generateMasterLedger({
+    legacyAudit: legacyFixture,
+    nolaneV5: nolaneFixture,
+    nolane_nativeInventory: nolane_nativeFixture,
+    externalCertification: certification,
+  });
+  const windows = ledger.requirements.find((entry) => entry.aliases.some((alias) => alias.id === '1.3'));
+  assert.equal(windows.status, 'external_gate');
+  assert.deepEqual(windows.acceptance.externalReceipts ?? [], []);
+});
+
+test('official master-ledger generator verifies optional committed external certification freshness before promotion', async () => {
+  const source = await readFile('scripts/generate-master-acceptance-ledger.mjs', 'utf8');
+  assert.match(source, /verifyExternalGateCertificationFreshness/);
+  assert.match(source, /requirements\/external-gate-certification\.json/);
+  assert.match(source, /externalCertification/);
+  assert.match(source, /ENOENT/);
+});

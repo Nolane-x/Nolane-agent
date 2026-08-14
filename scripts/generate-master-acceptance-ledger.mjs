@@ -7,6 +7,7 @@ import {
   hydrateMasterLedgerEvidence,
   validateMasterLedger,
 } from '../src/requirements/master-ledger.mjs';
+import { verifyExternalGateCertificationFreshness } from '../src/release/external-gate-certification.mjs';
 
 function canonical(value) {
   if (Array.isArray(value)) return value.map(canonical);
@@ -54,13 +55,22 @@ async function loadJson(relativePath) {
   return JSON.parse(await readFile(relativePath, 'utf8'));
 }
 
+async function loadExternalCertification(rootDirectory) {
+  const relativePath = 'requirements/external-gate-certification.json';
+  let certificationSet;
+  try { certificationSet = await loadJson(relativePath); }
+  catch (error) { if (error?.code === 'ENOENT') return null; throw error; }
+  return verifyExternalGateCertificationFreshness(certificationSet, { rootDirectory });
+}
+
 async function main() {
   const rootDirectory = process.cwd();
   const legacyAudit = await loadJson('docs/feature-audit-4.0.0.json');
   const nolaneV5 = await loadJson('requirements/nolane-agent-v5-requirements.json');
   const nolane_nativeInventory = await loadJson('requirements/nolane-native-core-inventory.json');
   const nativeConformance = await loadJson('requirements/nolane-native-core-conformance.json');
-  const initial = generateMasterLedger({ legacyAudit, nolaneV5, nolane_nativeInventory, nativeConformance });
+  const externalCertification = await loadExternalCertification(rootDirectory);
+  const initial = generateMasterLedger({ legacyAudit, nolaneV5, nolane_nativeInventory, nativeConformance, externalCertification });
   const ledger = await hydrateMasterLedgerEvidence(initial, { rootDirectory });
   validateMasterLedger(ledger);
   await writeFile('requirements/master-acceptance-ledger.json', `${JSON.stringify(canonical(ledger), null, 2)}\n`);
