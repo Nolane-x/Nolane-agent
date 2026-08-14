@@ -1,0 +1,62 @@
+name: Apply external provenance fix staging
+
+on:
+  push:
+    branches:
+      - codex/external-runtime-provenance-fix-staging
+
+permissions:
+  contents: write
+
+concurrency:
+  group: external-runtime-provenance-fix-staging
+  cancel-in-progress: false
+
+jobs:
+  apply-provenance-fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Apply head-tested-tree provenance migration
+        run: python .ci/apply-external-provenance-fix.py
+
+      - name: Verify provenance contracts
+        run: >-
+          node --test
+          tests/external-gate-evidence.test.mjs
+          tests/external-gate-certification.test.mjs
+          tests/external-gate-certification-builder.test.mjs
+          tests/external-gate-certification-workflow.test.mjs
+
+      - name: Commit clean staging tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .ci/apply-external-provenance-fix.py .github/workflows/apply-external-provenance-fix-staging.yml
+          git add \
+            src/release/external-gate-evidence.mjs \
+            src/release/external-gate-certification.mjs \
+            scripts/build-external-gate-certification.mjs \
+            .github/workflows/external-gates.yml \
+            tests/external-gate-evidence.test.mjs \
+            tests/external-gate-certification.test.mjs \
+            tests/external-gate-certification-builder.test.mjs \
+            tests/external-gate-certification-workflow.test.mjs \
+            .ci/apply-external-provenance-fix.py \
+            .github/workflows/apply-external-provenance-fix-staging.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix(evidence): bind certification to PR head and tested tree'
+          git push origin HEAD:codex/external-runtime-provenance-fix-staging
