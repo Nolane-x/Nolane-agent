@@ -27,14 +27,13 @@ function stateUrl(baseUrl, token, route) {
   return target.toString();
 }
 
-async function completeOnboarding(root, credential) {
-  const response = await fetch(new URL('/api/onboarding/recommended', root), {
-    method: 'POST',
-    headers: { authorization: `Bearer ${credential}`, 'content-type': 'application/json' },
-    body: JSON.stringify({ primaryUse: 'chat' }),
+async function completeOnboarding(context, root, credential) {
+  const response = await context.request.post(new URL('/api/onboarding/recommended', root).toString(), {
+    headers: { authorization: `Bearer ${credential}` },
+    data: { primaryUse: 'chat' },
   });
-  if (!response.ok && response.status !== 409) {
-    throw new Error(`onboarding preparation failed with ${response.status}`);
+  if (!response.ok() && response.status() !== 409) {
+    throw new Error(`onboarding preparation failed with ${response.status()}`);
   }
 }
 
@@ -107,13 +106,13 @@ export async function captureProoflineEmptyEvidence({ baseUrl, token, outputDire
   const credential = required(token, 'token');
   const output = path.resolve(required(outputDirectory, 'outputDirectory'));
   await mkdir(output, { recursive: true });
-  await completeOnboarding(root, credential);
 
   const browser = await chromium.launch({ headless: true });
   const captures = [];
   try {
     for (const state of STATES) {
       const context = await browser.newContext({ viewport: state.viewport, deviceScaleFactor: 1 });
+      await completeOnboarding(context, root, credential);
       const page = await context.newPage();
       const pageErrors = [];
       page.on('pageerror', (error) => pageErrors.push(String(error?.message ?? error)));
