@@ -1,4 +1,4 @@
-import { normalizeExperience } from '../../core/experience-policy.mjs';
+import { normalizeExperience } from '../../core/experience-policy.9e518a5ee296.mjs';
 function at(root, path) { return String(path).split('.').reduce((value, key) => value?.[key], root); }
 function setAt(root, path, value) { const next = structuredClone(root ?? {}); const parts = String(path).split('.'); let node = next; for (const part of parts.slice(0,-1)) node = node[part] ??= {}; node[parts.at(-1)] = value; return next; }
 function modelWorkspaceMatches(providers, models, needle) {

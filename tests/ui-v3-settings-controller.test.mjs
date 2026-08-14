@@ -55,6 +55,29 @@ test('English settings render every language card in the active interface locale
   assert.doesNotMatch(html, /Tiếng Việt|Giao diện tiếng Việt/);
 });
 
+test('settings search keeps the provider workspace visible when a provider name matches', async () => {
+  const api = {
+    get: async (path) => {
+      if (path.includes('catalog')) return { categories: [{ id: 'models', title: 'Models', level: 'standard', fields: [] }] };
+      if (path.includes('effective')) return { value: { general: { language: 'en' }, experience: { level: 'everyday' } }, provenance: {}, warnings: [] };
+      if (path.includes('model-profiles')) return { models: [] };
+      if (path.includes('provider-connections')) return [{ id: 'openai-api', label: 'OpenAI API', kind: 'openai-responses', configured: false }];
+      return {};
+    },
+    put: async () => ({}),
+    post: async () => ({}),
+  };
+  const controller = createSettingsController({ api });
+  await controller.load();
+  controller.search('OpenAI API');
+
+  const state = controller.snapshot();
+  assert.deepEqual(state.visibleCategories.map((category) => category.id), ['models']);
+  const html = renderSettingsView(state);
+  assert.match(html, /OpenAI API/);
+  assert.doesNotMatch(html, /No settings match your search\./);
+});
+
 test('Vietnamese settings localize provider account login status and device receipt', async () => {
   const api = {
     get: async (path) => {
