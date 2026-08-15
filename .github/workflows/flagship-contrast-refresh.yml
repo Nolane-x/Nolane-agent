@@ -1,0 +1,100 @@
+name: Refresh flagship contrast evidence source
+
+on:
+  push:
+    branches:
+      - codex/nui-flagship-reconstruction-v2
+
+permissions:
+  contents: write
+
+concurrency:
+  group: flagship-contrast-refresh
+  cancel-in-progress: true
+
+jobs:
+  repair-and-build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Apply contrast-safe Mission semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          test_path = Path('tests/ui-v3-flagship-reconstruction.test.mjs')
+          test_text = test_path.read_text(encoding='utf-8')
+          marker = "Mission secondary evidence text uses contrast-safe semantic roles on the open canvas"
+          if marker in test_text:
+              raise SystemExit('contrast regression test already exists')
+          test_text += r'''
+
+test('Mission secondary evidence text uses contrast-safe semantic roles on the open canvas', async () => {
+  const css = await readFile(flagshipUrl, 'utf8');
+  assert.match(css, /\.mission-spotlight > header \.eyebrow,\s*\n\.mission-spotlight > header p:last-child\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
+  assert.match(css, /\.mission-task-strip article div > small\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
+  assert.match(css, /\.execution-story > footer > span,\s*\n\.execution-story > footer > code,\s*\n\.follow-toggle > span\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
+});
+'''
+          test_path.write_text(test_text, encoding='utf-8')
+
+          css_path = Path('ui-v3/styles/flagship/proofborne-instrument.css')
+          css = css_path.read_text(encoding='utf-8')
+          css_marker = 'Runtime critique cycle 1: transparent Mission material requires stronger'
+          if css_marker in css:
+              raise SystemExit('contrast repair already exists')
+          css += r'''
+
+/* Runtime critique cycle 1: transparent Mission material requires stronger
+ * semantic text roles than the old raised-panel muted treatment. */
+.mission-spotlight > header .eyebrow,
+.mission-spotlight > header p:last-child {
+  color: var(--text-secondary);
+}
+
+.mission-task-strip article div > small {
+  color: var(--text-secondary);
+}
+
+.execution-story > footer > span,
+.execution-story > footer > code,
+.follow-toggle > span {
+  color: var(--text-secondary);
+}
+'''
+          css_path.write_text(css, encoding='utf-8')
+          PY
+
+          node --test tests/ui-v3-flagship-reconstruction.test.mjs
+          npm run validate:ui-tokens
+          npm run build:ui-v3
+      - name: Guard scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t changed < <(git status --short | sed -E 's/^.. //')
+          for path in "${changed[@]}"; do
+            case "$path" in
+              tests/ui-v3-flagship-reconstruction.test.mjs|ui-v3/styles/flagship/proofborne-instrument.css|ui-dist/*) ;;
+              *) echo "unexpected change: $path" >&2; exit 1 ;;
+            esac
+          done
+      - name: Commit repair and canonical distribution
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/ui-v3-flagship-reconstruction.test.mjs ui-v3/styles/flagship/proofborne-instrument.css ui-dist
+          git commit -m "fix(ui): raise Mission secondary evidence contrast"
+          git push origin HEAD:${GITHUB_REF_NAME}
