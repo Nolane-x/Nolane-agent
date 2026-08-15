@@ -1,0 +1,52 @@
+name: Product Perfection Review Accessibility Fix
+
+on:
+  push:
+    branches: [codex/product-perfection-system-v3]
+    paths: ['.github/workflows/product-perfection-review-a11y-fix.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  review-a11y:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm }
+      - run: npm ci --ignore-scripts
+      - name: Prove Review accessibility contract RED
+        shell: bash
+        run: |
+          set -euo pipefail
+          if node --test tests/ui-v3-review-accessibility-audit.test.mjs; then
+            echo 'Review accessibility contract unexpectedly passed before migration' >&2
+            exit 1
+          fi
+      - name: Apply bounded Review accessibility correction
+        run: node scripts/apply-review-accessibility-audit-fix.mjs
+      - name: Verify GREEN and release source gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run build:ui-v3
+          node --test tests/ui-v3-review-accessibility-audit.test.mjs tests/ui-v3-review.test.mjs tests/ui-v3-review-flow.test.mjs tests/ui-v3-release-gate.test.mjs
+          node scripts/verify-ui-v3-release.mjs
+          npm run validate:ui-tokens
+          git diff --check
+      - name: Commit exact accessibility correction
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f .github/workflows/product-perfection-review-a11y-fix.yml scripts/apply-review-accessibility-audit-fix.mjs
+          git add scripts/audit-ui-v3-accessibility.mjs ui-v3/views/review/review-view.mjs ui-dist tests/ui-v3-review-accessibility-audit.test.mjs
+          git config user.name nolane-ui-bot
+          git config user.email actions@users.noreply.github.com
+          git commit -m 'fix(a11y): preserve localized Review navigation labels'
+          node --test tests/ui-v3-review-accessibility-audit.test.mjs tests/ui-v3-release-gate.test.mjs
+          test -z "$(git status --porcelain)"
+          git push origin HEAD:codex/product-perfection-system-v3
