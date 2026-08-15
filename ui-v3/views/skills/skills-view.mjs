@@ -4,6 +4,7 @@ import { renderOptionPicker } from '../../components/option-picker.mjs';
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 const asList = (value) => Array.isArray(value) ? value : Array.isArray(value?.skills) ? value.skills : Array.isArray(value?.items) ? value.items : [];
 const SKILL_CATALOG_LIMIT = 500;
+const SKILL_RENDER_BATCH = 48;
 
 function copy(language) {
   const vi = language === 'vi';
@@ -14,7 +15,7 @@ function copy(language) {
     empty: 'Chưa có skill phù hợp', emptyDetail: 'Thử đổi từ khóa hoặc danh mục để xem các skill khác.',
     preview: 'Xem trước skill', previewEmpty: 'Chọn một skill để đọc nội dung trước khi dùng trong cuộc trò chuyện.',
     inspect: 'Xem trước', error: 'Không thể tải kho skill', source: 'Nguồn', sourceUrl: 'URL nguồn', catalogDetail: 'Danh mục', provenance: 'Nguồn gốc', license: 'Giấy phép', contentHash: 'Mã nội dung', unavailable: 'Chưa khai báo', maturity: 'Trạng thái',
-    useInMission: 'Dùng trong nhiệm vụ tiếp theo', useInMissionDetail: 'Skill sẽ được chọn rõ ràng và kiểm tra lại trước khi agent đọc.', install: 'Thêm vào skill của tôi', installing: 'Đang thêm skill…', installed: 'Đã thêm vào skill cục bộ', installedDetail: 'Skill Forge OS đã được thêm vào kho cục bộ với nguồn gốc và hash giữ nguyên.', installDetail: 'Chỉ tài liệu skill đã xác minh được thêm vào; không script hay quyền nào được bật.', installError: 'Không thể thêm skill', manage: 'Quản trị extension', manageDetail: 'Cài đặt và quyền hạn vẫn nằm trong Control Plane.',
+    useInMission: 'Dùng trong nhiệm vụ tiếp theo', useInMissionDetail: 'Skill sẽ được chọn rõ ràng và kiểm tra lại trước khi agent đọc.', install: 'Thêm vào skill của tôi', installing: 'Đang thêm skill…', installed: 'Đã thêm vào skill cục bộ', installedDetail: 'Skill Forge OS đã được thêm vào kho cục bộ với nguồn gốc và hash giữ nguyên.', installDetail: 'Chỉ tài liệu skill đã xác minh được thêm vào; không script hay quyền nào được bật.', installError: 'Không thể thêm skill', manage: 'Quản trị extension', manageDetail: 'Cài đặt và quyền hạn vẫn nằm trong Control Plane.', showMore: 'Hiện thêm skill',
   } : {
     eyebrow: 'Workspace library', title: 'Skills', subtitle: 'Find, read, and add the right skill to context before assigning work to the agent.',
     search: 'Search skills', searchPlaceholder: 'Search by name, source, or status…', catalog: 'Catalog',
@@ -22,7 +23,7 @@ function copy(language) {
     empty: 'No matching skills', emptyDetail: 'Try a different search or catalog to see other skills.',
     preview: 'Skill preview', previewEmpty: 'Select a skill to read it before using it in a conversation.',
     inspect: 'Preview', error: 'The skill library could not be loaded', source: 'Source', sourceUrl: 'Source URL', catalogDetail: 'Catalog', provenance: 'Provenance', license: 'License', contentHash: 'Content hash', unavailable: 'Not declared', maturity: 'Status',
-    useInMission: 'Use in next mission', useInMissionDetail: 'The skill is explicitly selected and checked again before the agent reads it.', install: 'Add to my Skills', installing: 'Adding skill…', installed: 'Added to local Skills', installedDetail: 'Forge OS skill added to local library with provenance and hashes preserved.', installDetail: 'Only verified skill documentation is added; no scripts or permissions are enabled.', installError: 'Could not add skill', manage: 'Manage extensions', manageDetail: 'Installation and permissions remain in the Control Plane.',
+    useInMission: 'Use in next mission', useInMissionDetail: 'The skill is explicitly selected and checked again before the agent reads it.', install: 'Add to my Skills', installing: 'Adding skill…', installed: 'Added to local Skills', installedDetail: 'Forge OS skill added to local library with provenance and hashes preserved.', installDetail: 'Only verified skill documentation is added; no scripts or permissions are enabled.', installError: 'Could not add skill', manage: 'Manage extensions', manageDetail: 'Installation and permissions remain in the Control Plane.', showMore: 'Show more skills',
   };
 }
 
@@ -78,13 +79,13 @@ function previewFrom(payload, fallback) {
 
 export function createSkillsLibraryController({ api, language = 'en' } = {}) {
   if (typeof api?.get !== 'function' || typeof api?.post !== 'function') throw new TypeError('Skills library requires api.get and api.post');
-  let state = Object.freeze({ status: 'loading', language, query: '', catalog: '', skills: Object.freeze([]), preview: null, error: null, installState: 'idle', installReceipt: null, installError: null });
+  let state = Object.freeze({ status: 'loading', language, query: '', catalog: '', visibleLimit: SKILL_RENDER_BATCH, skills: Object.freeze([]), preview: null, error: null, installState: 'idle', installReceipt: null, installError: null });
   const patch = (value) => { state = Object.freeze({ ...state, ...value }); return snapshot(); };
-  const snapshot = () => Object.freeze({ ...state, skills: Object.freeze(state.skills.map((skill) => Object.freeze({ ...skill }))), preview: state.preview ? Object.freeze({ ...state.preview }) : null, installReceipt: state.installReceipt ? Object.freeze({ ...state.installReceipt }) : null });
+  const snapshot = () => Object.freeze({ ...state, skills: state.skills, preview: state.preview ? Object.freeze({ ...state.preview }) : null, installReceipt: state.installReceipt ? Object.freeze({ ...state.installReceipt }) : null });
   const patchFilter = (value) => {
     const candidate = { ...state, ...value };
     const selectedIsVisible = !candidate.preview || visibleSkills(candidate).some((skill) => skill.id === candidate.preview.id);
-    return patch({ ...value, preview: selectedIsVisible ? candidate.preview : null });
+    return patch({ ...value, visibleLimit: SKILL_RENDER_BATCH, preview: selectedIsVisible ? candidate.preview : null });
   };
   return Object.freeze({
     snapshot,
@@ -92,13 +93,17 @@ export function createSkillsLibraryController({ api, language = 'en' } = {}) {
       patch({ status: 'loading', error: null });
       try {
         const skills = asList(await api.get(`/api/skills/catalog?limit=${SKILL_CATALOG_LIMIT}`)).map(normalizeSkill).filter(Boolean);
-        return patch({ status: 'ready', skills: Object.freeze(skills), error: null });
+        return patch({ status: 'ready', visibleLimit: SKILL_RENDER_BATCH, skills: Object.freeze(skills), error: null });
       } catch (error) {
-        return patch({ status: 'error', skills: Object.freeze([]), preview: null, error: String(error?.payload?.error ?? error?.message ?? error) });
+        return patch({ status: 'error', visibleLimit: SKILL_RENDER_BATCH, skills: Object.freeze([]), preview: null, error: String(error?.payload?.error ?? error?.message ?? error) });
       }
     },
     setQuery(query) { return patchFilter({ query: String(query ?? '') }); },
     setCatalog(catalog) { return patchFilter({ catalog: String(catalog ?? '').toLowerCase() }); },
+    showMore() {
+      const total = visibleSkills(state).length;
+      return patch({ visibleLimit: Math.min(total, Math.max(SKILL_RENDER_BATCH, Number(state.visibleLimit) || SKILL_RENDER_BATCH) + SKILL_RENDER_BATCH) });
+    },
     async selectSkill(id) {
       const selected = state.skills.find((skill) => skill.id === String(id ?? ''));
       if (!selected) return patch({ error: 'Unknown skill' });
@@ -159,13 +164,16 @@ function catalogOptions(text) {
 
 export function renderSkillsLibrary(state = {}) {
   const text = copy(state.language);
-  const skills = visibleSkills({ ...state, skills: Array.isArray(state.skills) ? state.skills : [] });
+  const filteredSkills = visibleSkills({ ...state, skills: Array.isArray(state.skills) ? state.skills : [] });
+  const visibleLimit = Math.max(1, Number(state.visibleLimit) || SKILL_RENDER_BATCH);
+  const skills = filteredSkills.slice(0, visibleLimit);
+  const remainingSkills = Math.max(0, filteredSkills.length - skills.length);
   const selectedId = state.preview?.id ?? '';
   const preview = state.preview;
   const controls = `<div class="skills-library__controls"><label class="skills-library__search"><span class="sr-only">${text.search}</span>${icon('search',{size:16})}<input type="search" data-skills-search value="${esc(state.query ?? '')}" placeholder="${esc(text.searchPlaceholder)}"></label><div class="skills-library__filter"><span>${text.catalog}</span>${renderOptionPicker({ id: 'skills-catalog', label: text.catalog, selected: state.catalog, options: catalogOptions(text), valueDataAttribute: 'data-skills-catalog' })}</div></div>`;
   let body;
   if (state.status === 'loading') body = `<div class="page-loading skills-library__loading" role="status"><span class="spinner"></span>${text.loading}</div>`;
   else if (state.status === 'error' && !state.skills?.length) body = `<div class="page-error skills-library__error" role="alert">${icon('warning',{size:18})}<span>${esc(text.error)}: ${esc(state.error)}</span></div>`;
-  else body = `<div class="skills-library__body"><section class="skills-library__catalog" aria-label="${esc(text.title)}">${skills.length ? `<div class="skills-library__list" role="list">${skills.map((skill) => `<div role="listitem">${renderSkillItem(skill, String(selectedId === skill.id), text)}</div>`).join('')}</div>` : `<div class="empty-state skills-library__empty"><span>${icon('spark',{size:20})}</span><strong>${text.empty}</strong><p>${text.emptyDetail}</p></div>`}</section><aside class="skills-library__preview" aria-live="polite"><header><p class="eyebrow">${text.preview}</p><h2>${preview ? esc(preview.title) : text.preview}</h2>${preview?.catalog ? `<span>${esc(preview.catalog)}</span>` : ''}</header>${preview ? `<div class="skills-library__preview-content">${renderProvenance(preview, text)}<pre>${esc(preview.content || text.previewEmpty)}</pre></div>` : `<div class="skills-library__preview-empty">${icon('eye',{size:20})}<p>${text.previewEmpty}</p></div>`}<footer>${preview ? `${renderInstallation(state, preview, text)}<a href="#/?skill=${encodeURIComponent(preview.id)}" data-route="/?skill=${encodeURIComponent(preview.id)}">${text.useInMission} <span aria-hidden="true">→</span></a><small>${text.useInMissionDetail}</small>` : ''}<a href="#/control-plane/extensions" data-route="/control-plane/extensions">${text.manage} <span aria-hidden="true">→</span></a><small>${text.manageDetail}</small></footer></aside></div>`;
+  else body = `<div class="skills-library__body"><section class="skills-library__catalog" aria-label="${esc(text.title)}">${skills.length ? `<div class="skills-library__list" role="list">${skills.map((skill) => `<div role="listitem">${renderSkillItem(skill, String(selectedId === skill.id), text)}</div>`).join('')}</div>${remainingSkills > 0 ? `<button type="button" class="skills-library__show-more" data-skills-show-more>${esc(text.showMore)} <span aria-hidden="true">+${remainingSkills}</span></button>` : ''}` : `<div class="empty-state skills-library__empty"><span>${icon('spark',{size:20})}</span><strong>${text.empty}</strong><p>${text.emptyDetail}</p></div>`}</section><aside class="skills-library__preview" aria-live="polite"><header><p class="eyebrow">${text.preview}</p><h2>${preview ? esc(preview.title) : text.preview}</h2>${preview?.catalog ? `<span>${esc(preview.catalog)}</span>` : ''}</header>${preview ? `<div class="skills-library__preview-content">${renderProvenance(preview, text)}<pre>${esc(preview.content || text.previewEmpty)}</pre></div>` : `<div class="skills-library__preview-empty">${icon('eye',{size:20})}<p>${text.previewEmpty}</p></div>`}<footer>${preview ? `${renderInstallation(state, preview, text)}<a href="#/?skill=${encodeURIComponent(preview.id)}" data-route="/?skill=${encodeURIComponent(preview.id)}">${text.useInMission} <span aria-hidden="true">→</span></a><small>${text.useInMissionDetail}</small>` : ''}<a href="#/control-plane/extensions" data-route="/control-plane/extensions">${text.manage} <span aria-hidden="true">→</span></a><small>${text.manageDetail}</small></footer></aside></div>`;
   return `<section class="surface-page skills-library"><header class="surface-page__header"><div><p class="eyebrow">${text.eyebrow}</p><h1>${text.title}</h1><p>${text.subtitle}</p></div></header>${controls}${body}</section>`;
 }

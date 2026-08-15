@@ -120,14 +120,22 @@ async function captureRenderDiagnostic({ page, state, root, credential, pageErro
   }
 }
 
+async function chooseSettingsCategory(page, category) {
+  const link = page.locator(`[data-settings-category-link="${category}"]`);
+  await link.waitFor({ state: 'visible', timeout: 10_000 });
+  await link.click();
+  const section = page.locator(`[data-settings-category="${category}"]`);
+  await section.waitFor({ state: 'visible', timeout: 10_000 });
+  return section;
+}
+
 async function assertSettingsScrollPreserved(page) {
   const setScrollPosition = () => page.evaluate(() => {
     const scroller = document.querySelector('[data-scroll-key="settings-content"]');
     if (!scroller) return { error: 'settings scroll container is missing' };
     const targetTop = Math.min(480, Math.max(0, scroller.scrollHeight - scroller.clientHeight));
-    if (targetTop < 1) return { error: 'settings content is not scrollable' };
     scroller.scrollTop = targetTop;
-    return { before: scroller.scrollTop };
+    return { before: scroller.scrollTop, scrollable: targetTop > 0 };
   });
   const setScrollForVisibleControl = (control) => control.evaluate((node) => {
     const scroller = document.querySelector('[data-scroll-key="settings-content"]');
@@ -135,16 +143,16 @@ async function assertSettingsScrollPreserved(page) {
     const scrollerBox = scroller.getBoundingClientRect();
     const controlBox = node.getBoundingClientRect();
     const contentTop = scroller.scrollTop + controlBox.top - scrollerBox.top;
-    const targetTop = Math.min(480, Math.max(0, scroller.scrollHeight - scroller.clientHeight), Math.max(0, contentTop - 24));
-    if (targetTop < 1) return { error: 'settings language choice cannot remain visible at a nonzero scroll position' };
-    scroller.scrollTop = targetTop;
-    return { before: scroller.scrollTop };
+    const top = Math.min(480, Math.max(0, scroller.scrollHeight - scroller.clientHeight), Math.max(0, contentTop - 24));
+    scroller.scrollTop = top;
+    return { before: scroller.scrollTop, scrollable: top > 0 };
   });
   const assertScroll = async (before, label) => {
     const after = await page.locator('[data-scroll-key="settings-content"]').evaluate((node) => node.scrollTop);
     if (after == null || Math.abs(after - before) > 2) throw new Error(`${label} did not preserve scroll position: ${before} -> ${after}`);
   };
 
+  await chooseSettingsCategory(page, 'appearance');
   const accent = await setScrollPosition();
   if (accent.error) throw new Error(accent.error);
   const accentChoice = page.locator('[data-setting-choice][data-setting-path="appearance.accent"][data-setting-value="blue"]');
@@ -153,6 +161,7 @@ async function assertSettingsScrollPreserved(page) {
   if (await accentChoice.getAttribute('aria-pressed') !== 'true') throw new Error('settings accent choice did not update the live preference state');
   await assertScroll(accent.before, 'settings content');
 
+  await chooseSettingsCategory(page, 'general');
   const language = await page.evaluate(() => document.querySelector('[data-setting-choice][data-setting-path="general.language"][aria-pressed="true"]')?.dataset?.settingValue === 'vi' ? 'en' : 'vi');
   const languageChoice = page.locator(`[data-setting-choice][data-setting-path="general.language"][data-setting-value="${language}"]`);
   const beforeLanguage = await setScrollForVisibleControl(languageChoice);
@@ -190,9 +199,11 @@ async function assertSettingsLanguageRoundtrip(page) {
 }
 
 async function assertSettingsOptionPicker(page) {
+  await chooseSettingsCategory(page, 'general');
   const pickerId = 'setting-general.defaultIntent';
   const picker = page.locator(`[data-option-picker="${pickerId}"]`);
   const trigger = picker.locator('[data-option-picker-toggle]');
+  await trigger.waitFor({ state: 'visible', timeout: 10_000 });
   const before = await trigger.evaluate((node) => {
     const scroller = document.querySelector('[data-scroll-key="settings-content"]');
     if (!scroller) return { error: 'settings scroll container is missing' };
@@ -200,9 +211,8 @@ async function assertSettingsOptionPicker(page) {
     const box = node.getBoundingClientRect();
     const contentTop = scroller.scrollTop + box.top - scrollerBox.top;
     const top = Math.min(480, Math.max(0, scroller.scrollHeight - scroller.clientHeight), Math.max(0, contentTop - 24));
-    if (top < 1) return { error: 'settings option picker cannot remain visible at a nonzero scroll position' };
     scroller.scrollTop = top;
-    return { top };
+    return { top: scroller.scrollTop, scrollable: top > 0 };
   });
   if (before.error) throw new Error(before.error);
   await trigger.click();

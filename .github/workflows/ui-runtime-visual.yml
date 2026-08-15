@@ -8,7 +8,12 @@ on:
       - 'src/**'
       - 'scripts/build-ui-v3.mjs'
       - 'scripts/capture-ui-runtime-visual.mjs'
+      - 'scripts/capture-ui-responsive-evidence.mjs'
       - 'tests/ui-runtime-visual-workflow.test.mjs'
+      - 'tests/ui-responsive-evidence-workflow.test.mjs'
+      - 'tests/ui-v3-skills-contrast.test.mjs'
+      - 'tests/ui-v3-settings-contrast.test.mjs'
+      - 'tests/ui-v3-control-plane-scroll-region.test.mjs'
       - 'tests/nui-proofline-mission-cockpit.test.mjs'
       - 'package.json'
       - 'package-lock.json'
@@ -78,6 +83,7 @@ jobs:
           NOLANE_UI_VISUAL_STATES=onboarding node scripts/capture-ui-runtime-visual.mjs
           NOLANE_UI_VISUAL_STATES=mission-proofline,mission-proofline-compact node scripts/capture-ui-runtime-visual.mjs
           NOLANE_UI_VISUAL_STATES=home,home-experience-menu,home-compact,projects,skills,skills-catalog-picker,skills-forge-preview,settings,settings-option-picker,settings-language-roundtrip,settings-model-catalog,workroom,control-plane,browser node scripts/capture-ui-runtime-visual.mjs
+          node scripts/capture-ui-responsive-evidence.mjs
           curl --fail --silent --show-error --request PUT \
             --header "authorization: Bearer $NOLANE_AGENT_TOKEN" \
             --header 'content-type: application/json' \
@@ -165,6 +171,8 @@ jobs:
             $env:NOLANE_UI_VISUAL_STATES = 'home,home-compact,settings,settings-model-catalog,skills,workroom,browser'
             node scripts/capture-ui-runtime-visual.mjs
             if ($LASTEXITCODE -ne 0) { throw "Windows workspace capture failed with exit code $LASTEXITCODE" }
+            node scripts/capture-ui-responsive-evidence.mjs
+            if ($LASTEXITCODE -ne 0) { throw "Windows responsive UI evidence capture failed with exit code $LASTEXITCODE" }
             $computer = Get-CimInstance Win32_ComputerSystem
             $operatingSystem = Get-CimInstance Win32_OperatingSystem
             $liveRuntime = Get-Process -Id $runtime.Id -ErrorAction Stop

@@ -339,6 +339,13 @@ router.register({ id: 'skills', pattern: /^\/skills(?:\?.*)?$/, title: 'Skills',
           repaint();
           return;
         }
+        const showMore = event.target.closest('[data-skills-show-more]');
+        if (showMore) {
+          controller.showMore();
+          repaint();
+          root?.querySelector('[data-skills-show-more]')?.focus({ preventScroll: true });
+          return;
+        }
         const selected = event.target.closest('[data-skill-library-select]');
         if (!selected) return;
         selected.disabled = true;
