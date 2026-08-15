@@ -22,6 +22,9 @@ const replacements = [
   ["throw new Error(`${state.id} emitted page errors: ${pageErrors.join(' | ')}`);", "throw new Error(state.id + ' emitted page errors: ' + pageErrors.join(' | '));"],
   ["const filename = `${state.id}.png`;", "const filename = state.id + '.png';"],
   ["await writeFile(path.join(output, 'receipt.json'), `${JSON.stringify({ ...report, receiptSha256 }, null, 2)}\\n`);", "await writeFile(path.join(output, 'receipt.json'), JSON.stringify({ ...report, receiptSha256 }, null, 2) + String.fromCharCode(10));"],
+  ["async function applyStatePreferences(page, state) {", "async function applyStatePreferences(page, state, credential) {"],
+  ["headers: { 'content-type': 'application/json' },", "headers: { authorization: 'Bearer ' + credential, 'content-type': 'application/json' },"],
+  ["await applyStatePreferences(page, state);", "await applyStatePreferences(page, state, credential);"],
 ];
 
 for (const [before, after] of replacements) {
