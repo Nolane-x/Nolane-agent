@@ -1,0 +1,160 @@
+name: Product Perfection Task 8 Runtime Evidence
+
+on:
+  push:
+    branches:
+      - codex/product-perfection-system-v3
+    paths:
+      - '.github/workflows/product-perfection-task8-runtime.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  runtime-evidence:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      NOLANE_AGENT_HOST: 127.0.0.1
+      NOLANE_AGENT_PORT: 4173
+      NOLANE_AGENT_TOKEN: nolane-task8-runtime-token
+      NOLANE_UI_RUNTIME_URL: http://127.0.0.1:4173
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Verify canonical distribution
+        run: |
+          npm run build:ui-v3
+          git diff --exit-code -- ui-dist
+      - name: Install Chromium and Axe
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.58.2 @axe-core/playwright@4.12.1
+          npx playwright install --with-deps chromium
+      - name: Start authenticated source runtime
+        shell: bash
+        env:
+          NOLANE_AGENT_DATA_DIR: ${{ runner.temp }}/nolane-task8-runtime-data
+        run: |
+          node src/app.mjs > "$RUNNER_TEMP/nolane-task8-runtime.log" 2>&1 &
+          echo "NOLANE_TASK8_PID=$!" >> "$GITHUB_ENV"
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent --show-error "$NOLANE_UI_RUNTIME_URL/health" >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/nolane-task8-runtime.log"
+          exit 1
+      - name: Complete onboarding
+        shell: bash
+        env:
+          NOLANE_UI_VISUAL_OUTPUT: ${{ runner.temp }}/task8-runtime/onboarding
+          NOLANE_UI_VISUAL_STATES: onboarding
+        run: node scripts/capture-ui-runtime-visual.mjs
+      - name: Verify Skills Settings and Control Plane runtime truth
+        shell: bash
+        run: |
+          ln -s "$GITHUB_WORKSPACE/node_modules" "$RUNNER_TEMP/node_modules" 2>/dev/null || true
+          mkdir -p "$RUNNER_TEMP/task8-runtime/custom"
+          cat > "$RUNNER_TEMP/task8-runtime.mjs" <<'NODE'
+          import { createHash } from 'node:crypto';
+          import { mkdir, readFile, writeFile } from 'node:fs/promises';
+          import path from 'node:path';
+          import AxeBuilder from '@axe-core/playwright';
+          import { chromium } from 'playwright';
+
+          const base=process.env.NOLANE_UI_RUNTIME_URL;
+          const token=process.env.NOLANE_AGENT_TOKEN;
+          const out=path.join(process.env.RUNNER_TEMP,'task8-runtime','custom');
+          await mkdir(out,{recursive:true});
+          const browser=await chromium.launch({headless:true});
+          const captures=[];
+          async function axe(page,label){const r=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa']).analyze();const b=r.violations.filter(v=>['serious','critical'].includes(String(v.impact)));if(b.length)throw new Error(`${label} Axe blockers: ${b.map(v=>v.id).join(', ')}`)}
+          async function overflow(page,label){const v=await page.evaluate(()=>({w:innerWidth,d:Math.max(document.documentElement.scrollWidth,document.body?.scrollWidth??0)}));if(v.d>v.w+1)throw new Error(`${label} horizontal overflow ${v.d}>${v.w}`)}
+          async function shot(page,id){const f=path.join(out,`${id}.png`);await page.screenshot({path:f,fullPage:true,animations:'disabled'});const b=await readFile(f);captures.push({id,file:path.basename(f),bytes:b.length,sha256:createHash('sha256').update(b).digest('hex')})}
+          try {
+            // Skills: runtime must project only explicitly declared capability facets.
+            const skillsContext=await browser.newContext({viewport:{width:1180,height:900}});
+            const skills=await skillsContext.newPage();
+            await skills.route('**/api/skills/catalog?limit=500', async route => route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({skills:[{id:'guarded-skill',title:'Guarded Skill',source:'nolane',catalog:'local',installed:true,enabled:false,configured:true,ready:false,blocked:true,maturity:'stable',description:'Capability truth runtime fixture'}]})}));
+            await skills.goto(`${base}/#/skills?token=${encodeURIComponent(token)}`,{waitUntil:'domcontentloaded',timeout:30000});
+            await skills.locator('.skills-library').waitFor({state:'visible',timeout:30000});
+            for(const state of ['installed','disabled','configured','not-ready','blocked']) await skills.locator(`[data-skill-capability-state="${state}"]`).waitFor({state:'visible',timeout:5000});
+            if(await skills.locator('[data-skill-capability-state="ready"]').count()) throw new Error('Skills inferred ready despite explicit ready=false');
+            const skillsSearch=skills.locator('[data-skills-search]'); await skillsSearch.fill('blocked'); await skills.waitForTimeout(100); if(!(await skills.locator('text=Guarded Skill').count())) throw new Error('Skills state search failed to find blocked capability');
+            await overflow(skills,'Skills truth'); await axe(skills,'Skills truth'); await shot(skills,'skills-1180-capability-truth'); await skillsContext.close();
+
+            // Settings: debounce must preserve the same active search and caret.
+            const settingsContext=await browser.newContext({viewport:{width:980,height:900}});
+            const settings=await settingsContext.newPage();
+            await settings.goto(`${base}/#/settings?token=${encodeURIComponent(token)}`,{waitUntil:'domcontentloaded',timeout:30000});
+            const search=settings.locator('[data-settings-search]'); await search.waitFor({state:'visible',timeout:30000}); await search.focus(); await search.fill('provider');
+            await search.evaluate(el=>el.setSelectionRange(3,5)); await settings.waitForTimeout(180);
+            const focus=await settings.evaluate(()=>{const el=document.activeElement;return {isSearch:Boolean(el?.matches?.('[data-settings-search]')),value:el?.value??null,selection:el?.selectionStart==null?null:[el.selectionStart,el.selectionEnd]}});
+            if(!focus.isSearch||focus.value!=='provider'||JSON.stringify(focus.selection)!=='[3,5]') throw new Error(`Settings search continuity failed: ${JSON.stringify(focus)}`);
+            await overflow(settings,'Settings search'); await axe(settings,'Settings search'); await shot(settings,'settings-980-search-continuity'); await settingsContext.close();
+
+            // Control Plane: successful HTTP does not mean semantic health.
+            const cpContext=await browser.newContext({viewport:{width:1180,height:1000}});
+            const cp=await cpContext.newPage();
+            const fixtures=new Map([
+              ['/api/missions',{status:'ready',missions:[]}],
+              ['/api/provider-connections/readiness',{status:'blocked'}],
+              ['/api/runtime-readiness/architecture',{status:'configured'}],
+              ['/api/security-certification/snapshot',{status:'offline'}],
+            ]);
+            for(const [pathname,payload] of fixtures) await cp.route(`**${pathname}`,async route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(payload)}));
+            await cp.goto(`${base}/#/control-plane/overview?token=${encodeURIComponent(token)}`,{waitUntil:'domcontentloaded',timeout:30000});
+            await cp.locator('.control-plane-live-workspace').waitFor({state:'visible',timeout:30000});
+            const text=(await cp.locator('.control-plane-live-workspace').innerText()).replace(/\s+/g,' ');
+            if(!/Adapters online\s*1\/4/i.test(text)) throw new Error(`Control Plane online KPI is not truthful: ${text.slice(0,900)}`);
+            if(/Adapters online\s*4\/4/i.test(text)) throw new Error('Control Plane counted non-ready records online');
+            const status=await cp.locator('.control-plane-live-workspace').getAttribute('data-state');
+            if(status!=='degraded') throw new Error(`Control Plane expected degraded semantic health, got ${status}`);
+            await overflow(cp,'Control Plane truth'); await axe(cp,'Control Plane truth'); await shot(cp,'control-plane-1180-semantic-health'); await cpContext.close();
+          } finally { await browser.close(); }
+          const report={schema:'nolane.task8.runtime-evidence.v1',sourceRevision:process.env.GITHUB_SHA,captures}; report.receiptSha256=createHash('sha256').update(JSON.stringify(report)).digest('hex'); await writeFile(path.join(out,'receipt.json'),`${JSON.stringify(report,null,2)}\n`); console.log(JSON.stringify({receiptSha256:report.receiptSha256,captures:captures.length}));
+          NODE
+          node "$RUNNER_TEMP/task8-runtime.mjs"
+      - name: Upload Task 8 runtime evidence
+        uses: actions/upload-artifact@v6
+        with:
+          name: product-perfection-task8-runtime-evidence
+          path: ${{ runner.temp }}/task8-runtime
+          if-no-files-found: error
+          retention-days: 21
+      - name: Persist Task 8 runtime closure
+        shell: bash
+        run: |
+          receipt=$(node -p "JSON.parse(require('fs').readFileSync(process.env.RUNNER_TEMP + '/task8-runtime/custom/receipt.json','utf8')).receiptSha256")
+          cat > docs/product-perfection/TASK8-RUNTIME-VISUAL-CLOSURE.md <<EOF
+          # Task 8 — Skills / Settings / Control Plane Runtime Closure
+
+          **Exact source implementation revision:** \`07d24efbd589065a023750c14f326fa3141aa9e0\`  
+          **Workflow run:** \`${GITHUB_RUN_ID}\`  
+          **Runtime receipt:** \`${receipt}\`
+
+          Runtime evidence completed:
+
+          - Skills rendered the explicitly declared \`installed / disabled / configured / not-ready / blocked\` facets and did not infer \`ready\`;
+          - searching Skills for \`blocked\` retained the capability because declared states participate in search;
+          - Settings search preserved active focus, value and the exact caret selection after its debounced rerender;
+          - Control Plane rendered semantic degraded health and \`Adapters online 1/4\` for a \`ready / blocked / configured / offline\` fixture instead of treating successful HTTP/configuration as health;
+          - captured Task 8 states had no serious/critical Axe violations and no horizontal overflow.
+
+          Provider-real and independent screen-reader certification remain UNKNOWN and are not implied by this runtime evidence.
+          EOF
+          git rm -f .github/workflows/product-perfection-task8-runtime.yml
+          git add docs/product-perfection/TASK8-RUNTIME-VISUAL-CLOSURE.md
+          git config user.name nolane-evidence-bot; git config user.email actions@users.noreply.github.com
+          git commit -m 'docs(perfection): record Task 8 runtime closure [skip ci]'
+          git push origin HEAD:codex/product-perfection-system-v3
+      - name: Stop runtime
+        if: always()
+        run: |
+          if [ -n "${NOLANE_TASK8_PID:-}" ]; then kill "$NOLANE_TASK8_PID" || true; fi
