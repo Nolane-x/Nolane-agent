@@ -8,7 +8,13 @@ on:
       - 'src/**'
       - 'scripts/build-ui-v3.mjs'
       - 'scripts/capture-ui-runtime-visual.mjs'
+      - 'scripts/capture-ui-responsive-evidence.mjs'
       - 'tests/ui-runtime-visual-workflow.test.mjs'
+      - 'tests/ui-responsive-evidence-workflow.test.mjs'
+      - 'tests/ui-v3-skills-contrast.test.mjs'
+      - 'tests/ui-v3-settings-contrast.test.mjs'
+      - 'tests/ui-v3-control-plane-scroll-region.test.mjs'
+      - 'tests/nui-proofline-mission-cockpit.test.mjs'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/ui-runtime-visual.yml'
@@ -68,13 +74,16 @@ jobs:
           cat "$RUNNER_TEMP/nolane-ui-runtime.log"
           exit 1
 
-      - name: Capture onboarding, workspace, Skills, settings, studio, and control-plane states
+      - name: Capture onboarding, workspace, Proofline, settings, studio, and control-plane states
         shell: bash
         env:
           NOLANE_UI_VISUAL_OUTPUT: ${{ runner.temp }}/nolane-ui-runtime-visual
         run: |
+          # Aggregate contract inventory (captured in isolated phases): NOLANE_UI_VISUAL_STATES=home,home-experience-menu,home-compact,projects,skills,skills-catalog-picker,skills-forge-preview,settings,settings-option-picker,settings-language-roundtrip,settings-model-catalog,workroom,control-plane,mission-proofline,mission-proofline-compact,browser
           NOLANE_UI_VISUAL_STATES=onboarding node scripts/capture-ui-runtime-visual.mjs
+          NOLANE_UI_VISUAL_STATES=mission-proofline,mission-proofline-compact node scripts/capture-ui-runtime-visual.mjs
           NOLANE_UI_VISUAL_STATES=home,home-experience-menu,home-compact,projects,skills,skills-catalog-picker,skills-forge-preview,settings,settings-option-picker,settings-language-roundtrip,settings-model-catalog,workroom,control-plane,browser node scripts/capture-ui-runtime-visual.mjs
+          node scripts/capture-ui-responsive-evidence.mjs
           curl --fail --silent --show-error --request PUT \
             --header "authorization: Bearer $NOLANE_AGENT_TOKEN" \
             --header 'content-type: application/json' \
@@ -136,7 +145,7 @@ jobs:
           $output = Join-Path $env:RUNNER_TEMP 'nolane-windows-ui-runtime-visual'
           $env:NOLANE_AGENT_DATA_DIR = Join-Path $env:RUNNER_TEMP 'nolane-windows-ui-runtime-data'
           $env:NOLANE_UI_VISUAL_OUTPUT = $output
-          $env:NOLANE_UI_VISUAL_STATES = 'onboarding,home,home-compact,settings,settings-model-catalog,skills,workroom,browser'
+          # Aggregate contract inventory (captured in isolated phases): NOLANE_UI_VISUAL_STATES = 'onboarding,home,home-compact,settings,settings-model-catalog,skills,workroom,mission-proofline,mission-proofline-compact,browser'
           $stdout = Join-Path $env:RUNNER_TEMP 'nolane-windows-ui-runtime.stdout.log'
           $stderr = Join-Path $env:RUNNER_TEMP 'nolane-windows-ui-runtime.stderr.log'
           $runtime = Start-Process -FilePath node -ArgumentList 'src/app.mjs' -RedirectStandardOutput $stdout -RedirectStandardError $stderr -PassThru -WindowStyle Hidden
@@ -153,8 +162,17 @@ jobs:
               }
             }
             if (!$healthy) { throw 'Windows source runtime did not become healthy within 60 seconds' }
+            $env:NOLANE_UI_VISUAL_STATES = 'onboarding'
             node scripts/capture-ui-runtime-visual.mjs
-            if ($LASTEXITCODE -ne 0) { throw "Windows UI visual capture failed with exit code $LASTEXITCODE" }
+            if ($LASTEXITCODE -ne 0) { throw "Windows onboarding capture failed with exit code $LASTEXITCODE" }
+            $env:NOLANE_UI_VISUAL_STATES = 'mission-proofline,mission-proofline-compact'
+            node scripts/capture-ui-runtime-visual.mjs
+            if ($LASTEXITCODE -ne 0) { throw "Windows Proofline capture failed with exit code $LASTEXITCODE" }
+            $env:NOLANE_UI_VISUAL_STATES = 'home,home-compact,settings,settings-model-catalog,skills,workroom,browser'
+            node scripts/capture-ui-runtime-visual.mjs
+            if ($LASTEXITCODE -ne 0) { throw "Windows workspace capture failed with exit code $LASTEXITCODE" }
+            node scripts/capture-ui-responsive-evidence.mjs
+            if ($LASTEXITCODE -ne 0) { throw "Windows responsive UI evidence capture failed with exit code $LASTEXITCODE" }
             $computer = Get-CimInstance Win32_ComputerSystem
             $operatingSystem = Get-CimInstance Win32_OperatingSystem
             $liveRuntime = Get-Process -Id $runtime.Id -ErrorAction Stop
@@ -166,7 +184,7 @@ jobs:
               availablePhysicalMemoryBytes = [int64]$operatingSystem.FreePhysicalMemory * 1KB
               runtimeWorkingSetBytes = [int64]$liveRuntime.WorkingSet64
               runtimePrivateMemoryBytes = [int64]$liveRuntime.PrivateMemorySize64
-              visualStateIds = @('onboarding', 'home', 'home-compact', 'settings', 'settings-model-catalog', 'skills', 'workroom', 'browser')
+              visualStateIds = @('onboarding', 'home', 'home-compact', 'settings', 'settings-model-catalog', 'skills', 'workroom', 'mission-proofline', 'mission-proofline-compact', 'browser')
             } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $output 'windows-runner-baseline.json') -Encoding utf8
             $completed = $true
           } finally {

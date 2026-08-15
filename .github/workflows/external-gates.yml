@@ -21,6 +21,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: external-gates-${{ github.workflow }}-${{ github.ref }}
@@ -32,6 +33,8 @@ jobs:
     name: ${{ matrix.label }} evidence
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
+    env:
+      NOLANE_GITHUB_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
     strategy:
       fail-fast: false
       matrix:
@@ -153,5 +156,55 @@ jobs:
         with:
           name: external-gates-${{ matrix.slug }}
           path: ${{ runner.temp }}/external-gates/${{ matrix.slug }}.json
+          if-no-files-found: error
+          retention-days: 14
+  certification-candidate:
+    if: ${{ needs.runner-evidence.result == 'success' }}
+    needs: runner-evidence
+    name: Bounded external certification candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install locked source dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Download runner-bound external gate receipts
+        uses: actions/download-artifact@v6
+        with:
+          pattern: external-gates-*
+          path: ${{ runner.temp }}/external-gates
+          merge-multiple: true
+
+      - name: Collect immutable artifact provenance
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts?per_page=100" > "$RUNNER_TEMP/external-gate-artifacts.json"
+
+      - name: Build bounded external certification candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/build-external-gate-certification.mjs \
+            --input-dir "$RUNNER_TEMP/external-gates" \
+            --artifacts-json "$RUNNER_TEMP/external-gate-artifacts.json" \
+            --output "$RUNNER_TEMP/external-gate-certification.json"
+
+      - name: Upload bounded external certification candidate
+        uses: actions/upload-artifact@v6
+        with:
+          name: external-gate-certification-candidate
+          path: ${{ runner.temp }}/external-gate-certification.json
           if-no-files-found: error
           retention-days: 14
