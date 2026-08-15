@@ -11,7 +11,7 @@ test('UI runtime evidence includes a multi-width responsive render matrix withou
   assert.equal([...workflow.matchAll(/node scripts\/capture-ui-responsive-evidence\.mjs/g)].length, 2);
   assert.match(workflow, /NOLANE_UI_VISUAL_OUTPUT/);
 
-  for (const width of [640, 900, 1180, 1440, 1600]) {
+  for (const width of [640, 900, 979, 980, 1180, 1440, 1600]) {
     assert.match(responsive, new RegExp(`\\b${width}\\b`));
   }
   for (const surface of ['home', 'projects', 'skills', 'settings', 'workroom', 'control-plane', 'browser']) {
