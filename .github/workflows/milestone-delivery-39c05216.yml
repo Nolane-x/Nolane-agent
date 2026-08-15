@@ -1,0 +1,106 @@
+name: Milestone delivery 39c05216
+
+on:
+  push:
+    branches:
+      - checkpoint/nui-performance-integration-delivery-39c05216
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  package-verified-milestone:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact verified default head
+        uses: actions/checkout@v6
+        with:
+          ref: 39c05216a553b577c53060716387a2a6919f0a03
+          fetch-depth: 0
+
+      - name: Assert exact source SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "39c05216a553b577c53060716387a2a6919f0a03"
+
+      - name: Add milestone verification manifest and runner evidence
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p delivery/external-gates
+          cat > delivery/MILESTONE-VERIFICATION.json <<'JSON'
+          {
+            "schema": "nolane.agent.milestone-delivery.v1",
+            "product": "Nolane Agent",
+            "milestone": "NUI v10 + verified UI performance/progressive integration",
+            "repository": "Nolane-x/Nolane-agent",
+            "defaultBranch": "codex/external-gate-evidence",
+            "finalHeadSha": "39c05216a553b577c53060716387a2a6919f0a03",
+            "mergeCommitSha": "bcc49f048ccdf0e0134c9246dd5ce88bed929fde",
+            "semanticIntegrationSha": "57e161bedc4d8a6e45df8a5af1eee08499e47ad0",
+            "semanticParents": {
+              "nuiProvenance": "3cc8168ab8daf8b33a5729e70bb27573e68b45b8",
+              "uiPerformanceProgressive": "5169bf18be62b6a78aa4ba2ad9d6a3c37270c7cd"
+            },
+            "preMergeExactHead": "4a1a9bcdc23a731d66425e34250a109783533123",
+            "preMergeRuns": {
+              "ci": 31861356670,
+              "performance": 31861356676,
+              "visual": 31861356710,
+              "prooflineLedger": 31861356672,
+              "prooflineEmpty": 31861356677,
+              "externalGates": 31861356685
+            },
+            "finalRuns": {
+              "ci": 31862147273,
+              "externalGates": 31862147291
+            },
+            "finalExternalGatePolicy": "push runs collect Linux/macOS/Windows runner evidence; bounded certification candidate is PR-only because its builder requires pull_request provenance",
+            "receipts": {
+              "uiManifest": "e4f5cb55a4df65a4bb6fcc8e4aed07ab79af86406a9c573327a4d2c6ae6c584e",
+              "nativeCoreConformance": "25ae9910d90b43e3ec27a006bdccb371d5fd9bfa7be5bff57d88bf39850c0400",
+              "masterAcceptanceLedger": "f6d275361a145a44586a27afcfa23eae8fe547cb95860efec535dbde3363e5db",
+              "evidenceFreshness": "c36520f32d9e2a7b179dff87acc1bf74b2911baa3229ae3d453fcff5276e3254",
+              "uiSourceRelease": "9553e7a98c5714cbb4c350512467fdc7be2a6aa3392878328966c56bb49ac34f"
+            },
+            "acceptanceSummary": {
+              "canonicalRequirements": 1460,
+              "verified": 1372,
+              "externalGate": 88,
+              "implementedNotWired": 0,
+              "notImplemented": 0,
+              "unmapped": 0,
+              "completeParityClaimAllowed": false
+            },
+            "boundedNonClaims": [
+              "independent screen-reader certification",
+              "labelled Windows 8GB empirical performance certification",
+              "release/signing/installer/update/provider-real requirements outside the recorded external receipts"
+            ]
+          }
+          JSON
+          gh run download 31862147291 --repo "$GITHUB_REPOSITORY" --dir delivery/external-gates
+
+      - name: Package complete project and verification artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          ZIP="$RUNNER_TEMP/Nolane-agent-NUI-performance-integrated-39c05216-COMPLETE.zip"
+          zip -q -r "$ZIP" . -x '.git/*'
+          unzip -t "$ZIP" >/dev/null
+          sha256sum "$ZIP" | tee "$RUNNER_TEMP/Nolane-agent-NUI-performance-integrated-39c05216-COMPLETE.zip.sha256"
+
+      - name: Upload complete milestone delivery
+        uses: actions/upload-artifact@v6
+        with:
+          name: Nolane-agent-NUI-performance-integrated-39c05216-COMPLETE
+          path: |
+            ${{ runner.temp }}/Nolane-agent-NUI-performance-integrated-39c05216-COMPLETE.zip
+            ${{ runner.temp }}/Nolane-agent-NUI-performance-integrated-39c05216-COMPLETE.zip.sha256
+          if-no-files-found: error
+          retention-days: 30
