@@ -35,8 +35,8 @@ export async function auditUiQuality({ root } = {}) {
   if (/animation-iteration-count\s*:\s*infinite/i.test(all)) accessibilityFindings.push('unbounded-animation');
 
   const breakpoints = [...all.matchAll(/breakpoint:\s*(\d+)/g)].map((match) => Number(match[1])).filter(Number.isFinite);
-  for (const expected of [1440, 1180, 900, 640]) if (!breakpoints.includes(expected)) responsiveFindings.push(`missing-breakpoint-${expected}`);
-  if (!/@media\s*\(max-width:899px\)/.test(all)) responsiveFindings.push('missing-single-surface-small-window-contract');
+  for (const expected of [1440, 1180, 980, 640]) if (!breakpoints.includes(expected)) responsiveFindings.push(`missing-breakpoint-${expected}`);
+  if (!/@media\s*\(max-width:979px\)/.test(all)) responsiveFindings.push('missing-narrow-workspace-contract');
 
   for (const entry of entries) {
     const external = entry.text.match(/(?:src|href)=["']https?:\/\/[^"']+|@import\s+(?:url\()?['"]?https?:\/\//gi) ?? [];
