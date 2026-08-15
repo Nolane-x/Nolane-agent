@@ -62,7 +62,7 @@ jobs:
             .github/workflows/product-perfection-task10-green-v3.yml \
             .github/workflows/product-perfection-task10-preference-auth-red.yml \
             scripts/apply-product-perfection-task10-cycle-a.mjs
-          git add ui-v3/styles/pages/settings.css scripts/capture-ui-runtime-visual.mjs ui-dist
+          git add ui-v3/styles/responsive.css scripts/capture-ui-runtime-visual.mjs ui-dist
           git config user.name nolane-evidence-bot
           git config user.email actions@users.noreply.github.com
           git commit -m 'fix(ui): recompose compact localized Settings hierarchy'
