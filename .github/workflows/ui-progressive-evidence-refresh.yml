@@ -164,7 +164,7 @@ jobs:
             .github/workflows/settings-progressive-runtime-tdd.yml \
             .github/workflows/skills-progressive-render-tdd.yml \
             .github/workflows/skills-progressive-render-fix.yml
-          unexpected="$(git status --porcelain | awk '{print $2}' | grep -Ev '^(scripts/capture-ui-runtime-visual\.mjs|ui-dist/|requirements/runtime-purity-summary\.json|requirements/nolane-agent-v5-requirements\.json|requirements/master-acceptance-ledger\.json|docs/MASTER-ACCEPTANCE-LEDGER\.md|\.github/workflows/(ui-progressive-evidence-refresh|settings-progressive-runtime-tdd|skills-progressive-render-tdd|skills-progressive-render-fix)\.yml)$' || true)"
+          unexpected="$(git status --porcelain | awk '{print $2}' | grep -Ev '^(scripts/capture-ui-runtime-visual\.mjs|ui-dist/.*|requirements/runtime-purity-summary\.json|requirements/nolane-agent-v5-requirements\.json|requirements/master-acceptance-ledger\.json|docs/MASTER-ACCEPTANCE-LEDGER\.md|docs/ui-v3/ui-v3-source-release\.json|\.github/workflows/(ui-progressive-evidence-refresh|settings-progressive-runtime-tdd|skills-progressive-render-tdd|skills-progressive-render-fix)\.yml)$' || true)"
           if [ -n "$unexpected" ]; then
             printf '%s\n' 'Unexpected generated changes:' "$unexpected" >&2
             exit 1
