@@ -51,12 +51,13 @@ jobs:
           done
           cat "$RUNNER_TEMP/nolane-task6-runtime.log"
           exit 1
-      - name: Capture Activity Proofline runtime matrix
+      - name: Complete onboarding and capture Activity Proofline runtime matrix
         shell: bash
         env:
           NOLANE_UI_VISUAL_OUTPUT: ${{ runner.temp }}/task6-runtime/activity
-          NOLANE_UI_VISUAL_STATES: mission-proofline,mission-proofline-compact
-        run: node scripts/capture-ui-runtime-visual.mjs
+        run: |
+          NOLANE_UI_VISUAL_STATES=onboarding node scripts/capture-ui-runtime-visual.mjs
+          NOLANE_UI_VISUAL_STATES=mission-proofline,mission-proofline-compact node scripts/capture-ui-runtime-visual.mjs
       - name: Capture server-backed Review runtime matrix
         shell: bash
         run: |
