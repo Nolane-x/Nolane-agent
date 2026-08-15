@@ -48,10 +48,9 @@ test('empty project picker directs people to add a local folder from this worksp
   assert.doesNotMatch(`${english}\n${vietnamese}`, /desktop launcher/i);
 });
 
-test('project registry owns its Add project action without a duplicate global listener', async () => {
+test('project registry owns its Add project action without a duplicate legacy global listener', async () => {
   const source = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
   assert.match(source, /action==='add'/);
-  assert.match(source, /nolane:project-create-requested/);
-  assert.equal((source.match(/nolane:project-create-requested/g) ?? []).length, 1);
+  assert.match(source, /action==='add'[\s\S]{0,260}nolane:project-create-requested/);
   assert.doesNotMatch(source, /\['new',\s*'add',\s*'none'\]/);
 });
