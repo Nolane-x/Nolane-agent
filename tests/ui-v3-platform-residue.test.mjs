@@ -8,13 +8,14 @@ test('platform residue authority owns selection caret scrollbars and textarea re
   const css = await read('../ui-v3/styles/perfection/platform-residue.css');
   assert.match(css, /::selection\s*\{/);
   assert.match(css, /caret-color:\s*var\(--caret-color\)/);
-  assert.match(css, /scrollbar-color:\s*var\(--scroll-thumb\)\s+var\(--scroll-track\)/);
+  assert.match(css, /scrollbar-color:\s*var\(--scrollbar-thumb\)\s+transparent/);
   assert.match(css, /scrollbar-width:\s*thin/);
   assert.match(css, /textarea\s*\{\s*resize:\s*vertical/);
+  assert.match(css, /\[data-resize-region="sidebar"\],\[data-resize-region="dock"\]\{cursor:col-resize\}/);
   assert.doesNotMatch(css, /appearance:\s*none/);
 });
 
-test('motion and high-contrast authorities remain explicit and final-state friendly', async () => {
+test('motion and forced-colors authorities remain explicit and final-state friendly', async () => {
   const [motion, responsive] = await Promise.all([
     read('../ui-v3/styles/motion.css'),
     read('../ui-v3/styles/responsive.css'),
@@ -22,5 +23,6 @@ test('motion and high-contrast authorities remain explicit and final-state frien
   assert.match(motion, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
   assert.match(motion, /scroll-behavior:\s*auto\s*!important/);
   assert.match(responsive, /@media\s*\(forced-colors:\s*active\)/);
-  assert.match(responsive, /forced-color-adjust/);
+  assert.match(responsive, /CanvasText/);
+  assert.match(responsive, /Highlight/);
 });
