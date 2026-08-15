@@ -1,0 +1,13 @@
+/* Experience regimes tune density without changing product semantics. */
+.app-shell[data-progressive-experience="everyday"]{
+  --density-row-height:46px;--density-control-height:40px;--density-section-gap:var(--space-6);--density-control-gap:var(--space-3);--density-inline-gap:var(--space-2);--density-explanatory-max:68ch
+}
+.app-shell[data-progressive-experience="workspace"]{
+  --density-row-height:42px;--density-control-height:36px;--density-section-gap:var(--space-5);--density-control-gap:var(--space-2);--density-inline-gap:var(--space-2);--density-explanatory-max:66ch
+}
+.app-shell[data-progressive-experience="studio"]{
+  --density-row-height:36px;--density-control-height:34px;--density-section-gap:var(--space-4);--density-control-gap:var(--space-2);--density-inline-gap:var(--space-2);--density-explanatory-max:64ch
+}
+.app-shell[data-progressive-experience="expert"]{
+  --density-row-height:34px;--density-control-height:32px;--density-section-gap:var(--space-4);--density-control-gap:var(--space-1);--density-inline-gap:var(--space-1);--density-explanatory-max:62ch
+}

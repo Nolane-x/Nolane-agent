@@ -1,4 +1,0 @@
-import { t } from '../../core/i18n.079fba244adf.mjs';
-const ORDER = Object.freeze({ organization: 0, project: 1, local: 2, mission: 3, user: 4 });
-export function buildGovernanceView({ instructions = [], conflicts = [], git = {}, guardrails = [] } = {}) { return Object.freeze({ instructions: Object.freeze([...instructions].sort((a, b) => (ORDER[a.scope] ?? 99) - (ORDER[b.scope] ?? 99)).map((item) => Object.freeze({ ...item }))), conflicts: Object.freeze(conflicts.map((item) => Object.freeze({ ...item, severity: item.validOverride ? 'info' : 'warning' }))), git: Object.freeze({ ...git }), guardrails: Object.freeze(guardrails.map((item) => Object.freeze({ ...item }))) }); }
-export function renderGovernanceView(value, { language = 'en' } = {}) { return `<section><h1>${t('control.domain.governance', language)}</h1><p>${value.instructions.length} ${t('control.instructionLayers', language)} · ${value.conflicts.length} ${t('control.conflicts', language)}</p></section>`; }
