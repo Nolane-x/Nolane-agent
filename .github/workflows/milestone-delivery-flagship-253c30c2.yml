@@ -14,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Checkout exact verified merged head
+      - name: Checkout verified default branch ref
         uses: actions/checkout@v6
         with:
-          ref: 253c30c28f748064a706630136191ece1723245b
+          ref: codex/external-gate-evidence
           fetch-depth: 0
 
       - name: Assert exact source SHA
