@@ -1,0 +1,173 @@
+name: Product Perfection Task 6 Runtime Evidence
+
+on:
+  push:
+    branches:
+      - codex/product-perfection-system-v3
+    paths:
+      - '.github/workflows/product-perfection-task6-runtime.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  runtime-evidence:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      NOLANE_AGENT_HOST: 127.0.0.1
+      NOLANE_AGENT_PORT: 4173
+      NOLANE_AGENT_TOKEN: nolane-task6-runtime-evidence-token
+      NOLANE_UI_RUNTIME_URL: http://127.0.0.1:4173
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Verify canonical distribution
+        run: |
+          npm run build:ui-v3
+          git diff --exit-code -- ui-dist
+      - name: Install Chromium and Axe
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.58.2 @axe-core/playwright@4.12.1
+          npx playwright install --with-deps chromium
+      - name: Start authenticated source runtime
+        shell: bash
+        env:
+          NOLANE_AGENT_DATA_DIR: ${{ runner.temp }}/nolane-task6-runtime-data
+        run: |
+          set -euo pipefail
+          node src/app.mjs > "$RUNNER_TEMP/nolane-task6-runtime.log" 2>&1 &
+          echo "NOLANE_TASK6_PID=$!" >> "$GITHUB_ENV"
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent --show-error "$NOLANE_UI_RUNTIME_URL/health" >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/nolane-task6-runtime.log"
+          exit 1
+      - name: Capture Activity Proofline runtime matrix
+        shell: bash
+        env:
+          NOLANE_UI_VISUAL_OUTPUT: ${{ runner.temp }}/task6-runtime/activity
+          NOLANE_UI_VISUAL_STATES: mission-proofline,mission-proofline-compact
+        run: node scripts/capture-ui-runtime-visual.mjs
+      - name: Capture server-backed Review runtime matrix
+        shell: bash
+        run: |
+          cat > "$RUNNER_TEMP/capture-task6-review.mjs" <<'NODE'
+          import { createHash } from 'node:crypto';
+          import { mkdir, readFile, writeFile } from 'node:fs/promises';
+          import path from 'node:path';
+          import AxeBuilder from '@axe-core/playwright';
+          import { chromium } from 'playwright';
+
+          const base = process.env.NOLANE_UI_RUNTIME_URL;
+          const token = process.env.NOLANE_AGENT_TOKEN;
+          const output = path.join(process.env.RUNNER_TEMP, 'task6-runtime', 'review');
+          await mkdir(output, { recursive: true });
+          const browser = await chromium.launch({ headless: true });
+          const captures = [];
+          let fixture = null;
+          try {
+            for (const width of [1440, 820]) {
+              const context = await browser.newContext({ viewport: { width, height: 1000 }, deviceScaleFactor: 1 });
+              const page = await context.newPage();
+              const errors = [];
+              page.on('pageerror', (error) => errors.push(String(error?.message ?? error)));
+              await page.goto(`${base}/#/missions?token=${encodeURIComponent(token)}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
+              await page.locator('.activity-page').waitFor({ state: 'visible', timeout: 30000 });
+              if (!fixture) {
+                fixture = await page.evaluate(async ({ workspaceRoot }) => {
+                  const request = async (pathname, { method = 'GET', body = null } = {}) => {
+                    const response = await fetch(pathname, { method, headers: body == null ? undefined : { 'content-type': 'application/json' }, body: body == null ? undefined : JSON.stringify(body) });
+                    const text = await response.text();
+                    let payload = null; try { payload = text ? JSON.parse(text) : null; } catch { payload = text; }
+                    if (!response.ok) throw new Error(`${method} ${pathname} failed with ${response.status}: ${typeof payload === 'string' ? payload : JSON.stringify(payload)}`);
+                    return payload;
+                  };
+                  const project = await request('/api/projects', { method: 'POST', body: { name: 'Task 6 Review Runtime Fixture', workspaceRoot, metadata: { evidenceFixture: 'task6-review-runtime-v1' } } });
+                  const mission = await request('/api/missions/plan', { method: 'POST', body: { projectId: project.id, objective: 'Review an evidence-bound change without accepting a stale snapshot', plan: { summary: 'Create a bounded review fixture.', tasks: [{ id: 'review', title: 'Review exact diff truth', objective: 'Keep review decisions snapshot-bound.', role: 'reviewer', dependencies: [], allowedPaths: ['**'], deniedPaths: ['.env', '.env.*'] }] } } });
+                  const review = await request(`/api/agent/runs/${encodeURIComponent(mission.id)}/diff-review`);
+                  return { projectId: project.id, missionId: mission.id, reviewSha256: review.reviewSha256 };
+                }, { workspaceRoot: process.cwd() });
+              }
+              await page.evaluate(({ missionId }) => { location.hash = `/review/${encodeURIComponent(missionId)}`; }, fixture);
+              await page.locator('.review-detail').waitFor({ state: 'visible', timeout: 20000 });
+              await page.waitForTimeout(250);
+              const ui = await page.evaluate(() => ({
+                machineId: document.querySelector('.review-detail .ui-machine-id')?.textContent?.trim() ?? '',
+                viewport: window.innerWidth,
+                documentWidth: Math.max(document.documentElement.scrollWidth, document.body?.scrollWidth ?? 0),
+                hasReviewShell: Boolean(document.querySelector('.review-detail .review-shell')),
+                hasSummary: Boolean(document.querySelector('.review-detail .review-summary')),
+              }));
+              if (!ui.hasReviewShell || !ui.hasSummary) throw new Error('server-backed Review surface did not render its evidence shell');
+              if (!String(fixture.reviewSha256).startsWith(ui.machineId)) throw new Error(`Review UI did not expose the current review SHA prefix: ${ui.machineId}`);
+              if (ui.documentWidth > ui.viewport + 1) throw new Error(`Review ${width}px overflows horizontally: ${ui.documentWidth} > ${ui.viewport}`);
+              const axe = await new AxeBuilder({ page }).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa']).analyze();
+              const blocking = axe.violations.filter((v) => ['serious','critical'].includes(String(v.impact)));
+              if (blocking.length) throw new Error(`Review ${width}px Axe blockers: ${blocking.map((v) => v.id).join(', ')}`);
+              if (errors.length) throw new Error(`Review ${width}px page errors: ${errors.join(' | ')}`);
+              const file = path.join(output, `review-${width}.png`);
+              await page.screenshot({ path: file, fullPage: true, animations: 'disabled' });
+              const bytes = await readFile(file);
+              captures.push({ width, file: path.basename(file), bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex'), axeSeriousCritical: 'PASS', horizontalOverflow: 'PASS', reviewSha256: fixture.reviewSha256 });
+              await context.close();
+            }
+          } finally { await browser.close(); }
+          const report = { schema: 'nolane.task6.review-runtime-evidence.v1', sourceRevision: process.env.GITHUB_SHA, fixture, captures };
+          report.receiptSha256 = createHash('sha256').update(JSON.stringify(report)).digest('hex');
+          await writeFile(path.join(output, 'receipt.json'), `${JSON.stringify(report, null, 2)}\n`);
+          console.log(JSON.stringify({ receiptSha256: report.receiptSha256, captures: captures.length }));
+          NODE
+          node "$RUNNER_TEMP/capture-task6-review.mjs"
+      - name: Upload Task 6 runtime evidence
+        uses: actions/upload-artifact@v6
+        with:
+          name: product-perfection-task6-runtime-evidence
+          path: ${{ runner.temp }}/task6-runtime
+          if-no-files-found: error
+          retention-days: 21
+      - name: Persist runtime closure receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          activity_receipt=$(node -p "JSON.parse(require('fs').readFileSync(process.env.RUNNER_TEMP + '/task6-runtime/activity/receipt.json','utf8')).receiptSha256")
+          review_receipt=$(node -p "JSON.parse(require('fs').readFileSync(process.env.RUNNER_TEMP + '/task6-runtime/review/receipt.json','utf8')).receiptSha256")
+          cat > docs/product-perfection/TASK6-RUNTIME-VISUAL-CLOSURE.md <<EOF
+          # Task 6 — Runtime Visual / Axe Closure
+
+          **Source head observed:** \`${GITHUB_SHA}\`  
+          **Exact implementation revision:** \`95048169066439c63cf6596c4ea356b784081ba2\`  
+          **Workflow run:** \`${GITHUB_RUN_ID}\`  
+          **Activity visual receipt:** \`${activity_receipt}\`  
+          **Review visual receipt:** \`${review_receipt}\`
+
+          Runtime evidence completed:
+
+          - Proofline Activity at 1440px and 820px using the real source runtime;
+          - server-backed Review at 1440px and 820px using a real ephemeral project + planned mission + diff-review API snapshot;
+          - Review UI SHA prefix matched backend \`reviewSha256\`;
+          - serious/critical Axe violations: 0 for captured Task 6 states;
+          - horizontal overflow: PASS for captured Task 6 states;
+          - browser page errors: 0 for captured Review states.
+
+          Independent screen-reader certification remains UNKNOWN and is not implied by Axe evidence.
+          EOF
+          git rm -f .github/workflows/product-perfection-task6-runtime.yml
+          git add docs/product-perfection/TASK6-RUNTIME-VISUAL-CLOSURE.md
+          git config user.name 'nolane-evidence-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'docs(perfection): record Task 6 runtime visual closure [skip ci]'
+          git push origin HEAD:codex/product-perfection-system-v3
+      - name: Stop runtime
+        if: always()
+        shell: bash
+        run: |
+          if [ -n "${NOLANE_TASK6_PID:-}" ]; then kill "$NOLANE_TASK6_PID" || true; fi
