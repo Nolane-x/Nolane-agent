@@ -4,7 +4,7 @@ import { renderOptionPicker } from '../../components/option-picker.mjs';
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 const asList = (value) => Array.isArray(value) ? value : Array.isArray(value?.skills) ? value.skills : Array.isArray(value?.items) ? value.items : [];
 const SKILL_CATALOG_LIMIT = 500;
-const SKILL_RENDER_BATCH = 72;
+const SKILL_RENDER_BATCH = 48;
 
 function copy(language) {
   const vi = language === 'vi';
