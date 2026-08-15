@@ -47,7 +47,7 @@ jobs:
 
   package-checkpoint:
     if: github.ref_name == 'checkpoint/ui-performance-evidence-20260815'
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
@@ -79,7 +79,7 @@ jobs:
             "performanceCertified": false
           }
           JSON
-          sha256sum "$out/Nolane-agent-ui-performance-5169bf1-source.zip" > "$out/SHA256SUMS.txt"
+          shasum -a 256 "$out/Nolane-agent-ui-performance-5169bf1-source.zip" > "$out/SHA256SUMS.txt"
       - name: Upload exact source checkpoint
         uses: actions/upload-artifact@v6
         with:
