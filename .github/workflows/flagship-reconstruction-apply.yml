@@ -39,11 +39,17 @@ jobs:
           test -d .flagship-patch
           cat .flagship-patch/chunk-*.b64 > /tmp/flagship.patch.b64
           base64 -d /tmp/flagship.patch.b64 > /tmp/flagship.patch
-          # The current canonical baseline already contains the mission-context
-          # Workroom markup. Exclude that historical hunk and apply only the
-          # new flagship visual/test/token source changes.
-          git apply --check --exclude=ui-v3/views/workroom/workroom-view.mjs /tmp/flagship.patch
-          git apply --exclude=ui-v3/views/workroom/workroom-view.mjs /tmp/flagship.patch
+          # Workroom already has canonical mission context and the flagship test
+          # is now stored directly as an immutable Git blob. Apply only visual
+          # source/token changes from the historical transport packet.
+          git apply --check \
+            --exclude=ui-v3/views/workroom/workroom-view.mjs \
+            --exclude=tests/ui-v3-flagship-reconstruction.test.mjs \
+            /tmp/flagship.patch
+          git apply \
+            --exclude=ui-v3/views/workroom/workroom-view.mjs \
+            --exclude=tests/ui-v3-flagship-reconstruction.test.mjs \
+            /tmp/flagship.patch
 
           node --test \
             tests/ui-v3-flagship-reconstruction.test.mjs \
@@ -67,7 +73,6 @@ jobs:
           mapfile -t changed < <(git status --short | sed -E 's/^.. //')
           for path in "${changed[@]}"; do
             case "$path" in
-              tests/ui-v3-flagship-reconstruction.test.mjs|\
               ui-v3/styles/index.css|\
               ui-v3/styles/tokens/semantic.css|\
               ui-v3/styles/flagship/proofborne-instrument.css|\
@@ -87,7 +92,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tests/ui-v3-flagship-reconstruction.test.mjs \
+          git add \
             ui-v3/styles/index.css \
             ui-v3/styles/tokens/semantic.css \
             ui-v3/styles/flagship/proofborne-instrument.css \
