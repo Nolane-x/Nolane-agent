@@ -1,0 +1,189 @@
+name: Product Perfection Task 7 Runtime Evidence v2
+
+on:
+  push:
+    branches:
+      - codex/product-perfection-system-v3
+    paths:
+      - '.github/workflows/product-perfection-task7-runtime-v2.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  runtime-evidence:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      NOLANE_AGENT_HOST: 127.0.0.1
+      NOLANE_AGENT_PORT: 4173
+      NOLANE_AGENT_TOKEN: nolane-task7-runtime-v2-token
+      NOLANE_UI_RUNTIME_URL: http://127.0.0.1:4173
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Verify canonical distribution
+        run: |
+          npm run build:ui-v3
+          git diff --exit-code -- ui-dist
+      - name: Install Chromium and Axe
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.58.2 @axe-core/playwright@4.12.1
+          npx playwright install --with-deps chromium
+      - name: Start authenticated source runtime
+        shell: bash
+        env:
+          NOLANE_AGENT_DATA_DIR: ${{ runner.temp }}/nolane-task7-runtime-v2-data
+        run: |
+          node src/app.mjs > "$RUNNER_TEMP/nolane-task7-runtime-v2.log" 2>&1 &
+          echo "NOLANE_TASK7_V2_PID=$!" >> "$GITHUB_ENV"
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent --show-error "$NOLANE_UI_RUNTIME_URL/health" >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/nolane-task7-runtime-v2.log"
+          exit 1
+      - name: Complete onboarding and capture canonical wide states
+        shell: bash
+        env:
+          NOLANE_UI_VISUAL_OUTPUT: ${{ runner.temp }}/task7-runtime-v2/canonical
+        run: |
+          NOLANE_UI_VISUAL_STATES=onboarding node scripts/capture-ui-runtime-visual.mjs
+          NOLANE_UI_VISUAL_STATES=workroom,browser node scripts/capture-ui-runtime-visual.mjs
+      - name: Verify compact Studio and localized Browser trust semantics
+        shell: bash
+        run: |
+          ln -s "$GITHUB_WORKSPACE/node_modules" "$RUNNER_TEMP/node_modules" 2>/dev/null || true
+          mkdir -p "$RUNNER_TEMP/task7-runtime-v2/custom"
+          cat > "$RUNNER_TEMP/task7-runtime-v2.mjs" <<'NODE'
+          import { createHash } from 'node:crypto';
+          import { mkdir, readFile, writeFile } from 'node:fs/promises';
+          import path from 'node:path';
+          import AxeBuilder from '@axe-core/playwright';
+          import { chromium } from 'playwright';
+
+          const base = process.env.NOLANE_UI_RUNTIME_URL;
+          const token = process.env.NOLANE_AGENT_TOKEN;
+          const out = path.join(process.env.RUNNER_TEMP, 'task7-runtime-v2', 'custom');
+          await mkdir(out, { recursive: true });
+          const browser = await chromium.launch({ headless: true });
+          const captures = [];
+
+          async function assertAxe(page, label) {
+            const result = await new AxeBuilder({ page }).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa']).analyze();
+            const blocking = result.violations.filter((item) => ['serious','critical'].includes(String(item.impact)));
+            if (blocking.length) throw new Error(`${label} Axe blockers: ${blocking.map((item) => item.id).join(', ')}`);
+          }
+          async function assertNoOverflow(page, label) {
+            const value = await page.evaluate(() => ({ viewport: innerWidth, documentWidth: Math.max(document.documentElement.scrollWidth, document.body?.scrollWidth ?? 0) }));
+            if (value.documentWidth > value.viewport + 1) throw new Error(`${label} horizontal overflow ${value.documentWidth}>${value.viewport}`);
+          }
+          async function shot(page, id) {
+            const file = path.join(out, `${id}.png`);
+            await page.screenshot({ path: file, fullPage: true, animations: 'disabled' });
+            const bytes = await readFile(file);
+            captures.push({ id, file: path.basename(file), bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex') });
+          }
+
+          try {
+            const studioContext = await browser.newContext({ viewport: { width: 640, height: 900 } });
+            const studio = await studioContext.newPage();
+            await studio.goto(`${base}/#/workroom?token=${encodeURIComponent(token)}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
+            await studio.locator('.workroom-view').waitFor({ state: 'visible', timeout: 30000 });
+            await studio.locator('.workroom-compact-panes').waitFor({ state: 'visible', timeout: 10000 });
+            for (const pane of ['files','editor','agent']) {
+              const button = studio.locator(`[data-workroom-pane="${pane}"]`);
+              await button.click();
+              await studio.locator(`[data-panel="${pane}"][data-compact-active="true"]`).waitFor({ state: 'visible', timeout: 5000 });
+              for (const other of ['files','editor','agent'].filter((item) => item !== pane)) {
+                const inactive = studio.locator(`[data-panel="${other}"][data-compact-active="false"]`).first();
+                if (await inactive.isVisible()) throw new Error(`Studio compact ${pane}: ${other} remained visually active`);
+              }
+              await assertNoOverflow(studio, `Studio compact ${pane}`);
+              await assertAxe(studio, `Studio compact ${pane}`);
+              await shot(studio, `studio-640-${pane}`);
+            }
+            await studioContext.close();
+
+            const browserContext = await browser.newContext({ viewport: { width: 820, height: 1000 } });
+            const page = await browserContext.newPage();
+            await page.goto(`${base}/#/browser?token=${encodeURIComponent(token)}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
+            await page.locator('.browser-workspace').waitFor({ state: 'visible', timeout: 30000 });
+            const inspector = page.locator('[data-browser-trust-boundary]');
+            const boundary = page.locator('[data-browser-external-content="bounded"]');
+            await inspector.waitFor({ state: 'visible', timeout: 10000 });
+            await boundary.waitFor({ state: 'visible', timeout: 10000 });
+            const heading = boundary.locator(':scope > header > strong');
+            await heading.waitFor({ state: 'visible', timeout: 5000 });
+            const headingText = (await heading.innerText()).trim();
+            if (!['External page content', 'Nội dung trang bên ngoài'].includes(headingText)) throw new Error(`Unexpected Browser external-content heading: ${headingText}`);
+            const inspectorText = await inspector.innerText();
+            if (!inspectorText.includes('Origin')) throw new Error('Browser trust inspector missing Origin');
+            if (!(inspectorText.includes('Session') || inspectorText.includes('Phiên'))) throw new Error('Browser trust inspector missing Session/Phiên');
+            if (!(inspectorText.includes('Permission boundary') || inspectorText.includes('Ranh giới quyền'))) throw new Error('Browser trust inspector missing permission boundary text');
+            const pageHtml = await page.content();
+            if (/token=secret|>secret</i.test(pageHtml)) throw new Error('Browser trust surface leaked a query-secret marker');
+            await assertNoOverflow(page, 'Browser compact trust boundary');
+            await assertAxe(page, 'Browser compact trust boundary');
+            await shot(page, 'browser-820-trust-boundary');
+            await browserContext.close();
+          } finally {
+            await browser.close();
+          }
+
+          const report = { schema: 'nolane.task7.runtime-evidence.v2', sourceRevision: process.env.GITHUB_SHA, captures };
+          report.receiptSha256 = createHash('sha256').update(JSON.stringify(report)).digest('hex');
+          await writeFile(path.join(out, 'receipt.json'), `${JSON.stringify(report, null, 2)}\n`);
+          console.log(JSON.stringify({ receiptSha256: report.receiptSha256, captures: captures.length }));
+          NODE
+          node "$RUNNER_TEMP/task7-runtime-v2.mjs"
+      - name: Upload Task 7 runtime evidence
+        uses: actions/upload-artifact@v6
+        with:
+          name: product-perfection-task7-runtime-evidence-v2
+          path: ${{ runner.temp }}/task7-runtime-v2
+          if-no-files-found: error
+          retention-days: 21
+      - name: Persist Task 7 runtime closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          canonical_receipt=$(node -p "JSON.parse(require('fs').readFileSync(process.env.RUNNER_TEMP + '/task7-runtime-v2/canonical/receipt.json','utf8')).receiptSha256")
+          custom_receipt=$(node -p "JSON.parse(require('fs').readFileSync(process.env.RUNNER_TEMP + '/task7-runtime-v2/custom/receipt.json','utf8')).receiptSha256")
+          cat > docs/product-perfection/TASK7-RUNTIME-VISUAL-CLOSURE.md <<EOF
+          # Task 7 — Studio / Browser Runtime Visual / Axe Closure
+
+          **Source head observed:** \`${GITHUB_SHA}\`  
+          **Exact source implementation revision:** \`0fdd1b19952d71e9d42b6b3cb28c3f86694474e5\`  
+          **Workflow run:** \`${GITHUB_RUN_ID}\`  
+          **Canonical wide-state receipt:** \`${canonical_receipt}\`  
+          **Compact/trust custom receipt:** \`${custom_receipt}\`
+
+          Runtime evidence completed:
+
+          - canonical Studio and Browser wide states rendered from the real source runtime;
+          - Studio at 640px switched through Files, Editor and Agent, with the selected pane visible and non-selected panes not visually active;
+          - Browser at 820px exposed a visible localized external-content heading plus textual Origin, Session/Phiên and Permission-boundary facts;
+          - captured Task 7 states had no serious/critical Axe violations and no horizontal overflow;
+          - runtime trust surface did not expose a query-secret marker.
+
+          Independent screen-reader certification remains UNKNOWN and is not implied by Axe evidence.
+          EOF
+          git rm -f .github/workflows/product-perfection-task7-runtime.yml .github/workflows/product-perfection-task7-runtime-v2.yml
+          git add docs/product-perfection/TASK7-RUNTIME-VISUAL-CLOSURE.md
+          git config user.name 'nolane-evidence-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'docs(perfection): record Task 7 runtime closure [skip ci]'
+          git push origin HEAD:codex/product-perfection-system-v3
+      - name: Stop runtime
+        if: always()
+        shell: bash
+        run: |
+          if [ -n "${NOLANE_TASK7_V2_PID:-}" ]; then kill "$NOLANE_TASK7_V2_PID" || true; fi
