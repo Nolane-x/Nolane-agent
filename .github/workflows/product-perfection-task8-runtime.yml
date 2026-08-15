@@ -1,5 +1,6 @@
 name: Product Perfection Task 8 Runtime Evidence
 
+# Re-observe after the evidence-backed capability-chip contrast repair.
 on:
   push:
     branches:
@@ -67,56 +68,28 @@ jobs:
           import path from 'node:path';
           import AxeBuilder from '@axe-core/playwright';
           import { chromium } from 'playwright';
-
-          const base=process.env.NOLANE_UI_RUNTIME_URL;
-          const token=process.env.NOLANE_AGENT_TOKEN;
-          const out=path.join(process.env.RUNNER_TEMP,'task8-runtime','custom');
-          await mkdir(out,{recursive:true});
-          const browser=await chromium.launch({headless:true});
-          const captures=[];
+          const base=process.env.NOLANE_UI_RUNTIME_URL, token=process.env.NOLANE_AGENT_TOKEN;
+          const out=path.join(process.env.RUNNER_TEMP,'task8-runtime','custom'); await mkdir(out,{recursive:true});
+          const browser=await chromium.launch({headless:true}); const captures=[];
           async function axe(page,label){const r=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa']).analyze();const b=r.violations.filter(v=>['serious','critical'].includes(String(v.impact)));if(b.length)throw new Error(`${label} Axe blockers: ${b.map(v=>v.id).join(', ')}`)}
           async function overflow(page,label){const v=await page.evaluate(()=>({w:innerWidth,d:Math.max(document.documentElement.scrollWidth,document.body?.scrollWidth??0)}));if(v.d>v.w+1)throw new Error(`${label} horizontal overflow ${v.d}>${v.w}`)}
           async function shot(page,id){const f=path.join(out,`${id}.png`);await page.screenshot({path:f,fullPage:true,animations:'disabled'});const b=await readFile(f);captures.push({id,file:path.basename(f),bytes:b.length,sha256:createHash('sha256').update(b).digest('hex')})}
           try {
-            // Skills: runtime must project only explicitly declared capability facets.
-            const skillsContext=await browser.newContext({viewport:{width:1180,height:900}});
-            const skills=await skillsContext.newPage();
+            const skillsContext=await browser.newContext({viewport:{width:1180,height:900}}); const skills=await skillsContext.newPage();
             await skills.route('**/api/skills/catalog?limit=500', async route => route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({skills:[{id:'guarded-skill',title:'Guarded Skill',source:'nolane',catalog:'local',installed:true,enabled:false,configured:true,ready:false,blocked:true,maturity:'stable',description:'Capability truth runtime fixture'}]})}));
-            await skills.goto(`${base}/#/skills?token=${encodeURIComponent(token)}`,{waitUntil:'domcontentloaded',timeout:30000});
-            await skills.locator('.skills-library').waitFor({state:'visible',timeout:30000});
+            await skills.goto(`${base}/#/skills?token=${encodeURIComponent(token)}`,{waitUntil:'domcontentloaded',timeout:30000}); await skills.locator('.skills-library').waitFor({state:'visible',timeout:30000});
             for(const state of ['installed','disabled','configured','not-ready','blocked']) await skills.locator(`[data-skill-capability-state="${state}"]`).waitFor({state:'visible',timeout:5000});
             if(await skills.locator('[data-skill-capability-state="ready"]').count()) throw new Error('Skills inferred ready despite explicit ready=false');
-            const skillsSearch=skills.locator('[data-skills-search]'); await skillsSearch.fill('blocked'); await skills.waitForTimeout(100); if(!(await skills.locator('text=Guarded Skill').count())) throw new Error('Skills state search failed to find blocked capability');
+            const skillsSearch=skills.locator('[data-skills-search]'); await skillsSearch.fill('blocked'); await skills.waitForTimeout(100); if(!(await skills.locator('text=Guarded Skill').count())) throw new Error('Skills state search failed');
             await overflow(skills,'Skills truth'); await axe(skills,'Skills truth'); await shot(skills,'skills-1180-capability-truth'); await skillsContext.close();
 
-            // Settings: debounce must preserve the same active search and caret.
-            const settingsContext=await browser.newContext({viewport:{width:980,height:900}});
-            const settings=await settingsContext.newPage();
-            await settings.goto(`${base}/#/settings?token=${encodeURIComponent(token)}`,{waitUntil:'domcontentloaded',timeout:30000});
-            const search=settings.locator('[data-settings-search]'); await search.waitFor({state:'visible',timeout:30000}); await search.focus(); await search.fill('provider');
-            await search.evaluate(el=>el.setSelectionRange(3,5)); await settings.waitForTimeout(180);
-            const focus=await settings.evaluate(()=>{const el=document.activeElement;return {isSearch:Boolean(el?.matches?.('[data-settings-search]')),value:el?.value??null,selection:el?.selectionStart==null?null:[el.selectionStart,el.selectionEnd]}});
-            if(!focus.isSearch||focus.value!=='provider'||JSON.stringify(focus.selection)!=='[3,5]') throw new Error(`Settings search continuity failed: ${JSON.stringify(focus)}`);
+            const settingsContext=await browser.newContext({viewport:{width:980,height:900}}); const settings=await settingsContext.newPage();
+            await settings.goto(`${base}/#/settings?token=${encodeURIComponent(token)}`,{waitUntil:'domcontentloaded',timeout:30000}); const search=settings.locator('[data-settings-search]'); await search.waitFor({state:'visible',timeout:30000}); await search.focus(); await search.fill('provider'); await search.evaluate(el=>el.setSelectionRange(3,5)); await settings.waitForTimeout(180);
+            const focus=await settings.evaluate(()=>{const el=document.activeElement;return {isSearch:Boolean(el?.matches?.('[data-settings-search]')),value:el?.value??null,selection:el?.selectionStart==null?null:[el.selectionStart,el.selectionEnd]}}); if(!focus.isSearch||focus.value!=='provider'||JSON.stringify(focus.selection)!=='[3,5]') throw new Error(`Settings search continuity failed: ${JSON.stringify(focus)}`);
             await overflow(settings,'Settings search'); await axe(settings,'Settings search'); await shot(settings,'settings-980-search-continuity'); await settingsContext.close();
 
-            // Control Plane: successful HTTP does not mean semantic health.
-            const cpContext=await browser.newContext({viewport:{width:1180,height:1000}});
-            const cp=await cpContext.newPage();
-            const fixtures=new Map([
-              ['/api/missions',{status:'ready',missions:[]}],
-              ['/api/provider-connections/readiness',{status:'blocked'}],
-              ['/api/runtime-readiness/architecture',{status:'configured'}],
-              ['/api/security-certification/snapshot',{status:'offline'}],
-            ]);
-            for(const [pathname,payload] of fixtures) await cp.route(`**${pathname}`,async route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(payload)}));
-            await cp.goto(`${base}/#/control-plane/overview?token=${encodeURIComponent(token)}`,{waitUntil:'domcontentloaded',timeout:30000});
-            await cp.locator('.control-plane-live-workspace').waitFor({state:'visible',timeout:30000});
-            const text=(await cp.locator('.control-plane-live-workspace').innerText()).replace(/\s+/g,' ');
-            if(!/Adapters online\s*1\/4/i.test(text)) throw new Error(`Control Plane online KPI is not truthful: ${text.slice(0,900)}`);
-            if(/Adapters online\s*4\/4/i.test(text)) throw new Error('Control Plane counted non-ready records online');
-            const status=await cp.locator('.control-plane-live-workspace').getAttribute('data-state');
-            if(status!=='degraded') throw new Error(`Control Plane expected degraded semantic health, got ${status}`);
-            await overflow(cp,'Control Plane truth'); await axe(cp,'Control Plane truth'); await shot(cp,'control-plane-1180-semantic-health'); await cpContext.close();
+            const cpContext=await browser.newContext({viewport:{width:1180,height:1000}}); const cp=await cpContext.newPage(); const fixtures=new Map([['/api/missions',{status:'ready',missions:[]}],['/api/provider-connections/readiness',{status:'blocked'}],['/api/runtime-readiness/architecture',{status:'configured'}],['/api/security-certification/snapshot',{status:'offline'}]]); for(const [pathname,payload] of fixtures) await cp.route(`**${pathname}`,async route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(payload)}));
+            await cp.goto(`${base}/#/control-plane/overview?token=${encodeURIComponent(token)}`,{waitUntil:'domcontentloaded',timeout:30000}); await cp.locator('.control-plane-live-workspace').waitFor({state:'visible',timeout:30000}); const text=(await cp.locator('.control-plane-live-workspace').innerText()).replace(/\s+/g,' '); if(!/Adapters online\s*1\/4/i.test(text)) throw new Error(`Control Plane online KPI is not truthful: ${text.slice(0,900)}`); if(/Adapters online\s*4\/4/i.test(text)) throw new Error('Control Plane counted non-ready records online'); const status=await cp.locator('.control-plane-live-workspace').getAttribute('data-state'); if(status!=='degraded') throw new Error(`Control Plane expected degraded, got ${status}`); await overflow(cp,'Control Plane truth'); await axe(cp,'Control Plane truth'); await shot(cp,'control-plane-1180-semantic-health'); await cpContext.close();
           } finally { await browser.close(); }
           const report={schema:'nolane.task8.runtime-evidence.v1',sourceRevision:process.env.GITHUB_SHA,captures}; report.receiptSha256=createHash('sha256').update(JSON.stringify(report)).digest('hex'); await writeFile(path.join(out,'receipt.json'),`${JSON.stringify(report,null,2)}\n`); console.log(JSON.stringify({receiptSha256:report.receiptSha256,captures:captures.length}));
           NODE
