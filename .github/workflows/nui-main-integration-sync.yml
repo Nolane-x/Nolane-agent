@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: nui-main-integration-canonical-sync-${{ github.ref }}
+  group: ${{ github.ref_name == 'codex/nui-performance-convergence' && 'nui-performance-convergence-v2' || format('nui-main-integration-canonical-sync-{0}', github.ref) }}
   cancel-in-progress: false
 
 jobs:
