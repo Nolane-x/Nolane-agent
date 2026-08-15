@@ -23,7 +23,10 @@ const replacements = [
   ["const filename = `${state.id}.png`;", "const filename = state.id + '.png';"],
   ["await writeFile(path.join(output, 'receipt.json'), `${JSON.stringify({ ...report, receiptSha256 }, null, 2)}\\n`);", "await writeFile(path.join(output, 'receipt.json'), JSON.stringify({ ...report, receiptSha256 }, null, 2) + String.fromCharCode(10));"],
   ["async function applyStatePreferences(page, state) {", "async function applyStatePreferences(page, state, credential) {"],
+  ["const outcome = await page.evaluate(async (value) => {", "const outcome = await page.evaluate(async ({ patch, credential }) => {"],
   ["headers: { 'content-type': 'application/json' },", "headers: { authorization: 'Bearer ' + credential, 'content-type': 'application/json' },"],
+  ["body: JSON.stringify({ layer: 'user', patch: value }),", "body: JSON.stringify({ layer: 'user', patch }),"],
+  ["}, patch);", "}, { patch, credential });"],
   ["await applyStatePreferences(page, state);", "await applyStatePreferences(page, state, credential);"],
 ];
 
