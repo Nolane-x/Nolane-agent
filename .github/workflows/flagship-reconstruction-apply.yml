@@ -55,16 +55,18 @@ jobs:
           from pathlib import Path
           path = Path('ui-v3/views/workroom/workroom-view.mjs')
           text = path.read_text(encoding='utf-8')
+          start = text.index('export function renderWorkroomView')
+          prefix, section = text[:start], text[start:]
           anchor = "  const terminalDisabled = snapshot.projectId === 'unselected' ? ' disabled' : '';\n"
           addition = anchor + "  const missionTrace = snapshot.missionId ? `<div class=\"workroom-mission-trace\" role=\"status\"><span>${languageOf(language) === 'vi' ? 'Ngữ cảnh nhiệm vụ' : 'Mission context'}</span><code>${escapeHtml(snapshot.missionId)}</code><i aria-hidden=\"true\"></i><span>${languageOf(language) === 'vi' ? 'Studio giữ nguyên dòng bằng chứng của nhiệm vụ' : 'Studio remains attached to this mission lineage'}</span></div>` : '';\n"
-          if text.count(anchor) != 1:
-              raise SystemExit('bounded Workroom anchor is not unique')
-          text = text.replace(anchor, addition, 1)
+          if section.count(anchor) != 1:
+              raise SystemExit('renderWorkroomView terminal anchor is not unique')
+          section = section.replace(anchor, addition, 1)
           needle = '</header>${error}<div class="workroom-tabs">'
-          if text.count(needle) != 1:
-              raise SystemExit('bounded Workroom render insertion point is not unique')
-          text = text.replace(needle, '</header>${missionTrace}${error}<div class="workroom-tabs">', 1)
-          path.write_text(text, encoding='utf-8')
+          if section.count(needle) != 1:
+              raise SystemExit('renderWorkroomView insertion point is not unique')
+          section = section.replace(needle, '</header>${missionTrace}${error}<div class="workroom-tabs">', 1)
+          path.write_text(prefix + section, encoding='utf-8')
           PY
 
           node --test \
