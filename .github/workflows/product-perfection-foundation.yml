@@ -1,0 +1,181 @@
+name: Product Perfection Shared Foundation
+
+on:
+  push:
+    branches:
+      - codex/product-perfection-system-v3
+
+permissions:
+  contents: write
+
+jobs:
+  foundation:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Write authority regression test and prove RED
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > tests/ui-v3-perfection-authority.test.mjs <<'EOF'
+          import test from 'node:test';
+          import assert from 'node:assert/strict';
+          import { readFile } from 'node:fs/promises';
+
+          const read = (file) => readFile(new URL(`../${file}`, import.meta.url), 'utf8');
+
+          test('perfection layers exist below accessibility and responsive authorities', async () => {
+            const index = await read('ui-v3/styles/index.css');
+            const density = "@import './perfection/density-regimes.css';";
+            const detail = "@import './perfection/micro-detail.css';";
+            const residue = "@import './perfection/platform-residue.css';";
+            for (const marker of [density, detail, residue]) assert.ok(index.includes(marker), `missing ${marker}`);
+            assert.ok(index.indexOf("@import './flagship/proofborne-instrument.css';") < index.indexOf(density));
+            assert.ok(index.indexOf(density) < index.indexOf(detail));
+            assert.ok(index.indexOf(detail) < index.indexOf(residue));
+            assert.ok(index.indexOf(residue) < index.indexOf("@import './accessibility-runtime.css';"));
+            assert.ok(index.indexOf("@import './accessibility-runtime.css';") < index.indexOf("@import './responsive.css';"));
+          });
+
+          test('all four approved experience regimes own distinct density contracts', async () => {
+            const css = await read('ui-v3/styles/perfection/density-regimes.css');
+            for (const regime of ['everyday', 'workspace', 'studio', 'expert']) {
+              assert.match(css, new RegExp(`data-progressive-experience=["']${regime}["']`));
+            }
+            for (const token of ['--density-row-height', '--density-control-height', '--density-section-gap', '--density-control-gap']) {
+              assert.ok(css.split(token).length >= 5, `${token} must be owned by all four regimes`);
+            }
+          });
+
+          test('shared detail and residue layers expose product-safe mechanisms without cascade escape hatches', async () => {
+            const detail = await read('ui-v3/styles/perfection/micro-detail.css');
+            const residue = await read('ui-v3/styles/perfection/platform-residue.css');
+            assert.match(detail, /\.ui-truncate/);
+            assert.match(detail, /\.ui-machine-id/);
+            assert.match(detail, /\.ui-consequence-plate/);
+            assert.match(detail, /\.ui-focus-boundary/);
+            assert.match(residue, /::selection/);
+            assert.match(residue, /scrollbar-color/);
+            assert.match(residue, /caret-color/);
+            assert.doesNotMatch(`${detail}\n${residue}`, /!important/);
+          });
+          EOF
+          if node --test tests/ui-v3-perfection-authority.test.mjs; then
+            echo 'Expected RED before perfection authority exists, but test passed' >&2
+            exit 1
+          fi
+
+      - name: Create perfection authority layers and semantic aliases
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ui-v3/styles/perfection
+          cat > ui-v3/styles/perfection/density-regimes.css <<'EOF'
+          /* Experience regimes tune density without changing product semantics. */
+          .app-shell[data-progressive-experience="everyday"]{
+            --density-row-height:46px;--density-control-height:40px;--density-section-gap:var(--space-6);--density-control-gap:var(--space-3);--density-inline-gap:var(--space-2);--density-explanatory-max:68ch
+          }
+          .app-shell[data-progressive-experience="workspace"]{
+            --density-row-height:42px;--density-control-height:36px;--density-section-gap:var(--space-5);--density-control-gap:var(--space-2);--density-inline-gap:var(--space-2);--density-explanatory-max:66ch
+          }
+          .app-shell[data-progressive-experience="studio"]{
+            --density-row-height:36px;--density-control-height:34px;--density-section-gap:var(--space-4);--density-control-gap:var(--space-2);--density-inline-gap:var(--space-2);--density-explanatory-max:64ch
+          }
+          .app-shell[data-progressive-experience="expert"]{
+            --density-row-height:34px;--density-control-height:32px;--density-section-gap:var(--space-4);--density-control-gap:var(--space-1);--density-inline-gap:var(--space-1);--density-explanatory-max:62ch
+          }
+          EOF
+
+          cat > ui-v3/styles/perfection/micro-detail.css <<'EOF'
+          /* Reusable optical mechanisms. Route-specific ownership stays in page styles. */
+          .ui-truncate{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+          .ui-machine-id{font-family:var(--machine-id-font);font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;overflow-wrap:anywhere}
+          .ui-optical-icon{display:inline-flex;align-items:center;justify-content:center;transform:translateY(var(--optical-icon-nudge-y))}
+          .ui-consequence-plate{border-block-start:1px solid var(--instrument-rule);padding-block-start:var(--space-3)}
+          .ui-focus-boundary{scroll-margin:var(--focus-scroll-margin)}
+          .ui-density-row{min-block-size:var(--density-row-height)}
+          .ui-density-control{min-block-size:var(--density-control-height)}
+          .ui-readable-copy{max-inline-size:var(--density-explanatory-max)}
+          .app-shell :where(.app-topbar__trail,.app-topbar__actions,.surface-page__header,.surface-toolbar){min-width:0}
+          .app-shell :where(kbd,.telemetry-value,[data-count],[data-duration]){font-variant-numeric:tabular-nums}
+          EOF
+
+          cat > ui-v3/styles/perfection/platform-residue.css <<'EOF'
+          /* Intentional browser/OS residue. Native behavior remains where it improves usability. */
+          .app-shell{accent-color:var(--accent);caret-color:var(--caret-color)}
+          .app-shell ::selection{background:var(--selection-bg);color:var(--selection-fg)}
+          .app-shell :where(input,textarea,[contenteditable="true"]){caret-color:var(--caret-color)}
+          :where(#workspace,.session-sidebar,.output-summary-root){scrollbar-color:var(--scrollbar-thumb) transparent;scrollbar-width:thin}
+          :where(#workspace,.session-sidebar,.output-summary-root)::-webkit-scrollbar{width:10px;height:10px}
+          :where(#workspace,.session-sidebar,.output-summary-root)::-webkit-scrollbar-track{background:transparent}
+          :where(#workspace,.session-sidebar,.output-summary-root)::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);border:3px solid transparent;background-clip:padding-box;border-radius:var(--radius-round)}
+          :where(#workspace,.session-sidebar,.output-summary-root)::-webkit-scrollbar-thumb:hover{background:var(--scrollbar-thumb-hover);border:3px solid transparent;background-clip:padding-box}
+          [data-resize-region="sidebar"],[data-resize-region="dock"]{cursor:col-resize}
+          [aria-disabled="true"],[disabled]{cursor:not-allowed}
+          EOF
+
+          python - <<'PY'
+          from pathlib import Path
+
+          index = Path('ui-v3/styles/index.css')
+          s = index.read_text()
+          anchor = "@import './flagship/proofborne-instrument.css';\n@import './accessibility-runtime.css';"
+          replacement = "@import './flagship/proofborne-instrument.css';\n@import './perfection/density-regimes.css';\n@import './perfection/micro-detail.css';\n@import './perfection/platform-residue.css';\n@import './accessibility-runtime.css';"
+          if s.count(anchor) != 1: raise SystemExit('unexpected stylesheet authority graph')
+          index.write_text(s.replace(anchor, replacement))
+
+          component = Path('ui-v3/styles/tokens/component.css')
+          s = component.read_text()
+          old = '--resize-handle-size:5px;--bottom-panel-height:280px}'
+          new = '--resize-handle-size:5px;--bottom-panel-height:280px;--density-row-height:42px;--density-control-height:36px;--density-section-gap:var(--space-5);--density-control-gap:var(--space-2);--density-inline-gap:var(--space-2);--density-explanatory-max:66ch;--hit-target-min:32px;--focus-scroll-margin:96px;--machine-id-font:var(--font-code);--optical-icon-nudge-y:0px}'
+          if s.count(old) != 1: raise SystemExit('unexpected component token authority shape')
+          component.write_text(s.replace(old, new))
+
+          semantic = Path('ui-v3/styles/tokens/semantic.css')
+          s = semantic.read_text()
+          old = '  --instrument-rule:color-mix(in srgb,var(--border-default) 58%,transparent);--instrument-margin:color-mix(in srgb,var(--surface-sidebar) 88%,var(--surface-canvas));--instrument-plate:color-mix(in srgb,var(--surface-panel) 93%,var(--surface-raised));--instrument-trace:var(--accent-strong);--instrument-evidence:color-mix(in srgb,var(--text-primary) 84%,var(--accent));\n}'
+          new = '  --instrument-rule:color-mix(in srgb,var(--border-default) 58%,transparent);--instrument-margin:color-mix(in srgb,var(--surface-sidebar) 88%,var(--surface-canvas));--instrument-plate:color-mix(in srgb,var(--surface-panel) 93%,var(--surface-raised));--instrument-trace:var(--accent-strong);--instrument-evidence:color-mix(in srgb,var(--text-primary) 84%,var(--accent));\n  --state-success:var(--nolane-success);--state-warning:var(--nolane-warning);--state-error:var(--nolane-danger);--state-info:var(--nolane-info);--state-unknown:var(--text-muted);--state-blocked:var(--nolane-danger);--selection-bg:color-mix(in srgb,var(--accent) 26%,transparent);--selection-fg:var(--text-primary);--scrollbar-thumb:color-mix(in srgb,var(--text-muted) 42%,transparent);--scrollbar-thumb-hover:color-mix(in srgb,var(--text-secondary) 58%,transparent);--caret-color:var(--text-primary);\n}'
+          if s.count(old) != 1: raise SystemExit('unexpected semantic token authority shape')
+          semantic.write_text(s.replace(old, new))
+          PY
+
+      - name: Prove GREEN, token integrity and deterministic build
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test tests/ui-v3-perfection-authority.test.mjs tests/ui-v3-tokens.test.mjs tests/ui-v3-accessibility.test.mjs tests/ui-v3-flagship-reconstruction.test.mjs
+          npm run validate:ui-tokens
+          npm run build:ui-v3
+          git diff --check
+
+      - name: Scope guard and commit shared foundation
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t changed < <(git status --porcelain=v1 | sed -E 's/^.. //')
+          for file in "${changed[@]}"; do
+            case "$file" in
+              ui-v3/styles/perfection/*|ui-v3/styles/index.css|ui-v3/styles/tokens/component.css|ui-v3/styles/tokens/semantic.css|tests/ui-v3-perfection-authority.test.mjs|ui-dist/*) ;;
+              *) echo "unexpected foundation change: $file" >&2; exit 1 ;;
+            esac
+          done
+          git add ui-v3/styles/perfection ui-v3/styles/index.css ui-v3/styles/tokens/component.css ui-v3/styles/tokens/semantic.css tests/ui-v3-perfection-authority.test.mjs ui-dist
+          git config user.name 'nolane-evidence-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'feat(ui): add systemic micro-detail and density regimes'
+          git push origin HEAD:codex/product-perfection-system-v3
