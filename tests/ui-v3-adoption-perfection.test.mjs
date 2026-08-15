@@ -17,25 +17,29 @@ test('Home runtime failure offers a bounded retry action', () => {
 });
 
 test('Projects distinguish no search matches from a truly empty registry', () => {
-  const noMatches = renderProjectsView({ status: 'ready', language: 'en', query: 'atlas', projects: [], view: 'cards' });
+  const noMatches = renderProjectsView({ status: 'ready', language: 'en', query: 'atlas', projects: [], view: 'grid' });
   assert.match(noMatches, /No matching projects/);
   assert.match(noMatches, /data-project-action="clear-search"/);
-  const empty = renderProjectsView({ status: 'ready', language: 'en', query: '', projects: [], view: 'cards' });
+  const empty = renderProjectsView({ status: 'ready', language: 'en', query: '', projects: [], view: 'grid' });
   assert.match(empty, /No projects yet/);
   assert.doesNotMatch(empty, /data-project-action="clear-search"/);
 });
 
 test('Projects runtime failure offers retry and trust labels localize', () => {
-  const error = renderProjectsView({ status: 'error', language: 'en', error: 'offline' });
+  const error = renderProjectsView({ status: 'ready', language: 'en', error: 'offline' });
   assert.match(error, /data-project-action="retry"/);
-  const vi = renderProjectsView({ status: 'ready', language: 'vi', query: '', view: 'cards', projects: [{ id: 'p1', name: 'A', root: '/tmp/a', mode: 'git', trust: 'trusted', lastUsedAt: Date.now() }] });
+  const vi = renderProjectsView({ status: 'ready', language: 'vi', query: '', view: 'grid', projects: [{ id: 'p1', name: 'A', path: '/tmp/a', trust: 'trusted', activeMissions: 0, completedMissions: 0, openIntelligenceRoute: '/control-plane/intelligence/repository?project=p1' }] });
   assert.match(vi, />TIN CẬY</);
 });
 
-test('Projects search rerender restores focus and caret, and clear/retry are wired', async () => {
-  const app = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
-  assert.match(app, /restoreProjectsSearchFocus/);
+test('Projects search uses shared rerender preservation for focus and caret, and clear/retry are wired', async () => {
+  const [app, projectView] = await Promise.all([
+    readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8'),
+    readFile(new URL('../ui-v3/views/projects/project-view.mjs', import.meta.url), 'utf8'),
+  ]);
+  assert.match(projectView, /data-preserve-key="projects-search"/);
+  assert.match(app, /rerenderView\(root,view,\{preserve:e\.target\}\)/);
   assert.match(app, /setSelectionRange/);
-  assert.match(app, /data\.projectAction==='clear-search'/);
-  assert.match(app, /data\.projectAction==='retry'/);
+  assert.match(app, /action==='clear-search'/);
+  assert.match(app, /action==='retry'/);
 });

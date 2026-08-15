@@ -7,6 +7,7 @@ def replace_once(text: str, old: str, new: str, label: str) -> str:
     return text.replace(old, new)
 
 
+# Home: convert disabled prerequisites and runtime failures into explicit next valid actions.
 home = Path('ui-v3/views/home/home-view.mjs')
 s = home.read_text()
 anchor = "  const runtimeStatus = selectedModelReady ? providerStatus : (model.language === 'vi' ? 'Model đã chọn chưa sẵn sàng. Hãy chọn model khác hoặc đăng nhập provider đó.' : 'Selected model is not ready. Choose another model or sign in to its provider.');\n  const quick = ["
@@ -17,91 +18,44 @@ new = "      </form>${readinessHtml}${model.error?`<div class=\"home-error\" rol
 s = replace_once(s, old, new, 'Home composer tail')
 home.write_text(s)
 
+# Projects: preserve current grid/activity architecture and add missing state semantics.
 projects = Path('ui-v3/views/projects/project-view.mjs')
 s = projects.read_text()
-marker = 'export function renderProjectsView(state={}) {'
-if marker not in s:
-    raise SystemExit('renderProjectsView marker missing')
-prefix = s.split(marker, 1)[0]
-render = r'''function projectTrustLabel(value, language = 'en') {
-  const trust = String(value ?? '').toLowerCase();
-  if (language === 'vi') return ({ trusted: 'Tin cậy', manual: 'Thủ công', local: 'Cục bộ', untrusted: 'Chưa tin cậy', unknown: 'Chưa rõ' })[trust] ?? value ?? 'Chưa rõ';
-  return ({ trusted: 'Trusted', manual: 'Manual', local: 'Local', untrusted: 'Untrusted', unknown: 'Unknown' })[trust] ?? value ?? 'Unknown';
-}
+trust_anchor = "function trustTone(trust) {\n  return trust === 'trusted' ? 'success' : trust === 'blocked' ? 'danger' : 'warning';\n}\n"
+trust_insert = trust_anchor + "\nfunction projectTrustLabel(trust, language = 'en') {\n  const value = String(trust ?? 'unknown').toLowerCase();\n  if (language === 'vi') return ({ trusted: 'Tin cậy', blocked: 'Bị chặn', manual: 'Thủ công', local: 'Cục bộ', untrusted: 'Chưa tin cậy', unknown: 'Chưa rõ' })[value] ?? String(trust ?? 'Chưa rõ');\n  return ({ trusted: 'Trusted', blocked: 'Blocked', manual: 'Manual', local: 'Local', untrusted: 'Untrusted', unknown: 'Unknown' })[value] ?? String(trust ?? 'Unknown');\n}\n"
+s = replace_once(s, trust_anchor, trust_insert, 'Projects trust semantics')
+s = replace_once(s, "<small>${esc(project.trust)}</small>", "<small>${esc(projectTrustLabel(project.trust, language).toUpperCase())}</small>", 'Projects trust label')
+s = replace_once(s, "  const query = String(state.query ?? '').toLowerCase();\n  const projects = (state.projects ?? []).filter((project) => !query || `${project.name} ${project.path} ${project.id}`.toLowerCase().includes(query));", "  const rawQuery = String(state.query ?? '').trim();\n  const query = rawQuery.toLowerCase();\n  const projects = (state.projects ?? []).filter((project) => !query || `${project.name} ${project.path} ${project.id}`.toLowerCase().includes(query));", 'Projects query normalization')
+s = replace_once(s, "    ? `<div class=\"page-loading\"><span class=\"spinner\"></span>${t('common.loading', language)}</div>`", "    ? `<div class=\"page-loading\" aria-busy=\"true\"><span class=\"spinner\"></span><span role=\"status\" aria-live=\"polite\">${t('common.loading', language)}</span></div>`", 'Projects loading state')
+s = replace_once(s, "      ? `<div class=\"page-error\">${icon('warning', { size: 18 })}<span>${esc(state.error)}</span></div>`", "      ? `<div class=\"page-error projects-error\">${icon('warning', { size: 18 })}<span role=\"alert\">${esc(state.error)}</span><button type=\"button\" data-project-action=\"retry\">${language === 'vi' ? 'Thử lại' : 'Retry'}</button></div>`", 'Projects error state')
+old_empty = "      : !projects.length\n        ? `<div class=\"empty-state page-empty\"><span>${icon('projects', { size: 20 })}</span><strong>${language === 'vi' ? 'Chưa có dự án' : 'No projects yet'}</strong><p>${t('projects.empty', language)}</p></div>`"
+new_empty = "      : !projects.length\n        ? rawQuery\n          ? `<div class=\"empty-state page-empty page-empty--search\"><span>${icon('search', { size: 20 })}</span><strong>${language === 'vi' ? 'Không có dự án phù hợp' : 'No matching projects'}</strong><p>${language === 'vi' ? `Không tìm thấy dự án nào cho “${esc(rawQuery)}”.` : `No projects match “${esc(rawQuery)}”.`}</p><button type=\"button\" data-project-action=\"clear-search\">${language === 'vi' ? 'Xóa tìm kiếm' : 'Clear search'}</button></div>`\n          : `<div class=\"empty-state page-empty\"><span>${icon('projects', { size: 20 })}</span><strong>${language === 'vi' ? 'Chưa có dự án' : 'No projects yet'}</strong><p>${t('projects.empty', language)}</p><button type=\"button\" data-project-action=\"add\">${language === 'vi' ? 'Thêm dự án' : 'Add project'}</button></div>`"
+s = replace_once(s, old_empty, new_empty, 'Projects empty/search state')
+old_search = "<input type=\"search\" data-project-search placeholder=\"${language === 'vi' ? 'Tìm dự án…' : 'Search projects…'}\" value=\"${esc(state.query ?? '')}\">"
+new_search = "<input type=\"search\" data-project-search data-preserve-key=\"projects-search\" autocomplete=\"off\" spellcheck=\"false\" placeholder=\"${language === 'vi' ? 'Tìm dự án…' : 'Search projects…'}\" value=\"${esc(state.query ?? '')}\">"
+s = replace_once(s, old_search, new_search, 'Projects search input')
+old_toggle = "<button type=\"button\" data-project-view=\"grid\" aria-pressed=\"${view === 'grid'}\""
+new_toggle = "<button type=\"button\" data-project-view=\"grid\" data-preserve-key=\"project-view-grid\" aria-pressed=\"${view === 'grid'}\""
+s = replace_once(s, old_toggle, new_toggle, 'Projects grid toggle')
+old_toggle = "<button type=\"button\" data-project-view=\"activity\" aria-pressed=\"${view === 'activity'}\""
+new_toggle = "<button type=\"button\" data-project-view=\"activity\" data-preserve-key=\"project-view-activity\" aria-pressed=\"${view === 'activity'}\""
+s = replace_once(s, old_toggle, new_toggle, 'Projects activity toggle')
+projects.write_text(s)
 
-export function renderProjectsView(state={}) {
-  const language=state.language??'en';const vi=language==='vi';
-  if(state.status==='loading')return `<section class="page-loading" aria-busy="true"><span class="spinner"></span><p role="status" aria-live="polite">${vi?'Đang tải dự án…':'Loading projects…'}</p></section>`;
-  if(state.status==='error')return `<section class="page-error projects-error"><p role="alert">${esc(state.error)}</p><button type="button" data-project-action="retry">${vi?'Thử lại':'Retry'}</button></section>`;
-  const projects=state.projects??[];
-  const query=String(state.query??'').trim();
-  const empty=query
-    ? `<div class="page-empty page-empty--search"><span>${icon('search',{size:20})}</span><h3>${vi?'Không có dự án phù hợp':'No matching projects'}</h3><p>${vi?`Không tìm thấy dự án nào cho “${esc(query)}”.`:`No projects match “${esc(query)}”.`}</p><button type="button" data-project-action="clear-search">${vi?'Xóa tìm kiếm':'Clear search'}</button></div>`
-    : `<div class="page-empty"><span>${icon('folder',{size:20})}</span><h3>${vi?'Chưa có dự án':'No projects yet'}</h3><p>${vi?'Thêm thư mục cục bộ để Nolane có không gian làm việc.':'No projects yet. Add a local folder to give Nolane a workspace.'}</p><button type="button" data-project-action="add">${vi?'Thêm dự án':'Add project'}</button></div>`;
-  const cards=projects.map(project=>{const status=project.status??project.lifecycle??'active';const last=formatTime(project.lastUsedAt??project.updatedAt,language);const trust=project.trust??(project.mode==='git'?'trusted':'manual');return `<a class="project-card" href="#/project?id=${encodeURIComponent(project.id)}" data-route="/project?id=${encodeURIComponent(project.id)}"><span class="project-card__icon">${icon('folder',{size:19})}</span><span class="project-card__copy"><strong>${esc(project.name??project.id)}</strong><small title="${esc(project.root??project.path??'')}">${esc(project.root??project.path??'')}</small></span><span class="project-card__meta"><small>${esc(last)}</small><em data-tone="${tone(status)}">${esc(projectTrustLabel(trust,language).toUpperCase())}</em></span><span class="project-card__options" aria-hidden="true">${icon('dots',{size:16})}</span></a>`}).join('');
-  const activity=projects.flatMap(project=>(project.recentMissions??project.missions??[]).map(mission=>({...mission,projectName:project.name,projectId:project.id}))).slice(0,10);
-  const activityHtml=activity.length?`<div class="project-activity-list">${activity.map(item=>`<article class="project-activity" data-tone="${tone(item.status)}"><span class="project-activity__mark">${icon(tone(item.status)==='success'?'check':tone(item.status)==='danger'?'warning':'activity',{size:15})}</span><div><strong>${esc(item.title??item.objective??item.id)}</strong><small>${esc(item.projectName??item.projectId??'')} · ${esc(item.status??'draft')}</small></div><a href="#/missions?id=${encodeURIComponent(item.id)}" aria-label="${vi?'Mở nhiệm vụ':'Open mission'}">${icon('arrow',{size:15})}</a></article>`).join('')}</div>`:empty;
-  return `<section class="projects-page surface-page" data-project-view-mode="${esc(state.view??'cards')}"><header class="surface-page__header"><div><p class="eyebrow">${vi?'Danh mục không gian làm việc':'Workspace registry'}</p><h1>${vi?'Dự án':'Projects'}</h1><p>${vi?'Không gian tin cậy, lịch sử nhiệm vụ và thông tin kho mã ở cùng một nơi.':'Trusted workspaces, mission history, and repository intelligence in one place.'}</p></div><button class="primary-action" data-project-action="add">${icon('plus',{size:15})}${vi?'Thêm dự án':'Add project'}</button></header><div class="surface-toolbar"><label class="surface-search"><span class="sr-only">${vi?'Tìm dự án':'Search projects'}</span>${icon('search',{size:15})}<input type="search" value="${esc(state.query??'')}" placeholder="${vi?'Tìm dự án…':'Search projects…'}" data-project-search autocomplete="off"></label><div class="view-toggle" role="group" aria-label="${vi?'Chế độ xem dự án':'Project view'}"><button data-project-view="cards" aria-pressed="${state.view!=='activity'}" aria-label="${vi?'Xem dự án':'Project cards'}">${icon('folder',{size:14})}</button><button data-project-view="activity" aria-pressed="${state.view==='activity'}" aria-label="${vi?'Xem hoạt động':'Activity view'}">${icon('activity',{size:14})}</button></div><span class="sr-only" role="status" aria-live="polite">${projects.length} ${vi?'kết quả':'results'}</span></div><div class="projects-content">${state.view==='activity'?activityHtml:(cards||empty)}</div></section>`;
-}
-'''
-projects.write_text(prefix + render)
-
+# Use the existing generic rerenderView focus/selection authority instead of duplicating it.
 app = Path('ui-v3/app.mjs')
 s = app.read_text()
-start = s.index("router.register({ id: 'projects'")
-end = s.index("router.register({ id: 'skills'", start)
-replacement = r'''router.register({ id: 'projects', pattern: /^\/projects(?:\?.*)?$/, title: 'Projects', load: async () => {
-  const { createProjectsController, renderProjectsView } = await import('./views/projects/project-view.mjs');
-  const controller=createProjectsController({api,language:cachedPreferences.language});
-  await controller.load();
-  let root=null;
-  const view={
-    render:()=>renderProjectsView(controller.snapshot()),
-    mount(node){
-      root=node;
-      const restoreProjectsSearchFocus=(value,start,end)=>requestAnimationFrame(()=>{const search=root?.querySelector('[data-project-search]');if(!search)return;search.focus({preventScroll:true});if(Number.isInteger(start)&&Number.isInteger(end))search.setSelectionRange(start,end);else{const position=String(value??'').length;search.setSelectionRange(position,position);}});
-      const repaint=({focusSearch=false,searchValue=null,selectionStart=null,selectionEnd=null,focusSelector=null}={})=>{if(!root)return;root.innerHTML=view.render();if(focusSearch)restoreProjectsSearchFocus(searchValue,selectionStart,selectionEnd);else if(focusSelector)requestAnimationFrame(()=>root?.querySelector(focusSelector)?.focus({preventScroll:true}));};
-      const input=e=>{if(!e.target.matches('[data-project-search]'))return;const value=e.target.value;const selectionStart=e.target.selectionStart;const selectionEnd=e.target.selectionEnd;controller.setQuery(value);repaint({focusSearch:true,searchValue:value,selectionStart,selectionEnd});};
-      const click=async e=>{
-        const mode=e.target.closest('[data-project-view]');
-        if(mode){const value=mode.dataset.projectView;controller.setView(value);repaint({focusSelector:`[data-project-view="${CSS.escape(value)}"]`});return;}
-        const data=e.target.closest('[data-project-action]')?.dataset;
-        if(!data)return;
-        if(data.projectAction==='add'){window.dispatchEvent(new CustomEvent('nolane:project-create-requested',{detail:{source:'projects-view'}}));return;}
-        if(data.projectAction==='clear-search'){controller.setQuery('');repaint({focusSearch:true,searchValue:''});return;}
-        if(data.projectAction==='retry'){await controller.load();repaint({focusSearch:true,searchValue:controller.snapshot().query??''});}
-      };
-      root.addEventListener('input',input);root.addEventListener('click',click);
-      return()=>{root.removeEventListener('input',input);root.removeEventListener('click',click)};
-    }
-  };
-  return view;
-} });
-
-'''
-app.write_text(s[:start] + replacement + s[end:])
-
-s = app.read_text()
-anchor = "      const click = async (event) => {\n        const selectedSkillRemove=event.target.closest('[data-selected-skill-remove]');"
-replacement = "      const click = async (event) => {\n        const homeAction=event.target.closest('[data-home-action]')?.dataset.homeAction; if(homeAction==='retry'){const value=root.querySelector('#objective')?.value??'';await controller.load();render({textareaValue:value,focus:true});return;}\n        const selectedSkillRemove=event.target.closest('[data-selected-skill-remove]');"
-s = replace_once(s, anchor, replacement, 'Home click authority')
+old_route = "router.register({ id: 'projects', pattern: /^\\/projects(?:\\?.*)?$/, title: 'Projects', load: async () => {\n  const { createProjectsController, renderProjectsView } = await import('./views/projects/project-view.mjs');const controller=createProjectsController({api,language:cachedPreferences.language});await controller.load();let root=null;const view={render:()=>renderProjectsView(controller.snapshot()),mount(node){root=node;const input=e=>{if(e.target.matches('[data-project-search]')){controller.setQuery(e.target.value);rerenderView(root,view);}};const click=e=>{const mode=e.target.closest('[data-project-view]');if(mode){controller.setView(mode.dataset.projectView);rerenderView(root,view);return;}if(e.target.closest('[data-project-action=\"add\"]')){window.dispatchEvent(new CustomEvent('nolane:project-create-requested',{detail:{source:'projects-view'}}));}};root.addEventListener('input',input);root.addEventListener('click',click);return()=>{root.removeEventListener('input',input);root.removeEventListener('click',click)}}};return view;\n} });"
+new_route = "router.register({ id: 'projects', pattern: /^\\/projects(?:\\?.*)?$/, title: 'Projects', load: async () => {\n  const { createProjectsController, renderProjectsView } = await import('./views/projects/project-view.mjs');const controller=createProjectsController({api,language:cachedPreferences.language});await controller.load();let root=null;const focusSearch=()=>requestAnimationFrame(()=>root?.querySelector('[data-project-search]')?.focus({preventScroll:true}));const view={render:()=>renderProjectsView(controller.snapshot()),mount(node){root=node;const input=e=>{if(e.target.matches('[data-project-search]')){controller.setQuery(e.target.value);rerenderView(root,view,{preserve:e.target});}};const click=async e=>{const mode=e.target.closest('[data-project-view]');if(mode){controller.setView(mode.dataset.projectView);rerenderView(root,view,{preserve:mode});return;}const action=e.target.closest('[data-project-action]')?.dataset.projectAction;if(action==='add'){window.dispatchEvent(new CustomEvent('nolane:project-create-requested',{detail:{source:'projects-view'}}));return;}if(action==='clear-search'){controller.setQuery('');rerenderView(root,view);focusSearch();return;}if(action==='retry'){await controller.load();rerenderView(root,view);focusSearch();}};root.addEventListener('input',input);root.addEventListener('click',click);return()=>{root.removeEventListener('input',input);root.removeEventListener('click',click)}}};return view;\n} });"
+s = replace_once(s, old_route, new_route, 'Projects route wiring')
+home_click = "      const click = async (event) => {\n        const selectedSkillRemove=event.target.closest('[data-selected-skill-remove]');"
+home_click_new = "      const click = async (event) => {\n        const homeAction=event.target.closest('[data-home-action]')?.dataset.homeAction; if(homeAction==='retry'){const value=root.querySelector('#objective')?.value??'';await controller.load();render({textareaValue:value,focus:true});return;}\n        const selectedSkillRemove=event.target.closest('[data-selected-skill-remove]');"
+s = replace_once(s, home_click, home_click_new, 'Home retry wiring')
 app.write_text(s)
 
+# Bounded styles: recovery actions stay instrument-like rather than becoming new cards.
 home_css = Path('ui-v3/styles/pages/home.css')
-home_css.write_text(home_css.read_text() + r'''
-.home-readiness{display:grid;gap:0;width:min(960px,100%);margin-top:12px;border-block:1px solid var(--instrument-rule)}
-.home-readiness__item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;min-height:var(--density-row-height);padding:9px 2px;color:var(--text-secondary)}
-.home-readiness__item+.home-readiness__item{border-top:1px solid var(--border-faint)}
-.home-readiness__item>span{display:grid;place-items:center;width:30px;height:30px;color:var(--instrument-trace)}
-.home-readiness__item>div{display:grid;min-width:0;gap:2px}.home-readiness__item strong{color:var(--text-primary);font-size:11px}.home-readiness__item small{color:var(--text-secondary);font-size:10px;line-height:1.45}
-.home-readiness__item>a{display:flex;align-items:center;gap:4px;color:var(--text-secondary);font-size:10px;text-decoration:none}.home-readiness__item>a:hover,.home-readiness__item>a:focus-visible{color:var(--text-primary)}
-.home-error button{margin-left:auto;padding:5px 9px;border:1px solid color-mix(in srgb,var(--nolane-danger) 35%,var(--border-default));border-radius:8px;background:transparent;color:var(--text-primary)}
-@media(max-width:680px){.home-readiness__item{grid-template-columns:auto minmax(0,1fr)}.home-readiness__item>a{grid-column:2;justify-self:start}}
-''')
+home_css.write_text(home_css.read_text() + '''\n.home-readiness{display:grid;gap:0;width:min(960px,100%);margin-top:12px;border-block:1px solid var(--instrument-rule)}\n.home-readiness__item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;min-height:var(--density-row-height);padding:9px 2px;color:var(--text-secondary)}\n.home-readiness__item+.home-readiness__item{border-top:1px solid var(--border-faint)}\n.home-readiness__item>span{display:grid;place-items:center;width:30px;height:30px;color:var(--instrument-trace)}\n.home-readiness__item>div{display:grid;min-width:0;gap:2px}.home-readiness__item strong{color:var(--text-primary);font-size:11px}.home-readiness__item small{color:var(--text-secondary);font-size:10px;line-height:1.45}\n.home-readiness__item>a{display:flex;align-items:center;gap:4px;color:var(--text-secondary);font-size:10px;text-decoration:none}.home-readiness__item>a:hover,.home-readiness__item>a:focus-visible{color:var(--text-primary)}\n.home-error button{margin-left:auto;padding:5px 9px;border:1px solid color-mix(in srgb,var(--nolane-danger) 35%,var(--border-default));border-radius:8px;background:transparent;color:var(--text-primary)}\n@media(max-width:680px){.home-readiness__item{grid-template-columns:auto minmax(0,1fr)}.home-readiness__item>a{grid-column:2;justify-self:start}}\n''')
 
 projects_css = Path('ui-v3/styles/pages/projects.css')
-projects_css.write_text(projects_css.read_text() + r'''
-.projects-error{gap:10px}.projects-error button,.page-empty--search button,.projects-content .page-empty button{justify-self:center;padding:6px 10px;border:1px solid var(--border-subtle);border-radius:8px;background:var(--surface-raised);color:var(--text-secondary)}
-.projects-error button:hover,.page-empty--search button:hover,.projects-content .page-empty button:hover{border-color:var(--border-default);color:var(--text-primary)}
-.page-empty--search>span{color:var(--text-secondary)}
-''')
+projects_css.write_text(projects_css.read_text() + '''\n.projects-error{gap:10px}.projects-error button,.page-empty--search button,.projects-page>.page-empty button{justify-self:center;padding:6px 10px;border:1px solid var(--border-subtle);border-radius:8px;background:var(--surface-raised);color:var(--text-secondary)}\n.projects-error button:hover,.page-empty--search button:hover,.projects-page>.page-empty button:hover{border-color:var(--border-default);color:var(--text-primary)}\n.page-empty--search>span{color:var(--text-secondary)}\n''')
