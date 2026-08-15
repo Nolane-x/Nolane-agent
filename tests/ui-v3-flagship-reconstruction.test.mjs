@@ -126,3 +126,28 @@ test('Control Plane taxonomy text stays readable after dashboard chrome is flatt
   const css = await readFile(flagshipUrl, 'utf8');
   assert.match(css, /\.cp-workspace \.cp-eyebrow\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
 });
+
+test('Control Plane cycle-2 composition reads as a system map rather than a nested dashboard', async () => {
+  const css = await readFile(flagshipUrl, 'utf8');
+  assert.match(css, /\.control-plane-shell\s*\{[^}]*border-radius:\s*8px[^}]*box-shadow:\s*none/s);
+  assert.match(css, /\.control-plane-shell > main\s*\{[^}]*background:\s*var\(--surface-canvas\)/s);
+  assert.match(css, /\.cp-workspace-hero\s*\{[^}]*border-radius:\s*0[^}]*background:\s*transparent[^}]*box-shadow:\s*none/s);
+  assert.match(css, /\.cp-kpi-grid\s*\{[^}]*gap:\s*1px[^}]*background:\s*var\(--instrument-rule\)/s);
+  assert.match(css, /\.cp-kpi-grid article\s*\{[^}]*border:\s*0[^}]*border-radius:\s*0/s);
+  assert.match(css, /\.cp-adapter-grid\s*\{[^}]*gap:\s*1px[^}]*background:\s*var\(--instrument-rule\)/s);
+  assert.match(css, /\.cp-adapter-card\s*\{[^}]*border:\s*0[^}]*border-radius:\s*0[^}]*box-shadow:\s*none/s);
+});
+
+test('Control Plane flattened records keep operational microcopy readable', async () => {
+  const css = await readFile(flagshipUrl, 'utf8');
+  assert.match(css, /\.cp-kpi-grid span,[\s\S]*\.cp-adapter-rows small\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
+});
+
+test('Onboarding cycle-2 material uses one setup plate and trace-based choices', async () => {
+  const css = await readFile(flagshipUrl, 'utf8');
+  assert.match(css, /\.onboarding-shell\s*\{[^}]*background:\s*var\(--instrument-margin\)/s);
+  assert.match(css, /\.onboarding-card\s*\{[^}]*border-radius:\s*10px[^}]*background:\s*var\(--surface-canvas\)[^}]*box-shadow:\s*var\(--shadow-sm\)/s);
+  assert.match(css, /\.onboarding-choice,\s*\n\.onboarding-toggle\s*\{[^}]*border-radius:\s*6px[^}]*background:\s*transparent/s);
+  assert.match(css, /\.onboarding-choice\[aria-pressed="true"\]\s*\{[^}]*box-shadow:\s*inset 2px 0 var\(--instrument-trace\)/s);
+  assert.match(css, /\.onboarding-choice__icon\s*\{[^}]*border:\s*1px solid var\(--instrument-rule\)[^}]*border-radius:\s*50%[^}]*background:\s*transparent/s);
+});
