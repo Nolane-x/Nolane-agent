@@ -1,0 +1,97 @@
+name: Product Perfection Task 9 Content Residue Closure
+
+on:
+  push:
+    branches: [codex/product-perfection-system-v3]
+    paths:
+      - '.github/workflows/product-perfection-task9-content-residue.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  close-task9:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm }
+      - run: npm ci --ignore-scripts
+      - name: Prove Task 9 content contract was RED before correction
+        shell: bash
+        run: |
+          set -euo pipefail
+          candidate="$GITHUB_SHA"
+          red_revision="$(git rev-parse "$GITHUB_SHA~2")"
+          git checkout --detach "$red_revision"
+          if node --test tests/ui-v3-content-contract.test.mjs tests/ui-v3-platform-residue.test.mjs; then
+            echo 'Expected Task 9 content contract to be RED before attention-card correction' >&2
+            exit 1
+          fi
+          git checkout --detach "$candidate"
+      - name: Verify Task 9 GREEN and canonical distribution
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check ui-v3/views/mission/attention-card.mjs
+          node --test \
+            tests/ui-v3-content-contract.test.mjs \
+            tests/ui-v3-platform-residue.test.mjs \
+            tests/ui-v3-attention-cards.test.mjs \
+            tests/ui-v3-accessibility.test.mjs \
+            tests/ui-v3-motion-policy.test.mjs \
+            tests/ui-v3-perfection-authority.test.mjs
+          npm run validate:ui-tokens
+          npm run audit:ui-quality
+          npm run build:ui-v3
+          git diff --check
+      - name: Create exact Task 9 implementation and closure commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f .github/workflows/product-perfection-task9-content-residue.yml
+          cat > docs/product-perfection/TASK9-CONTENT-ACCESSIBILITY-RESIDUE-CLOSURE.md <<EOF
+          # Task 9 — Content / Accessibility / Platform Residue Source Closure
+
+          **Verified source revision entering the gate:** \`${GITHUB_SHA}\`  
+          **Workflow run:** \`${GITHUB_RUN_ID}\`
+
+          Verified:
+
+          - English/Vietnamese declared dictionary keys remain in parity;
+          - attention-card decisions localize EN/VI option chrome without silent English fallback;
+          - attention-card action/reason/impact/scope and technical values are escaped before rendering;
+          - irreversible decisions expose explicit scope and reversibility truth and retain cancel/deny fail-closed behavior;
+          - secret-like technical keys are not projected;
+          - platform residue authority explicitly owns selection, caret, scrollbar and textarea resize behavior without globally replacing native controls;
+          - reduced-motion and forced-colors authorities remain present;
+          - focused accessibility/motion/perfection suites, token validation and static UI quality audit pass;
+          - canonical \`ui-dist\` was regenerated in this run.
+
+          Runtime keyboard/reduced-motion/forced-colors evidence is intentionally delegated to Task 10's canonical risk-driven visual matrix rather than claimed from source tests.
+          EOF
+          if ! grep -q 'Slice PFX-09 — Content safety and platform residue closure' docs/product-perfection/NUI-ROUTE-LEDGER.md; then
+            cat >> docs/product-perfection/NUI-ROUTE-LEDGER.md <<'EOF'
+
+          ---
+
+          ## Slice PFX-09 — Content safety and platform residue closure
+
+          **Observed triggers:** decision/attention cards exposed English-only option chrome, rendered external decision text without escaping, and did not explicitly label scope/reversibility even though those fields governed destructive-action safety. Shared platform residue/motion/high-contrast authorities already existed and therefore required preservation tests rather than duplicate overrides.
+
+          **Activated NUI decision classes:** destructive-action clarity; localization/long-copy integrity; semantic safety copy; accessibility/focus/motion/high-contrast authority; platform-residue audit; evidence-gated completion.
+
+          **Omitted for this slice:** broad native-control restyling and new animation systems. Existing native/OS behavior is preserved where the product deliberately delegates it.
+
+          **Falsification:** the slice is not closed if Vietnamese attention states silently fall back to English, external decision content can become markup, irreversible actions hide scope/reversibility, or shared selection/caret/scrollbar/reduced-motion/forced-colors authority disappears.
+
+          **Evidence boundary:** source/static closure here; canonical runtime keyboard/reduced-motion/forced-colors observation belongs to Task 10. Independent assistive-technology certification remains external.
+          EOF
+          fi
+          git add ui-dist docs/product-perfection/TASK9-CONTENT-ACCESSIBILITY-RESIDUE-CLOSURE.md docs/product-perfection/NUI-ROUTE-LEDGER.md
+          git config user.name nolane-evidence-bot; git config user.email actions@users.noreply.github.com
+          git commit -m 'fix(ui): close content accessibility and platform residue gaps'
+          git push origin HEAD:codex/product-perfection-system-v3
