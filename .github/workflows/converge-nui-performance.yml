@@ -1,0 +1,216 @@
+name: Converge NUI provenance and UI performance
+
+on:
+  push:
+    branches:
+      - codex/nui-performance-convergence
+    paths:
+      - '.github/workflows/converge-nui-performance.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nui-performance-convergence
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - name: Checkout convergence workspace
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Merge exact verified performance head without committing
+        shell: bash
+        run: |
+          set -euo pipefail
+          perf_sha='5169bf18be62b6a78aa4ba2ad9d6a3c37270c7cd'
+          git fetch origin "$perf_sha"
+          git config user.name 'nolane-integration'
+          git config user.email 'nolane-integration@users.noreply.github.com'
+          set +e
+          git merge --no-commit --no-ff "$perf_sha"
+          merge_status=$?
+          set -e
+          if [ "$merge_status" -ne 0 ]; then
+            echo 'Merge produced conflicts; applying bounded semantic resolutions.'
+          fi
+          printf '%s\n' 'Initial unresolved paths:'
+          git diff --name-only --diff-filter=U || true
+
+      - name: Resolve generated outputs from NUI side temporarily
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf ui-dist
+          git checkout HEAD -- ui-dist
+          git add -A ui-dist
+          for path in \
+            requirements/nolane-native-core-conformance.json \
+            requirements/runtime-purity-summary.json \
+            requirements/nolane-agent-v5-requirements.json \
+            requirements/master-acceptance-ledger.json \
+            docs/MASTER-ACCEPTANCE-LEDGER.md \
+            docs/ui-v3/ui-v3-source-release.json; do
+            if git cat-file -e "HEAD:$path" 2>/dev/null; then
+              git show "HEAD:$path" > "$path"
+              git add "$path"
+            fi
+          done
+
+      - name: Semantically combine NUI Proofline and progressive Settings capturer
+        shell: bash
+        run: |
+          set -euo pipefail
+          perf_sha='5169bf18be62b6a78aa4ba2ad9d6a3c37270c7cd'
+          git show HEAD:scripts/capture-ui-runtime-visual.mjs > scripts/capture-ui-runtime-visual.mjs
+          git show "$perf_sha:scripts/capture-ui-runtime-visual.mjs" > "$RUNNER_TEMP/perf-capturer.mjs"
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = 'scripts/capture-ui-runtime-visual.mjs';
+          let nui = fs.readFileSync(path, 'utf8');
+          const perf = fs.readFileSync(process.env.RUNNER_TEMP + '/perf-capturer.mjs', 'utf8');
+          const section = (source, start, end) => {
+            const a = source.indexOf(start);
+            const b = source.indexOf(end, a + start.length);
+            if (a < 0 || b < 0 || b <= a) throw new Error(`Unable to extract ${start} .. ${end}`);
+            return source.slice(a, b);
+          };
+          const replaceSection = (source, start, end, replacement) => {
+            const a = source.indexOf(start);
+            const b = source.indexOf(end, a + start.length);
+            if (a < 0 || b < 0 || b <= a) throw new Error(`Unable to replace ${start} .. ${end}`);
+            return source.slice(0, a) + replacement + source.slice(b);
+          };
+          const progressiveScroll = section(perf, 'async function chooseSettingsCategory', 'async function assertSettingsLanguageRoundtrip');
+          nui = replaceSection(nui, 'async function assertSettingsScrollPreserved', 'async function assertSettingsLanguageRoundtrip', progressiveScroll);
+          const progressivePicker = section(perf, 'async function assertSettingsOptionPicker', 'async function assertSettingsModelCatalog');
+          nui = replaceSection(nui, 'async function assertSettingsOptionPicker', 'async function assertSettingsModelCatalog', progressivePicker);
+          if (!nui.includes("id: 'mission-proofline'")) throw new Error('NUI Proofline desktop state was lost');
+          if (!nui.includes("id: 'mission-proofline-compact'")) throw new Error('NUI Proofline compact state was lost');
+          if (!nui.includes('async function prepareProoflineMission')) throw new Error('NUI Proofline fixture was lost');
+          if (!nui.includes('async function chooseSettingsCategory')) throw new Error('Progressive Settings helper was not integrated');
+          fs.writeFileSync(path, nui);
+          NODE
+          git add scripts/capture-ui-runtime-visual.mjs
+
+      - name: Semantically combine Proofline and responsive visual workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show HEAD:.github/workflows/ui-runtime-visual.yml > .github/workflows/ui-runtime-visual.yml
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = '.github/workflows/ui-runtime-visual.yml';
+          let source = fs.readFileSync(path, 'utf8');
+          const once = (before, after) => {
+            const count = source.split(before).length - 1;
+            if (count !== 1) throw new Error(`Expected one workflow match, found ${count}: ${before}`);
+            source = source.replace(before, after);
+          };
+          once(
+            "      - 'scripts/capture-ui-runtime-visual.mjs'\n",
+            "      - 'scripts/capture-ui-runtime-visual.mjs'\n      - 'scripts/capture-ui-responsive-evidence.mjs'\n"
+          );
+          once(
+            "      - 'tests/ui-runtime-visual-workflow.test.mjs'\n      - 'tests/nui-proofline-mission-cockpit.test.mjs'\n",
+            "      - 'tests/ui-runtime-visual-workflow.test.mjs'\n      - 'tests/ui-responsive-evidence-workflow.test.mjs'\n      - 'tests/ui-v3-skills-contrast.test.mjs'\n      - 'tests/ui-v3-settings-contrast.test.mjs'\n      - 'tests/ui-v3-control-plane-scroll-region.test.mjs'\n      - 'tests/nui-proofline-mission-cockpit.test.mjs'\n"
+          );
+          once(
+            "          NOLANE_UI_VISUAL_STATES=home,home-experience-menu,home-compact,projects,skills,skills-catalog-picker,skills-forge-preview,settings,settings-option-picker,settings-language-roundtrip,settings-model-catalog,workroom,control-plane,browser node scripts/capture-ui-runtime-visual.mjs\n",
+            "          NOLANE_UI_VISUAL_STATES=home,home-experience-menu,home-compact,projects,skills,skills-catalog-picker,skills-forge-preview,settings,settings-option-picker,settings-language-roundtrip,settings-model-catalog,workroom,control-plane,browser node scripts/capture-ui-runtime-visual.mjs\n          node scripts/capture-ui-responsive-evidence.mjs\n"
+          );
+          once(
+            "            if ($LASTEXITCODE -ne 0) { throw \"Windows workspace capture failed with exit code $LASTEXITCODE\" }\n            $computer = Get-CimInstance Win32_ComputerSystem\n",
+            "            if ($LASTEXITCODE -ne 0) { throw \"Windows workspace capture failed with exit code $LASTEXITCODE\" }\n            node scripts/capture-ui-responsive-evidence.mjs\n            if ($LASTEXITCODE -ne 0) { throw \"Windows responsive UI evidence capture failed with exit code $LASTEXITCODE\" }\n            $computer = Get-CimInstance Win32_ComputerSystem\n"
+          );
+          if (!source.includes('mission-proofline,mission-proofline-compact')) throw new Error('Proofline capture phases were lost');
+          if (!source.includes('capture-ui-responsive-evidence.mjs')) throw new Error('Responsive evidence capture was not integrated');
+          fs.writeFileSync(path, source);
+          NODE
+          git add .github/workflows/ui-runtime-visual.yml
+
+      - name: Keep NUI visual contract test and resolve known generated conflicts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show HEAD:tests/ui-runtime-visual-workflow.test.mjs > tests/ui-runtime-visual-workflow.test.mjs
+          git add tests/ui-runtime-visual-workflow.test.mjs
+          unresolved="$(git diff --name-only --diff-filter=U)"
+          if [ -n "$unresolved" ]; then
+            printf '%s\n' 'Unrecognized unresolved merge conflicts:' "$unresolved" >&2
+            exit 1
+          fi
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Prove combined cross-stack contracts before regeneration
+        run: >-
+          node --test
+          tests/provider-dogfood-candidate-runner.test.mjs
+          tests/provider-dogfood-self-hosted-workflow.test.mjs
+          tests/nui-host-sidecar.test.mjs
+          tests/nui-context-builder.test.mjs
+          tests/nui-proofline-mission-cockpit.test.mjs
+          tests/ui-runtime-visual-workflow.test.mjs
+          tests/ui-settings-progressive-runtime-contract.test.mjs
+          tests/ui-v3-settings-controller.test.mjs
+          tests/ui-v3-skills-progressive-render.test.mjs
+          tests/ui-performance-runtime-evidence.test.mjs
+          tests/ui-responsive-evidence-workflow.test.mjs
+          tests/ui-responsive-medium-pressure.test.mjs
+          tests/ui-v3-settings-contrast.test.mjs
+          tests/ui-v3-skills-contrast.test.mjs
+          tests/ui-v3-control-plane-scroll-region.test.mjs
+          tests/external-gate-certification.test.mjs
+          tests/external-gate-certification-builder.test.mjs
+
+      - name: Regenerate deterministic UI distribution
+        run: npm run build:ui-v3
+
+      - name: Regenerate native-core conformance
+        run: node scripts/generate-native-core-conformance.mjs
+
+      - name: Regenerate Nolane requirement evidence
+        run: node scripts/generate-nolane-program.mjs
+
+      - name: Regenerate master acceptance ledger last
+        run: node scripts/generate-master-acceptance-ledger.mjs
+
+      - name: Run complete source validation
+        run: npm run validate
+
+      - name: Verify the merged UI release boundary
+        run: npm run verify:ui-v3-release
+
+      - name: Recheck evidence freshness after release verification
+        run: npm run audit:evidence-freshness
+
+      - name: Remove integration helper and create real merge commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/converge-nui-performance.yml
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No convergence changes were staged.' >&2
+            exit 1
+          fi
+          git commit -m 'merge: converge NUI provenance and UI performance evidence'
+          parents="$(git show -s --format='%P' HEAD)"
+          if [ "$(wc -w <<<"$parents" | tr -d ' ')" -lt 2 ]; then
+            echo "Expected a real two-parent merge commit, got parents: $parents" >&2
+            exit 1
+          fi
+          git push origin 'HEAD:codex/nui-performance-convergence'
