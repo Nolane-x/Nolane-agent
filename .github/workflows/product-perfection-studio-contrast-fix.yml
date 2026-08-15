@@ -1,0 +1,81 @@
+name: Product Perfection Studio Compact Contrast Repair
+
+on:
+  push:
+    branches:
+      - codex/product-perfection-system-v3
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Write exact contrast regression and prove RED
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > tests/ui-v3-workroom-welcome-contrast.test.mjs <<'EOF'
+          import test from 'node:test';
+          import assert from 'node:assert/strict';
+          import { readFile } from 'node:fs/promises';
+
+          const css = await readFile(new URL('../ui-v3/styles/pages/workroom.css', import.meta.url), 'utf8');
+
+          test('Studio welcome shortcut labels use readable secondary semantics on open canvas', () => {
+            assert.match(css, /\.editor-welcome>div>span\{color:var\(--text-secondary\)\}/);
+          });
+          EOF
+          if node --test tests/ui-v3-workroom-welcome-contrast.test.mjs; then
+            echo 'Expected RED before semantic contrast correction' >&2
+            exit 1
+          fi
+      - name: Apply narrow semantic text-role correction
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('ui-v3/styles/pages/workroom.css')
+          s = p.read_text()
+          anchor = '.editor-welcome>div{display:grid;grid-template-columns:auto auto auto auto;gap:7px;align-items:center;margin-top:10px;font-size:9px}'
+          replacement = anchor + '.editor-welcome>div>span{color:var(--text-secondary)}'
+          if s.count(anchor) != 1:
+              raise SystemExit('unexpected editor welcome shortcut rule shape')
+          p.write_text(s.replace(anchor, replacement))
+          PY
+      - name: Prove GREEN and canonical build
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test tests/ui-v3-workroom-welcome-contrast.test.mjs tests/ui-v3-workroom.test.mjs tests/ui-v3-accessibility.test.mjs tests/ui-v3-perfection-authority.test.mjs
+          npm run validate:ui-tokens
+          npm run build:ui-v3
+          git diff --check
+      - name: Scope guard and commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t changed < <(git status --porcelain=v1 | sed -E 's/^.. //')
+          for file in "${changed[@]}"; do
+            case "$file" in
+              ui-v3/styles/pages/workroom.css|tests/ui-v3-workroom-welcome-contrast.test.mjs|ui-dist/*) ;;
+              *) echo "unexpected Studio contrast change: $file" >&2; exit 1 ;;
+            esac
+          done
+          git add ui-v3/styles/pages/workroom.css tests/ui-v3-workroom-welcome-contrast.test.mjs ui-dist
+          git config user.name 'nolane-evidence-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'fix(ui): restore Studio shortcut label contrast'
+          git push origin HEAD:codex/product-perfection-system-v3
