@@ -1,0 +1,72 @@
+name: UI Skills progressive build
+
+on:
+  push:
+    branches:
+      - codex/ui-performance-runtime-evidence
+    paths:
+      - '.github/workflows/ui-skills-progressive-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply-test-build:
+    if: github.ref == 'refs/heads/codex/ui-performance-runtime-evidence'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Wire progressive expansion and semantic styling
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+
+          const appFile = 'ui-v3/app.mjs';
+          let app = await readFile(appFile, 'utf8');
+          const appNeedle = "        const selected = event.target.closest('[data-skill-library-select]');";
+          const appReplacement = `        const showMore = event.target.closest('[data-skills-show-more]');
+          if (showMore) {
+            controller.showMore();
+            repaint();
+            root?.querySelector('[data-skills-show-more]')?.focus({ preventScroll: true });
+            return;
+          }
+${appNeedle}`;
+          const appCount = app.split(appNeedle).length - 1;
+          if (appCount !== 1) throw new Error(`Expected exactly one Skills selection anchor, got ${appCount}`);
+          app = app.replace(appNeedle, appReplacement);
+          await writeFile(appFile, app);
+
+          const cssFile = 'ui-v3/styles/pages/skills.css';
+          let css = await readFile(cssFile, 'utf8');
+          const cssNeedle = '.skills-library__loading,.skills-library__error,.skills-library__empty{min-height:240px}';
+          const cssReplacement = `.skills-library__show-more{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:40px;margin-top:6px;padding:8px 11px;border:1px solid var(--border-subtle);border-radius:9px;background:var(--surface-raised);color:var(--text-primary);font-size:12px;font-weight:700;text-align:left}.skills-library__show-more:hover{background:var(--surface-hover)}.skills-library__show-more:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}.skills-library__show-more span{color:var(--text-secondary);font:11px var(--font-code)}${cssNeedle}`;
+          const cssCount = css.split(cssNeedle).length - 1;
+          if (cssCount !== 1) throw new Error(`Expected exactly one Skills loading CSS anchor, got ${cssCount}`);
+          css = css.replace(cssNeedle, cssReplacement);
+          await writeFile(cssFile, css);
+          NODE
+      - name: Prove Skills behavior and accessibility regressions
+        run: node --test tests/ui-v3-skills-progressive-render.test.mjs tests/ui-v3-skills-library.test.mjs tests/ui-v3-skills-contrast.test.mjs
+      - name: Build deterministic UI distribution
+        run: npm run build:ui-v3
+      - name: Commit source and generated distribution atomically
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add ui-v3/app.mjs ui-v3/styles/pages/skills.css ui-dist
+          git diff --cached --exit-code && { echo 'Expected progressive Skills changes were not produced'; exit 1; }
+          git commit -m 'perf(ui): progressively render Skills catalog'
+          git push origin HEAD:codex/ui-performance-runtime-evidence
