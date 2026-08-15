@@ -10,7 +10,7 @@ test('UI v3 static quality audit certifies keyboard, focus, live region, reduced
   assert.deepEqual(report.offlineFindings, []);
   assert.equal(report.breakpoints.includes(1440), true);
   assert.equal(report.breakpoints.includes(1180), true);
-  assert.equal(report.breakpoints.includes(900), true);
+  assert.equal(report.breakpoints.includes(980), true);
   assert.equal(report.breakpoints.includes(640), true);
   assert.equal(report.staticCertification, true);
   assert.equal(report.runtimeCertification, false);
