@@ -1,2 +1,0 @@
-import { sha256 } from '../../core/receipt.e78a9e63d053.mjs';
-export function createRecoveryCard(input={}){if(!input.id||!input.strategy)throw new Error('recovery id and strategy are required');return Object.freeze({execute(){if(input.destructive&&input.approved!==true)throw new Error('Destructive recovery requires approval');const base={schema:'nolane.ui.recovery-action.v1',id:String(input.id),strategy:String(input.strategy),destructive:Boolean(input.destructive)};return Object.freeze({...base,receiptSha256:sha256(JSON.stringify(base))})}})}

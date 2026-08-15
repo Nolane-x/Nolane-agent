@@ -1,5 +1,5 @@
-import { EXPERIENCE_LEVELS, experienceMeta, normalizeExperience } from '../../core/experience-policy.mjs';
-import { icon } from '../../core/icon.mjs';
+import { EXPERIENCE_LEVELS, experienceMeta, normalizeExperience } from '../../core/experience-policy.1d10ac3569b8.mjs';
+import { icon } from '../../core/icon.1c3c00d66b3a.mjs';
 
 const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 
