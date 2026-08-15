@@ -32,14 +32,50 @@ jobs:
           fi
       - name: Apply bounded migration
         run: python scripts/apply-product-perfection-adoption.py
-      - name: Prove GREEN and build canonical distribution
+      - name: Diagnose GREEN contracts
+        id: diagnose
         shell: bash
         run: |
-          set -euo pipefail
-          node --test tests/ui-v3-adoption-perfection.test.mjs tests/ui-v3-home.test.mjs tests/ui-v3-project-view.test.mjs tests/ui-v3-project-picker.test.mjs tests/ui-v3-project-switcher.test.mjs tests/onboarding-ui.test.mjs tests/ui-v3-workroom-welcome-contrast.test.mjs tests/ui-v3-shell.test.mjs
-          npm run validate:ui-tokens
-          npm run build:ui-v3
-          git diff --check
+          set +e
+          LOG="$RUNNER_TEMP/green-diagnostics.log"
+          : > "$LOG"
+          status=0
+          for test_file in \
+            tests/ui-v3-adoption-perfection.test.mjs \
+            tests/ui-v3-home.test.mjs \
+            tests/ui-v3-project-view.test.mjs \
+            tests/ui-v3-project-picker.test.mjs \
+            tests/ui-v3-project-switcher.test.mjs \
+            tests/onboarding-ui.test.mjs \
+            tests/ui-v3-workroom-welcome-contrast.test.mjs \
+            tests/ui-v3-shell.test.mjs; do
+            echo "===== $test_file =====" | tee -a "$LOG"
+            node --test "$test_file" 2>&1 | tee -a "$LOG"
+            code=${PIPESTATUS[0]}
+            if [ "$code" -ne 0 ]; then status="$code"; fi
+          done
+          echo '===== validate:ui-tokens =====' | tee -a "$LOG"
+          npm run validate:ui-tokens 2>&1 | tee -a "$LOG"
+          code=${PIPESTATUS[0]}; if [ "$code" -ne 0 ]; then status="$code"; fi
+          echo '===== build:ui-v3 =====' | tee -a "$LOG"
+          npm run build:ui-v3 2>&1 | tee -a "$LOG"
+          code=${PIPESTATUS[0]}; if [ "$code" -ne 0 ]; then status="$code"; fi
+          echo '===== diff-check =====' | tee -a "$LOG"
+          git diff --check 2>&1 | tee -a "$LOG"
+          code=${PIPESTATUS[0]}; if [ "$code" -ne 0 ]; then status="$code"; fi
+          echo "green_status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Upload GREEN diagnostics
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: adoption-green-diagnostics
+          path: ${{ runner.temp }}/green-diagnostics.log
+          if-no-files-found: error
+          retention-days: 7
+      - name: Enforce GREEN result
+        if: ${{ steps.diagnose.outputs.green_status != '0' }}
+        run: exit 1
       - name: Scope guard and commit
         shell: bash
         run: |
