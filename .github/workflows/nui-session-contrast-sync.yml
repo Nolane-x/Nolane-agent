@@ -1,0 +1,69 @@
+name: NUI Session Contrast Canonical Sync
+
+on:
+  push:
+    branches: [codex/product-perfection-system-v3]
+    paths: ['.github/workflows/nui-session-contrast-sync.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Prove GREEN regression contract
+        run: node --test tests/ui-v3-session-context-contrast.test.mjs tests/ui-v3-session-sidebar.test.mjs
+      - name: Verify UI source quality
+        run: |
+          npm run validate:ui-tokens
+          npm run audit:ui-quality
+      - name: Regenerate deterministic UI distribution
+        run: npm run build:ui-v3
+      - name: Regenerate native conformance and program evidence
+        run: |
+          node scripts/generate-native-core-conformance.mjs
+          node scripts/generate-nolane-program.mjs
+          node scripts/generate-master-acceptance-ledger.mjs
+      - name: Validate full graph and release truth
+        run: |
+          npm run validate
+          npm run verify:ui-v3-release
+          npm run generate:product-perfection-catalog
+          npm run generate:product-perfection-matrix
+          npm run verify:product-perfection
+      - name: Restrict generated mutations
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t changed < <(git status --porcelain=v1 | sed -E 's/^.. //')
+          for path in "${changed[@]}"; do
+            case "$path" in
+              ui-dist/*|requirements/nolane-native-core-conformance.json|requirements/runtime-purity-summary.json|requirements/nolane-agent-v5-requirements.json|requirements/master-acceptance-ledger.json|docs/MASTER-ACCEPTANCE-LEDGER.md|docs/ui-v3/ui-v3-source-release.json|requirements/product-perfection-catalog.json|requirements/product-perfection-matrix.json) ;;
+              *) echo "Unexpected contrast sync mutation: $path" >&2; exit 1 ;;
+            esac
+          done
+      - name: Commit canonical outputs and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f .github/workflows/nui-session-contrast-sync.yml
+          git add ui-dist requirements/nolane-native-core-conformance.json requirements/runtime-purity-summary.json requirements/nolane-agent-v5-requirements.json requirements/master-acceptance-ledger.json docs/MASTER-ACCEPTANCE-LEDGER.md docs/ui-v3/ui-v3-source-release.json requirements/product-perfection-catalog.json requirements/product-perfection-matrix.json
+          git config user.name nolane-ui-bot
+          git config user.email actions@users.noreply.github.com
+          git commit -m 'chore(evidence): sync session contrast artifacts'
+          npm run audit:evidence-freshness
+          npm run verify:ui-v3-release
+          npm run verify:product-perfection
+          test -z "$(git status --porcelain)"
+          git push origin HEAD:codex/product-perfection-system-v3
