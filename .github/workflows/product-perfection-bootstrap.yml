@@ -1,0 +1,47 @@
+name: Product Perfection Bootstrap
+
+on:
+  push:
+    branches:
+      - codex/product-perfection-system-v3
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-and-generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@v6
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Verify product-perfection core
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test tests/product-perfection-catalog.test.mjs tests/product-perfection-matrix.test.mjs
+          npm run generate:product-perfection-catalog
+          npm run generate:product-perfection-matrix
+          npm run verify:product-perfection
+          node --check src/product-perfection/catalog.mjs
+          node --check src/product-perfection/matrix-store.mjs
+          node --check scripts/generate-product-perfection-catalog.mjs
+          node --check scripts/generate-product-perfection-matrix.mjs
+          node --check scripts/verify-product-perfection-matrix.mjs
+
+      - name: Upload canonical generated matrix
+        uses: actions/upload-artifact@v6
+        with:
+          name: product-perfection-bootstrap
+          path: |
+            requirements/product-perfection-catalog.json
+            requirements/product-perfection-matrix.json
+          if-no-files-found: error
+          retention-days: 14
