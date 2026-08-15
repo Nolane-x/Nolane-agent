@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 
 const TARGETS = Object.freeze({
-  css: Object.freeze({ path: 'ui-v3/styles/pages/settings.css', blob: '7f956c51e71bec163fb82a3becc4b73d40f1f301' }),
+  responsive: Object.freeze({ path: 'ui-v3/styles/responsive.css', blob: '75c30414af70eabe7fa7f2806d294c93c54b1b9f' }),
   capturer: Object.freeze({ path: 'scripts/capture-ui-runtime-visual.mjs', blob: 'e2f57ea4ca36220ab703b877ecb096d5d047d449' }),
 });
 const hash = (file) => execFileSync('git', ['hash-object', file], { encoding: 'utf8' }).trim();
@@ -12,14 +12,14 @@ for (const target of Object.values(TARGETS)) {
   if (actual !== target.blob) throw new Error(`Task 10 Cycle A refuses drifted ${target.path}: ${actual}`);
 }
 
-let css = readFileSync(TARGETS.css.path, 'utf8');
-if (css.includes('/* Task 10 Cycle A: compact Settings recomposition */')) throw new Error('Task 10 Cycle A CSS already applied');
-css += `
+let responsive = readFileSync(TARGETS.responsive.path, 'utf8');
+if (responsive.includes('/* Task 10 Cycle A: 640 Settings authority */')) throw new Error('Task 10 Cycle A responsive repair already applied');
+responsive += `
 
-/* Task 10 Cycle A: compact Settings recomposition */
-@media(max-width:720px){
-  .settings-center{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
-  .settings-nav{padding:8px 10px 6px;border-right:0;border-bottom:1px solid var(--border-default);overflow:hidden}
+/* Task 10 Cycle A: 640 Settings authority */
+@media (max-width:720px){
+  .settings-center{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);height:100dvh;min-height:0}
+  .settings-nav{position:relative;z-index:auto;display:flex;height:auto;max-height:none;min-height:0;padding:8px 10px 6px;border-right:0;border-bottom:1px solid var(--border-default);overflow:hidden}
   .settings-brand{display:none}
   .settings-back{min-height:30px;padding-inline:6px}
   .settings-search{margin:5px 0 6px;min-height:34px}
@@ -28,12 +28,12 @@ css += `
   .experience-switch--four small{display:none}
   .settings-nav>nav{display:flex;flex:0 0 auto;gap:4px;overflow-x:auto;overflow-y:hidden;overscroll-behavior-inline:contain;padding:0 0 5px;scrollbar-gutter:auto}
   .settings-nav>nav a{flex:0 0 auto;min-height:34px;padding:5px 8px;white-space:nowrap}
-  .settings-nav footer{padding-top:5px}
+  .settings-nav footer{display:flex;padding-top:5px}
   .settings-nav footer button{min-height:30px}
-  .settings-content{padding:22px 16px max(48px,env(safe-area-inset-bottom))}
-  .settings-toolbar{flex-direction:column;align-items:stretch;gap:12px}
+  .settings-content{height:auto;min-height:0;padding:22px 16px max(48px,env(safe-area-inset-bottom));overflow:auto}
+  .settings-toolbar{display:flex;flex-direction:column;align-items:stretch;gap:12px}
   .settings-toolbar h1{font-size:28px}
-  .settings-actions{width:100%;align-items:flex-end;flex-wrap:wrap}
+  .settings-actions{position:static;display:flex;width:100%;max-width:none;margin-top:0;align-items:flex-end;flex-wrap:wrap}
   .settings-layer{flex:1 1 180px}
   .settings-actions>button{flex:0 0 auto;white-space:nowrap}
   .setting-row{grid-template-columns:minmax(0,1fr);gap:10px}
@@ -41,7 +41,7 @@ css += `
   .setting-control select,.setting-control input[type="text"],.setting-control input[type="number"]{width:min(100%,420px)}
 }
 `;
-writeFileSync(TARGETS.css.path, css);
+writeFileSync(TARGETS.responsive.path, responsive);
 
 let capturer = readFileSync(TARGETS.capturer.path, 'utf8');
 const before = `async function assertVietnameseResponsive(page) {
@@ -83,6 +83,6 @@ writeFileSync(TARGETS.capturer.path, capturer);
 
 execFileSync(process.execPath, ['--check', TARGETS.capturer.path], { stdio: 'inherit' });
 console.log(JSON.stringify({
-  css: { before: TARGETS.css.blob, after: hash(TARGETS.css.path) },
+  responsive: { before: TARGETS.responsive.blob, after: hash(TARGETS.responsive.path) },
   capturer: { before: TARGETS.capturer.blob, after: hash(TARGETS.capturer.path) },
 }));
