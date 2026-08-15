@@ -39,8 +39,11 @@ jobs:
           test -d .flagship-patch
           cat .flagship-patch/chunk-*.b64 > /tmp/flagship.patch.b64
           base64 -d /tmp/flagship.patch.b64 > /tmp/flagship.patch
-          git apply --check /tmp/flagship.patch
-          git apply /tmp/flagship.patch
+          # The current canonical baseline already contains the mission-context
+          # Workroom markup. Exclude that historical hunk and apply only the
+          # new flagship visual/test/token source changes.
+          git apply --check --exclude=ui-v3/views/workroom/workroom-view.mjs /tmp/flagship.patch
+          git apply --exclude=ui-v3/views/workroom/workroom-view.mjs /tmp/flagship.patch
 
           node --test \
             tests/ui-v3-flagship-reconstruction.test.mjs \
@@ -68,7 +71,6 @@ jobs:
               ui-v3/styles/index.css|\
               ui-v3/styles/tokens/semantic.css|\
               ui-v3/styles/flagship/proofborne-instrument.css|\
-              ui-v3/views/workroom/workroom-view.mjs|\
               ui-dist/*|\
               .flagship-patch/*)
                 ;;
@@ -89,7 +91,6 @@ jobs:
             ui-v3/styles/index.css \
             ui-v3/styles/tokens/semantic.css \
             ui-v3/styles/flagship/proofborne-instrument.css \
-            ui-v3/views/workroom/workroom-view.mjs \
             ui-dist
           git rm -r .flagship-patch
           git commit -m "feat(ui): reconstruct Nolane flagship with Proofborne Instrument"
