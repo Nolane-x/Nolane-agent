@@ -13,13 +13,13 @@ permissions:
 
 concurrency:
   group: ${{ github.ref_name == 'codex/nui-performance-convergence' && 'nui-performance-convergence-v2' || format('nui-main-integration-canonical-sync-{0}', github.ref) }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   converge-performance:
     if: github.ref_name == 'codex/nui-performance-convergence' && github.actor != 'github-actions[bot]'
-    runs-on: macos-latest
-    timeout-minutes: 55
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
         with:
@@ -37,6 +37,30 @@ jobs:
           const fs = require('node:fs');
           const path = 'scripts/converge-nui-performance.mjs';
           let source = fs.readFileSync(path, 'utf8');
+
+          const unboundedHelpers = `function run(command, args, options = {}) {
+            return execFileSync(command, args, { stdio: 'inherit', ...options });
+          }
+          function text(command, args) {
+            return execFileSync(command, args, { encoding: 'utf8', maxBuffer: LARGE_STDIO_BUFFER });
+          }
+          function tryRun(command, args) {
+            return spawnSync(command, args, { stdio: 'inherit' });
+          }`;
+          const boundedHelpers = `function run(command, args, options = {}) {
+            console.log('[convergence:run]', command, ...args);
+            return execFileSync(command, args, { stdio: 'inherit', timeout: 120_000, killSignal: 'SIGKILL', ...options });
+          }
+          function text(command, args) {
+            console.log('[convergence:text]', command, ...args);
+            return execFileSync(command, args, { encoding: 'utf8', maxBuffer: LARGE_STDIO_BUFFER, timeout: 120_000, killSignal: 'SIGKILL' });
+          }
+          function tryRun(command, args) {
+            console.log('[convergence:try]', command, ...args);
+            return spawnSync(command, args, { stdio: 'inherit', timeout: 120_000, killSignal: 'SIGKILL' });
+          }`;
+          if (!source.includes(unboundedHelpers)) throw new Error('convergence command helpers changed unexpectedly');
+          source = source.replace(unboundedHelpers, boundedHelpers);
 
           const responsiveTest = "  'tests/ui-responsive-medium-pressure.test.mjs',\n";
           if (!source.includes(responsiveTest)) throw new Error('responsive focused-test anchor missing');
