@@ -5,6 +5,7 @@ on:
     branches:
       - codex/nui-main-integration-repair
       - codex/nui-flagship-integration
+      - codex/nui-performance-convergence
   workflow_dispatch:
 
 permissions:
@@ -15,8 +16,25 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  converge-performance:
+    if: github.ref_name == 'codex/nui-performance-convergence' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Build a clean two-parent NUI + performance integration commit
+        run: node scripts/converge-nui-performance.mjs
+
   regenerate-and-verify:
-    if: github.actor != 'github-actions[bot]' || github.event_name == 'workflow_dispatch'
+    if: github.ref_name != 'codex/nui-performance-convergence' && (github.actor != 'github-actions[bot]' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
