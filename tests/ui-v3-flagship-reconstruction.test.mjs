@@ -109,3 +109,10 @@ test('flagship compact policy structurally recomposes professional surfaces', as
   assert.match(css, /@media \(max-width: 640px\)[\s\S]*\.skills-library__body\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/);
   assert.match(css, /@media \(max-width: 640px\)[\s\S]*\.browser-workspace-grid\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/);
 });
+
+test('Mission secondary evidence text uses contrast-safe semantic roles on the open canvas', async () => {
+  const css = await readFile(flagshipUrl, 'utf8');
+  assert.match(css, /\.mission-spotlight > header \.eyebrow,\s*\n\.mission-spotlight > header p:last-child\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
+  assert.match(css, /\.mission-task-strip article div > small\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
+  assert.match(css, /\.execution-story > footer > span,\s*\n\.execution-story > footer > code,\s*\n\.follow-toggle > span\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
+});
