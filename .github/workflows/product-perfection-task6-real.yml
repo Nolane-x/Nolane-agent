@@ -1,0 +1,129 @@
+name: Product Perfection Task 6 Real Closure
+
+on:
+  push:
+    branches:
+      - codex/product-perfection-system-v3
+    paths:
+      - '.github/workflows/product-perfection-task6-real.yml'
+      - 'scripts/apply-product-perfection-task6-real.py'
+      - 'ui-v3/views/review/**'
+      - 'ui-v3/views/mission/**'
+      - 'ui-v3/styles/pages/review.css'
+
+permissions:
+  contents: write
+
+jobs:
+  close-task6:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+
+      - name: Prove exact Task 6 contract is RED before app/activity migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          if node --test tests/ui-v3-mission-review-perfection.test.mjs; then
+            echo 'Task 6 contract unexpectedly passed before app/activity migration' >&2
+            exit 1
+          fi
+
+      - name: Apply guarded app and Activity migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/apply-product-perfection-task6-real.py
+          python scripts/apply-product-perfection-task6-real.py
+          node --check ui-v3/app.mjs
+          node --check ui-v3/views/activity/activity-view.mjs
+          node --check ui-v3/views/mission/mission-view.mjs
+          node --check ui-v3/views/review/review-view.mjs
+
+      - name: Build canonical UI distribution
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run validate:ui-tokens
+          npm run build:ui-v3
+          git diff --check
+
+      - name: Create exact implementation commit locally
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f --ignore-unmatch \
+            scripts/apply-product-perfection-task6-real.py \
+            .github/workflows/product-perfection-task6-real.yml \
+            docs/product-perfection/.task6-real-stage-sentinel \
+            docs/product-perfection/.task6-real-stage-sentinel-2 \
+            docs/product-perfection/.task6-real-stage-sentinel-3 \
+            docs/product-perfection/.STOP \
+            docs/product-perfection/.task6-closure-trigger
+          git add ui-v3/app.mjs ui-v3/views/activity/activity-view.mjs ui-dist
+          git config user.name 'nolane-evidence-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'feat(ui): close Mission Activity Review execution loop'
+          echo "TASK6_VERIFIED_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Verify exact Task 6 implementation commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TASK6_VERIFIED_SHA"
+          node --test \
+            tests/ui-v3-mission-review-perfection.test.mjs \
+            tests/ui-v3-review.test.mjs \
+            tests/ui-v3-review-flow.test.mjs \
+            tests/diff-review-service.test.mjs \
+            tests/diff-review-http-api.test.mjs \
+            tests/ui-v3-mission-components.test.mjs \
+            tests/ui-v3-progressive-activity.test.mjs \
+            tests/ui-v3-time-travel.test.mjs \
+            tests/ui-v3-accessibility.test.mjs \
+            tests/ui-v3-perfection-authority.test.mjs
+          npm run validate:ui-tokens
+          npm run build:ui-v3
+          git diff --exit-code -- ui-dist
+          npm run audit:ui-quality
+          git diff --check
+          grep -q "id: 'review-mission'.*createReviewController" <(tr '\n' ' ' < ui-v3/app.mjs)
+          ! grep -q "id: 'review-mission'.*createReviewModel" <(tr '\n' ' ' < ui-v3/app.mjs)
+          grep -q 'data-preserve-key="activity-follow"' ui-v3/views/activity/activity-view.mjs
+          grep -q 'expectedReviewSha256' ui-v3/views/review/review-view.mjs
+
+      - name: Write durable Task 6 closure receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > docs/product-perfection/TASK6-MISSION-ACTIVITY-REVIEW-CLOSURE.md <<EOF
+          # Task 6 — Mission / Activity / Review Closure Receipt
+
+          **Exact verified implementation revision:** \`${TASK6_VERIFIED_SHA}\`  
+          **Verification workflow run:** \`${GITHUB_RUN_ID}\`  
+          **Status:** PASS for source, focused behavior, canonical build, token and static-quality scope.
+
+          Verified on the exact implementation commit above:
+
+          - \`/review/:mission\` uses the real server-backed diff-review controller rather than an empty local model;
+          - decisions bind to exact \`reviewSha256\`, require a reason and fail closed on stale snapshots;
+          - raw diff content is escaped before rendering;
+          - legacy Review model hashing, evidence binding and virtualization remain covered;
+          - Activity filter/follow controls and five-second polling preserve keyboard focus through shared rerender authority;
+          - Mission external title/status/activity content is escaped without removing the existing progress/model APIs;
+          - UI token validation, canonical \`ui-dist\`, focused accessibility/perfection tests and static UI quality audit pass.
+
+          Remaining Task 6 claim boundary: independent runtime visual/Axe re-observation is still required before product-wide final certification.
+          EOF
+          git add docs/product-perfection/TASK6-MISSION-ACTIVITY-REVIEW-CLOSURE.md
+          git commit -m 'docs(perfection): record exact Task 6 closure [skip ci]'
+          git push origin HEAD:codex/product-perfection-system-v3
