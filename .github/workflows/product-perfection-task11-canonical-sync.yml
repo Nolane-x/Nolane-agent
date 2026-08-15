@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node --test tests/ui-performance-product-perfection.test.mjs tests/ui-performance-runtime-evidence.test.mjs tests/ui-v3-settings-primary-contrast.test.mjs
+          node --test tests/ui-performance-product-perfection.test.mjs tests/ui-performance-runtime-evidence.test.mjs tests/ui-v3-settings-primary-contrast.test.mjs tests/ui-v3-review-accessibility-audit.test.mjs
           npm run validate:ui-tokens
           npm run audit:ui-quality
       - name: Regenerate deterministic UI distribution
@@ -43,7 +43,7 @@ jobs:
         run: node scripts/generate-master-acceptance-ledger.mjs
       - name: Validate canonical evidence graph
         run: npm run validate
-      - name: Verify UI release truth
+      - name: Verify and persist UI release truth
         run: npm run verify:ui-v3-release
       - name: Regenerate and verify fail-closed product-perfection matrix
         shell: bash
@@ -58,7 +58,7 @@ jobs:
           mapfile -t changed < <(git status --porcelain=v1 | sed -E 's/^.. //')
           for path in "${changed[@]}"; do
             case "$path" in
-              ui-dist/*|requirements/nolane-native-core-conformance.json|requirements/runtime-purity-summary.json|requirements/nolane-agent-v5-requirements.json|requirements/master-acceptance-ledger.json|docs/MASTER-ACCEPTANCE-LEDGER.md|requirements/product-perfection-catalog.json|requirements/product-perfection-matrix.json) ;;
+              ui-dist/*|requirements/nolane-native-core-conformance.json|requirements/runtime-purity-summary.json|requirements/nolane-agent-v5-requirements.json|requirements/master-acceptance-ledger.json|docs/MASTER-ACCEPTANCE-LEDGER.md|docs/ui-v3/ui-v3-source-release.json|requirements/product-perfection-catalog.json|requirements/product-perfection-matrix.json) ;;
               *) echo "Unexpected canonical-sync mutation: $path" >&2; exit 1 ;;
             esac
           done
@@ -67,7 +67,7 @@ jobs:
         run: |
           set -euo pipefail
           git rm -f .github/workflows/product-perfection-task11-canonical-sync.yml
-          git add ui-dist requirements/nolane-native-core-conformance.json requirements/runtime-purity-summary.json requirements/nolane-agent-v5-requirements.json requirements/master-acceptance-ledger.json docs/MASTER-ACCEPTANCE-LEDGER.md requirements/product-perfection-catalog.json requirements/product-perfection-matrix.json
+          git add ui-dist requirements/nolane-native-core-conformance.json requirements/runtime-purity-summary.json requirements/nolane-agent-v5-requirements.json requirements/master-acceptance-ledger.json docs/MASTER-ACCEPTANCE-LEDGER.md docs/ui-v3/ui-v3-source-release.json requirements/product-perfection-catalog.json requirements/product-perfection-matrix.json
           git config user.name nolane-evidence-bot
           git config user.email actions@users.noreply.github.com
           git commit -m 'chore(evidence): converge Product Perfection Task 11 evidence'
