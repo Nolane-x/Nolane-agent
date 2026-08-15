@@ -1,0 +1,72 @@
+name: Refresh flagship Studio contrast
+
+on:
+  push:
+    branches:
+      - codex/nui-flagship-reconstruction-v2
+
+permissions:
+  contents: write
+
+concurrency:
+  group: flagship-studio-contrast-refresh
+  cancel-in-progress: true
+
+jobs:
+  repair-and-build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Apply Studio contrast correction
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -q "Studio empty-state guidance remains readable" tests/ui-v3-flagship-reconstruction.test.mjs
+          ! grep -q "flattened Studio editor keeps instructional" ui-v3/styles/flagship/proofborne-instrument.css
+          cat >> tests/ui-v3-flagship-reconstruction.test.mjs <<'EOF_TEST'
+
+          test('Studio empty-state guidance remains readable on the flattened editor canvas', async () => {
+            const css = await readFile(flagshipUrl, 'utf8');
+            assert.match(css, /\.editor-welcome > p\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
+          });
+          EOF_TEST
+          cat >> ui-v3/styles/flagship/proofborne-instrument.css <<'EOF_CSS'
+
+          /* Runtime critique cycle 1: the flattened Studio editor keeps instructional
+           * copy readable without turning the empty state into a raised card. */
+          .editor-welcome > p {
+            color: var(--text-secondary);
+          }
+          EOF_CSS
+          node --test tests/ui-v3-flagship-reconstruction.test.mjs
+          npm run validate:ui-tokens
+          npm run build:ui-v3
+      - name: Guard scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t changed < <(git status --short | sed -E 's/^.. //')
+          for path in "${changed[@]}"; do
+            case "$path" in
+              tests/ui-v3-flagship-reconstruction.test.mjs|ui-v3/styles/flagship/proofborne-instrument.css|ui-dist/*) ;;
+              *) echo "unexpected change: $path" >&2; exit 1 ;;
+            esac
+          done
+      - name: Commit repair and canonical distribution
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/ui-v3-flagship-reconstruction.test.mjs ui-v3/styles/flagship/proofborne-instrument.css ui-dist
+          git commit -m "fix(ui): raise Studio empty-state contrast"
+          git push origin HEAD:${GITHUB_REF_NAME}
