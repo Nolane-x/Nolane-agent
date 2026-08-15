@@ -21,7 +21,7 @@ const replacements = [
   ["throw new Error(`UI state did not render: ${state.id}; diagnostic=${JSON.stringify(diagnostic)}`, { cause: error });", "throw new Error('UI state did not render: ' + state.id + '; diagnostic=' + JSON.stringify(diagnostic), { cause: error });"],
   ["throw new Error(`${state.id} emitted page errors: ${pageErrors.join(' | ')}`);", "throw new Error(state.id + ' emitted page errors: ' + pageErrors.join(' | '));"],
   ["const filename = `${state.id}.png`;", "const filename = state.id + '.png';"],
-  ["await writeFile(path.join(output, 'receipt.json'), `${JSON.stringify({ ...report, receiptSha256 }, null, 2)}\\n`);", "await writeFile(path.join(output, 'receipt.json'), JSON.stringify({ ...report, receiptSha256 }, null, 2) + '\\n');"],
+  ["await writeFile(path.join(output, 'receipt.json'), `${JSON.stringify({ ...report, receiptSha256 }, null, 2)}\\n`);", "await writeFile(path.join(output, 'receipt.json'), JSON.stringify({ ...report, receiptSha256 }, null, 2) + String.fromCharCode(10));"],
 ];
 
 for (const [before, after] of replacements) {
