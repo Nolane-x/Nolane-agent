@@ -1,0 +1,181 @@
+name: UI progressive evidence refresh
+
+on:
+  pull_request:
+    types: [reopened]
+    paths:
+      - '.github/workflows/ui-progressive-evidence-refresh.yml'
+      - 'scripts/capture-ui-runtime-visual.mjs'
+      - 'ui-v3/views/skills/skills-view.mjs'
+      - 'ui-v3/views/settings/settings-view.mjs'
+      - 'tests/ui-settings-progressive-runtime-contract.test.mjs'
+      - 'tests/ui-v3-skills-progressive-render.test.mjs'
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-progressive-ui-evidence:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.head_ref == 'codex/ui-performance-runtime-evidence'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Patch Settings runtime evidence for progressive rendering
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = 'scripts/capture-ui-runtime-visual.mjs';
+          let source = fs.readFileSync(path, 'utf8');
+
+          const scrollPattern = /async function assertSettingsScrollPreserved\(page\) \{[\s\S]*?\n\}\n\nasync function assertSettingsLanguageRoundtrip/;
+          if (!scrollPattern.test(source)) throw new Error('Settings scroll helper contract was not found exactly once');
+          const scrollReplacement = `async function chooseSettingsCategory(page, category) {
+            const link = page.locator(\`[data-settings-category-link="\${category}"]\`);
+            await link.waitFor({ state: 'visible', timeout: 10_000 });
+            await link.click();
+            const section = page.locator(\`[data-settings-category="\${category}"]\`);
+            await section.waitFor({ state: 'visible', timeout: 10_000 });
+            return section;
+          }
+
+          async function assertSettingsScrollPreserved(page) {
+            const setScrollPosition = () => page.evaluate(() => {
+              const scroller = document.querySelector('[data-scroll-key="settings-content"]');
+              if (!scroller) return { error: 'settings scroll container is missing' };
+              const targetTop = Math.min(480, Math.max(0, scroller.scrollHeight - scroller.clientHeight));
+              scroller.scrollTop = targetTop;
+              return { before: scroller.scrollTop, scrollable: targetTop > 0 };
+            });
+            const setScrollForVisibleControl = (control) => control.evaluate((node) => {
+              const scroller = document.querySelector('[data-scroll-key="settings-content"]');
+              if (!scroller) return { error: 'settings scroll container is missing' };
+              const scrollerBox = scroller.getBoundingClientRect();
+              const controlBox = node.getBoundingClientRect();
+              const contentTop = scroller.scrollTop + controlBox.top - scrollerBox.top;
+              const top = Math.min(480, Math.max(0, scroller.scrollHeight - scroller.clientHeight), Math.max(0, contentTop - 24));
+              scroller.scrollTop = top;
+              return { before: scroller.scrollTop, scrollable: top > 0 };
+            });
+            const assertScroll = async (before, label) => {
+              const after = await page.locator('[data-scroll-key="settings-content"]').evaluate((node) => node.scrollTop);
+              if (after == null || Math.abs(after - before) > 2) throw new Error(\`\${label} did not preserve scroll position: \${before} -> \${after}\`);
+            };
+
+            await chooseSettingsCategory(page, 'appearance');
+            const accent = await setScrollPosition();
+            if (accent.error) throw new Error(accent.error);
+            const accentChoice = page.locator('[data-setting-choice][data-setting-path="appearance.accent"][data-setting-value="blue"]');
+            await accentChoice.click();
+            await accentChoice.waitFor({ state: 'visible', timeout: 10_000 });
+            if (await accentChoice.getAttribute('aria-pressed') !== 'true') throw new Error('settings accent choice did not update the live preference state');
+            await assertScroll(accent.before, 'settings content');
+
+            await chooseSettingsCategory(page, 'general');
+            const language = await page.evaluate(() => document.querySelector('[data-setting-choice][data-setting-path="general.language"][aria-pressed="true"]')?.dataset?.settingValue === 'vi' ? 'en' : 'vi');
+            const languageChoice = page.locator(\`[data-setting-choice][data-setting-path="general.language"][data-setting-value="\${language}"]\`);
+            const beforeLanguage = await setScrollForVisibleControl(languageChoice);
+            if (beforeLanguage.error) throw new Error(beforeLanguage.error);
+            await languageChoice.click();
+            await page.waitForFunction(({ nextLanguage, expectedTop }) => document.documentElement.dataset.language === nextLanguage && document.querySelector(\`[data-setting-choice][data-setting-path="general.language"][data-setting-value="\${nextLanguage}"][aria-pressed="true"]\`) && Math.abs((document.querySelector('[data-scroll-key="settings-content"]')?.scrollTop ?? 0) - expectedTop) <= 2, { nextLanguage: language, expectedTop: beforeLanguage.before }, { timeout: 10_000 });
+            await assertScroll(beforeLanguage.before, 'settings language choice');
+          }
+
+          async function assertSettingsLanguageRoundtrip`;
+          source = source.replace(scrollPattern, scrollReplacement);
+
+          const pickerPattern = /async function assertSettingsOptionPicker\(page\) \{[\s\S]*?\n\}\n\nasync function assertSettingsModelCatalog/;
+          if (!pickerPattern.test(source)) throw new Error('Settings option-picker helper contract was not found exactly once');
+          const pickerReplacement = `async function assertSettingsOptionPicker(page) {
+            await chooseSettingsCategory(page, 'general');
+            const pickerId = 'setting-general.defaultIntent';
+            const picker = page.locator(\`[data-option-picker="\${pickerId}"]\`);
+            const trigger = picker.locator('[data-option-picker-toggle]');
+            await trigger.waitFor({ state: 'visible', timeout: 10_000 });
+            const before = await trigger.evaluate((node) => {
+              const scroller = document.querySelector('[data-scroll-key="settings-content"]');
+              if (!scroller) return { error: 'settings scroll container is missing' };
+              const scrollerBox = scroller.getBoundingClientRect();
+              const box = node.getBoundingClientRect();
+              const contentTop = scroller.scrollTop + box.top - scrollerBox.top;
+              const top = Math.min(480, Math.max(0, scroller.scrollHeight - scroller.clientHeight), Math.max(0, contentTop - 24));
+              scroller.scrollTop = top;
+              return { top: scroller.scrollTop, scrollable: top > 0 };
+            });
+            if (before.error) throw new Error(before.error);
+            await trigger.click();
+            const next = picker.locator('[data-option-picker-option][aria-selected="false"]:not([disabled])').first();
+            await next.waitFor({ state: 'visible', timeout: 10_000 });
+            const value = await next.getAttribute('data-option-picker-option');
+            await next.click();
+            await page.waitForFunction(({ pickerId, value }) => document.querySelector(\`[data-option-picker="\${pickerId}"] [data-option-picker-value]\`)?.value === value, { pickerId, value }, { timeout: 10_000 });
+            const after = await page.locator('[data-scroll-key="settings-content"]').evaluate((node) => node.scrollTop);
+            if (after == null || Math.abs(after - before.top) > 2) throw new Error(\`settings option picker did not preserve scroll position: \${before.top} -> \${after}\`);
+          }
+
+          async function assertSettingsModelCatalog`;
+          source = source.replace(pickerPattern, pickerReplacement);
+          fs.writeFileSync(path, source);
+          NODE
+
+      - name: Prove focused progressive UI behavior
+        run: >-
+          node --test
+          tests/ui-settings-progressive-runtime-contract.test.mjs
+          tests/ui-v3-skills-progressive-render.test.mjs
+          tests/ui-v3-settings-controller.test.mjs
+          tests/ui-runtime-visual-workflow.test.mjs
+
+      - name: Build deterministic UI distribution
+        run: npm run build:ui-v3
+
+      - name: Refresh source-bound evidence in dependency order
+        shell: bash
+        run: |
+          node scripts/generate-nolane-program.mjs
+          node scripts/generate-master-acceptance-ledger.mjs
+          npm run audit:evidence-freshness
+          npm run verify:ui-v3-release
+
+      - name: Remove temporary workflows and prove patch scope
+        shell: bash
+        run: |
+          rm -f \
+            .github/workflows/ui-progressive-evidence-refresh.yml \
+            .github/workflows/settings-progressive-runtime-tdd.yml \
+            .github/workflows/skills-progressive-render-tdd.yml \
+            .github/workflows/skills-progressive-render-fix.yml
+          unexpected="$(git status --porcelain | awk '{print $2}' | grep -Ev '^(scripts/capture-ui-runtime-visual\.mjs|ui-dist/|requirements/runtime-purity-summary\.json|requirements/nolane-agent-v5-requirements\.json|requirements/master-acceptance-ledger\.json|docs/MASTER-ACCEPTANCE-LEDGER\.md|\.github/workflows/(ui-progressive-evidence-refresh|settings-progressive-runtime-tdd|skills-progressive-render-tdd|skills-progressive-render-fix)\.yml)$' || true)"
+          if [ -n "$unexpected" ]; then
+            printf '%s\n' 'Unexpected generated changes:' "$unexpected" >&2
+            exit 1
+          fi
+          test -n "$(git status --porcelain -- scripts/capture-ui-runtime-visual.mjs)" || { echo 'Runtime capturer did not change' >&2; exit 1; }
+          test -n "$(git status --porcelain -- ui-dist)" || { echo 'Generated ui-dist did not change' >&2; exit 1; }
+          test -n "$(git status --porcelain -- requirements/nolane-agent-v5-requirements.json)" || { echo 'Nolane registry did not refresh' >&2; exit 1; }
+          test -n "$(git status --porcelain -- requirements/master-acceptance-ledger.json)" || { echo 'Master ledger did not refresh' >&2; exit 1; }
+
+      - name: Commit source, generated distribution, and refreshed evidence
+        shell: bash
+        run: |
+          git config user.name 'nolane-ci'
+          git config user.email 'nolane-ci@users.noreply.github.com'
+          git add -A
+          git commit -m 'fix(ui): align progressive runtime evidence'
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
