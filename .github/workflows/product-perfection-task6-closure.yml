@@ -1,0 +1,105 @@
+name: Product Perfection Task 6 Closure
+
+on:
+  push:
+    branches:
+      - codex/product-perfection-system-v3
+    paths:
+      - '.github/workflows/product-perfection-task6-closure.yml'
+      - 'ui-v3/app.mjs'
+      - 'ui-v3/views/mission/**'
+      - 'ui-v3/views/activity/**'
+      - 'ui-v3/views/review/**'
+      - 'ui-v3/styles/pages/review.css'
+      - 'tests/ui-v3-mission-review-perfection.test.mjs'
+      - 'tests/ui-v3-review*.test.mjs'
+      - 'tests/diff-review*.test.mjs'
+      - 'ui-dist/**'
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Assert Task 6 source outcome
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'createReviewController' ui-v3/app.mjs
+          grep -q 'data-review-decision' ui-v3/views/review/review-view.mjs
+          grep -q 'expectedReviewSha256' ui-v3/views/review/review-view.mjs
+          grep -q 'data-preserve-key="activity-follow"' ui-v3/views/activity/activity-view.mjs
+          grep -q 'escapeHtml(snapshot.header.title' ui-v3/views/mission/mission-view.mjs
+          test ! -e scripts/apply-product-perfection-mission-review.py
+          test ! -e scripts/apply-product-perfection-mission-review-v2.py
+          test ! -e .github/workflows/product-perfection-mission-review-red.yml
+          test ! -e .github/workflows/product-perfection-mission-review-apply.yml
+          test ! -e .github/workflows/product-perfection-mission-review-apply-v2.yml
+      - name: Verify Task 6 contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check ui-v3/app.mjs
+          node --check ui-v3/views/review/review-view.mjs
+          node --check ui-v3/views/mission/mission-view.mjs
+          node --check ui-v3/views/activity/activity-view.mjs
+          node --test \
+            tests/ui-v3-mission-review-perfection.test.mjs \
+            tests/ui-v3-review.test.mjs \
+            tests/ui-v3-review-flow.test.mjs \
+            tests/diff-review-service.test.mjs \
+            tests/diff-review-http-api.test.mjs \
+            tests/ui-v3-mission-components.test.mjs \
+            tests/ui-v3-progressive-activity.test.mjs \
+            tests/ui-v3-time-travel.test.mjs \
+            tests/ui-v3-accessibility.test.mjs \
+            tests/ui-v3-perfection-authority.test.mjs
+          npm run validate:ui-tokens
+          npm run build:ui-v3
+          git diff --exit-code -- ui-dist
+          npm run audit:ui-quality
+          git diff --check
+      - name: Write durable Task 6 closure receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/product-perfection
+          cat > docs/product-perfection/TASK6-MISSION-ACTIVITY-REVIEW-CLOSURE.md <<EOF
+          # Task 6 — Mission / Activity / Review Closure Receipt
+
+          **Exact verified revision:** \`${GITHUB_SHA}\`  
+          **Workflow run:** \`${GITHUB_RUN_ID}\`  
+          **Status:** PASS for source/test/build/static-quality scope of Task 6.
+
+          Verified in this run:
+
+          - server-backed Review route uses the real diff-review snapshot API;
+          - accept/reject decisions bind to exact \`reviewSha256\` and require a reason;
+          - stale review conflicts refresh current truth instead of applying old decisions;
+          - legacy Review model hash/evidence/virtualization behavior remains covered;
+          - Activity filters/follow controls and polling use focus-preserving rerender authority;
+          - Mission component escapes externally supplied text while preserving current mission/progress model APIs;
+          - focused accessibility/perfection contracts pass;
+          - token validation passes;
+          - canonical \`ui-dist\` matches source;
+          - static UI quality audit passes.
+
+          This receipt does not replace runtime visual/Axe re-observation; that remains the next Task 6 evidence step before final product-perfection integration.
+          EOF
+          git add docs/product-perfection/TASK6-MISSION-ACTIVITY-REVIEW-CLOSURE.md
+          git config user.name 'nolane-evidence-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'docs(perfection): record verified Task 6 source closure [skip ci]'
+          git push origin HEAD:codex/product-perfection-system-v3
