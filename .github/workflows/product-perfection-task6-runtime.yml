@@ -61,6 +61,7 @@ jobs:
       - name: Capture server-backed Review runtime matrix
         shell: bash
         run: |
+          ln -s "$GITHUB_WORKSPACE/node_modules" "$RUNNER_TEMP/node_modules" 2>/dev/null || true
           cat > "$RUNNER_TEMP/capture-task6-review.mjs" <<'NODE'
           import { createHash } from 'node:crypto';
           import { mkdir, readFile, writeFile } from 'node:fs/promises';
