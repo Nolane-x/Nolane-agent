@@ -1,0 +1,1039 @@
+/*
+ * Proofborne Instrument — Nolane Agent flagship visual authority.
+ *
+ * This layer translates product truth into a restrained instrument grammar.
+ * It intentionally sits below accessibility-runtime.css and responsive.css.
+ * Evidence, permissions and recovery semantics remain owned by the views.
+ */
+
+.app-shell {
+  --instrument-shell-gap: 0px;
+  background: var(--surface-canvas);
+}
+
+/* Remove ambient AI-theme spectacle. Product state, not a glow field, owns attention. */
+.app-shell::before {
+  background: none;
+}
+
+.global-rail {
+  background: var(--instrument-margin);
+  border-right-color: var(--instrument-rule);
+}
+
+.global-rail__logo {
+  border: 1px solid var(--instrument-rule);
+  border-radius: 8px;
+  background: var(--text-primary);
+  color: var(--surface-canvas);
+  box-shadow: none;
+}
+
+.global-rail a:not(.global-rail__logo) {
+  border-radius: 8px;
+  transition: background var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard);
+}
+
+.global-rail a:not(.global-rail__logo):hover {
+  transform: none;
+}
+
+.global-rail a[aria-current="page"] {
+  background: transparent;
+  color: var(--text-primary);
+  box-shadow: none;
+}
+
+.global-rail a[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  width: 3px;
+  height: 26px;
+  border-radius: 0;
+  background: var(--instrument-trace);
+  box-shadow: none;
+}
+
+.session-sidebar {
+  background: var(--instrument-margin);
+  border-right-color: var(--instrument-rule);
+}
+
+.session-sidebar__brand-mark,
+.session-sidebar__orb {
+  border-radius: 7px;
+  box-shadow: none;
+}
+
+.session-sidebar__new {
+  border-color: var(--instrument-rule);
+  border-radius: 8px;
+  background: var(--instrument-plate);
+  box-shadow: none;
+}
+
+.session-sidebar__search,
+.session-row {
+  border-radius: 7px;
+}
+
+.session-sidebar__groups section h2 {
+  letter-spacing: .13em;
+}
+
+.app-topbar {
+  min-height: var(--topbar-height);
+  border-bottom-color: var(--instrument-rule);
+  background: var(--instrument-margin);
+}
+
+.app-topbar__title {
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+}
+
+.shell-command-search {
+  border-color: var(--instrument-rule);
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--surface-canvas) 72%, var(--instrument-margin));
+  box-shadow: none;
+}
+
+.home-view {
+  position: relative;
+}
+
+.home-view::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 1px;
+  background: var(--instrument-rule);
+  pointer-events: none;
+}
+
+.activity-page {
+  --proofline-rule: var(--instrument-rule);
+  --proofline-trace: var(--instrument-trace);
+}
+
+.activity-page > .surface-page__header h1 {
+  max-width: 690px;
+  font-size: clamp(30px, 3.5vw, 50px);
+  line-height: 1;
+}
+
+.mission-spotlight,
+.execution-story,
+.time-travel {
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+ * Shell / command band — calibrated navigation rather than a chat-app frame.
+ * ----------------------------------------------------------------------- */
+.session-sidebar__new {
+  min-height: 38px;
+  padding-inline: 8px;
+  border-color: var(--instrument-rule);
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.session-sidebar__new:hover {
+  border-color: var(--border-strong);
+  background: color-mix(in srgb, var(--surface-hover) 58%, transparent);
+}
+
+.session-sidebar__search {
+  min-height: 34px;
+  border-radius: 5px;
+  background: transparent;
+  border-bottom-color: var(--instrument-rule);
+}
+
+.session-row {
+  position: relative;
+  min-height: 38px;
+  padding: 7px 7px 7px 11px;
+  border-radius: 0;
+  border-left: 1px solid var(--instrument-rule);
+}
+
+.session-row:hover {
+  background: color-mix(in srgb, var(--surface-hover) 54%, transparent);
+  border-left-color: var(--text-muted);
+}
+
+.session-project-row[aria-current="true"] {
+  position: relative;
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.session-project-row[aria-current="true"]::before {
+  content: "";
+  position: absolute;
+  inset: 7px auto 7px -1px;
+  width: 2px;
+  background: var(--instrument-trace);
+}
+
+.shell-command-search {
+  border-radius: 5px;
+}
+
+.app-topbar__actions > button {
+  border-radius: 6px;
+}
+
+.shell-runtime-status {
+  padding-left: 10px;
+  border-left: 1px solid var(--instrument-rule);
+  font-family: var(--font-code);
+  font-size: 9px;
+}
+
+/* --------------------------------------------------------------------------
+ * Home — mission launch surface.
+ * ----------------------------------------------------------------------- */
+.home-view {
+  max-width: 1240px;
+  padding-inline: clamp(18px, 2vw, 32px);
+}
+
+.home-intro {
+  grid-template-columns: minmax(180px, .42fr) minmax(0, 1fr);
+  align-items: end;
+  column-gap: clamp(30px, 4vw, 70px);
+  padding-top: clamp(28px, 4vw, 56px);
+  padding-bottom: 48px;
+}
+
+.home-intro__copy {
+  max-width: 340px;
+  align-self: start;
+  padding-top: 12px;
+}
+
+.home-intro h1 {
+  max-width: 360px;
+  margin: 8px 0 12px;
+  font-size: clamp(34px, 4.2vw, 58px);
+  line-height: .98;
+  letter-spacing: -.052em;
+}
+
+.home-subtitle {
+  max-width: 330px;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.mission-composer {
+  width: 100%;
+  border-color: var(--instrument-rule);
+  border-radius: 10px;
+  background: var(--surface-canvas);
+  box-shadow: none;
+}
+
+.mission-composer:focus-within {
+  border-color: var(--instrument-trace);
+  box-shadow: 0 0 0 1px var(--instrument-trace);
+}
+
+.composer-context-row {
+  min-height: 40px;
+  padding: 8px 12px 7px;
+  border-bottom: 1px solid var(--instrument-rule);
+}
+
+.composer-runtime {
+  padding-left: 10px;
+  border-left: 1px solid var(--instrument-rule);
+  font-family: var(--font-code);
+}
+
+.composer-input textarea {
+  min-height: 132px;
+  padding: 20px 18px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.composer-footer {
+  border-top-color: var(--instrument-rule);
+}
+
+.composer-submit {
+  border-radius: 6px;
+  background: var(--text-primary);
+  color: var(--surface-canvas);
+  box-shadow: none;
+}
+
+.composer-submit:hover:not(:disabled) {
+  filter: none;
+  transform: none;
+  background: var(--instrument-evidence);
+}
+
+.home-content {
+  grid-template-columns: minmax(0, .72fr) minmax(320px, 1.28fr);
+  align-items: start;
+  gap: clamp(34px, 5vw, 72px);
+  padding-top: 8px;
+  border-top: 1px solid var(--instrument-rule);
+}
+
+.home-section > header {
+  min-height: 56px;
+  margin-bottom: 0;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--instrument-rule);
+}
+
+.capability-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+
+.capability-card {
+  position: relative;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  gap: 2px 12px;
+  min-height: 0;
+  padding: 13px 4px;
+  border: 0;
+  border-bottom: 1px solid var(--instrument-rule);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.capability-card:hover {
+  transform: none;
+  border-color: var(--instrument-rule);
+  background: color-mix(in srgb, var(--surface-hover) 42%, transparent);
+  box-shadow: none;
+}
+
+.capability-card > span {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--instrument-rule);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.capability-card strong,
+.capability-card small {
+  grid-column: 2;
+}
+
+.capability-card__arrow {
+  position: static;
+  grid-column: 3;
+  grid-row: 1 / 3;
+  align-self: center;
+  opacity: .48;
+}
+
+.recent-list {
+  gap: 0;
+}
+
+.recent-mission {
+  position: relative;
+  min-height: 58px;
+  padding: 10px 4px 10px 12px;
+  border: 0;
+  border-bottom: 1px solid var(--instrument-rule);
+  border-radius: 0;
+  border-left: 2px solid transparent;
+}
+
+.recent-mission:hover {
+  border-color: var(--instrument-rule);
+  border-left-color: var(--instrument-trace);
+  background: color-mix(in srgb, var(--surface-hover) 42%, transparent);
+}
+
+.recent-mission__status {
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.recent-mission__badge {
+  border-radius: 4px;
+  background: transparent;
+  font-family: var(--font-code);
+  letter-spacing: .04em;
+}
+
+/* --------------------------------------------------------------------------
+ * Mission / Proofline — one ruled reading field with a consequence plate.
+ * ----------------------------------------------------------------------- */
+.mission-spotlight {
+  overflow: visible;
+  padding: 20px 0 20px 22px;
+  border: 0;
+  border-top: 1px solid var(--instrument-rule);
+  border-bottom: 1px solid var(--instrument-rule);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.mission-spotlight::before {
+  inset: 20px auto 20px 0;
+  width: 2px;
+  background: var(--instrument-trace);
+}
+
+.mission-progress {
+  border-color: var(--instrument-rule);
+  border-radius: 6px;
+  background: transparent;
+}
+
+.mission-task-strip {
+  gap: 0;
+  border-top: 1px solid var(--instrument-rule);
+  border-bottom: 1px solid var(--instrument-rule);
+}
+
+.mission-task-strip article {
+  border: 0;
+  border-right: 1px solid var(--instrument-rule);
+  border-radius: 0;
+  background: transparent;
+}
+
+.execution-story {
+  border: 0;
+  border-top: 1px solid var(--instrument-rule);
+  border-radius: 0;
+  background: transparent;
+}
+
+.execution-story__metrics {
+  border-color: var(--instrument-rule);
+  border-radius: 5px;
+  background: var(--instrument-rule);
+}
+
+.execution-story__phases::before {
+  background: var(--instrument-rule);
+}
+
+.time-travel {
+  border-color: var(--instrument-rule);
+  border-radius: 10px;
+  background: var(--instrument-plate);
+  box-shadow: none;
+}
+
+.time-travel > header {
+  background: var(--instrument-plate);
+}
+
+.activity-toolbar {
+  background: color-mix(in srgb, var(--surface-canvas) 94%, transparent);
+}
+
+.activity-event__node {
+  border-radius: 50%;
+  box-shadow: none;
+}
+
+.activity-event__body details {
+  border-left: 2px double var(--instrument-evidence);
+  padding-left: 9px;
+}
+
+@media (max-width: 980px) {
+  .home-intro {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 22px;
+  }
+
+  .home-intro__copy {
+    max-width: 650px;
+  }
+
+  .home-intro h1,
+  .home-subtitle {
+    max-width: 650px;
+  }
+
+  .home-content {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * Studio — code remains primary, mission lineage remains visible.
+ * ----------------------------------------------------------------------- */
+.workroom-view {
+  grid-template-rows: auto auto minmax(520px, 1fr) 24px;
+  border-color: var(--instrument-rule);
+  border-radius: 8px;
+  background: var(--surface-canvas);
+  box-shadow: none;
+}
+
+.workroom-view:has(.workroom-mission-trace) {
+  grid-template-rows: auto auto auto minmax(520px, 1fr) 24px;
+}
+
+.workroom-header {
+  padding: 14px 16px;
+  border-bottom-color: var(--instrument-rule);
+}
+
+.workroom-header h1 {
+  font-size: 18px;
+  letter-spacing: -.025em;
+}
+
+.workroom-header p {
+  max-width: 620px;
+}
+
+.workroom-mission-trace {
+  display: grid;
+  grid-template-columns: auto minmax(0, max-content) minmax(24px, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  min-height: 31px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--instrument-rule);
+  color: var(--text-muted);
+  font-size: 8px;
+}
+
+.workroom-mission-trace > span:first-child {
+  color: var(--text-secondary);
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.workroom-mission-trace code {
+  overflow: hidden;
+  color: var(--instrument-evidence);
+  font: 8px var(--font-code);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workroom-mission-trace i {
+  height: 1px;
+  background: var(--instrument-trace);
+}
+
+.workroom-tabs {
+  background: transparent;
+  border-bottom-color: var(--instrument-rule);
+}
+
+.workroom-tabs button {
+  border-radius: 4px;
+}
+
+.workroom-grid {
+  border-bottom: 1px solid var(--instrument-rule);
+}
+
+.workroom-files,
+.workroom-agent {
+  background: var(--instrument-margin);
+}
+
+.workroom-files {
+  border-right-color: var(--instrument-rule);
+}
+
+.workroom-agent {
+  border-left: 1px solid var(--instrument-rule);
+}
+
+.workroom-files > label,
+.workroom-agent > footer,
+.workroom-editor-actions button {
+  border-radius: 5px;
+}
+
+.workroom-editor > div {
+  background-image: none;
+}
+
+.editor-welcome {
+  justify-items: start;
+  max-width: 470px;
+  text-align: left;
+}
+
+.editor-welcome > span {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--instrument-rule);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-primary);
+  box-shadow: none;
+  font-size: 15px;
+}
+
+.agent-state-orb {
+  width: 42px;
+  height: 42px;
+  border-color: var(--instrument-rule);
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: none;
+}
+
+.agent-state-orb span {
+  width: 8px;
+  height: 8px;
+  border-color: var(--instrument-trace);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--instrument-trace) 8%, transparent);
+}
+
+.workroom-statusbar {
+  background: var(--instrument-margin);
+  border-top-color: var(--instrument-rule);
+  font-family: var(--font-code);
+}
+
+/* --------------------------------------------------------------------------
+ * Browser — permission and session truth is the first visual boundary.
+ * ----------------------------------------------------------------------- */
+.browser-workspace-hero {
+  align-items: start;
+  padding: 12px 0 18px;
+  border: 0;
+  border-bottom: 1px solid var(--instrument-rule);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.browser-workspace-hero h1 {
+  margin: 5px 0 7px;
+  font-size: clamp(24px, 3vw, 38px);
+  line-height: 1.02;
+  letter-spacing: -.035em;
+}
+
+.browser-back-link {
+  margin-bottom: 10px;
+}
+
+.browser-status-strip {
+  gap: 10px;
+  padding: 9px 12px;
+  border: 0;
+  border-block: 1px solid var(--instrument-rule);
+  border-left: 3px solid var(--instrument-trace);
+  border-radius: 0;
+  background: var(--instrument-margin);
+}
+
+.browser-status-pill {
+  min-height: 21px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: transparent;
+  font-family: var(--font-code);
+}
+
+.browser-panel,
+.browser-inspector,
+.browser-timeline {
+  border-color: var(--instrument-rule);
+  border-radius: 7px;
+  background: var(--surface-canvas);
+  box-shadow: none;
+}
+
+.browser-permission-list {
+  gap: 3px;
+}
+
+.browser-permission-chip {
+  border-radius: 3px;
+  background: transparent;
+}
+
+.browser-tabs li {
+  border-radius: 4px;
+  background: transparent;
+}
+
+.browser-tab-state {
+  border-radius: 3px;
+  background: transparent;
+  font-family: var(--font-code);
+}
+
+/* --------------------------------------------------------------------------
+ * Review — decisions become a trace rather than another card feed.
+ * ----------------------------------------------------------------------- */
+.review-list {
+  gap: 0;
+  border-top: 1px solid var(--instrument-rule);
+}
+
+.review-item {
+  position: relative;
+  min-height: 78px;
+  padding: 14px 8px 14px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--instrument-rule);
+  border-radius: 0;
+  border-left: 2px solid transparent;
+  background: transparent;
+}
+
+.review-item::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 30px;
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--text-muted);
+  border-radius: 50%;
+  background: var(--surface-canvas);
+}
+
+.review-item:hover {
+  border-left-color: var(--instrument-trace);
+  background: color-mix(in srgb, var(--surface-hover) 42%, transparent);
+}
+
+.review-item__icon {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--instrument-rule);
+  border-radius: 50%;
+  background: transparent;
+}
+
+.review-item header span {
+  border-radius: 3px;
+  background: transparent;
+  font-family: var(--font-code);
+}
+
+.review-shell {
+  border-top: 1px solid var(--instrument-rule);
+  background: var(--surface-canvas);
+}
+
+.change-navigator {
+  border-right-color: var(--instrument-rule);
+  background: var(--instrument-margin);
+}
+
+.diff-viewport article {
+  border-bottom-color: var(--instrument-rule);
+}
+
+/* --------------------------------------------------------------------------
+ * Skills — provenance catalogue rather than a marketplace card wall.
+ * ----------------------------------------------------------------------- */
+.skills-library__catalog {
+  padding: 0;
+  border-color: var(--instrument-rule);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.skills-library__preview {
+  border-color: var(--instrument-rule);
+  border-radius: 7px;
+  background: var(--surface-canvas);
+  box-shadow: none;
+}
+
+.skills-library__list {
+  gap: 0;
+}
+
+.skill-library-item {
+  position: relative;
+  min-height: 66px;
+  padding: 10px 11px;
+  border: 0;
+  border-bottom: 1px solid var(--instrument-rule);
+  border-radius: 0;
+}
+
+.skill-library-item[aria-pressed="true"] {
+  border-left: 2px solid var(--instrument-trace);
+  background: color-mix(in srgb, var(--surface-selected) 44%, transparent);
+}
+
+.skill-library-item__icon {
+  border-radius: 50%;
+  background: transparent;
+}
+
+.skills-library__preview > header {
+  box-shadow: inset 2px 0 var(--instrument-trace);
+}
+
+.skills-library__provenance {
+  gap: 1px;
+  background: var(--instrument-rule);
+}
+
+.skills-library__provenance div {
+  padding: 8px 10px;
+  background: var(--instrument-margin);
+}
+
+/* --------------------------------------------------------------------------
+ * Settings — intentionally quiet; consequence gets the plate, not every row.
+ * ----------------------------------------------------------------------- */
+.settings-nav {
+  background: var(--instrument-margin);
+  border-right-color: var(--instrument-rule);
+}
+
+.settings-nav > nav a {
+  border-radius: 5px;
+}
+
+.settings-nav > nav a[aria-current="true"] {
+  background: transparent;
+  box-shadow: inset 2px 0 var(--instrument-trace);
+}
+
+.settings-search,
+.experience-switch {
+  border-radius: 7px;
+  background: transparent;
+}
+
+.settings-actions {
+  border-color: var(--instrument-rule);
+  border-radius: 8px;
+  background: var(--instrument-plate);
+}
+
+.settings-card {
+  border-color: var(--instrument-rule);
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.setting-row {
+  min-height: 70px;
+}
+
+.setting-control select,
+.setting-control input[type="text"],
+.setting-control input[type="number"] {
+  border-radius: 6px;
+  background: var(--instrument-margin);
+}
+
+.model-profile-card {
+  border-color: var(--instrument-rule);
+  border-radius: 7px;
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+ * Control Plane — system map and calibration bands, not a nested dashboard.
+ * ----------------------------------------------------------------------- */
+.control-plane-shell > nav {
+  background: transparent;
+  border-right-color: var(--instrument-rule);
+}
+
+.control-plane-shell > nav a {
+  border-radius: 0;
+  border-left: 1px solid transparent;
+}
+
+.control-plane-shell > nav a[aria-current="page"] {
+  border-left: 2px solid var(--instrument-trace);
+  background: transparent;
+  box-shadow: none;
+}
+
+.kernel-hero {
+  min-height: 0;
+  padding: 10px 0 22px;
+  border: 0;
+  border-bottom: 1px solid var(--instrument-rule);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.kernel-hero::after {
+  content: none;
+}
+
+.kernel-hero h1 {
+  margin: 8px 0 9px;
+  font-size: clamp(28px, 3vw, 42px);
+  line-height: 1;
+}
+
+.kernel-metrics {
+  gap: 1px;
+  background: var(--instrument-rule);
+  border-block: 1px solid var(--instrument-rule);
+}
+
+.kernel-metric {
+  padding: 13px 15px;
+  border: 0;
+  border-radius: 0;
+  background: var(--surface-canvas);
+}
+
+.kernel-metric.is-primary {
+  box-shadow: inset 0 2px var(--instrument-trace);
+}
+
+.kernel-panel {
+  border-color: var(--instrument-rule);
+  border-radius: 8px;
+  background: var(--surface-canvas);
+  box-shadow: none;
+}
+
+.fabric-node,
+.kernel-thread {
+  border-radius: 5px;
+  background: transparent;
+}
+
+.kernel-boundary {
+  background: var(--surface-canvas);
+}
+
+.cp-workspace-hero,
+.cp-route-panel,
+.cp-adapter-card {
+  border-color: var(--instrument-rule);
+  border-radius: 7px;
+  background: var(--surface-canvas);
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+ * Compact reconstruction — stack tools instead of silently deleting access.
+ * ----------------------------------------------------------------------- */
+@media (max-width: 980px) {
+ .workroom-view {
+    grid-template-rows: auto auto auto auto auto;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .workroom-grid {
+    grid-template-columns: minmax(0, 1fr);
+    overflow: visible;
+  }
+
+  .workroom-files,
+  .workroom-agent {
+    display: grid;
+    min-height: 260px;
+    border: 0;
+    border-bottom: 1px solid var(--instrument-rule);
+  }
+
+  .workroom-editor {
+    min-height: 520px;
+  }
+
+  .workroom-mission-trace {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .workroom-mission-trace i,
+  .workroom-mission-trace > span:last-child {
+    display: none;
+  }
+
+  .browser-workspace-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .kernel-hero {
+    gap: 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-view {
+    padding-inline: 14px;
+  }
+
+  .home-intro {
+    padding-top: 18px;
+  }
+
+  .workroom-files,
+  .workroom-agent {
+    display: grid;
+    max-height: 360px;
+    overflow: auto;
+  }
+
+  .workroom-editor {
+    min-height: 440px;
+  }
+
+  .workroom-header {
+    padding: 12px;
+  }
+
+  .workroom-mission-trace {
+    padding-inline: 10px;
+  }
+
+  .skills-library__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .browser-workspace-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .browser-workspace-hero {
+    gap: 12px;
+  }
+
+  .kernel-metrics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
