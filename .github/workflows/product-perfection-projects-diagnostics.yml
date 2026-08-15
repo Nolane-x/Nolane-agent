@@ -1,0 +1,85 @@
+name: Product Perfection Projects Diagnostics
+
+on:
+  push:
+    branches:
+      - codex/product-perfection-system-v3
+    paths:
+      - 'scripts/capture-ui-layout-diagnostics.mjs'
+      - 'tests/ui-v3-project-layout-diagnostics.test.mjs'
+      - '.github/workflows/product-perfection-projects-diagnostics.yml'
+      - 'ui-v3/**'
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  projects-layout-diagnostics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NOLANE_AGENT_HOST: 127.0.0.1
+      NOLANE_AGENT_PORT: 4173
+      NOLANE_AGENT_TOKEN: nolane-product-perfection-projects-token
+      NOLANE_UI_RUNTIME_URL: http://127.0.0.1:4173
+
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@v6
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked source dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Verify diagnostic contract
+        run: node --test tests/ui-v3-project-layout-diagnostics.test.mjs
+
+      - name: Install Chromium diagnostic runtime
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.58.2
+          npx playwright install --with-deps chromium
+
+      - name: Start authenticated source runtime
+        shell: bash
+        env:
+          NOLANE_AGENT_DATA_DIR: ${{ runner.temp }}/nolane-product-perfection-projects-data
+        run: |
+          set -euo pipefail
+          node src/app.mjs > "$RUNNER_TEMP/nolane-projects-diagnostics.log" 2>&1 &
+          echo "NOLANE_DIAGNOSTIC_RUNTIME_PID=$!" >> "$GITHUB_ENV"
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent --show-error "$NOLANE_UI_RUNTIME_URL/health" > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/nolane-projects-diagnostics.log"
+          exit 1
+
+      - name: Capture Projects geometry and scroll evidence
+        shell: bash
+        env:
+          NOLANE_UI_LAYOUT_DIAGNOSTICS_OUTPUT: ${{ runner.temp }}/product-perfection-projects-diagnostics
+        run: node scripts/capture-ui-layout-diagnostics.mjs
+
+      - name: Upload product-perfection-projects-diagnostics
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: product-perfection-projects-diagnostics
+          path: ${{ runner.temp }}/product-perfection-projects-diagnostics
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Stop source runtime
+        if: always()
+        shell: bash
+        run: |
+          if [ -n "${NOLANE_DIAGNOSTIC_RUNTIME_PID:-}" ]; then kill "$NOLANE_DIAGNOSTIC_RUNTIME_PID" || true; fi
