@@ -48,7 +48,7 @@ test('Task 10 canonical visual authority declares risk-driven responsive/theme/l
     'browser-nocturne',
   ]) assert.match(capturer, new RegExp(`id: '${state}'`), `missing canonical state ${state}`);
 
-  assert.match(capturer, /\.\.\.state\.contextOptions/);
+  assert.match(capturer, /\.\.\.\(state\.contextOptions \?\? \{\}\)/);
   assert.match(capturer, /async function applyStatePreferences/);
   assert.match(capturer, /async function captureRuntimeMetadata/);
   for (const key of ['experience', 'theme', 'locale', 'activeElement', 'scroll', 'overflow', 'axe', 'semanticSignature']) {
