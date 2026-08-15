@@ -30,51 +30,36 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python - <<'PY'
-          from pathlib import Path
-          test_path = Path('tests/ui-v3-flagship-reconstruction.test.mjs')
-          test_text = test_path.read_text(encoding='utf-8')
-          marker = "Mission secondary evidence text uses contrast-safe semantic roles on the open canvas"
-          if marker in test_text:
-              raise SystemExit('contrast regression test already exists')
-          test_text += r'''
+          ! grep -q "Mission secondary evidence text uses contrast-safe semantic roles" tests/ui-v3-flagship-reconstruction.test.mjs
+          ! grep -q "Runtime critique cycle 1: transparent Mission material" ui-v3/styles/flagship/proofborne-instrument.css
+          cat >> tests/ui-v3-flagship-reconstruction.test.mjs <<'EOF_TEST'
 
-test('Mission secondary evidence text uses contrast-safe semantic roles on the open canvas', async () => {
-  const css = await readFile(flagshipUrl, 'utf8');
-  assert.match(css, /\.mission-spotlight > header \.eyebrow,\s*\n\.mission-spotlight > header p:last-child\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
-  assert.match(css, /\.mission-task-strip article div > small\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
-  assert.match(css, /\.execution-story > footer > span,\s*\n\.execution-story > footer > code,\s*\n\.follow-toggle > span\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
-});
-'''
-          test_path.write_text(test_text, encoding='utf-8')
+          test('Mission secondary evidence text uses contrast-safe semantic roles on the open canvas', async () => {
+            const css = await readFile(flagshipUrl, 'utf8');
+            assert.match(css, /\.mission-spotlight > header \.eyebrow,\s*\n\.mission-spotlight > header p:last-child\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
+            assert.match(css, /\.mission-task-strip article div > small\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
+            assert.match(css, /\.execution-story > footer > span,\s*\n\.execution-story > footer > code,\s*\n\.follow-toggle > span\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
+          });
+          EOF_TEST
+          cat >> ui-v3/styles/flagship/proofborne-instrument.css <<'EOF_CSS'
 
-          css_path = Path('ui-v3/styles/flagship/proofborne-instrument.css')
-          css = css_path.read_text(encoding='utf-8')
-          css_marker = 'Runtime critique cycle 1: transparent Mission material requires stronger'
-          if css_marker in css:
-              raise SystemExit('contrast repair already exists')
-          css += r'''
+          /* Runtime critique cycle 1: transparent Mission material requires stronger
+           * semantic text roles than the old raised-panel muted treatment. */
+          .mission-spotlight > header .eyebrow,
+          .mission-spotlight > header p:last-child {
+            color: var(--text-secondary);
+          }
 
-/* Runtime critique cycle 1: transparent Mission material requires stronger
- * semantic text roles than the old raised-panel muted treatment. */
-.mission-spotlight > header .eyebrow,
-.mission-spotlight > header p:last-child {
-  color: var(--text-secondary);
-}
+          .mission-task-strip article div > small {
+            color: var(--text-secondary);
+          }
 
-.mission-task-strip article div > small {
-  color: var(--text-secondary);
-}
-
-.execution-story > footer > span,
-.execution-story > footer > code,
-.follow-toggle > span {
-  color: var(--text-secondary);
-}
-'''
-          css_path.write_text(css, encoding='utf-8')
-          PY
-
+          .execution-story > footer > span,
+          .execution-story > footer > code,
+          .follow-toggle > span {
+            color: var(--text-secondary);
+          }
+          EOF_CSS
           node --test tests/ui-v3-flagship-reconstruction.test.mjs
           npm run validate:ui-tokens
           npm run build:ui-v3
