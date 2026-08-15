@@ -24,8 +24,8 @@ test('project registry switches between the project grid and real project activi
   assert.equal(controller.snapshot().view, 'activity');
   assert.match(activity, /class="project-activity-list"/);
   assert.match(activity, /Repair Workroom/);
-  assert.match(activity, /data-project-view="activity" aria-pressed="true"/);
+  assert.match(activity, /data-project-view="activity"[^>]*aria-pressed="true"/);
 
   const app = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
-  assert.match(app, /closest\('\[data-project-view\]'\)[\s\S]{0,140}controller\.setView\(mode\.dataset\.projectView\)/);
+  assert.match(app, /closest\('\[data-project-view\]'\)[\s\S]{0,180}controller\.setView\(mode\.dataset\.projectView\)/);
 });

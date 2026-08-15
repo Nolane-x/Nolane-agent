@@ -50,6 +50,8 @@ test('empty project picker directs people to add a local folder from this worksp
 
 test('project registry owns its Add project action without a duplicate global listener', async () => {
   const source = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
-  assert.match(source, /data-project-action="add"[^\n]+nolane:project-create-requested/);
+  assert.match(source, /action==='add'/);
+  assert.match(source, /nolane:project-create-requested/);
+  assert.equal((source.match(/nolane:project-create-requested/g) ?? []).length, 1);
   assert.doesNotMatch(source, /\['new',\s*'add',\s*'none'\]/);
 });
