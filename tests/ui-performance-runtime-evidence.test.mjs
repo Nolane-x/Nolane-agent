@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-test('runtime performance evidence uses the canonical UI budgets and remains candidate-only', async () => {
+test('runtime performance evidence uses canonical budgets, route attribution, and candidate-only claims', async () => {
   const source = await readFile('scripts/capture-ui-performance-evidence.mjs', 'utf8');
 
   assert.match(source, /homeInteractiveMs:\s*250/);
