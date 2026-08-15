@@ -1,0 +1,122 @@
+name: Milestone delivery flagship 253c30c2
+
+on:
+  push:
+    branches:
+      - checkpoint/nui-flagship-reconstruction-delivery-253c30c2
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  package-verified-milestone:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact verified merged head
+        uses: actions/checkout@v6
+        with:
+          ref: 253c30c28f748064a706630136191ece1723245b
+          fetch-depth: 0
+
+      - name: Assert exact source SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "253c30c28f748064a706630136191ece1723245b"
+
+      - name: Add milestone verification manifest and evidence artifacts
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p delivery/evidence/{critique-cycle-1,critique-cycle-2,final-visual,performance,proofline-ledger,proofline-empty,external-pr,external-post-merge}
+          cat > delivery/MILESTONE-VERIFICATION.json <<'JSON'
+          {
+            "schema": "nolane.agent.milestone-delivery.v2",
+            "product": "Nolane Agent",
+            "milestone": "NUI v10 flagship Proofborne Instrument reconstruction",
+            "repository": "Nolane-x/Nolane-agent",
+            "defaultBranch": "codex/external-gate-evidence",
+            "pullRequest": 12,
+            "selectedNuiThesis": "Proofborne Instrument",
+            "productNativeSignature": "Evidence Spine / Trace",
+            "finalMergedSha": "253c30c28f748064a706630136191ece1723245b",
+            "preMergeExactHead": "527d2faea767f7076cad691c7029ac52c4394047",
+            "mergeTreeIdenticalToVerifiedHead": true,
+            "critiqueCycles": {
+              "cycle1": {
+                "focus": "silhouette, hierarchy, semantic contrast",
+                "run": 31865461689,
+                "artifactId": 9241892519,
+                "artifactDigest": "sha256:28e0ee2ad1ea13a8d8729d466892eef23743ae61528016e2379cac4f57030e72",
+                "result": "PASS after causal Mission/Studio/Control Plane contrast corrections"
+              },
+              "cycle2": {
+                "focus": "comparative taste, material restraint, coherence",
+                "run": 31865945167,
+                "artifactId": 9242025353,
+                "artifactDigest": "sha256:88793429aa5591e6c3915e6364234a1a1474a3e2d3a9937f45d17e583760860a",
+                "result": "PASS after Control Plane system-map and Onboarding setup-plate refinement"
+              }
+            },
+            "canonicalSyncRun": 31866156199,
+            "preMergeExactHeadRuns": {
+              "ci": 31866197308,
+              "visual": 31866197278,
+              "performance": 31866197285,
+              "prooflineLedger": 31866197279,
+              "prooflineEmpty": 31866197280,
+              "externalGatesCleanPrRun": 31866427663
+            },
+            "preMergeVerification": "6/6 workflow families completed successfully on exact head; clean PR external run included Linux/macOS/Windows evidence plus bounded external certification candidate PASS",
+            "postMergeRuns": {
+              "ci": 31866823344,
+              "externalGates": 31866823335
+            },
+            "postMergeVerification": "CI PASS; Linux/macOS/Windows external evidence PASS; bounded certification candidate SKIPPED as designed on push because candidate is PR-only",
+            "externalGatePolicy": "pull_request runs may aggregate the bounded certification candidate from immutable PR receipts; push runs collect platform receipts and skip the PR-only candidate",
+            "designArtifacts": [
+              "docs/superpowers/specs/2026-08-15-nui-flagship-reconstruction-design.md",
+              "docs/superpowers/plans/2026-08-15-nui-flagship-reconstruction.md",
+              "docs/ui-v3/NUI-FLAGSHIP-RECONSTRUCTION-CRITIQUE.md"
+            ],
+            "boundedNonClaims": [
+              "independent screen-reader certification",
+              "labelled Windows 8GB empirical performance certification",
+              "provider-real, signing, release, installer or update requirements not explicitly proven by recorded receipts",
+              "a causal empirical claim that Nolane UI Intelligence improves every model or every UI task"
+            ],
+            "openObservation": "Projects runtime capture contains unexplained upper whitespace; no speculative CSS patch was applied because a causal root was not reproduced."
+          }
+          JSON
+
+          gh run download 31865461689 --repo "$GITHUB_REPOSITORY" --dir delivery/evidence/critique-cycle-1
+          gh run download 31865945167 --repo "$GITHUB_REPOSITORY" --dir delivery/evidence/critique-cycle-2
+          gh run download 31866197278 --repo "$GITHUB_REPOSITORY" --dir delivery/evidence/final-visual
+          gh run download 31866197285 --repo "$GITHUB_REPOSITORY" --dir delivery/evidence/performance
+          gh run download 31866197279 --repo "$GITHUB_REPOSITORY" --dir delivery/evidence/proofline-ledger
+          gh run download 31866197280 --repo "$GITHUB_REPOSITORY" --dir delivery/evidence/proofline-empty
+          gh run download 31866427663 --repo "$GITHUB_REPOSITORY" --dir delivery/evidence/external-pr
+          gh run download 31866823335 --repo "$GITHUB_REPOSITORY" --dir delivery/evidence/external-post-merge
+
+      - name: Package complete project and verification artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          ZIP="$RUNNER_TEMP/Nolane-agent-NUI-flagship-Proofborne-Instrument-253c30c2-COMPLETE.zip"
+          zip -q -r "$ZIP" . -x '.git/*'
+          unzip -t "$ZIP" >/dev/null
+          sha256sum "$ZIP" | tee "$RUNNER_TEMP/Nolane-agent-NUI-flagship-Proofborne-Instrument-253c30c2-COMPLETE.zip.sha256"
+
+      - name: Upload complete milestone delivery
+        uses: actions/upload-artifact@v6
+        with:
+          name: Nolane-agent-NUI-flagship-Proofborne-Instrument-253c30c2-COMPLETE
+          path: |
+            ${{ runner.temp }}/Nolane-agent-NUI-flagship-Proofborne-Instrument-253c30c2-COMPLETE.zip
+            ${{ runner.temp }}/Nolane-agent-NUI-flagship-Proofborne-Instrument-253c30c2-COMPLETE.zip.sha256
+          if-no-files-found: error
+          retention-days: 30
