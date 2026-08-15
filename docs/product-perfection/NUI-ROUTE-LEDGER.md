@@ -89,6 +89,62 @@ If a future task materially changes one of these fields, update this checksum be
 
 ---
 
+## Slice PFX-04 — Adoption path micro-detail closure
+
+**Observed trigger:** after shell correction, Onboarding/Home/Projects were visually coherent but still contained dead-end prerequisites, missing retry states, focus/caret loss risk during Projects search rerender, ambiguous empty-search copy, raw trust vocabulary and hidden-menu focus/description defects.
+
+**Activated NUI faculties / decision classes:**
+
+- adoption/onboarding architecture;
+- route/action reachability;
+- empty/loading/error/recovery state ownership;
+- keyboard/focus continuity;
+- localization and microcopy;
+- responsive capability preservation;
+- rendered critique;
+- professional-workspace trust semantics.
+
+**Systemic decisions:**
+
+- disabled mission prerequisites must expose a next valid action near the failure, not rely on hidden Settings knowledge;
+- Projects search must reuse the existing generic rerender/focus-selection preservation authority rather than introduce a second local mechanism;
+- search-empty and registry-empty are different product states;
+- experience regime switching changes disclosure/density but must restore visible focus and preserve state;
+- compact-runtime Axe findings are fixed at the local semantic-text owner rather than by weakening global contrast rules.
+
+**Omitted:** major Home art-direction changes and project management feature expansion. The selected flagship composition was already sound; the failure class was path/state closure.
+
+**Evidence:** `docs/product-perfection/ADOPTION-PATH-CLOSURE.md`; final render run `31873750921`, artifact `9244176098`, digest `sha256:01a907a4488e3e127e08e1ee71dab94c95408dd6275d67e535530cb7b88d0401`.
+
+**Falsification:** if a user can still reach Home with a disabled mission composer and no visible prerequisite recovery, type into Projects search and lose focus/caret, or receive “No projects yet” while a nonempty registry merely has no matches, this slice is not closed.
+
+---
+
+## Slice PFX-05 — Mission / Activity / Review truth and continuity
+
+**Observed trigger:** Mission/Activity/Review now has strong Proofline architecture, but source archaeology exposes professional-tool micro-gaps: polling rerenders can replace a focused control every five seconds; activity filters/follow state are not yet bound to the shared focus-preservation authority; the detail Review route constructs an empty local model instead of loading the real diff-review snapshot/decision API; the simple Mission component interpolates external values without the same explicit escaping discipline as richer flagship surfaces.
+
+**Activated NUI faculties / decision classes:**
+
+- AI/agent streaming, uncertainty and autonomous-action semantics;
+- execution provenance/evidence visualization;
+- review/approval consequence architecture;
+- keyboard/focus continuity under asynchronous rerender;
+- stale-snapshot/conflict recovery;
+- professional diff/workspace architecture;
+- trust/evidence truth;
+- rendered hierarchy and accessibility critique.
+
+**Required design boundary:** planned/running/partial/blocked/generated/accepted/rejected/verified states must not collapse into one visual “success” grammar. Review acceptance/rejection must be bound to the current server snapshot and actor/reason contract; stale snapshots must refresh instead of silently applying old decisions.
+
+**Omitted initially:** general visual-theme redesign, capability marketplace, Settings and release/update work. Those do not own the execution/review failure class.
+
+**Evidence capability:** source/API contract tests, existing diff-review service/HTTP tests, runtime source capture, Axe, and GitHub platform runner. Provider-real evidence is not required for this slice unless a provider-specific state is claimed.
+
+**Falsification:** if background Activity refresh can steal focus, `/review/:mission` can render without the real server review snapshot while appearing actionable, or a decision can be submitted against stale review SHA without visible recovery, this slice is not complete.
+
+---
+
 ## Routing maintenance rule
 
 Before each later material slice (shell, adoption, Mission/Review, Studio/Browser, capabilities/Settings/Control Plane, release/update), add an entry that records:
