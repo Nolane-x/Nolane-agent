@@ -170,3 +170,17 @@ Do not expand routing simply because a skill exists.
 **Falsification:** the slice is not closed if compact mode makes any core pane unreachable, project-path changes can reuse stale Workroom state, external page-derived content is indistinguishable from trusted Nolane chrome, or URL display can leak query secrets.
 
 **Evidence boundary:** source/focused tests + canonical build first; runtime wide/compact/Axe evidence required separately. Independent screen-reader/provider claims remain external.
+
+---
+
+## Slice PFX-08 — Capability truth and expert continuity
+
+**Observed triggers:** Skills discarded backend-declared capability state; Settings search could lose focus/caret after debounce; Control Plane equated successful HTTP reads/configuration with operational readiness and counted blocked/offline/configured records as online; Control Plane skill search lacked a preserve key.
+
+**Activated NUI decision classes:** capability-state truth; model/provider/tool transparency; professional control-plane semantics; state preservation; progressive expert disclosure; accessibility/focus continuity; evidence-gated completion.
+
+**Omitted for this slice:** new capabilities, provider behavior changes, broad Settings redesign and Control Plane information-architecture expansion. The failure class is truthful projection and interaction continuity.
+
+**Falsification:** the slice is not closed if UI infers undeclared skill readiness, configured/blocked/offline adapters appear online, status parsing can classify `not-ready` as ready, or debounced search replaces the active input and loses caret state.
+
+**Evidence boundary:** focused source tests + canonical build first; runtime keyboard/search and visual state evidence required separately. Provider-real and screen-reader claims remain external.
