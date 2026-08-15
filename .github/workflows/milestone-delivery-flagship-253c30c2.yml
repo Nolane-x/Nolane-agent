@@ -14,17 +14,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Checkout verified default branch ref
+      - name: Checkout exact verified merged head
         uses: actions/checkout@v6
         with:
-          ref: codex/external-gate-evidence
+          ref: 253c30c2f1c89a33eb2ad4e31fe1a2ee32a08a7f
           fetch-depth: 0
 
       - name: Assert exact source SHA
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "253c30c28f748064a706630136191ece1723245b"
+          test "$(git rev-parse HEAD)" = "253c30c2f1c89a33eb2ad4e31fe1a2ee32a08a7f"
 
       - name: Add milestone verification manifest and evidence artifacts
         shell: bash
@@ -43,8 +43,9 @@ jobs:
             "pullRequest": 12,
             "selectedNuiThesis": "Proofborne Instrument",
             "productNativeSignature": "Evidence Spine / Trace",
-            "finalMergedSha": "253c30c28f748064a706630136191ece1723245b",
+            "finalMergedSha": "253c30c2f1c89a33eb2ad4e31fe1a2ee32a08a7f",
             "preMergeExactHead": "527d2faea767f7076cad691c7029ac52c4394047",
+            "finalMergeTree": "1a52bb6f6c95f7abb10004524fdf15f6ca0a3a53",
             "mergeTreeIdenticalToVerifiedHead": true,
             "critiqueCycles": {
               "cycle1": {
