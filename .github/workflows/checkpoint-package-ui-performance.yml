@@ -1,0 +1,60 @@
+name: Package UI performance checkpoint
+
+on:
+  push:
+    branches:
+      - checkpoint/ui-performance-evidence-20260815
+    paths:
+      - '.github/workflows/checkpoint-package-ui-performance.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository history
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Archive exact verified source SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          target_sha='5169bf18be62b6a78aa4ba2ad9d6a3c37270c7cd'
+          out="$RUNNER_TEMP/nolane-ui-performance-checkpoint"
+          mkdir -p "$out"
+          git cat-file -e "$target_sha^{commit}"
+          git archive --format=zip --prefix='Nolane-agent-ui-performance-5169bf1/' \
+            --output="$out/Nolane-agent-ui-performance-5169bf1-source.zip" \
+            "$target_sha"
+          cat > "$out/checkpoint-manifest.json" <<JSON
+          {
+            "schema": "nolane.agent.checkpoint-package.v1",
+            "repository": "Nolane-x/Nolane-agent",
+            "sourceSha": "$target_sha",
+            "sourceBranch": "codex/ui-performance-runtime-evidence",
+            "checkpointBranch": "checkpoint/ui-performance-evidence-20260815",
+            "ciRun": 31856366247,
+            "visualRun": 31856366262,
+            "performanceRun": 31856366260,
+            "externalGateRun": 31856366249,
+            "certificationBoundary": {
+              "windows8GbCertified": false,
+              "screenReaderCertified": false,
+              "performanceCertified": false
+            }
+          }
+          JSON
+          sha256sum "$out/Nolane-agent-ui-performance-5169bf1-source.zip" > "$out/SHA256SUMS.txt"
+
+      - name: Upload checkpoint source package
+        uses: actions/upload-artifact@v6
+        with:
+          name: nolane-ui-performance-checkpoint-source
+          path: ${{ runner.temp }}/nolane-ui-performance-checkpoint
+          if-no-files-found: error
+          retention-days: 30
