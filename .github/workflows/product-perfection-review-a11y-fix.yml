@@ -35,7 +35,7 @@ jobs:
           set -euo pipefail
           npm run build:ui-v3
           node --test tests/ui-v3-review-accessibility-audit.test.mjs tests/ui-v3-review.test.mjs tests/ui-v3-review-flow.test.mjs tests/ui-v3-release-gate.test.mjs
-          node scripts/verify-ui-v3-release.mjs
+          node -e "import('./scripts/verify-ui-v3-release.mjs').then(async (m)=>{const r=await m.verifyUiV3Release({write:false}); console.log(JSON.stringify(r)); if(!r.sourceLocalPass) process.exit(1)})"
           npm run validate:ui-tokens
           git diff --check
       - name: Commit exact accessibility correction
