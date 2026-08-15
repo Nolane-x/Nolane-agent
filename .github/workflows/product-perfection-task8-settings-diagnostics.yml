@@ -1,0 +1,93 @@
+name: Product Perfection Task 8 Settings Diagnostics
+
+on:
+  push:
+    branches:
+      - codex/product-perfection-system-v3
+    paths:
+      - '.github/workflows/product-perfection-task8-settings-diagnostics.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose-settings:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NOLANE_AGENT_HOST: 127.0.0.1
+      NOLANE_AGENT_PORT: 4173
+      NOLANE_AGENT_TOKEN: nolane-task8-settings-diagnostics-token
+      NOLANE_UI_RUNTIME_URL: http://127.0.0.1:4173
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Verify canonical distribution
+        run: |
+          npm run build:ui-v3
+          git diff --exit-code -- ui-dist
+      - name: Install Chromium + Axe
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.58.2 @axe-core/playwright@4.12.1
+          npx playwright install --with-deps chromium
+      - name: Start source runtime
+        env:
+          NOLANE_AGENT_DATA_DIR: ${{ runner.temp }}/nolane-task8-settings-diagnostics-data
+        run: |
+          node src/app.mjs > "$RUNNER_TEMP/task8-settings-diagnostics.log" 2>&1 &
+          echo "NOLANE_SETTINGS_DIAG_PID=$!" >> "$GITHUB_ENV"
+          for attempt in $(seq 1 60); do curl --fail --silent "$NOLANE_UI_RUNTIME_URL/health" >/dev/null && exit 0; sleep 1; done
+          cat "$RUNNER_TEMP/task8-settings-diagnostics.log"; exit 1
+      - name: Complete onboarding
+        env:
+          NOLANE_UI_VISUAL_OUTPUT: ${{ runner.temp }}/task8-settings-diagnostics/onboarding
+          NOLANE_UI_VISUAL_STATES: onboarding
+        run: node scripts/capture-ui-runtime-visual.mjs
+      - name: Diagnose Settings search Axe nodes
+        shell: bash
+        run: |
+          ln -s "$GITHUB_WORKSPACE/node_modules" "$RUNNER_TEMP/node_modules" 2>/dev/null || true
+          mkdir -p "$RUNNER_TEMP/task8-settings-diagnostics"
+          cat > "$RUNNER_TEMP/settings-diagnostics.mjs" <<'NODE'
+          import { writeFile } from 'node:fs/promises';
+          import AxeBuilder from '@axe-core/playwright';
+          import { chromium } from 'playwright';
+          const base=process.env.NOLANE_UI_RUNTIME_URL, token=process.env.NOLANE_AGENT_TOKEN;
+          const out=`${process.env.RUNNER_TEMP}/task8-settings-diagnostics`;
+          const browser=await chromium.launch({headless:true});
+          const context=await browser.newContext({viewport:{width:980,height:900}});
+          const page=await context.newPage();
+          try{
+            await page.goto(`${base}/#/settings?token=${encodeURIComponent(token)}`,{waitUntil:'domcontentloaded',timeout:30000});
+            const search=page.locator('[data-settings-search]');
+            await search.waitFor({state:'visible',timeout:30000});
+            await search.focus(); await search.fill('provider'); await search.evaluate(el=>el.setSelectionRange(3,5)); await page.waitForTimeout(180);
+            const focus=await page.evaluate(()=>{const el=document.activeElement;return {isSearch:Boolean(el?.matches?.('[data-settings-search]')),value:el?.value??null,selection:el?.selectionStart==null?null:[el.selectionStart,el.selectionEnd]}});
+            const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa']).analyze();
+            const blocking=axe.violations.filter(v=>['serious','critical'].includes(String(v.impact))).map(v=>({id:v.id,impact:v.impact,help:v.help,helpUrl:v.helpUrl,nodes:v.nodes.map(n=>({target:n.target,html:n.html,failureSummary:n.failureSummary,any:n.any,all:n.all,none:n.none}))}));
+            const details=[];
+            for(const violation of blocking){for(const node of violation.nodes){for(const target of node.target){const computed=await page.locator(target).first().evaluate(el=>{const s=getComputedStyle(el),r=el.getBoundingClientRect();return {tag:el.tagName,className:el.className,text:el.textContent?.trim(),color:s.color,backgroundColor:s.backgroundColor,fontSize:s.fontSize,fontWeight:s.fontWeight,opacity:s.opacity,rect:{x:r.x,y:r.y,width:r.width,height:r.height}}}).catch(error=>({selectorError:String(error)}));details.push({violationId:violation.id,target,computed})}}}
+            const report={schema:'nolane.task8.settings-contrast-diagnostic.v1',sourceRevision:process.env.GITHUB_SHA,focus,blocking,details};
+            await writeFile(`${out}/axe-settings-980.json`,`${JSON.stringify(report,null,2)}\n`);
+            await page.screenshot({path:`${out}/settings-980-provider.png`,fullPage:true,animations:'disabled'});
+            console.log(JSON.stringify(report,null,2));
+            if(blocking.length) process.exitCode=2;
+          }finally{await context.close();await browser.close()}
+          NODE
+          node "$RUNNER_TEMP/settings-diagnostics.mjs"
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: task8-settings-contrast-diagnostics
+          path: ${{ runner.temp }}/task8-settings-diagnostics
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Stop runtime
+        if: always()
+        run: |
+          if [ -n "${NOLANE_SETTINGS_DIAG_PID:-}" ]; then kill "$NOLANE_SETTINGS_DIAG_PID" || true; fi
