@@ -1,0 +1,158 @@
+name: Product Perfection Task 8 Capability Truth Closure
+
+on:
+  push:
+    branches:
+      - codex/product-perfection-system-v3
+    paths:
+      - '.github/workflows/product-perfection-task8-capability-truth.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  close-task8:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+
+      - name: Prove Task 8 contract is RED
+        shell: bash
+        run: |
+          set -euo pipefail
+          if node --test tests/ui-v3-capability-settings-control-perfection.test.mjs; then
+            echo 'Expected Task 8 truth/continuity contract to be RED before migration' >&2
+            exit 1
+          fi
+
+      - name: Apply guarded Skills Settings Control Plane migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/apply-product-perfection-task8.py
+          python scripts/apply-product-perfection-task8.py
+          node --check ui-v3/app.mjs
+          node --check ui-v3/views/skills/skills-view.mjs
+          node --check ui-v3/control-plane/live-domain-workspace.mjs
+
+      - name: Verify focused GREEN and canonical distribution
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test \
+            tests/ui-v3-capability-settings-control-perfection.test.mjs \
+            tests/ui-v3-skills-library.test.mjs \
+            tests/ui-v3-skills-progressive-render.test.mjs \
+            tests/ui-v3-settings-controller.test.mjs \
+            tests/ui-v3-settings-route.test.mjs \
+            tests/ui-v3-settings-wiring.test.mjs \
+            tests/ui-settings-progressive-runtime-contract.test.mjs \
+            tests/ui-v3-control-plane-live-workspace.test.mjs \
+            tests/ui-v3-control-plane-domains.test.mjs \
+            tests/ui-v3-control-plane-shell-v2.test.mjs \
+            tests/ui-v3-accessibility.test.mjs \
+            tests/ui-v3-perfection-authority.test.mjs
+          npm run validate:ui-tokens
+          npm run build:ui-v3
+          git diff --check
+
+      - name: Create exact Task 8 implementation commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f scripts/apply-product-perfection-task8.py .github/workflows/product-perfection-task8-capability-truth.yml
+          git add \
+            ui-v3/app.mjs \
+            ui-v3/views/skills/skills-view.mjs \
+            ui-v3/styles/pages/skills.css \
+            ui-v3/control-plane/live-domain-workspace.mjs \
+            tests/ui-v3-capability-settings-control-perfection.test.mjs \
+            ui-dist
+          git config user.name 'nolane-evidence-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'feat(ui): close capability truth and expert continuity gaps'
+          echo "TASK8_VERIFIED_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Verify exact Task 8 implementation commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TASK8_VERIFIED_SHA"
+          node --test \
+            tests/ui-v3-capability-settings-control-perfection.test.mjs \
+            tests/ui-v3-skills-library.test.mjs \
+            tests/ui-v3-skills-progressive-render.test.mjs \
+            tests/ui-v3-settings-controller.test.mjs \
+            tests/ui-v3-settings-route.test.mjs \
+            tests/ui-v3-settings-wiring.test.mjs \
+            tests/ui-settings-progressive-runtime-contract.test.mjs \
+            tests/ui-v3-control-plane-live-workspace.test.mjs \
+            tests/ui-v3-control-plane-domains.test.mjs \
+            tests/ui-v3-control-plane-shell-v2.test.mjs \
+            tests/ui-v3-accessibility.test.mjs \
+            tests/ui-v3-perfection-authority.test.mjs
+          npm run validate:ui-tokens
+          npm run build:ui-v3
+          git diff --exit-code -- ui-dist
+          npm run audit:ui-quality
+          git diff --check
+          grep -q 'data-skill-capability-state' ui-v3/views/skills/skills-view.mjs
+          grep -q 'settingsSearchState' ui-v3/app.mjs
+          grep -q 'data-preserve-key="control-plane-skill-search"' ui-v3/control-plane/live-domain-workspace.mjs
+          grep -q "workspaceStatus=hardFailures.length?'degraded':warnings.length?'attention':'ready'" ui-v3/control-plane/live-domain-workspace.mjs
+
+      - name: Write durable Task 8 source closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > docs/product-perfection/TASK8-SKILLS-SETTINGS-CONTROL-CLOSURE.md <<EOF
+          # Task 8 — Skills / Settings / Control Plane Source Closure
+
+          **Exact verified implementation revision:** \`${TASK8_VERIFIED_SHA}\`  
+          **Workflow run:** \`${GITHUB_RUN_ID}\`  
+          **Status:** PASS for source truth, focused behavior, canonical build, token and static-quality scope.
+
+          Verified:
+
+          - Skills preserves and renders only capability states explicitly declared by the backend; no readiness is inferred from installation/configuration metadata;
+          - explicit skill capability states participate in search and remain localized;
+          - Settings search preserves active focus, value and caret/selection through the debounced custom rerender path without stealing focus after the user moves away;
+          - Control Plane classifies semantic blocked/offline/not-ready states before positive ready matching;
+          - configured/attention records are not counted as online;
+          - aggregate Control Plane status is degraded for hard semantic failures and attention for non-ready warnings;
+          - Control Plane skill catalog search owns a shared focus-preservation key;
+          - focused Skills, Settings, Control Plane, accessibility and perfection regressions pass;
+          - canonical \`ui-dist\`, UI tokens and static UI quality audit pass.
+
+          Runtime visual/interaction re-observation remains required before Task 8 final certification.
+          EOF
+          if ! grep -q 'Slice PFX-08 — Capability truth and expert continuity' docs/product-perfection/NUI-ROUTE-LEDGER.md; then
+            cat >> docs/product-perfection/NUI-ROUTE-LEDGER.md <<'EOF'
+
+          ---
+
+          ## Slice PFX-08 — Capability truth and expert continuity
+
+          **Observed triggers:** Skills discarded backend-declared capability state; Settings search could lose focus/caret after debounce; Control Plane equated successful HTTP reads/configuration with operational readiness and counted blocked/offline/configured records as online; Control Plane skill search lacked a preserve key.
+
+          **Activated NUI decision classes:** capability-state truth; model/provider/tool transparency; professional control-plane semantics; state preservation; progressive expert disclosure; accessibility/focus continuity; evidence-gated completion.
+
+          **Omitted for this slice:** new capabilities, provider behavior changes, broad Settings redesign and Control Plane information-architecture expansion. The failure class is truthful projection and interaction continuity.
+
+          **Falsification:** the slice is not closed if UI infers undeclared skill readiness, configured/blocked/offline adapters appear online, status parsing can classify `not-ready` as ready, or debounced search replaces the active input and loses caret state.
+
+          **Evidence boundary:** focused source tests + canonical build first; runtime keyboard/search and visual state evidence required separately. Provider-real and screen-reader claims remain external.
+          EOF
+          fi
+          git add docs/product-perfection/TASK8-SKILLS-SETTINGS-CONTROL-CLOSURE.md docs/product-perfection/NUI-ROUTE-LEDGER.md
+          git commit -m 'docs(perfection): record Task 8 source closure [skip ci]'
+          git push origin HEAD:codex/product-perfection-system-v3
