@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-test('UI runtime evidence includes a multi-width responsive render matrix without replacing external certification', async () => {
+test('UI runtime evidence covers responsive pressure points and breakpoint boundaries without replacing external certification', async () => {
   const workflow = await readFile('.github/workflows/ui-runtime-visual.yml', 'utf8');
   const responsive = await readFile('scripts/capture-ui-responsive-evidence.mjs', 'utf8');
 
