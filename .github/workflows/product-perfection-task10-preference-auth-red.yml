@@ -1,0 +1,22 @@
+name: Product Perfection Task 10 Preference Auth RED
+
+on:
+  push:
+    branches: [codex/product-perfection-system-v3]
+    paths:
+      - 'tests/ui-runtime-preference-auth.test.mjs'
+      - '.github/workflows/product-perfection-task10-preference-auth-red.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  red:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: node --test tests/ui-runtime-preference-auth.test.mjs
