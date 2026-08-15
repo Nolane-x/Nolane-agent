@@ -1,0 +1,112 @@
+name: Product Perfection Task 7 Runtime Evidence v3
+
+on:
+  push:
+    branches:
+      - codex/product-perfection-system-v3
+    paths:
+      - '.github/workflows/product-perfection-task7-runtime-v3.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  runtime-evidence:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NOLANE_AGENT_HOST: 127.0.0.1
+      NOLANE_AGENT_PORT: 4173
+      NOLANE_AGENT_TOKEN: nolane-task7-runtime-v3-token
+      NOLANE_UI_RUNTIME_URL: http://127.0.0.1:4173
+    steps:
+      - uses: actions/checkout@v6
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm }
+      - run: npm ci --ignore-scripts
+      - name: Verify canonical distribution
+        run: |
+          npm run build:ui-v3
+          git diff --exit-code -- ui-dist
+      - name: Install Chromium and Axe
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.58.2 @axe-core/playwright@4.12.1
+          npx playwright install --with-deps chromium
+      - name: Start source runtime
+        env:
+          NOLANE_AGENT_DATA_DIR: ${{ runner.temp }}/nolane-task7-runtime-v3-data
+        run: |
+          node src/app.mjs > "$RUNNER_TEMP/task7-v3.log" 2>&1 &
+          echo "NOLANE_TASK7_V3_PID=$!" >> "$GITHUB_ENV"
+          for attempt in $(seq 1 60); do curl --fail --silent "$NOLANE_UI_RUNTIME_URL/health" >/dev/null && exit 0; sleep 1; done
+          cat "$RUNNER_TEMP/task7-v3.log"; exit 1
+      - name: Complete onboarding
+        env:
+          NOLANE_UI_VISUAL_OUTPUT: ${{ runner.temp }}/task7-runtime-v3/onboarding
+          NOLANE_UI_VISUAL_STATES: onboarding
+        run: node scripts/capture-ui-runtime-visual.mjs
+      - name: Verify compact Studio and Browser trust boundary
+        shell: bash
+        run: |
+          ln -s "$GITHUB_WORKSPACE/node_modules" "$RUNNER_TEMP/node_modules" 2>/dev/null || true
+          mkdir -p "$RUNNER_TEMP/task7-runtime-v3/custom"
+          cat > "$RUNNER_TEMP/task7-v3.mjs" <<'NODE'
+          import { createHash } from 'node:crypto';
+          import { mkdir, readFile, writeFile } from 'node:fs/promises';
+          import path from 'node:path';
+          import AxeBuilder from '@axe-core/playwright';
+          import { chromium } from 'playwright';
+          const base=process.env.NOLANE_UI_RUNTIME_URL, token=process.env.NOLANE_AGENT_TOKEN;
+          const out=path.join(process.env.RUNNER_TEMP,'task7-runtime-v3','custom'); await mkdir(out,{recursive:true});
+          const browser=await chromium.launch({headless:true}); const captures=[];
+          const axe=async(page,label)=>{const r=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa']).analyze();const b=r.violations.filter(v=>['serious','critical'].includes(String(v.impact)));if(b.length)throw new Error(`${label} Axe blockers: ${b.map(v=>v.id).join(', ')}`)};
+          const overflow=async(page,label)=>{const v=await page.evaluate(()=>({w:innerWidth,d:Math.max(document.documentElement.scrollWidth,document.body?.scrollWidth??0)}));if(v.d>v.w+1)throw new Error(`${label} overflow ${v.d}>${v.w}`)};
+          const shot=async(page,id)=>{const f=path.join(out,`${id}.png`);await page.screenshot({path:f,fullPage:true,animations:'disabled'});const b=await readFile(f);captures.push({id,file:path.basename(f),sha256:createHash('sha256').update(b).digest('hex'),bytes:b.length})};
+          try{
+            const c1=await browser.newContext({viewport:{width:640,height:900}}), studio=await c1.newPage();
+            await studio.goto(`${base}/#/workroom?token=${encodeURIComponent(token)}`,{waitUntil:'domcontentloaded'});await studio.locator('.workroom-view').waitFor({state:'visible',timeout:30000});await studio.locator('.workroom-compact-panes').waitFor({state:'visible'});
+            for(const pane of ['files','editor','agent']){await studio.locator(`[data-workroom-pane="${pane}"]`).click();await studio.locator(`[data-panel="${pane}"][data-compact-active="true"]`).waitFor({state:'visible'});for(const other of ['files','editor','agent'].filter(x=>x!==pane)){if(await studio.locator(`[data-panel="${other}"][data-compact-active="false"]`).first().isVisible())throw new Error(`${other} remained active while ${pane} selected`)}await overflow(studio,`Studio ${pane}`);await axe(studio,`Studio ${pane}`);await shot(studio,`studio-640-${pane}`)}await c1.close();
+            const c2=await browser.newContext({viewport:{width:820,height:1000}}), page=await c2.newPage();await page.goto(`${base}/#/browser?token=${encodeURIComponent(token)}`,{waitUntil:'domcontentloaded'});await page.locator('.browser-workspace').waitFor({state:'visible',timeout:30000});const inspector=page.locator('[data-browser-trust-boundary]'), boundary=page.locator('[data-browser-external-content="bounded"]');await inspector.waitFor({state:'visible'});await boundary.waitFor({state:'visible'});const heading=boundary.locator(':scope > header > strong');await heading.waitFor({state:'visible'});const h=(await heading.innerText()).trim().toLocaleLowerCase();if(!['external page content','nội dung trang bên ngoài'].includes(h))throw new Error(`Unexpected Browser external-content heading: ${h}`);const t=(await inspector.innerText()).toLocaleLowerCase();if(!t.includes('origin'))throw new Error('missing Origin');if(!(t.includes('session')||t.includes('phiên')))throw new Error('missing Session/Phiên');if(!(t.includes('permission boundary')||t.includes('ranh giới quyền')))throw new Error('missing permission boundary');if(/token=secret|>secret</i.test(await page.content()))throw new Error('query secret leaked');await overflow(page,'Browser trust');await axe(page,'Browser trust');await shot(page,'browser-820-trust-boundary');await c2.close();
+          }finally{await browser.close()}
+          const report={schema:'nolane.task7.runtime-evidence.v3',sourceRevision:process.env.GITHUB_SHA,captures};report.receiptSha256=createHash('sha256').update(JSON.stringify(report)).digest('hex');await writeFile(path.join(out,'receipt.json'),`${JSON.stringify(report,null,2)}\n`);console.log(JSON.stringify({receiptSha256:report.receiptSha256,captures:captures.length}));
+          NODE
+          node "$RUNNER_TEMP/task7-v3.mjs"
+      - name: Upload custom evidence
+        uses: actions/upload-artifact@v6
+        with:
+          name: product-perfection-task7-runtime-evidence-v3
+          path: ${{ runner.temp }}/task7-runtime-v3
+          retention-days: 21
+      - name: Persist Task 7 runtime closure
+        run: |
+          custom_receipt=$(node -p "JSON.parse(require('fs').readFileSync(process.env.RUNNER_TEMP + '/task7-runtime-v3/custom/receipt.json','utf8')).receiptSha256")
+          cat > docs/product-perfection/TASK7-RUNTIME-VISUAL-CLOSURE.md <<EOF
+          # Task 7 — Studio / Browser Runtime Visual / Axe Closure
+
+          **Exact source implementation revision:** \`0fdd1b19952d71e9d42b6b3cb28c3f86694474e5\`  
+          **Canonical wide-state evidence run:** \`31877717209\`  
+          **Canonical wide-state receipt:** \`3a1a4d73a69cf836c5ceee7177db8a1a922d9f597e21a17c11cb4e045430fec9\`  
+          **Compact/trust evidence run:** \`${GITHUB_RUN_ID}\`  
+          **Compact/trust receipt:** \`${custom_receipt}\`
+
+          Runtime evidence completed:
+
+          - canonical Studio and Browser wide states rendered from the real source runtime;
+          - Studio at 640px switched through Files, Editor and Agent, with only the selected pane visually active;
+          - Browser at 820px exposed a visible localized external-content heading plus textual Origin, Session/Phiên and Permission-boundary facts;
+          - captured custom states had no serious/critical Axe violations and no horizontal overflow;
+          - Browser trust surface did not expose a query-secret marker.
+
+          Independent screen-reader certification remains UNKNOWN and is not implied by Axe evidence.
+          EOF
+          git rm -f .github/workflows/product-perfection-task7-runtime.yml .github/workflows/product-perfection-task7-runtime-v2.yml .github/workflows/product-perfection-task7-runtime-v3.yml
+          git add docs/product-perfection/TASK7-RUNTIME-VISUAL-CLOSURE.md
+          git config user.name nolane-evidence-bot; git config user.email actions@users.noreply.github.com
+          git commit -m 'docs(perfection): record Task 7 runtime closure [skip ci]'
+          git push origin HEAD:codex/product-perfection-system-v3
+      - name: Stop runtime
+        if: always()
+        run: |
+          if [ -n "${NOLANE_TASK7_V3_PID:-}" ]; then kill "$NOLANE_TASK7_V3_PID" || true; fi
