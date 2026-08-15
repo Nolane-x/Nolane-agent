@@ -1,5 +1,6 @@
-name: Product Perfection Adoption Visual Baseline
+name: Product Perfection Adoption Visual Re-observation
 
+# Re-observation gate after causal shell, density, focus, contrast, and adoption-path corrections.
 on:
   push:
     branches:
@@ -73,7 +74,7 @@ jobs:
             --data '{"layer":"user","patch":{"general":{"language":"vi"},"appearance":{"theme":"nocturne","accent":"violet"}}}' \
             "$NOLANE_UI_RUNTIME_URL/api/settings" >/dev/null
           NOLANE_UI_VISUAL_OUTPUT="$RUNNER_TEMP/product-perfection-adoption/vi-nocturne" NOLANE_UI_VISUAL_STATES=home,home-experience-menu,projects node scripts/capture-ui-runtime-visual.mjs
-      - name: Upload adoption visual baseline
+      - name: Upload adoption visual re-observation
         if: always()
         uses: actions/upload-artifact@v6
         with:
