@@ -1,0 +1,21 @@
+name: Session Context Contrast RED
+
+on:
+  push:
+    branches: [codex/product-perfection-system-v3]
+    paths: ['.github/workflows/session-context-contrast-red.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  prove-red:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Prove the regression contract fails before the production fix
+        run: node --test tests/ui-v3-session-context-contrast.test.mjs
