@@ -4,12 +4,13 @@ import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 const NUI_SHA = '3cc8168ab8daf8b33a5729e70bb27573e68b45b8';
 const PERF_SHA = '5169bf18be62b6a78aa4ba2ad9d6a3c37270c7cd';
 const OUTPUT_BRANCH = 'codex/nui-performance-integration';
+const LARGE_STDIO_BUFFER = 64 * 1024 * 1024;
 
 function run(command, args, options = {}) {
   return execFileSync(command, args, { stdio: 'inherit', ...options });
 }
 function text(command, args) {
-  return execFileSync(command, args, { encoding: 'utf8' });
+  return execFileSync(command, args, { encoding: 'utf8', maxBuffer: LARGE_STDIO_BUFFER });
 }
 function tryRun(command, args) {
   return spawnSync(command, args, { stdio: 'inherit' });
