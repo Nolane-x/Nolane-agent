@@ -1,0 +1,43 @@
+name: Product Perfection Task 8 Skills Contrast Repair
+
+on:
+  push:
+    branches:
+      - codex/product-perfection-system-v3
+    paths:
+      - '.github/workflows/product-perfection-task8-contrast.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm }
+      - run: npm ci --ignore-scripts
+      - name: Prove Skills contrast contract is RED
+        run: |
+          if node --test tests/ui-v3-skills-capability-contrast.test.mjs; then echo 'Expected RED before repair' >&2; exit 1; fi
+      - name: Apply guarded repair
+        run: |
+          python -m py_compile scripts/apply-product-perfection-task8-contrast.py
+          python scripts/apply-product-perfection-task8-contrast.py
+      - name: Verify GREEN and canonical distribution
+        run: |
+          node --test tests/ui-v3-skills-capability-contrast.test.mjs tests/ui-v3-capability-settings-control-perfection.test.mjs tests/ui-v3-skills-library.test.mjs tests/ui-v3-accessibility.test.mjs tests/ui-v3-perfection-authority.test.mjs
+          npm run validate:ui-tokens
+          npm run build:ui-v3
+          git diff --check
+      - name: Commit exact repair
+        run: |
+          git rm -f scripts/apply-product-perfection-task8-contrast.py .github/workflows/product-perfection-task8-contrast.yml
+          git add ui-v3/styles/pages/skills.css tests/ui-v3-skills-capability-contrast.test.mjs ui-dist
+          git config user.name nolane-evidence-bot; git config user.email actions@users.noreply.github.com
+          git commit -m 'fix(ui): raise Skills capability-chip contrast'
+          git push origin HEAD:codex/product-perfection-system-v3
