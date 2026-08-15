@@ -116,3 +116,8 @@ test('Mission secondary evidence text uses contrast-safe semantic roles on the o
   assert.match(css, /\.mission-task-strip article div > small\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
   assert.match(css, /\.execution-story > footer > span,\s*\n\.execution-story > footer > code,\s*\n\.follow-toggle > span\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
 });
+
+test('Studio empty-state guidance remains readable on the flattened editor canvas', async () => {
+  const css = await readFile(flagshipUrl, 'utf8');
+  assert.match(css, /\.editor-welcome > p\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
+});
