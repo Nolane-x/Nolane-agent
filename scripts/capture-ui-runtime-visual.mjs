@@ -388,14 +388,26 @@ async function assertForcedColorsFocus(page) {
 }
 
 async function assertVietnameseResponsive(page) {
-  const result = await page.evaluate(() => ({
-    language: document.documentElement.dataset.language ?? document.documentElement.lang ?? '',
-    shellLabel: document.querySelector('[data-command="new-mission"] span')?.textContent?.trim() ?? '',
-  }));
-  if (!String(result.language).toLowerCase().startsWith('vi') || result.shellLabel !== 'Cuộc trò chuyện mới') {
-    throw new Error('Vietnamese responsive state did not project Vietnamese UI truth: ' + JSON.stringify(result));
+  const result = await page.evaluate(() => {
+    const center = document.querySelector('.settings-center');
+    const nav = document.querySelector('.settings-nav');
+    const content = document.querySelector('.settings-content');
+    const actionButtons = [...document.querySelectorAll('.settings-actions>button')];
+    const centerRect = center?.getBoundingClientRect();
+    const navRect = nav?.getBoundingClientRect();
+    const contentRect = content?.getBoundingClientRect();
+    return {
+      language: document.documentElement.dataset.language ?? document.documentElement.lang ?? '',
+      shellLabel: document.querySelector('[data-command="new-mission"] span')?.textContent?.trim() ?? '',
+      settingsStacked: Boolean(centerRect && navRect && contentRect && contentRect.top >= navRect.bottom - 1),
+      contentShare: centerRect && contentRect && centerRect.width > 0 ? contentRect.width / centerRect.width : 0,
+      actionsUnclipped: actionButtons.length > 0 && actionButtons.every((node) => node.scrollWidth <= node.clientWidth + 1 && node.scrollHeight <= node.clientHeight + 1),
+    };
+  });
+  if (!String(result.language).toLowerCase().startsWith('vi') || result.shellLabel !== 'Cuộc trò chuyện mới' || !result.settingsStacked || result.contentShare < 0.9 || !result.actionsUnclipped) {
+    throw new Error('Vietnamese responsive state did not preserve compact Settings hierarchy: ' + JSON.stringify(result));
   }
-  return Object.freeze({ vietnameseResponsive: 'PASS' });
+  return Object.freeze({ vietnameseResponsive: 'PASS', settingsCompactHierarchy: 'PASS' });
 }
 
 async function assertExperienceMenuOpaque(page) {
