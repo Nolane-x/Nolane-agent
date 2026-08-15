@@ -1,0 +1,198 @@
+name: Product Perfection Task 10 NUI Cycle B GREEN
+
+on:
+  push:
+    branches: [codex/product-perfection-system-v3]
+    paths:
+      - '.github/workflows/product-perfection-task10-cycle-b-green.yml'
+      - 'scripts/apply-product-perfection-task10-cycle-b.mjs'
+
+permissions:
+  contents: write
+
+jobs:
+  cycle-b:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      NOLANE_AGENT_HOST: 127.0.0.1
+      NOLANE_AGENT_PORT: 4173
+      NOLANE_AGENT_TOKEN: nolane-task10-cycle-b-token
+      NOLANE_UI_RUNTIME_URL: http://127.0.0.1:4173
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+
+      - name: Apply guarded Cycle B repair
+        run: |
+          set -euo pipefail
+          node scripts/apply-product-perfection-task10-cycle-b.mjs
+
+      - name: Verify Cycle B source GREEN
+        run: |
+          set -euo pipefail
+          node --check ui-v3/views/settings/settings-view.mjs
+          node --test \
+            tests/ui-v3-settings-save-state-material.test.mjs \
+            tests/ui-v3-settings-controller.test.mjs \
+            tests/ui-v3-settings-route.test.mjs \
+            tests/ui-v3-settings-contrast.test.mjs \
+            tests/ui-v3-settings-compact-recomposition.test.mjs \
+            tests/ui-v3-accessibility.test.mjs \
+            tests/ui-runtime-product-perfection-matrix.test.mjs
+          npm run validate:ui-tokens
+          npm run audit:ui-quality
+          npm run build:ui-v3
+          git diff --check
+
+      - name: Create and reverify exact Cycle B candidate
+        run: |
+          set -euo pipefail
+          git rm -f \
+            .github/workflows/product-perfection-task10-cycle-b-green.yml \
+            .github/workflows/product-perfection-task10-cycle-b-red.yml \
+            scripts/apply-product-perfection-task10-cycle-b.mjs
+          git add ui-v3/views/settings/settings-view.mjs ui-v3/styles/pages/settings.css ui-dist
+          git config user.name nolane-evidence-bot
+          git config user.email actions@users.noreply.github.com
+          git commit -m 'fix(ui): calibrate Settings save-state material hierarchy'
+          echo "NOLANE_UI_EVIDENCE_REVISION=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          node --test tests/ui-v3-settings-save-state-material.test.mjs tests/ui-v3-settings-route.test.mjs tests/ui-v3-settings-compact-recomposition.test.mjs
+          npm run build:ui-v3
+          git diff --exit-code -- ui-dist
+          npm run validate:ui-tokens
+          npm run audit:ui-quality
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+      - name: Install Chromium and Axe
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.58.2 @axe-core/playwright@4.12.1
+          npx playwright install --with-deps chromium
+
+      - name: Start exact Cycle B source runtime
+        env:
+          NOLANE_AGENT_DATA_DIR: ${{ runner.temp }}/nolane-task10-cycle-b-data
+        run: |
+          set -euo pipefail
+          node src/app.mjs > "$RUNNER_TEMP/nolane-task10-cycle-b.log" 2>&1 &
+          echo "NOLANE_TASK10_CYCLE_B_PID=$!" >> "$GITHUB_ENV"
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent --show-error "$NOLANE_UI_RUNTIME_URL/health" >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/nolane-task10-cycle-b.log"
+          exit 1
+
+      - name: Complete onboarding and establish Nocturne Settings
+        env:
+          NOLANE_UI_VISUAL_OUTPUT: ${{ runner.temp }}/task10-cycle-b/bootstrap
+        run: |
+          set -euo pipefail
+          NOLANE_UI_VISUAL_STATES=onboarding node scripts/capture-ui-runtime-visual.mjs
+          NOLANE_UI_VISUAL_STATES=settings-nocturne node scripts/capture-ui-runtime-visual.mjs
+
+      - name: Re-observe Saved and Dirty material states
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/task10-cycle-b-material.mjs" <<'NODE'
+          import { createHash } from 'node:crypto';
+          import { mkdir, readFile, writeFile } from 'node:fs/promises';
+          import path from 'node:path';
+          import AxeBuilder from '@axe-core/playwright';
+          import { chromium } from 'playwright';
+
+          const base = process.env.NOLANE_UI_RUNTIME_URL;
+          const token = process.env.NOLANE_AGENT_TOKEN;
+          const output = path.join(process.env.RUNNER_TEMP, 'task10-cycle-b', 'material');
+          await mkdir(output, { recursive: true });
+          const browser = await chromium.launch({ headless: true });
+          const context = await browser.newContext({ viewport: { width: 640, height: 1000 }, deviceScaleFactor: 1 });
+          const page = await context.newPage();
+          const pageErrors = [];
+          page.on('pageerror', (error) => pageErrors.push(String(error?.message ?? error)));
+          const captures = [];
+
+          const inspect = async (expectedState, filename) => {
+            const button = page.locator('[data-settings-action="save"]');
+            await button.waitFor({ state: 'visible', timeout: 20_000 });
+            const material = await button.evaluate((node) => {
+              const c = getComputedStyle(node);
+              return {
+                saveState: node.dataset.settingsSaveState,
+                disabled: node.disabled,
+                primary: node.classList.contains('primary'),
+                backgroundColor: c.backgroundColor,
+                color: c.color,
+                borderColor: c.borderColor,
+                opacity: Number(c.opacity),
+                label: node.textContent?.trim() ?? '',
+              };
+            });
+            if (material.saveState !== expectedState) throw new Error(`expected ${expectedState} save state, got ${material.saveState}`);
+            const axe = await new AxeBuilder({ page }).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa']).analyze();
+            const blocking = axe.violations.filter((item) => ['serious','critical'].includes(String(item.impact)));
+            if (blocking.length) throw new Error(`${expectedState} Axe blockers: ${blocking.map((item) => item.id).join(', ')}`);
+            const file = path.join(output, filename);
+            await page.screenshot({ path: file, fullPage: true, animations: 'disabled' });
+            const bytes = await readFile(file);
+            captures.push({ state: expectedState, file: filename, sha256: createHash('sha256').update(bytes).digest('hex'), material, axeSeriousCritical: 'PASS' });
+            return material;
+          };
+
+          try {
+            await page.goto(`${base}/#/settings?token=${encodeURIComponent(token)}`, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+            await page.locator('.settings-center').waitFor({ state: 'visible', timeout: 30_000 });
+            const saved = await inspect('saved', 'settings-saved-nocturne-640.png');
+            if (!saved.disabled || saved.primary) throw new Error(`Saved state must be neutral + disabled: ${JSON.stringify(saved)}`);
+
+            await page.locator('[data-settings-category-link="appearance"]').click();
+            await page.locator('[data-settings-category="appearance"]').waitFor({ state: 'visible', timeout: 10_000 });
+            const nextAccent = page.locator('[data-setting-choice][data-setting-path="appearance.accent"][aria-pressed="false"]').first();
+            await nextAccent.waitFor({ state: 'visible', timeout: 10_000 });
+            await nextAccent.click();
+            await page.waitForFunction(() => document.querySelector('[data-settings-action="save"]')?.dataset?.settingsSaveState === 'dirty', { timeout: 10_000 });
+            const dirty = await inspect('dirty', 'settings-dirty-nocturne-640.png');
+            if (dirty.disabled || !dirty.primary) throw new Error(`Dirty state must be actionable primary: ${JSON.stringify(dirty)}`);
+            if (dirty.backgroundColor === saved.backgroundColor || dirty.opacity <= saved.opacity) throw new Error(`Dirty state did not become materially stronger: ${JSON.stringify({ saved, dirty })}`);
+            if (pageErrors.length) throw new Error(`Settings material states emitted page errors: ${pageErrors.join(' | ')}`);
+          } finally {
+            await context.close();
+            await browser.close();
+          }
+
+          const report = { schema: 'nolane.task10.cycle-b-material.v1', revision: process.env.NOLANE_UI_EVIDENCE_REVISION, captures };
+          report.receiptSha256 = createHash('sha256').update(JSON.stringify(report)).digest('hex');
+          await writeFile(path.join(output, 'receipt.json'), `${JSON.stringify(report, null, 2)}\n`);
+          console.log(JSON.stringify({ revision: report.revision, receiptSha256: report.receiptSha256, captures: captures.map(({state,sha256}) => ({state,sha256})) }));
+          NODE
+          ln -s "$GITHUB_WORKSPACE/node_modules" "$RUNNER_TEMP/node_modules"
+          node "$RUNNER_TEMP/task10-cycle-b-material.mjs"
+
+      - name: Upload Cycle B re-observation
+        uses: actions/upload-artifact@v6
+        with:
+          name: product-perfection-task10-cycle-b
+          path: ${{ runner.temp }}/task10-cycle-b
+          if-no-files-found: error
+          retention-days: 21
+
+      - name: Push exact Cycle B candidate
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$NOLANE_UI_EVIDENCE_REVISION"
+          git fetch origin codex/product-perfection-system-v3
+          test "$(git merge-base HEAD origin/codex/product-perfection-system-v3)" = "$(git rev-parse origin/codex/product-perfection-system-v3)"
+          git push origin HEAD:codex/product-perfection-system-v3
+
+      - name: Stop runtime
+        if: always()
+        run: |
+          if [ -n "${NOLANE_TASK10_CYCLE_B_PID:-}" ]; then kill "$NOLANE_TASK10_CYCLE_B_PID" || true; fi
