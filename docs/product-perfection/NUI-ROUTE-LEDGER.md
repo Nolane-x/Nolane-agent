@@ -184,3 +184,17 @@ Do not expand routing simply because a skill exists.
 **Falsification:** the slice is not closed if UI infers undeclared skill readiness, configured/blocked/offline adapters appear online, status parsing can classify `not-ready` as ready, or debounced search replaces the active input and loses caret state.
 
 **Evidence boundary:** focused source tests + canonical build first; runtime keyboard/search and visual state evidence required separately. Provider-real and screen-reader claims remain external.
+
+---
+
+## Slice PFX-09 — Content safety and platform residue closure
+
+**Observed triggers:** decision/attention cards exposed English-only option chrome, rendered external decision text without escaping, and did not explicitly label scope/reversibility even though those fields governed destructive-action safety. Shared platform residue/motion/high-contrast authorities largely existed; textarea resize was the one missing browser-residue owner found by the audit.
+
+**Activated NUI decision classes:** destructive-action clarity; localization/long-copy integrity; semantic safety copy; accessibility/focus/motion/high-contrast authority; platform-residue audit; evidence-gated completion.
+
+**Omitted for this slice:** broad native-control restyling and new animation systems. Existing native/OS behavior is preserved where the product deliberately delegates it.
+
+**Falsification:** the slice is not closed if Vietnamese attention states silently fall back to English, external decision content can become markup, irreversible actions hide scope/reversibility, or shared selection/caret/scrollbar/textarea/reduced-motion/forced-colors authority disappears.
+
+**Evidence boundary:** source/static closure here; canonical runtime keyboard/reduced-motion/forced-colors observation belongs to Task 10. Independent assistive-technology certification remains external.
