@@ -1,0 +1,96 @@
+name: Apply flagship reconstruction packet
+
+on:
+  push:
+    branches:
+      - codex/nui-flagship-reconstruction-v2
+
+permissions:
+  contents: write
+
+concurrency:
+  group: flagship-reconstruction-apply
+  cancel-in-progress: true
+
+jobs:
+  apply-and-build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout reconstruction branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Reconstruct and validate source patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d .flagship-patch
+          cat .flagship-patch/chunk-*.b64 > /tmp/flagship.patch.b64
+          base64 -d /tmp/flagship.patch.b64 > /tmp/flagship.patch
+          git apply --check /tmp/flagship.patch
+          git apply /tmp/flagship.patch
+
+          node --test \
+            tests/ui-v3-flagship-reconstruction.test.mjs \
+            tests/ui-responsive-medium-pressure.test.mjs \
+            tests/ui-v3-responsive-completion.test.mjs \
+            tests/ui-quality-alpha5.test.mjs \
+            tests/ui-v3-workroom.test.mjs \
+            tests/ui-v3-browser-workspace.test.mjs \
+            tests/ui-v3-review.test.mjs \
+            tests/ui-v3-skills-library.test.mjs \
+            tests/ui-v3-skills-progressive-render.test.mjs \
+            tests/ui-v3-settings-controller.test.mjs \
+            tests/ui-v3-control-plane.test.mjs
+          npm run validate:ui-tokens
+          npm run build:ui-v3
+
+      - name: Guard reconstruction scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t changed < <(git status --short | sed -E 's/^.. //')
+          for path in "${changed[@]}"; do
+            case "$path" in
+              tests/ui-v3-flagship-reconstruction.test.mjs|\
+              ui-v3/styles/index.css|\
+              ui-v3/styles/tokens/semantic.css|\
+              ui-v3/styles/flagship/proofborne-instrument.css|\
+              ui-v3/views/workroom/workroom-view.mjs|\
+              ui-dist/*|\
+              .flagship-patch/*)
+                ;;
+              *)
+                echo "unexpected reconstruction change: $path" >&2
+                exit 1
+                ;;
+            esac
+          done
+
+      - name: Commit source and canonical distribution
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/ui-v3-flagship-reconstruction.test.mjs \
+            ui-v3/styles/index.css \
+            ui-v3/styles/tokens/semantic.css \
+            ui-v3/styles/flagship/proofborne-instrument.css \
+            ui-v3/views/workroom/workroom-view.mjs \
+            ui-dist
+          git rm -r .flagship-patch
+          git commit -m "feat(ui): reconstruct Nolane flagship with Proofborne Instrument"
+          git push origin HEAD:${GITHUB_REF_NAME}
