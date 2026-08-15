@@ -66,7 +66,8 @@ jobs:
           const token=process.env.NOLANE_AGENT_TOKEN;
           const out=`${process.env.RUNNER_TEMP}/review-diagnostics`;
           const browser=await chromium.launch({headless:true});
-          const page=await browser.newPage({viewport:{width:1440,height:1000}});
+          const context=await browser.newContext({viewport:{width:1440,height:1000}});
+          const page=await context.newPage();
           try {
             await page.goto(`${base}/#/missions?token=${encodeURIComponent(token)}`,{waitUntil:'domcontentloaded'});
             await page.locator('.activity-page').waitFor({state:'visible',timeout:30000});
@@ -107,7 +108,7 @@ jobs:
             await page.screenshot({path:`${out}/review-1440.png`,fullPage:true,animations:'disabled'});
             console.log(JSON.stringify(report,null,2));
             if(blocking.length) process.exitCode=2;
-          } finally { await browser.close(); }
+          } finally { await context.close(); await browser.close(); }
           NODE
           node "$RUNNER_TEMP/review-diagnostics.mjs"
       - name: Upload diagnostics
