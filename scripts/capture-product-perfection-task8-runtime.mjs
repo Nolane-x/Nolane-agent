@@ -61,11 +61,12 @@ try {
   ]);
   for (const [pathname, payload] of fixtures) await cp.route(`**${pathname}`, async (route) => route.fulfill({ status:200, contentType:'application/json', body:JSON.stringify(payload) }));
   await cp.goto(`${base}/#/control-plane/overview?token=${encodeURIComponent(token)}`, { waitUntil:'domcontentloaded', timeout:30000 });
-  await cp.locator('.control-plane-live-workspace').waitFor({ state:'visible', timeout:30000 });
-  const text = (await cp.locator('.control-plane-live-workspace').innerText()).replace(/\s+/g, ' ');
+  const workspace = cp.locator('.cp-workspace');
+  await workspace.waitFor({ state:'visible', timeout:30000 });
+  const text = (await workspace.innerText()).replace(/\s+/g, ' ');
   if (!/Adapters online\s*1\/4/i.test(text)) throw new Error(`Control Plane online KPI is not truthful: ${text.slice(0,900)}`);
   if (/Adapters online\s*4\/4/i.test(text)) throw new Error('Control Plane counted non-ready records online');
-  const status = await cp.locator('.control-plane-live-workspace').getAttribute('data-state');
+  const status = await workspace.getAttribute('data-domain-status');
   if (status !== 'degraded') throw new Error(`Control Plane expected degraded, got ${status}`);
   await assertNoOverflow(cp, 'Control Plane truth'); await assertAxe(cp, 'Control Plane truth'); await shot(cp, 'control-plane-1180-semantic-health');
   await cpContext.close();
