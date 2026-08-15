@@ -36,12 +36,16 @@ jobs:
           node --check scripts/generate-product-perfection-matrix.mjs
           node --check scripts/verify-product-perfection-matrix.mjs
 
-      - name: Upload canonical generated matrix
+      - name: Upload durable specification pack and canonical matrix
         uses: actions/upload-artifact@v6
         with:
-          name: product-perfection-bootstrap
+          name: product-perfection-spec-pack
           path: |
+            docs/superpowers/specs/2026-08-15-nolane-product-perfection-system-v3-design.md
+            docs/product-perfection/MICRO-DETAIL-CLOSURE-CATALOG.md
+            docs/superpowers/plans/2026-08-15-nolane-product-perfection-system-v3.md
+            docs/checkpoints/product-perfection/RESUME-CANONICAL.md
             requirements/product-perfection-catalog.json
             requirements/product-perfection-matrix.json
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 30
