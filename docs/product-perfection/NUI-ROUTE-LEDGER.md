@@ -156,3 +156,17 @@ Before each later material slice (shell, adoption, Mission/Review, Studio/Browse
 5. falsification condition.
 
 Do not expand routing simply because a skill exists.
+
+---
+
+## Slice PFX-07 — Studio / Browser continuity and trust boundary
+
+**Observed triggers:** compact Studio hid Files/Agent instead of preserving access; Workroom route cache was not project-path scoped; Browser external content lacked an explicit textual/semantic trust boundary despite permission data being available.
+
+**Activated NUI decision classes:** professional desktop workspace continuity; responsive disclosure; interaction-state preservation; browser trust architecture; permission/provenance clarity; security-oriented interface copy; evidence-gated rendered verification.
+
+**Omitted for this slice:** broad Studio visual redesign, browser automation capability expansion, provider changes. The failure class is continuity and trust semantics, not feature breadth.
+
+**Falsification:** the slice is not closed if compact mode makes any core pane unreachable, project-path changes can reuse stale Workroom state, external page-derived content is indistinguishable from trusted Nolane chrome, or URL display can leak query secrets.
+
+**Evidence boundary:** source/focused tests + canonical build first; runtime wide/compact/Axe evidence required separately. Independent screen-reader/provider claims remain external.
