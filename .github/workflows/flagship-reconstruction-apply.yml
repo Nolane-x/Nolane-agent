@@ -39,9 +39,6 @@ jobs:
           test -d .flagship-patch
           cat .flagship-patch/chunk-*.b64 > /tmp/flagship.patch.b64
           base64 -d /tmp/flagship.patch.b64 > /tmp/flagship.patch
-          # Workroom already has canonical mission context and the flagship test
-          # is now stored directly as an immutable Git blob. Apply only visual
-          # source/token changes from the historical transport packet.
           git apply --check \
             --exclude=ui-v3/views/workroom/workroom-view.mjs \
             --exclude=tests/ui-v3-flagship-reconstruction.test.mjs \
@@ -50,6 +47,25 @@ jobs:
             --exclude=ui-v3/views/workroom/workroom-view.mjs \
             --exclude=tests/ui-v3-flagship-reconstruction.test.mjs \
             /tmp/flagship.patch
+
+          # Studio already carries a truthful missionId in the model/snapshot.
+          # Expose exactly that state as a small lineage strip; no new backend
+          # field or synthetic receipt is introduced for visual effect.
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('ui-v3/views/workroom/workroom-view.mjs')
+          text = path.read_text(encoding='utf-8')
+          anchor = "  const terminalDisabled = snapshot.projectId === 'unselected' ? ' disabled' : '';\n"
+          addition = anchor + "  const missionTrace = snapshot.missionId ? `<div class=\"workroom-mission-trace\" role=\"status\"><span>${languageOf(language) === 'vi' ? 'Ngữ cảnh nhiệm vụ' : 'Mission context'}</span><code>${escapeHtml(snapshot.missionId)}</code><i aria-hidden=\"true\"></i><span>${languageOf(language) === 'vi' ? 'Studio giữ nguyên dòng bằng chứng của nhiệm vụ' : 'Studio remains attached to this mission lineage'}</span></div>` : '';\n"
+          if text.count(anchor) != 1:
+              raise SystemExit('bounded Workroom anchor is not unique')
+          text = text.replace(anchor, addition, 1)
+          needle = '</header>${error}<div class="workroom-tabs">'
+          if text.count(needle) != 1:
+              raise SystemExit('bounded Workroom render insertion point is not unique')
+          text = text.replace(needle, '</header>${missionTrace}${error}<div class="workroom-tabs">', 1)
+          path.write_text(text, encoding='utf-8')
+          PY
 
           node --test \
             tests/ui-v3-flagship-reconstruction.test.mjs \
@@ -76,6 +92,7 @@ jobs:
               ui-v3/styles/index.css|\
               ui-v3/styles/tokens/semantic.css|\
               ui-v3/styles/flagship/proofborne-instrument.css|\
+              ui-v3/views/workroom/workroom-view.mjs|\
               ui-dist/*|\
               .flagship-patch/*)
                 ;;
@@ -96,6 +113,7 @@ jobs:
             ui-v3/styles/index.css \
             ui-v3/styles/tokens/semantic.css \
             ui-v3/styles/flagship/proofborne-instrument.css \
+            ui-v3/views/workroom/workroom-view.mjs \
             ui-dist
           git rm -r .flagship-patch
           git commit -m "feat(ui): reconstruct Nolane flagship with Proofborne Instrument"
