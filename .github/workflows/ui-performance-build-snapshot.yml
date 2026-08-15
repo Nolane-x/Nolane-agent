@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - codex/ui-performance-runtime-evidence
+      - checkpoint/ui-performance-evidence-20260815
     paths:
       - '.github/workflows/ui-performance-build-snapshot.yml'
   workflow_dispatch:
@@ -13,6 +14,7 @@ permissions:
 
 jobs:
   verify-build-snapshot:
+    if: github.ref_name == 'codex/ui-performance-runtime-evidence'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -42,3 +44,46 @@ jobs:
           path: ui-dist
           if-no-files-found: error
           retention-days: 3
+
+  package-checkpoint:
+    if: github.ref_name == 'checkpoint/ui-performance-evidence-20260815'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Archive exact verified source SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          target_sha='5169bf18be62b6a78aa4ba2ad9d6a3c37270c7cd'
+          out="$RUNNER_TEMP/nolane-ui-performance-checkpoint"
+          mkdir -p "$out"
+          git cat-file -e "$target_sha^{commit}"
+          git archive --format=zip --prefix='Nolane-agent-ui-performance-5169bf1/' \
+            --output="$out/Nolane-agent-ui-performance-5169bf1-source.zip" \
+            "$target_sha"
+          cat > "$out/checkpoint-manifest.json" <<JSON
+          {
+            "schema": "nolane.agent.checkpoint-package.v1",
+            "repository": "Nolane-x/Nolane-agent",
+            "sourceSha": "$target_sha",
+            "sourceBranch": "codex/ui-performance-runtime-evidence",
+            "ciRun": 31856366247,
+            "visualRun": 31856366262,
+            "performanceRun": 31856366260,
+            "externalGateRun": 31856366249,
+            "windows8GbCertified": false,
+            "screenReaderCertified": false,
+            "performanceCertified": false
+          }
+          JSON
+          sha256sum "$out/Nolane-agent-ui-performance-5169bf1-source.zip" > "$out/SHA256SUMS.txt"
+      - name: Upload exact source checkpoint
+        uses: actions/upload-artifact@v6
+        with:
+          name: nolane-ui-performance-checkpoint-source-registered
+          path: ${{ runner.temp }}/nolane-ui-performance-checkpoint
+          if-no-files-found: error
+          retention-days: 30
