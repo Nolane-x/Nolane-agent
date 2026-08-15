@@ -19,21 +19,21 @@ test('Skills progressively renders a large catalog without hiding deep search re
   await controller.load();
 
   const initial = controller.snapshot();
-  assert.equal(initial.visibleLimit, 72);
+  assert.equal(initial.visibleLimit, 48);
   let html = renderSkillsLibrary(initial);
-  assert.equal((html.match(/data-skill-library-select=/g) ?? []).length, 72);
+  assert.equal((html.match(/data-skill-library-select=/g) ?? []).length, 48);
   assert.match(html, /data-skills-show-more/);
-  assert.match(html, /108/);
+  assert.match(html, /132/);
   assert.doesNotMatch(html, /Deep catalog target/);
 
   controller.showMore();
   html = renderSkillsLibrary(controller.snapshot());
-  assert.equal((html.match(/data-skill-library-select=/g) ?? []).length, 144);
-  assert.match(html, /36/);
+  assert.equal((html.match(/data-skill-library-select=/g) ?? []).length, 96);
+  assert.match(html, /84/);
 
   controller.setQuery('Deep catalog target');
   const filtered = controller.snapshot();
-  assert.equal(filtered.visibleLimit, 72);
+  assert.equal(filtered.visibleLimit, 48);
   html = renderSkillsLibrary(filtered);
   assert.equal((html.match(/data-skill-library-select=/g) ?? []).length, 1);
   assert.match(html, /Deep catalog target/);
