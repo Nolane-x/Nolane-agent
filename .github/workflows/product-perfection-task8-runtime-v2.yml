@@ -1,0 +1,89 @@
+name: Product Perfection Task 8 Runtime Evidence v2
+
+on:
+  push:
+    branches: [codex/product-perfection-system-v3]
+    paths:
+      - '.github/workflows/product-perfection-task8-runtime-v2.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  runtime-evidence:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      NOLANE_AGENT_HOST: 127.0.0.1
+      NOLANE_AGENT_PORT: 4173
+      NOLANE_AGENT_TOKEN: nolane-task8-runtime-v2-token
+      NOLANE_UI_RUNTIME_URL: http://127.0.0.1:4173
+    steps:
+      - uses: actions/checkout@v6
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v7
+        with: { node-version: 24, cache: npm }
+      - run: npm ci --ignore-scripts
+      - name: Verify canonical distribution
+        run: |
+          npm run build:ui-v3
+          git diff --exit-code -- ui-dist
+      - name: Install Chromium and Axe
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.58.2 @axe-core/playwright@4.12.1
+          npx playwright install --with-deps chromium
+      - name: Start source runtime
+        env:
+          NOLANE_AGENT_DATA_DIR: ${{ runner.temp }}/nolane-task8-runtime-v2-data
+        run: |
+          node src/app.mjs > "$RUNNER_TEMP/task8-v2.log" 2>&1 &
+          echo "NOLANE_TASK8_V2_PID=$!" >> "$GITHUB_ENV"
+          for attempt in $(seq 1 60); do curl --fail --silent "$NOLANE_UI_RUNTIME_URL/health" >/dev/null && exit 0; sleep 1; done
+          cat "$RUNNER_TEMP/task8-v2.log"; exit 1
+      - name: Complete onboarding
+        env:
+          NOLANE_UI_VISUAL_OUTPUT: ${{ runner.temp }}/task8-runtime-v2/onboarding
+          NOLANE_UI_VISUAL_STATES: onboarding
+        run: node scripts/capture-ui-runtime-visual.mjs
+      - name: Run Task 8 runtime probe
+        env:
+          NOLANE_TASK8_RUNTIME_OUTPUT: ${{ runner.temp }}/task8-runtime-v2/custom
+        run: node scripts/capture-product-perfection-task8-runtime.mjs
+      - name: Upload evidence
+        uses: actions/upload-artifact@v6
+        with:
+          name: product-perfection-task8-runtime-evidence-v2
+          path: ${{ runner.temp }}/task8-runtime-v2
+          if-no-files-found: error
+          retention-days: 21
+      - name: Persist Task 8 runtime closure
+        run: |
+          receipt=$(node -p "JSON.parse(require('fs').readFileSync(process.env.RUNNER_TEMP + '/task8-runtime-v2/custom/receipt.json','utf8')).receiptSha256")
+          cat > docs/product-perfection/TASK8-RUNTIME-VISUAL-CLOSURE.md <<EOF
+          # Task 8 — Skills / Settings / Control Plane Runtime Closure
+
+          **Exact source implementation revision:** \`07d24efbd589065a023750c14f326fa3141aa9e0\`  
+          **Runtime fixes included through:** \`${GITHUB_SHA}\`  
+          **Workflow run:** \`${GITHUB_RUN_ID}\`  
+          **Runtime receipt:** \`${receipt}\`
+
+          Runtime evidence completed:
+
+          - Skills rendered explicit \`installed / disabled / configured / not-ready / blocked\` facets and never inferred \`ready\`;
+          - declared states participated in Skills search;
+          - Settings preserved active search, value and exact caret selection after debounced rerender;
+          - Control Plane rendered semantic degraded health and \`Adapters online 1/4\` for a \`ready / blocked / configured / offline\` fixture;
+          - captured Task 8 states had no serious/critical Axe violations and no horizontal overflow.
+
+          Provider-real and independent screen-reader certification remain UNKNOWN.
+          EOF
+          git rm -f .github/workflows/product-perfection-task8-runtime.yml .github/workflows/product-perfection-task8-runtime-v2.yml scripts/capture-product-perfection-task8-runtime.mjs
+          git add docs/product-perfection/TASK8-RUNTIME-VISUAL-CLOSURE.md
+          git config user.name nolane-evidence-bot; git config user.email actions@users.noreply.github.com
+          git commit -m 'docs(perfection): record Task 8 runtime closure [skip ci]'
+          git push origin HEAD:codex/product-perfection-system-v3
+      - name: Stop runtime
+        if: always()
+        run: |
+          if [ -n "${NOLANE_TASK8_V2_PID:-}" ]; then kill "$NOLANE_TASK8_V2_PID" || true; fi
