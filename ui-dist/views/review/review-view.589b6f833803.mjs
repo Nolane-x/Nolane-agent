@@ -1,4 +1,4 @@
-import { sha256 } from '../../core/receipt.mjs';
+import { sha256 } from '../../core/receipt.27423bb16df2.mjs';
 let hunkIdentity = 0;
 const DECISIONS = new Set(['pending', 'accepted', 'rejected', 'needs-change']);
 const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);

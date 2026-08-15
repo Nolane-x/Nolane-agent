@@ -9,7 +9,7 @@ const CHECKS = Object.freeze([
   ['workspace-landmark', 'ui-v3/shell/app-shell.mjs', /<main id="workspace"[^>]+tabindex="-1"/],
   ['route-live-region', 'ui-v3/shell/app-shell.mjs', /role="status"[^>]+aria-live="polite"/],
   ['artifact-tab-semantics', 'ui-v3/views/mission/artifact-dock.mjs', /role="tablist"/],
-  ['review-navigation-label', 'ui-v3/views/review/review-view.mjs', /aria-label="Changed files"/],
+  ['review-navigation-label', 'ui-v3/views/review/review-view.mjs', /class="change-navigator" aria-label=/],
   ['reduced-motion', 'ui-v3/styles/motion.css', /prefers-reduced-motion:\s*reduce/],
   ['focus-target', 'ui-v3/app.mjs', /querySelector\('#workspace'\)\?\.focus/],
 ]);
