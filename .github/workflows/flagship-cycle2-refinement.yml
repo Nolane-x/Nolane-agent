@@ -1,0 +1,236 @@
+name: Apply flagship critique cycle 2
+
+on:
+  push:
+    branches:
+      - codex/nui-flagship-reconstruction-v2
+
+permissions:
+  contents: write
+
+concurrency:
+  group: flagship-cycle2-refinement
+  cancel-in-progress: true
+
+jobs:
+  refine-and-build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Apply system-map and onboarding material refinement
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -q "Control Plane cycle-2 composition reads as a system map" tests/ui-v3-flagship-reconstruction.test.mjs
+          ! grep -q "NUI critique cycle 2 — expert surfaces" ui-v3/styles/flagship/proofborne-instrument.css
+
+          cat >> tests/ui-v3-flagship-reconstruction.test.mjs <<'EOF_TEST'
+
+          test('Control Plane cycle-2 composition reads as a system map rather than a nested dashboard', async () => {
+            const css = await readFile(flagshipUrl, 'utf8');
+            assert.match(css, /\.control-plane-shell\s*\{[^}]*border-radius:\s*8px[^}]*box-shadow:\s*none/s);
+            assert.match(css, /\.control-plane-shell > main\s*\{[^}]*background:\s*var\(--surface-canvas\)/s);
+            assert.match(css, /\.cp-workspace-hero\s*\{[^}]*border-radius:\s*0[^}]*background:\s*transparent[^}]*box-shadow:\s*none/s);
+            assert.match(css, /\.cp-kpi-grid\s*\{[^}]*gap:\s*1px[^}]*background:\s*var\(--instrument-rule\)/s);
+            assert.match(css, /\.cp-kpi-grid article\s*\{[^}]*border:\s*0[^}]*border-radius:\s*0/s);
+            assert.match(css, /\.cp-adapter-grid\s*\{[^}]*gap:\s*1px[^}]*background:\s*var\(--instrument-rule\)/s);
+            assert.match(css, /\.cp-adapter-card\s*\{[^}]*border:\s*0[^}]*border-radius:\s*0[^}]*box-shadow:\s*none/s);
+          });
+
+          test('Control Plane flattened records keep operational microcopy readable', async () => {
+            const css = await readFile(flagshipUrl, 'utf8');
+            assert.match(css, /\.cp-kpi-grid span,[\s\S]*\.cp-adapter-rows small\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
+          });
+
+          test('Onboarding cycle-2 material uses one setup plate and trace-based choices', async () => {
+            const css = await readFile(flagshipUrl, 'utf8');
+            assert.match(css, /\.onboarding-shell\s*\{[^}]*background:\s*var\(--instrument-margin\)/s);
+            assert.match(css, /\.onboarding-card\s*\{[^}]*border-radius:\s*10px[^}]*background:\s*var\(--surface-canvas\)[^}]*box-shadow:\s*var\(--shadow-sm\)/s);
+            assert.match(css, /\.onboarding-choice,\s*\n\.onboarding-toggle\s*\{[^}]*border-radius:\s*6px[^}]*background:\s*transparent/s);
+            assert.match(css, /\.onboarding-choice\[aria-pressed="true"\]\s*\{[^}]*box-shadow:\s*inset 2px 0 var\(--instrument-trace\)/s);
+            assert.match(css, /\.onboarding-choice__icon\s*\{[^}]*border:\s*1px solid var\(--instrument-rule\)[^}]*border-radius:\s*50%[^}]*background:\s*transparent/s);
+          });
+          EOF_TEST
+
+          cat >> ui-v3/styles/flagship/proofborne-instrument.css <<'EOF_CSS'
+
+          /* NUI critique cycle 2 — expert surfaces become a system map, not a dashboard-in-dashboard. */
+          .control-plane-shell {
+            border-color: var(--instrument-rule);
+            border-radius: 8px;
+            background: var(--surface-canvas);
+            box-shadow: none;
+          }
+
+          .control-plane-shell > header {
+            background: transparent;
+            border-bottom-color: var(--instrument-rule);
+          }
+
+          .control-plane-shell > nav {
+            background: var(--instrument-margin);
+            border-right-color: var(--instrument-rule);
+          }
+
+          .control-plane-shell > nav a[aria-current="page"] {
+            border-left: 2px solid var(--instrument-trace);
+            background: transparent;
+            color: var(--text-primary);
+            box-shadow: none;
+          }
+
+          .control-plane-shell > main {
+            background: var(--surface-canvas);
+          }
+
+          .cp-workspace-hero {
+            padding: 8px 0 20px;
+            border: 0;
+            border-bottom: 1px solid var(--instrument-rule);
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+          }
+
+          .cp-kpi-grid {
+            gap: 1px;
+            border-block: 1px solid var(--instrument-rule);
+            background: var(--instrument-rule);
+          }
+
+          .cp-kpi-grid article {
+            border: 0;
+            border-radius: 0;
+            background: var(--surface-canvas);
+          }
+
+          .cp-adapter-grid {
+            gap: 1px;
+            border: 1px solid var(--instrument-rule);
+            background: var(--instrument-rule);
+          }
+
+          .cp-adapter-card {
+            border: 0;
+            border-radius: 0;
+            background: var(--surface-canvas);
+            box-shadow: none;
+          }
+
+          .cp-adapter-metrics div,
+          .cp-adapter-rows li {
+            border-radius: 4px;
+          }
+
+          .cp-route-panel {
+            border-color: var(--instrument-rule);
+            border-radius: 6px;
+            box-shadow: none;
+          }
+
+          .cp-kpi-grid span,
+          .cp-kpi-grid small,
+          .cp-adapter-section > header small,
+          .cp-route-panel > header > span,
+          .cp-adapter-card code,
+          .cp-adapter-count span,
+          .cp-adapter-metrics dt,
+          .cp-adapter-rows small {
+            color: var(--text-secondary);
+          }
+
+          /* NUI critique cycle 2 — onboarding is one setup plate; choices are instrument rows. */
+          .onboarding-shell {
+            background: var(--instrument-margin);
+          }
+
+          .onboarding-card {
+            border-color: var(--instrument-rule);
+            border-radius: 10px;
+            background: var(--surface-canvas);
+            box-shadow: var(--shadow-sm);
+          }
+
+          .onboarding-progress span {
+            border-radius: 0;
+          }
+
+          .onboarding-step-icon {
+            border: 1px solid var(--instrument-rule);
+            border-radius: 50%;
+            background: transparent;
+            color: var(--text-secondary);
+          }
+
+          .onboarding-screen > header p,
+          .onboarding-screen > header span,
+          .onboarding-choice small,
+          .onboarding-toggle small,
+          .onboarding-appearance label {
+            color: var(--text-secondary);
+          }
+
+          .onboarding-choice,
+          .onboarding-toggle {
+            border-color: var(--instrument-rule);
+            border-radius: 6px;
+            background: transparent;
+          }
+
+          .onboarding-choice[aria-pressed="true"] {
+            border-color: var(--instrument-rule);
+            background: var(--surface-selected);
+            color: var(--text-primary);
+            box-shadow: inset 2px 0 var(--instrument-trace);
+          }
+
+          .onboarding-choice__icon {
+            border: 1px solid var(--instrument-rule);
+            border-radius: 50%;
+            background: transparent;
+            color: var(--text-secondary);
+          }
+
+          .onboarding-actions {
+            background: var(--instrument-margin);
+          }
+
+          .onboarding-actions button,
+          .onboarding-complete button,
+          .onboarding-appearance select {
+            border-radius: 6px;
+          }
+          EOF_CSS
+
+          node --test tests/ui-v3-flagship-reconstruction.test.mjs
+          npm run validate:ui-tokens
+          npm run build:ui-v3
+      - name: Guard refinement scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t changed < <(git status --short | sed -E 's/^.. //')
+          for path in "${changed[@]}"; do
+            case "$path" in
+              tests/ui-v3-flagship-reconstruction.test.mjs|ui-v3/styles/flagship/proofborne-instrument.css|ui-dist/*) ;;
+              *) echo "unexpected cycle-2 change: $path" >&2; exit 1 ;;
+            esac
+          done
+      - name: Commit cycle-2 source and canonical distribution
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/ui-v3-flagship-reconstruction.test.mjs ui-v3/styles/flagship/proofborne-instrument.css ui-dist
+          git commit -m "fix(ui): close flagship taste and material critique cycle"
+          git push origin HEAD:${GITHUB_REF_NAME}
