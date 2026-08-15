@@ -121,3 +121,8 @@ test('Studio empty-state guidance remains readable on the flattened editor canva
   const css = await readFile(flagshipUrl, 'utf8');
   assert.match(css, /\.editor-welcome > p\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
 });
+
+test('Control Plane taxonomy text stays readable after dashboard chrome is flattened', async () => {
+  const css = await readFile(flagshipUrl, 'utf8');
+  assert.match(css, /\.cp-workspace \.cp-eyebrow\s*\{[^}]*color:\s*var\(--text-secondary\)/s);
+});
