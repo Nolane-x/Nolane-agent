@@ -1,0 +1,127 @@
+name: Product Perfection Task 10 GREEN v2
+
+on:
+  push:
+    branches: [codex/product-perfection-system-v3]
+    paths:
+      - '.github/workflows/product-perfection-task10-green-v2.yml'
+      - 'scripts/fix-product-perfection-task10-helper.mjs'
+      - 'scripts/apply-product-perfection-task10-test-compat.mjs'
+      - 'tests/ui-runtime-product-perfection-matrix.test.mjs'
+
+permissions:
+  contents: write
+
+jobs:
+  candidate:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      NOLANE_AGENT_HOST: 127.0.0.1
+      NOLANE_AGENT_PORT: 4173
+      NOLANE_AGENT_TOKEN: nolane-task10-runtime-evidence-token
+      NOLANE_UI_RUNTIME_URL: http://127.0.0.1:4173
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Apply guarded Task 10 migration
+        run: |
+          set -euo pipefail
+          node scripts/fix-product-perfection-task10-helper.mjs
+          node scripts/apply-product-perfection-task10.mjs
+          node scripts/apply-product-perfection-task10-test-compat.mjs
+          node scripts/capture-ui-v3-states.mjs
+      - name: Verify Task 10 source GREEN
+        run: |
+          set -euo pipefail
+          node --check scripts/capture-ui-runtime-visual.mjs
+          node --check scripts/bind-product-perfection-runtime-evidence.mjs
+          node --test tests/ui-runtime-product-perfection-matrix.test.mjs tests/ui-runtime-visual-workflow.test.mjs tests/ui-responsive-evidence-workflow.test.mjs tests/product-perfection-catalog.test.mjs tests/product-perfection-matrix.test.mjs
+          npm run validate:ui-tokens
+          npm run audit:ui-quality
+          npm run build:ui-v3
+          git diff --check
+      - name: Create and reverify exact candidate
+        run: |
+          set -euo pipefail
+          git rm -f .github/workflows/product-perfection-task10-red.yml .github/workflows/product-perfection-task10-green.yml .github/workflows/product-perfection-task10-green-v2.yml scripts/apply-product-perfection-task10.mjs scripts/apply-product-perfection-task10-test-compat.mjs scripts/fix-product-perfection-task10-helper.mjs
+          git add scripts/capture-ui-runtime-visual.mjs tests/ui-runtime-visual-workflow.test.mjs docs/ui-v3/visual-state-manifest.json ui-dist
+          git config user.name nolane-evidence-bot
+          git config user.email actions@users.noreply.github.com
+          git commit -m 'test(ui): expand risk-driven product perfection runtime matrix'
+          echo "NOLANE_UI_EVIDENCE_REVISION=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          node --check scripts/capture-ui-runtime-visual.mjs
+          node --test tests/ui-runtime-product-perfection-matrix.test.mjs tests/ui-runtime-visual-workflow.test.mjs tests/ui-responsive-evidence-workflow.test.mjs
+          npm run build:ui-v3
+          git diff --exit-code -- ui-dist
+          npm run validate:ui-tokens
+          npm run audit:ui-quality
+          git diff --check
+          test -z "$(git status --porcelain)"
+      - name: Install Chromium and Axe
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.58.2 @axe-core/playwright@4.12.1
+          npx playwright install --with-deps chromium
+      - name: Start exact-candidate source runtime
+        env:
+          NOLANE_AGENT_DATA_DIR: ${{ runner.temp }}/nolane-task10-runtime-data
+        run: |
+          set -euo pipefail
+          node src/app.mjs > "$RUNNER_TEMP/nolane-task10-runtime.log" 2>&1 &
+          echo "NOLANE_TASK10_PID=$!" >> "$GITHUB_ENV"
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent --show-error "$NOLANE_UI_RUNTIME_URL/health" >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/nolane-task10-runtime.log"
+          exit 1
+      - name: Capture risk-driven runtime matrix
+        env:
+          NOLANE_UI_VISUAL_OUTPUT: ${{ runner.temp }}/task10-runtime
+        run: |
+          set -euo pipefail
+          NOLANE_UI_VISUAL_STATES=onboarding node scripts/capture-ui-runtime-visual.mjs
+          NOLANE_UI_VISUAL_STATES=mission-proofline,mission-proofline-compact,mission-proofline-focus,mission-proofline-nocturne,review-runtime,review-runtime-compact node scripts/capture-ui-runtime-visual.mjs
+          NOLANE_UI_VISUAL_STATES=home,home-experience-menu,home-compact,home-keyboard-focus,home-reduced-motion,home-forced-colors,projects,projects-nocturne,skills,skills-catalog-picker,skills-forge-preview,skills-nocturne,settings,settings-option-picker,settings-language-roundtrip,settings-model-catalog,settings-model-catalog-vi,settings-vi-compact,settings-nocturne,workroom,workroom-nocturne,control-plane,control-plane-nocturne,browser,browser-blocked,browser-nocturne node scripts/capture-ui-runtime-visual.mjs
+          NOLANE_UI_VISUAL_STATES=home-nocturne node scripts/capture-ui-runtime-visual.mjs
+          node scripts/capture-ui-responsive-evidence.mjs
+      - name: Bind exact Task 10 PFX observations
+        env:
+          NOLANE_UI_VISUAL_RECEIPT: ${{ runner.temp }}/task10-runtime/receipt.json
+          NOLANE_UI_RESPONSIVE_RECEIPT: ${{ runner.temp }}/task10-runtime/responsive/receipt.json
+          NOLANE_PRODUCT_PERFECTION_OBSERVATIONS_OUTPUT: ${{ runner.temp }}/task10-runtime/product-perfection-runtime-observations.json
+          NOLANE_UI_EVIDENCE_ARTIFACT: product-perfection-task10-candidate
+        run: |
+          set -euo pipefail
+          node scripts/bind-product-perfection-runtime-evidence.mjs
+          node - <<'NODE'
+          const fs = require('fs');
+          const p = process.env.RUNNER_TEMP + '/task10-runtime/product-perfection-runtime-observations.json';
+          const value = JSON.parse(fs.readFileSync(p, 'utf8'));
+          if (value.revision !== process.env.NOLANE_UI_EVIDENCE_REVISION) throw new Error('Task 10 observation revision mismatch');
+          if (!Array.isArray(value.items) || value.items.length !== 7) throw new Error('Task 10 observation count mismatch');
+          NODE
+      - name: Upload candidate evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: product-perfection-task10-candidate
+          path: ${{ runner.temp }}/task10-runtime
+          if-no-files-found: warn
+          retention-days: 21
+      - name: Push exact runtime-green candidate
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$NOLANE_UI_EVIDENCE_REVISION"
+          git push origin HEAD:codex/product-perfection-system-v3
+      - name: Stop runtime
+        if: always()
+        run: |
+          if [ -n "${NOLANE_TASK10_PID:-}" ]; then kill "$NOLANE_TASK10_PID" || true; fi
