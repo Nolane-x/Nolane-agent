@@ -13,8 +13,8 @@ for (const target of Object.values(TARGETS)) {
 }
 
 let view = readFileSync(TARGETS.view.path, 'utf8');
-const before = `<button type="button" class="primary" data-settings-action="save"${state.saving||!state.dirty?' disabled':''}>${state.saving?(lang==='vi'?'Đang lưu…':'Saving…'):state.dirty?(lang==='vi'?'Lưu thay đổi':'Save changes'):(lang==='vi'?'Đã lưu':'Saved')}</button>`;
-const after = `<button type="button"${state.dirty&&!state.saving?' class="primary"':''} data-settings-action="save" data-settings-save-state="${state.saving?'saving':state.dirty?'dirty':'saved'}"${state.saving||!state.dirty?' disabled':''}>${state.saving?(lang==='vi'?'Đang lưu…':'Saving…'):state.dirty?(lang==='vi'?'Lưu thay đổi':'Save changes'):(lang==='vi'?'Đã lưu':'Saved')}</button>`;
+const before = `<button type="button" class="primary" data-settings-action="save"\${state.saving||!state.dirty?' disabled':''}>\${state.saving?(lang==='vi'?'Đang lưu…':'Saving…'):state.dirty?(lang==='vi'?'Lưu thay đổi':'Save changes'):(lang==='vi'?'Đã lưu':'Saved')}</button>`;
+const after = `<button type="button"\${state.dirty&&!state.saving?' class="primary"':''} data-settings-action="save" data-settings-save-state="\${state.saving?'saving':state.dirty?'dirty':'saved'}"\${state.saving||!state.dirty?' disabled':''}>\${state.saving?(lang==='vi'?'Đang lưu…':'Saving…'):state.dirty?(lang==='vi'?'Lưu thay đổi':'Save changes'):(lang==='vi'?'Đã lưu':'Saved')}</button>`;
 const count = view.split(before).length - 1;
 if (count !== 1) throw new Error(`Task 10 Cycle B expected one save-control anchor, got ${count}`);
 view = view.replace(before, after);
@@ -31,6 +31,7 @@ css += `
 `;
 writeFileSync(TARGETS.css.path, css);
 
+execFileSync(process.execPath, ['--check', new URL(import.meta.url).pathname], { stdio: 'inherit' });
 execFileSync(process.execPath, ['--check', TARGETS.view.path], { stdio: 'inherit' });
 console.log(JSON.stringify({
   view: { before: TARGETS.view.blob, after: hash(TARGETS.view.path) },
