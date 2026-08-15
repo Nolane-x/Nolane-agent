@@ -1,0 +1,68 @@
+name: Product Perfection Mission Review Apply
+
+on:
+  push:
+    branches:
+      - codex/product-perfection-system-v3
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-verify:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Apply blob-guarded Mission Activity Review wiring
+        run: python scripts/apply-product-perfection-mission-review.py
+      - name: Verify focused product contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check ui-v3/app.mjs
+          node --check ui-v3/views/review/review-view.mjs
+          node --check ui-v3/views/mission/mission-view.mjs
+          node --check ui-v3/views/activity/activity-view.mjs
+          node --test \
+            tests/ui-v3-mission-review-perfection.test.mjs \
+            tests/ui-v3-review.test.mjs \
+            tests/ui-v3-review-flow.test.mjs \
+            tests/diff-review-service.test.mjs \
+            tests/diff-review-http-api.test.mjs \
+            tests/ui-v3-mission-components.test.mjs \
+            tests/ui-v3-progressive-activity.test.mjs \
+            tests/ui-v3-time-travel.test.mjs \
+            tests/ui-v3-accessibility.test.mjs \
+            tests/ui-v3-perfection-authority.test.mjs
+          npm run validate:ui-tokens
+          npm run build:ui-v3
+          npm run audit:ui-quality
+          git diff --check
+      - name: Remove transport and commit canonical candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm scripts/apply-product-perfection-mission-review.py \
+            .github/workflows/product-perfection-mission-review-red.yml \
+            .github/workflows/product-perfection-mission-review-apply.yml
+          mapfile -t changed < <(git status --porcelain=v1 | sed -E 's/^.. //')
+          for file in "${changed[@]}"; do
+            case "$file" in
+              ui-v3/app.mjs|ui-v3/views/mission/mission-view.mjs|ui-v3/views/activity/activity-view.mjs|ui-dist/*|scripts/apply-product-perfection-mission-review.py|.github/workflows/product-perfection-mission-review-red.yml|.github/workflows/product-perfection-mission-review-apply.yml) ;;
+              *) echo "unexpected Task 6 mutation: $file" >&2; exit 1 ;;
+            esac
+          done
+          git add ui-v3/app.mjs ui-v3/views/mission/mission-view.mjs ui-v3/views/activity/activity-view.mjs ui-dist
+          git config user.name 'nolane-evidence-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'feat(ui): bind Review to real evidence and preserve Activity focus'
+          git push origin HEAD:codex/product-perfection-system-v3
