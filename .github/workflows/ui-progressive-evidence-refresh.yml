@@ -1,8 +1,9 @@
 name: UI progressive evidence refresh
 
 on:
-  pull_request:
-    types: [reopened]
+  push:
+    branches:
+      - codex/ui-performance-runtime-evidence
     paths:
       - '.github/workflows/ui-progressive-evidence-refresh.yml'
       - 'scripts/capture-ui-runtime-visual.mjs'
@@ -14,18 +15,20 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: ui-progressive-evidence-refresh
+  cancel-in-progress: true
+
 jobs:
   refresh-progressive-ui-evidence:
-    if: >-
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      github.head_ref == 'codex/ui-performance-runtime-evidence'
+    if: github.ref_name == 'codex/ui-performance-runtime-evidence'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Checkout exact PR head
+      - name: Checkout exact branch head
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
 
       - uses: actions/setup-node@v7
@@ -178,4 +181,4 @@ jobs:
           git config user.email 'nolane-ci@users.noreply.github.com'
           git add -A
           git commit -m 'fix(ui): align progressive runtime evidence'
-          git push origin "HEAD:${GITHUB_HEAD_REF}"
+          git push origin 'HEAD:codex/ui-performance-runtime-evidence'
