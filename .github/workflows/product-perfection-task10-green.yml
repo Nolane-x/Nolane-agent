@@ -33,6 +33,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          node scripts/fix-product-perfection-task10-helper.mjs
           node scripts/apply-product-perfection-task10.mjs
           node scripts/apply-product-perfection-task10-test-compat.mjs
           node scripts/capture-ui-v3-states.mjs
@@ -62,7 +63,8 @@ jobs:
             .github/workflows/product-perfection-task10-red.yml \
             .github/workflows/product-perfection-task10-green.yml \
             scripts/apply-product-perfection-task10.mjs \
-            scripts/apply-product-perfection-task10-test-compat.mjs
+            scripts/apply-product-perfection-task10-test-compat.mjs \
+            scripts/fix-product-perfection-task10-helper.mjs
           git add scripts/capture-ui-runtime-visual.mjs tests/ui-runtime-visual-workflow.test.mjs docs/ui-v3/visual-state-manifest.json ui-dist
           git config user.name nolane-evidence-bot
           git config user.email actions@users.noreply.github.com
