@@ -16,7 +16,7 @@ jobs:
   regenerate-and-verify:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6
         with:
@@ -30,19 +30,8 @@ jobs:
       - name: Install locked dependencies
         run: npm ci --ignore-scripts
 
-      - name: Run update-truth source contracts before regeneration
-        run: >-
-          node --test
-          tests/electron-update-coordinator.test.mjs
-          tests/electron-update-coordinator-wiring.test.mjs
-          tests/update-state-controller.test.mjs
-          tests/progressive-update-notice.test.mjs
-          tests/progressive-update-wiring.test.mjs
-          tests/update-service.test.mjs
-          tests/pre-update-snapshot.test.mjs
-          tests/electron-update-controller.test.mjs
-          tests/electron-update-wiring.test.mjs
-          tests/checkpoint-14-foundation-verifier.test.mjs
+      - name: Run the complete source contract suite before regeneration
+        run: npm test
 
       - name: Regenerate deterministic UI distribution
         run: npm run build:ui-v3
