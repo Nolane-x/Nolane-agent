@@ -12,6 +12,9 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
 jobs:
   platform-contracts:
     name: platform-${{ matrix.os }}
@@ -64,3 +67,46 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm run build:ui
       - run: npm run verify:ui
+
+  package-dry-run:
+    name: package-${{ matrix.artifact }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: windows
+            artifact: windows
+          - os: macos-latest
+            target: mac
+            artifact: macos
+          - os: ubuntu-latest
+            target: linux
+            artifact: linux
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.24.x' }
+      - run: npm ci --ignore-scripts
+      - name: Build native PTY helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd native/pty
+          if [ "${{ runner.os }}" = "Windows" ]; then go build -trimpath -o NolanePty.exe .; else go build -trimpath -o NolanePty .; fi
+      - name: Install pinned Electron builder
+        run: npm install --no-save --package-lock=false electron-builder@26.15.3
+      - name: Build native desktop package without publishing
+        env:
+          NOLANE_ELECTRON_TARGET: ${{ matrix.target }}
+        run: npm run build:electron:installer
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package-dry-run-${{ matrix.artifact }}
+          path: release/installer/NolaneAgent-*
+          if-no-files-found: error
+          retention-days: 3
