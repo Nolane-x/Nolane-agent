@@ -126,7 +126,14 @@ export function verifyCheckpoint14Foundation() {
   for (const method of ['getUpdateState', 'checkForUpdates', 'downloadAvailableUpdate', 'deferUpdate', 'ignoreVersion', 'installUpdateAndRestart']) {
     if (!preloadSource.includes(`${method}: () => electron.ipcRenderer.invoke`)) findings.push({ code: 'unsafe-or-missing-update-preload-method', method });
   }
-  if (!updateNoticeSource.includes('Your conversations, settings, projects, and missions will be kept.') || !updateNoticeSource.includes('Release evidence')) findings.push({ code: 'progressive-update-notice-contract' });
+  const updateNoticeHasBoundedPreservation = updateNoticeSource.includes('only receipt-backed state is treated as preserved.')
+    && updateNoticeSource.includes('detailed preservation claims remain bounded by available receipts.');
+  const updateNoticeHasPlatformTruth = updateNoticeSource.includes('platformTruth')
+    && updateNoticeSource.includes('handoffUnavailable')
+    && updateNoticeSource.includes('packageUnsupported');
+  if (!updateNoticeHasBoundedPreservation || !updateNoticeHasPlatformTruth || !updateNoticeSource.includes('Release evidence')) {
+    findings.push({ code: 'progressive-update-notice-contract' });
+  }
   if (!updateServiceSource.includes('streamDownloadToFile') || !updateServiceSource.includes('.partial') || !updateServiceSource.includes('handle.sync()')) findings.push({ code: 'streaming-update-staging-contract' });
   if (!snapshotSource.includes('os-vault-credentials') || !storeSource.includes('VACUUM INTO')) findings.push({ code: 'pre-update-snapshot-contract' });
   if (!installerSource.includes('/UPDATED') || !installerSource.includes('--updated') || !installerSource.includes('--post-update') || !desktopMainSource.includes('NOLANE_AGENT_POST_UPDATE')) findings.push({ code: 'post-update-relaunch-contract' });
