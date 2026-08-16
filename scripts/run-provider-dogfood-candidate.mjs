@@ -148,7 +148,7 @@ export async function runProviderDogfoodCommand({ argv = process.argv.slice(2), 
   if (env.NOLANE_PROVIDER_DOGFOOD_ALLOW_REAL_RUN !== '1') {
     throw dogfoodError('DOGFOOD_REAL_RUN_GUARD_REQUIRED', 'Real provider dogfood requires the explicit host environment guard.');
   }
-  if (env.GITHUB_EVENT_NAME && env.GITHUB_EVENT_NAME !== 'workflow_dispatch') {
+  if (env.GITHUB_EVENT_NAME !== 'workflow_dispatch') {
     throw dogfoodError('DOGFOOD_MANUAL_DISPATCH_REQUIRED', 'Real provider dogfood may only run from manual workflow dispatch on GitHub Actions.');
   }
   const registry = deps.registry ?? createDogfoodProviderRegistry();
