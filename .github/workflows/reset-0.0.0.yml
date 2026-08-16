@@ -1,0 +1,127 @@
+name: Apply 0.0.0 baseline
+
+on:
+  push:
+    branches:
+      - codex/0.0.0-baseline
+    paths:
+      - .github/workflows/reset-0.0.0.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nolane-0.0.0-baseline-reset
+  cancel-in-progress: false
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout reset branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/0.0.0-baseline
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Verify reset payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find .nolane-reset -maxdepth 1 -type f -name 'part*' | wc -l)" -eq 6
+          cat .nolane-reset/part* | base64 -d > /tmp/nolane-reset.tar.gz
+          echo "7251e75e6b0d680b49d135329aee759e8c47c564a09926b999c0d1ad0b29bb52  /tmp/nolane-reset.tar.gz" | sha256sum --check --strict
+          test "$(tar -xOf /tmp/nolane-reset.tar.gz delete.txt | wc -l)" -eq 1304
+          test "$(tar -tzf /tmp/nolane-reset.tar.gz | wc -l)" -eq 52
+
+      - name: Apply deterministic 0.0.0 source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import shutil
+          import tarfile
+
+          root = Path('.').resolve()
+          archive = Path('/tmp/nolane-reset.tar.gz')
+
+          with tarfile.open(archive, 'r:gz') as tf:
+              delete_member = tf.getmember('delete.txt')
+              deletes = tf.extractfile(delete_member).read().decode('utf-8').splitlines()
+              for rel in deletes:
+                  candidate = (root / rel).resolve()
+                  if candidate != root and root not in candidate.parents:
+                      raise SystemExit(f'unsafe delete path: {rel}')
+                  if candidate.is_dir() and not candidate.is_symlink():
+                      shutil.rmtree(candidate, ignore_errors=True)
+                  elif candidate.exists() or candidate.is_symlink():
+                      candidate.unlink(missing_ok=True)
+
+              for member in tf.getmembers():
+                  if not member.isfile() or not member.name.startswith('files/'):
+                      continue
+                  rel = member.name[len('files/'):]
+                  candidate = (root / rel).resolve()
+                  if root not in candidate.parents:
+                      raise SystemExit(f'unsafe write path: {rel}')
+                  candidate.parent.mkdir(parents=True, exist_ok=True)
+                  candidate.write_bytes(tf.extractfile(member).read())
+                  if member.mode & 0o111:
+                      candidate.chmod(candidate.stat().st_mode | 0o111)
+          PY
+
+          rm -rf .nolane-reset
+          rm -f .github/workflows/reset-0.0.0.yml
+          rm -f project-manifest.json
+          node scripts/generate-manifest.mjs . project-manifest.json
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Verify canonical version
+        run: npm run verify:version
+
+      - name: Verify hardened core
+        run: npm run test:core
+
+      - name: Verify release baseline
+        run: npm run test:release
+
+      - name: Verify UI contracts
+        run: npm run verify:ui
+
+      - name: Verify clean source surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(node -p "require('./package.json').version")" = "0.0.0"
+          test ! -e checkpoints
+          test ! -e recovered-artifacts
+          test ! -e .superpowers
+          test ! -e docs/checkpoints
+          test ! -e docs/product-perfection
+          test ! -e docs/superpowers
+          test ! -e MILESTONE-VERIFICATION-MANIFEST.json
+          test ! -e .nolane-reset
+          test ! -e .github/workflows/reset-0.0.0.yml
+          test -f README.md
+          grep -q '^# Nolane Agent 0\.0\.0$' README.md
+
+      - name: Commit clean 0.0.0 baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Nolane-x"
+          git config user.email "278117157+Nolane-x@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "release: establish Nolane Agent 0.0.0 baseline"
+          git push origin HEAD:codex/0.0.0-baseline
