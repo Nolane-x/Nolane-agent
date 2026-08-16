@@ -1,0 +1,22 @@
+name: Task 12 NUI targeted contracts
+
+on:
+  push:
+    branches:
+      - codex/product-perfection-system-v3
+
+permissions:
+  contents: read
+
+jobs:
+  update-surface-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: node --test tests/progressive-update-notice.test.mjs tests/progressive-update-wiring.test.mjs tests/update-notice-nui-contract.test.mjs tests/github-release-workflow.test.mjs tests/release-candidate-gate.test.mjs
