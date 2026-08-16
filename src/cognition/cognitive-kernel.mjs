@@ -77,7 +77,18 @@ export class CognitiveKernel {
       effects.errorRoute = route.receiptSha256;
     }
     if (type === 'strategy-failure') effects.recoveryGate = task.recoveryLease.recordFailure(event.strategyFingerprint, event.failureReceiptId ?? eventId).receiptSha256;
-    if (type === 'agency') effects.agency = this.agency.record(event.agency ?? {}).receiptSha256;
+    if (type === 'agency') {
+      const agency = event.agency ?? {};
+      const claim = this.#record(signed({
+        schema: 'forge.cognitive-agency-claim.v1', taskId: task.taskId, eventId,
+        actionId: text(agency.actionId, 'agency.actionId', 256), intent: text(agency.intent, 'agency.intent'),
+        commandKind: text(agency.commandKind, 'agency.commandKind', 128), commandFingerprint: text(agency.commandFingerprint, 'agency.commandFingerprint', 256),
+        expectedEffect: text(agency.expectedEffect, 'agency.expectedEffect'), claimedEffect: text(agency.claimedEffect ?? agency.actualEffect, 'agency.claimedEffect'),
+        observedAtMs: Number(this.clock()),
+        claims: { rawCommandStored: false, effectVerificationReceiptRequired: true, learningEligible: false },
+      }));
+      effects.agencyClaim = claim.receiptSha256;
+    }
     return this.#record(signed({ schema: 'forge.cognitive-observation.v1', taskId: task.taskId, eventId, type, effects }));
   }
 
@@ -184,7 +195,17 @@ export class CognitiveKernel {
       verification: verified.verification, lessonStatus: 'unconsolidated',
     });
     task.episodeIds.push(episodeId);
-    if (verified.agency) this.agency.record(verified.agency);
+    if (verified.agency && verified.effectVerification.status === 'verified') {
+      this.agency.record({
+        ...verified.agency,
+        taskId: task.taskId,
+        claimedEffect: verified.agency.claimedEffect ?? verified.agency.actualEffect,
+        verifiedEffect: verified.agency.verifiedEffect ?? verified.agency.actualEffect,
+        effectVerificationReceiptSha256: verified.effectVerification.receiptSha256,
+        observationAtMs: verified.verifiedAtMs,
+        causalAttributionStatus: verified.agency.causalAttributionStatus ?? 'inconclusive',
+      });
+    }
     const result = signed({
       schema: 'forge.cognitive-commit-result.v1', taskId: task.taskId, verifiedProposalId: verified.verifiedProposalId,
       allowed: true, reasons: [], gateReceiptSha256: gate.receiptSha256, episodeId,

@@ -36,6 +36,11 @@ test('runs observe propose verify commit and binds an episode', () => {
     expectedEffect: { targetTest: 'pass', publicApi: 'unchanged' },
     actualEffect: { targetTest: 'pass', publicApi: 'unchanged' },
     verification: { targetedTests: 'passed', impactedTests: 'passed' }, blockedInvariantIds: [], rollbackPoint: 'commit-base',
+    agency: {
+      actionId: 'patch-cache', taskId: 'foreign-task', intent: 'repair cache expiry', commandKind: 'patch', commandFingerprint: 'patch-cache-v1',
+      expectedEffect: 'the targeted cache test passes', actualEffect: 'the targeted cache test passed', causalAttributionStatus: 'verified',
+      controllability: 0.9, responsibleActor: 'nolane-agent',
+    },
   });
   const committed = kernel.commit('task-1', verified.verifiedProposalId);
   assert.equal(committed.allowed, true);
@@ -47,6 +52,11 @@ test('runs observe propose verify commit and binds an episode', () => {
   assert.equal(snapshot.episodeCount, 1);
   assert.equal(snapshot.claims.chainOfThoughtStored, false);
   assert.match(committed.receiptSha256, /^[a-f0-9]{64}$/);
+  const agencyRecord = kernel.agency.snapshot().entries[0];
+  assert.equal(agencyRecord.taskId, 'task-1');
+  assert.equal(agencyRecord.effectVerificationReceiptSha256, verified.effectVerification.receiptSha256);
+  assert.equal(agencyRecord.observationAtMs, verified.verifiedAtMs);
+  assert.equal(agencyRecord.learningEligible, true);
 });
 
 test('denies commit when posterior is dispersed and records routed errors', () => {
@@ -84,6 +94,26 @@ test('emits an explicit abstention instead of a null-action proposal', () => {
   assert.deepEqual(abstention.rejectedActionIds, ['overwrite-history']);
   assert.equal(kernel.snapshot('task-abstain').proposalCount, 0);
   assert.throws(() => kernel.verify('task-abstain', 'proposal-1', {}), /unknown proposal/i);
+});
+
+test('keeps unverified agency observations out of the learning ledger', () => {
+  const kernel = new CognitiveKernel();
+  kernel.startTask({
+    taskId: 'task-agency-claim', goal: 'separate claims from verified effects', recoveryLeaseId: 'lease-agency-claim',
+    contexts: [{ id: 'code', probability: 1 }],
+    hypotheses: [{ id: 'h1', claim: 'an effect must be verified', probability: 1, predictions: ['raw claims are excluded'], falsificationCondition: 'raw claim receives credit', testCost: 1 }],
+  });
+  const observation = kernel.observe('task-agency-claim', {
+    eventId: 'agency-claim-1', type: 'agency', agency: {
+      actionId: 'restart-server', taskId: 'task-agency-claim', intent: 'restart the test server', commandKind: 'process-restart',
+      commandFingerprint: 'restart-server-v1', expectedEffect: 'new listener appears', actualEffect: 'old listener remained',
+      controllability: 0.25, responsibleActor: 'environment-supervisor',
+    },
+  });
+  assert.match(observation.effects.agencyClaim, /^[a-f0-9]{64}$/);
+  assert.equal(kernel.agency.snapshot().count, 0);
+  const claim = kernel.receipts.find((receipt) => receipt.schema === 'forge.cognitive-agency-claim.v1');
+  assert.equal(claim.claims.learningEligible, false);
 });
 
 
