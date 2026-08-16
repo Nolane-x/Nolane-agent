@@ -21,13 +21,12 @@ async function fixture(t, { version = '0.0.0', packageVersion = version } = {}) 
   await write(root, 'extensions/vscode/extension.vsixmanifest', `<PackageManifest Version="4.0.0"><Metadata><Identity Version="${version}" /></Metadata></PackageManifest>`);
   await json(root, 'sdk/typescript/package.json', { name:'@nolane/agent-sdk', version });
   await write(root, 'sdk/python/pyproject.toml', `[project]\nname = "nolane-agent-sdk"\nversion = "${version}"\n`);
-  await json(root, 'project-manifest.json', { schema:'nolane.agent.project-manifest.v1', product:'Nolane Agent', version, files:[] });
   await write(root, 'README.md', `# Nolane Agent ${version}\n`);
   for (const relative of ['CHANGELOG.md','SECURITY.md','CONTRIBUTING.md','SUPPORT.md','docs/ARCHITECTURE.md','docs/DEVELOPMENT.md','docs/RELEASES.md','docs/PLATFORMS.md','docs/ROADMAP.md']) await write(root, relative, `# ${relative}\n`);
   return root;
 }
 
-test('version coherence accepts a complete Nolane Agent 0.0.x identity', async (t) => {
+test('version coherence accepts a complete Nolane Agent 0.0.x identity without generated source manifests', async (t) => {
   const root = await fixture(t, { version: '0.0.7' });
   const report = await verifyVersionCoherence({ rootDirectory: root });
   assert.equal(report.status, 'pass');
