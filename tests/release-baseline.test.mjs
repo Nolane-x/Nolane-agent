@@ -48,3 +48,10 @@ test('release configuration targets the canonical repository and publishes 0.0.x
   assert.match(workflow, /SHA256SUMS/);
   assert.doesNotMatch(workflow, /product-perfection|external-gate-evidence|checkpoint/i);
 });
+
+test('security workflow cancels stale runs for the same ref', async () => {
+  const workflow = await text('.github/workflows/security.yml');
+  assert.match(workflow, /^concurrency:\s*$/m);
+  assert.match(workflow, /group:\s*security-\$\{\{\s*github\.workflow\s*\}\}-\$\{\{\s*github\.ref\s*\}\}/);
+  assert.match(workflow, /cancel-in-progress:\s*true/);
+});
