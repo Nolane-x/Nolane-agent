@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { INTENT_PRESETS, createMissionRequest } from '../ui-v3/core/intent-presets.mjs';
+import { closeComposerPickers, isComposerPickerInteraction } from '../ui-v3/components/composer-picker.mjs';
 import { buildHomeViewModel, createHomeController, modelDeploymentKey, renderHomeView } from '../ui-v3/views/home/home-view.mjs';
 
 test('four intent presets map to enforceable backend boundaries', () => {
@@ -62,6 +63,20 @@ test('home composer keeps every ready discovered model selectable', () => {
   assert.match(modelMenu, /data-picker-value="codex\/model-51"/);
   assert.match(modelMenu, /data-composer-picker-search/);
   assert.match(modelMenu, /placeholder="Search models…"/);
+});
+
+test('composer picker helpers distinguish inside interactions and close every menu', async () => {
+  const attributes = [];
+  const trigger = { setAttribute(...args) { attributes.push(args); } };
+  const picker = { querySelector(selector) { assert.equal(selector, '[data-composer-picker-toggle]'); return trigger; } };
+  const menu = { hidden: false, closest(selector) { assert.equal(selector, '[data-composer-picker]'); return picker; } };
+  closeComposerPickers({ querySelectorAll(selector) { assert.equal(selector, '[data-composer-picker-menu]'); return [menu]; } });
+  assert.equal(menu.hidden, true);
+  assert.deepEqual(attributes, [['aria-expanded', 'false']]);
+  assert.equal(isComposerPickerInteraction({ closest() { return picker; } }), true);
+  assert.equal(isComposerPickerInteraction({ closest() { return null; } }), false);
+  const source = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
+  assert.match(source, /if \(!isComposerPickerInteraction\(event\.target\)\) closeComposerPickers\(document\);/);
 });
 
 test('home composer offers only ready provider deployments and disables send until a provider is usable', () => {
