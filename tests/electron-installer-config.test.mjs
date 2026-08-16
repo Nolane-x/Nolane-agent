@@ -39,3 +39,17 @@ test('native release builder refuses the wrong host and selects only declared pl
   assert.match(source, /linux: \{ platform: 'linux', builder: 'LINUX', target: \['AppImage', 'deb'\] \}/);
   assert.match(source, /must run on a native/);
 });
+
+test('electron-builder configuration does not export undefined optional values', () => {
+  const undefinedPaths = [];
+  const visit = (value, path = 'config') => {
+    if (!value || typeof value !== 'object') return;
+    for (const [key, child] of Object.entries(value)) {
+      const childPath = `${path}.${key}`;
+      if (child === undefined) undefinedPaths.push(childPath);
+      else visit(child, childPath);
+    }
+  };
+  visit(config);
+  assert.deepEqual(undefinedPaths, [], 'programmatic electron-builder config must omit optional fields instead of exporting undefined');
+});
