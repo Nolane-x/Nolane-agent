@@ -17,7 +17,7 @@
   "actions": {
     "selectedProbe": "targeted-test",
     "irreversibleRejected": true,
-    "selectionReceiptSha256": "f49e10bdc1a3c9f8fa915c6be073a979c90014515eab36b03a8873f57509480a"
+    "selectionReceiptSha256": "aacbfab0af76a6f00522928581bec7d76b3f856f49df83475c3c4252c660d7cd"
   },
   "errors": {
     "missingBinaryPrimary": "execution",
@@ -32,10 +32,14 @@
     "unrelatedSubsystemsMasked": true
   },
   "agency": {
-    "expectedActualMismatch": true,
-    "controllability": 0.25,
+    "unverifiedClaimExcluded": true,
+    "unverifiedClaimReceiptSha256": "98716f65d1cf9c6a72ee7f9bceefdbf76d6c190ac5e7415ac5633467c1800285",
+    "verifiedEffectReceiptBound": true,
+    "expectedVerifiedMismatch": true,
+    "controllability": 0.95,
+    "learningEligible": false,
     "rawCommandStored": false,
-    "receiptSha256": "7c1cc42e65c12805113c278bbefb936d57dcb729320b42c1d5d6f39abcd5ddf5"
+    "receiptSha256": "5243fdd9de43d503d2117693f2df577d04ecf80bbe69369ebac0785645dac05f"
   },
   "episode": {
     "bound": true,
@@ -53,8 +57,7 @@
   "commit": {
     "deniedBeforeEvidence": true,
     "deniedReasons": [
-      "context-posterior-dispersed",
-      "dominant-hypothesis-weak"
+      "tool-effect-false-success"
     ],
     "allowedAfterEvidence": true,
     "episodeId": "episode-5"
@@ -69,12 +72,13 @@
     "cognitionClaims": {
       "chainOfThoughtStored": false,
       "rawPromptsStored": false,
-      "sourceFilesMutatedDirectly": false
+      "sourceFilesMutatedDirectly": false,
+      "causalInterventionLoaded": false
     }
   },
   "composition": {
-    "appStaticImports": 154,
-    "appConstructors": 172
+    "appStaticImports": 160,
+    "appConstructors": 180
   },
   "boundaries": {
     "chainOfThoughtStored": false,
@@ -86,5 +90,5 @@
     "causalInterventionProductionClaimed": false,
     "comparativeSuperiorityClaimed": false
   },
-  "receiptSha256": "425e19cc6bef87c7dab865da6bac55d303d3126c6aac5558187cc54aa4891138"
+  "receiptSha256": "322d1453bb53465fe564c290a1dea867539a1037c408509203d34f32475aca1c"
 }

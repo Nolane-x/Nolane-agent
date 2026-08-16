@@ -116,6 +116,32 @@ test('keeps unverified agency observations out of the learning ledger', () => {
   assert.equal(claim.claims.learningEligible, false);
 });
 
+test('commits a verified bounded action without authorizing durable memory', () => {
+  const kernel = new CognitiveKernel({
+    context: { maxNormalizedEntropyForMemory: 0.45, minLeaderProbabilityForMemory: 0.7, maxNormalizedEntropyForActionCommit: 0.99, minLeaderProbabilityForActionCommit: 0.6 },
+  });
+  kernel.startTask({
+    taskId: 'task-action-commit', goal: 'apply a bounded verified patch', recoveryLeaseId: 'lease-action-commit',
+    contexts: [{ id: 'regression', probability: 0.65 }, { id: 'environment', probability: 0.35 }],
+    hypotheses: [
+      { id: 'h1', claim: 'the patch is safe', probability: 0.8, predictions: ['test passes'], falsificationCondition: 'test fails', testCost: 1 },
+      { id: 'h2', claim: 'the environment is unstable', probability: 0.2, predictions: ['test flakes'], falsificationCondition: 'test is stable', testCost: 1 },
+    ],
+  });
+  const proposal = kernel.propose('task-action-commit', {
+    uncertainty: 0.1,
+    actions: [{ id: 'patch-target', kind: 'patch', taskUtility: 0.9, informationGain: 0.2, tokenCost: 10, ramMbSeconds: 1, timeMs: 100, irreversibility: 0.05 }],
+  });
+  const verified = kernel.verify('task-action-commit', proposal.proposalId, {
+    verificationProbeId: 'target-test', toolRunReceiptSha256: 'e'.repeat(64), declaredSuccess: true,
+    effectProbes: [{ probeId: 'target-effect', independent: true, receiptSha256: 'f'.repeat(64), paths: ['targetTest'] }],
+    scope: { files: 1, changedLines: 1 }, expectedEffect: { targetTest: 'pass' }, actualEffect: { targetTest: 'pass' },
+    verification: { targetedTests: 'passed' }, blockedInvariantIds: [], rollbackPoint: 'base',
+  });
+  assert.equal(kernel.snapshot('task-action-commit').memoryWriteGate.allowed, false);
+  assert.equal(kernel.commit('task-action-commit', verified.verifiedProposalId).allowed, true);
+});
+
 
 test('denies commit when a declared tool success has a mismatched observed effect', () => {
   const kernel = new CognitiveKernel();

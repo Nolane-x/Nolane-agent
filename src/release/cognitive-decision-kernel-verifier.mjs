@@ -43,7 +43,7 @@ export async function verifyCognitiveDecisionKernel({ rootDirectory = process.cw
   requirePattern(selector, /informationGain[\s\S]*tokenCost[\s\S]*ramCost[\s\S]*timeCost[\s\S]*irreversibilityRisk/, 'information-efficient action selection', failures);
   requirePattern(router, /(?=[\s\S]*ownerMask)(?=[\s\S]*unrelatedSubsystemsMasked)(?=[\s\S]*missing-binary)(?=[\s\S]*stale-symbol-memory)/, 'structured error posterior and owner mask', failures);
   requirePattern(episode, /expectedEffect[\s\S]*actualEffect[\s\S]*rollbackPoint[\s\S]*transcriptStored\s*:\s*false/, 'causal episode without transcript', failures);
-  requirePattern(gates, /strategy-failed-in-current-lease[\s\S]*context-posterior-dispersed[\s\S]*verification-probe-unknown[\s\S]*marginal-information-gain-low/, 'recovery commit and stop gates', failures);
+  requirePattern(gates, /strategy-failed-in-current-lease[\s\S]*action-posterior-dispersed[\s\S]*verification-probe-unknown[\s\S]*marginal-information-gain-low/, 'recovery commit and stop gates', failures);
   requirePattern(kernel, /startTask[\s\S]*observe[\s\S]*propose[\s\S]*verify[\s\S]*commit[\s\S]*episodeReceiptSha256/, 'cognitive kernel lifecycle and causal binding', failures);
   requirePattern(plane, /(?=[\s\S]*cognitionLoaded)(?=[\s\S]*startCognitiveTask)(?=[\s\S]*commitCognitiveProposal)/, 'lazy Decision Plane cognition integration', failures);
   requirePattern(agentLoop, /cognitiveModeRequested[\s\S]*agent\.cognition\.recommendation[\s\S]*decisionPlane/, 'bounded Agent Loop cognition trigger', failures);
@@ -58,7 +58,7 @@ export async function verifyCognitiveDecisionKernel({ rootDirectory = process.cw
     if (measurement.hypotheses?.alternativeSurvived !== true || measurement.hypotheses?.falsifiedExplicitly !== true) failures.push('hypothesis survival/falsification not measured');
     if (measurement.actions?.selectedProbe !== 'targeted-test' || measurement.actions?.irreversibleRejected !== true) failures.push('epistemic action selection not measured');
     if (measurement.errors?.missingBinaryPrimary !== 'execution' || !measurement.errors?.staleMemoryOwners?.includes('memory')) failures.push('targeted error routing not measured');
-    if (measurement.agency?.expectedActualMismatch !== true || measurement.agency?.rawCommandStored !== false) failures.push('agency delta/privacy not measured');
+    if (measurement.agency?.unverifiedClaimExcluded !== true || measurement.agency?.expectedVerifiedMismatch !== true || measurement.agency?.verifiedEffectReceiptBound !== true || measurement.agency?.rawCommandStored !== false) failures.push('agency verification/privacy not measured');
     if (measurement.episode?.bound !== true || measurement.episode?.transcriptStored !== false) failures.push('causal episode binding not measured');
     if (measurement.recovery?.failedStrategyBanned !== true) failures.push('recovery strategy ban not measured');
     if (measurement.commit?.deniedBeforeEvidence !== true || measurement.commit?.allowedAfterEvidence !== true) failures.push('commit gates not measured');

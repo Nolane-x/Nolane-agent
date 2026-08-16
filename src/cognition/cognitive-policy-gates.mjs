@@ -31,9 +31,10 @@ export class RecoveryLease {
   }
 }
 
-export function evaluateCommitGate({ contextGate = {}, dominantHypothesis = null, minDominantProbability = 0.7, scope = {}, limits = {}, verificationProbeId = '', blockedInvariantIds = [] } = {}) {
+export function evaluateCommitGate({ actionGate, contextGate = {}, dominantHypothesis = null, minDominantProbability = 0.7, scope = {}, limits = {}, verificationProbeId = '', blockedInvariantIds = [] } = {}) {
   const reasons = [];
-  if (contextGate.allowed !== true) reasons.push('context-posterior-dispersed');
+  const selectedActionGate = actionGate ?? contextGate;
+  if (selectedActionGate.allowed !== true) reasons.push('action-posterior-dispersed');
   if (!dominantHypothesis || dominantHypothesis.status !== 'active') reasons.push('dominant-hypothesis-missing');
   else if (finite(dominantHypothesis.probability, 'dominantHypothesis.probability', { min: 0, max: 1 }) < minDominantProbability) reasons.push('dominant-hypothesis-weak');
   const files = Math.max(0, Math.floor(Number(scope.files) || 0));
@@ -48,6 +49,7 @@ export function evaluateCommitGate({ contextGate = {}, dominantHypothesis = null
   return signed({
     schema: 'forge.cognitive-commit-gate.v1', allowed: reasons.length === 0, reasons,
     dominantHypothesisId: dominantHypothesis?.id ?? null, verificationProbeId: String(verificationProbeId ?? '') || null,
+    actionGateReceiptSha256: selectedActionGate.receiptSha256 ?? null,
     scope: { files, changedLines }, limits: { files: maxFiles, changedLines: maxChangedLines }, blockedInvariantIds: invariants,
   });
 }

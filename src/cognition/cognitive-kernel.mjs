@@ -168,10 +168,11 @@ export class CognitiveKernel {
         episodeId: null,
       }));
     }
-    const contextGate = this.contexts.canWriteDurableMemory(task.taskId);
+    const actionGate = this.contexts.canCommitAction(task.taskId);
+    const durableMemoryGate = this.contexts.canWriteDurableMemory(task.taskId);
     const dominantHypothesis = this.hypotheses.dominant(task.taskId);
     const gate = evaluateCommitGate({
-      contextGate,
+      actionGate,
       dominantHypothesis,
       scope: verified.scope,
       limits: this.commitLimits,
@@ -180,7 +181,8 @@ export class CognitiveKernel {
     });
     if (!gate.allowed) return this.#record(signed({
       schema: 'forge.cognitive-commit-result.v1', taskId: task.taskId, verifiedProposalId: verified.verifiedProposalId,
-      allowed: false, reasons: [...gate.reasons], gateReceiptSha256: gate.receiptSha256, episodeId: null,
+      allowed: false, reasons: [...gate.reasons], gateReceiptSha256: gate.receiptSha256,
+      actionGateReceiptSha256: actionGate.receiptSha256, durableMemoryGateReceiptSha256: durableMemoryGate.receiptSha256, episodeId: null,
     }));
     const hypothesisSnapshot = this.hypotheses.snapshot(task.taskId);
     const episodeId = `episode-${++this.sequence}`;
@@ -209,6 +211,7 @@ export class CognitiveKernel {
     const result = signed({
       schema: 'forge.cognitive-commit-result.v1', taskId: task.taskId, verifiedProposalId: verified.verifiedProposalId,
       allowed: true, reasons: [], gateReceiptSha256: gate.receiptSha256, episodeId,
+      actionGateReceiptSha256: actionGate.receiptSha256, durableMemoryGateReceiptSha256: durableMemoryGate.receiptSha256,
       episodeReceiptSha256: episode.receiptSha256, effectVerificationReceiptSha256: verified.effectVerification.receiptSha256,
     });
     task.committed.set(verified.verifiedProposalId, result);
@@ -243,6 +246,7 @@ export class CognitiveKernel {
       schema: 'forge.cognitive-task-snapshot.v1', taskId: task.taskId, goal: task.goal,
       contextPosterior: context, hypothesisPopulation: hypotheses,
       memoryWriteGate: this.contexts.canWriteDurableMemory(task.taskId),
+      actionCommitGate: this.contexts.canCommitAction(task.taskId),
       recentErrorRoutes: task.recentErrorRoutes.map((route) => ({ primarySubsystem: route.primarySubsystem, ownerMask: [...route.ownerMask], receiptSha256: route.receiptSha256 })),
       proposalCount: task.proposals.size, verifiedProposalCount: task.verified.size, committedProposalCount: task.committed.size, episodeCount: task.episodeIds.length,
       recoveryLeaseId: task.recoveryLease.leaseId,
