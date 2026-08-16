@@ -1,0 +1,40 @@
+name: Synchronize 0.0.0 manifest
+
+on:
+  push:
+    branches: [codex/0.0.0-baseline]
+    paths: [.github/workflows/manifest-sync-0.0.0.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/0.0.0-baseline
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: Regenerate manifest for the final tree without this bootstrap
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .github/workflows/manifest-sync-0.0.0.yml /tmp/manifest-sync.yml
+          rm .github/workflows/manifest-sync-0.0.0.yml
+          rm -f project-manifest.json
+          node scripts/generate-manifest.mjs . project-manifest.json
+          mv /tmp/manifest-sync.yml .github/workflows/manifest-sync-0.0.0.yml
+          node -e "const m=require('./project-manifest.json'); if(m.product!=='Nolane Agent'||m.version!=='0.0.0'||m.files.length!==4524) process.exit(1)"
+      - name: Commit manifest only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Nolane-x"
+          git config user.email "278117157+Nolane-x@users.noreply.github.com"
+          git add project-manifest.json
+          test "$(git diff --cached --name-only)" = "project-manifest.json"
+          git commit -m "chore(release): synchronize 0.0.0 project manifest"
+          git push origin HEAD:codex/0.0.0-baseline
