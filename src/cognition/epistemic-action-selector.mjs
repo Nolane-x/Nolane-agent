@@ -46,7 +46,7 @@ export class EpistemicActionSelector {
       if (ids.has(id)) throw new TypeError(`duplicate action id: ${id}`);
       ids.add(id);
       const irreversibility = unit(action?.irreversibility, `actions[${index}].irreversibility`);
-      const eligible = !(uncertaintyValue > 0.5 && irreversibility > limit);
+      const eligible = irreversibility <= limit;
       const breakdown = {
         taskUtility: unit(action?.taskUtility, `actions[${index}].taskUtility`) * this.weights.taskUtility,
         informationGain: unit(action?.informationGain, `actions[${index}].informationGain`) * this.weights.informationGain,
@@ -56,7 +56,7 @@ export class EpistemicActionSelector {
         irreversibilityRisk: irreversibility * this.weights.irreversibilityRisk * Math.max(uncertaintyValue, 0.1),
       };
       const score = breakdown.taskUtility + breakdown.informationGain - breakdown.tokenCost - breakdown.ramCost - breakdown.timeCost - breakdown.irreversibilityRisk;
-      return { id, kind: text(action?.kind ?? 'action', `actions[${index}].kind`), eligible, score, breakdown, rejectedReason: eligible ? null : 'uncertainty-exceeds-reversibility-bound' };
+      return { id, kind: text(action?.kind ?? 'action', `actions[${index}].kind`), eligible, score, breakdown, rejectedReason: eligible ? null : 'irreversibility-exceeds-limit' };
     }).sort((a, b) => Number(b.eligible) - Number(a.eligible) || b.score - a.score || a.id.localeCompare(b.id));
     const selected = ranked.find((item) => item.eligible) ?? null;
     return signed({
