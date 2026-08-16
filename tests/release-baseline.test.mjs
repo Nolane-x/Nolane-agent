@@ -26,8 +26,8 @@ test('0.0.0 is the single canonical public version across product surfaces', asy
   assert.match(await text('README.md'), /^# Nolane Agent 0\.0\.0$/m);
 });
 
-test('0.0.0 source tree does not ship historical program residue', async () => {
-  for (const relative of ['checkpoints', 'recovered-artifacts', '.superpowers', 'MILESTONE-VERIFICATION-MANIFEST.json', 'docs/checkpoints', 'docs/product-perfection', 'docs/superpowers']) {
+test('0.0.0 source tree does not ship historical or generated process residue', async () => {
+  for (const relative of ['checkpoints', 'recovered-artifacts', '.superpowers', 'requirements', 'models', 'MILESTONE-VERIFICATION-MANIFEST.json', 'project-manifest.json', 'docs/checkpoints', 'docs/product-perfection', 'docs/superpowers']) {
     assert.equal(await missing(relative), true, `${relative} must not ship in the clean baseline`);
   }
   const readme = await text('README.md');
