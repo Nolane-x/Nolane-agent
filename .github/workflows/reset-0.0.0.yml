@@ -78,6 +78,8 @@ jobs:
                       candidate.chmod(candidate.stat().st_mode | 0o111)
           PY
 
+          rm -rf checkpoints recovered-artifacts .superpowers requirements models
+          rm -rf docs/checkpoints docs/product-perfection docs/superpowers
           rm -rf .nolane-reset
           rm -f .github/workflows/reset-0.0.0.yml
           rm -f project-manifest.json
@@ -97,6 +99,14 @@ jobs:
 
       - name: Verify UI contracts
         run: npm run verify:ui
+
+      - name: Normalize generated verification residue
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f release/version-coherence-0.0.0.json
+          rm -f project-manifest.json
+          node scripts/generate-manifest.mjs . project-manifest.json
 
       - name: Verify clean source surface
         shell: bash
