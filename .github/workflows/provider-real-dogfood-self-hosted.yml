@@ -28,7 +28,6 @@ jobs:
     runs-on: [self-hosted, Windows, X64, nolane-provider-dogfood]
     timeout-minutes: 30
     env:
-      NOLANE_PROVIDER_DOGFOOD_ALLOW_REAL_RUN: "1"
       NOLANE_DOGFOOD_PROVIDER: ${{ inputs.provider }}
       NOLANE_DOGFOOD_MODEL: ${{ inputs.model }}
     steps:
@@ -42,6 +41,7 @@ jobs:
         run: |
           if ($env:RUNNER_OS -ne 'Windows') { throw 'Dedicated provider dogfood runner must be Windows.' }
           if ($env:GITHUB_EVENT_NAME -ne 'workflow_dispatch') { throw 'Provider dogfood is manual-only.' }
+          if ($env:NOLANE_PROVIDER_DOGFOOD_ALLOW_REAL_RUN -ne '1') { throw 'Dedicated host has not explicitly opted into a real provider run.' }
           $allowedProviders = @('codex', 'claude', 'gemini')
           if ($env:NOLANE_DOGFOOD_PROVIDER -notin $allowedProviders) { throw 'Provider is not in the verified dogfood allow-list.' }
           $workRoot = Join-Path $env:RUNNER_TEMP "nolane-provider-dogfood-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"

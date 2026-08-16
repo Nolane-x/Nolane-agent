@@ -8,6 +8,12 @@ The workflow is manual-only (`workflow_dispatch`) and requires the dedicated lab
 
 Only providers whose production registry exposes `executionSafety: verified` are eligible. The workflow currently allow-lists `codex`, `claude`, and `gemini`. A provider such as `kimi-code` remains blocked while its registry contract is `external-plan-config-required`; a command-line flag cannot bypass that boundary.
 
+## Host-owned execution guard
+
+Before dispatching the workflow, the dedicated runner service account must set `NOLANE_PROVIDER_DOGFOOD_ALLOW_REAL_RUN=1` in the runner service account's environment, then restart the runner service so the process inherits it. This is a local, deliberate opt-in by the machine owner; the workflow checks it before creating the isolated workspace or invoking a provider.
+
+Never set this guard in workflow `env`, repository secrets, or workflow inputs. Removing the host variable disables real-provider execution again while preserving the workflow and its candidate contract for review.
+
 ## Evidence contract
 
 The fixed `provider-real-dogfood.v1` profile has 22 sequential cases: 10 behavioral cases and 12 adversarial probes. Each case records only identifiers, timing, exit classification, input SHA-256, result SHA-256, and result byte count. Task text and provider response content are never persisted in the candidate artifact.
