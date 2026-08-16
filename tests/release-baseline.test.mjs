@@ -1,3 +1,4 @@
+// CI re-arm marker; reverted in the next commit.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { access, readFile } from 'node:fs/promises';
