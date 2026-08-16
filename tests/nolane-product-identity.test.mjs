@@ -17,7 +17,11 @@ test('Nolane Agent 0.0.0 is the single canonical product identity for the clean 
   assert.equal(pkg.name, PRODUCT_IDENTITY.packageName);
   assert.equal(pkg.version, PRODUCT_IDENTITY.version);
 
-  const manifest = JSON.parse(await readFile('project-manifest.json', 'utf8'));
-  assert.equal(manifest.schema, 'nolane.agent.project-manifest.v1');
-  assert.equal(manifest.product, PRODUCT_IDENTITY.product);
+  const product = JSON.parse(await readFile('config/product-identity.json', 'utf8'));
+  assert.equal(product.schema, 'nolane.agent.product-identity.v1');
+  assert.equal(product.product, PRODUCT_IDENTITY.product);
+  assert.equal(product.packageName, PRODUCT_IDENTITY.packageName);
+  assert.equal(product.version, PRODUCT_IDENTITY.version);
+  assert.equal(product.channel, PRODUCT_IDENTITY.channel);
+  assert.equal(product.artifactPrefix, PRODUCT_IDENTITY.artifactPrefix);
 });
