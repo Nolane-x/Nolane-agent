@@ -101,7 +101,8 @@
     "verify:forgeos-upstream": "node scripts/verify-forgeos-upstream.mjs",
     "generate:product-perfection-catalog": "node scripts/generate-product-perfection-catalog.mjs",
     "generate:product-perfection-matrix": "node scripts/generate-product-perfection-matrix.mjs",
-    "verify:product-perfection": "node scripts/verify-product-perfection-matrix.mjs"
+    "verify:product-perfection": "node scripts/verify-product-perfection-matrix.mjs",
+    "verify:release-candidate": "node scripts/verify-release-candidate.mjs"
   },
   "license": "MIT",
   "main": "desktop/main.cjs",
