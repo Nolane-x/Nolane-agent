@@ -43,19 +43,18 @@ test('the canonical product starts on loopback within the lightweight startup bu
   await new Promise((resolve) => child.once('exit', resolve));
 });
 
-test('release documentation and project manifest are complete and contain no fake-control placeholders', async () => {
-  const required = ['README.md', 'CHANGELOG.md', 'CONTRIBUTING.md', 'SECURITY.md', 'SUPPORT.md', 'docs/ARCHITECTURE.md', 'docs/DEVELOPMENT.md', 'docs/CONFIGURATION.md', 'docs/API.md', 'docs/QUALITY.md', 'docs/RELEASES.md', 'docs/PLATFORMS.md', 'docs/ROADMAP.md', 'project-manifest.json', 'scripts/smoke.mjs'];
+test('release documentation and canonical product identity are complete and contain no fake-control placeholders', async () => {
+  const required = ['README.md', 'CHANGELOG.md', 'CONTRIBUTING.md', 'SECURITY.md', 'SUPPORT.md', 'docs/ARCHITECTURE.md', 'docs/DEVELOPMENT.md', 'docs/CONFIGURATION.md', 'docs/API.md', 'docs/QUALITY.md', 'docs/RELEASES.md', 'docs/PLATFORMS.md', 'docs/ROADMAP.md', 'config/product-identity.json', 'src/agent/agent-loop.mjs', 'scripts/smoke.mjs'];
   for (const file of required) assert.ok((await stat(file)).isFile(), file);
   const combined = (await Promise.all(required.filter((file) => file.endsWith('.md')).map((file) => readFile(file, 'utf8')))).join('\n');
   assert.doesNotMatch(combined, /\b(?:TBD|TODO|coming soon|fake button)\b/i);
-  const manifest = JSON.parse(await readFile('project-manifest.json', 'utf8'));
+  const identity = JSON.parse(await readFile('config/product-identity.json', 'utf8'));
   const packageMetadata = JSON.parse(await readFile('package.json', 'utf8'));
-  const expectedProduct = packageMetadata.name === 'nolane-agent' ? 'Nolane Agent' : 'Forge Studio';
-  const expectedSchema = packageMetadata.name === 'nolane-agent' ? 'nolane.agent.project-manifest.v1' : 'forge.studio.project-manifest.v1';
-  assert.equal(manifest.product, expectedProduct);
-  assert.equal(manifest.schema, expectedSchema);
-  assert.ok(manifest.files.some((file) => file.relativePath === 'src/agent/agent-loop.mjs' && /^[a-f0-9]{64}$/.test(file.sha256)));
-  assert.ok(manifest.files.every((file) => file.relativePath && file.fileName && file.mimeType && file.version && file.status && file.description));
+  assert.equal(identity.product, 'Nolane Agent');
+  assert.equal(identity.schema, 'nolane.agent.product-identity.v1');
+  assert.equal(identity.packageName, packageMetadata.name);
+  assert.equal(identity.version, packageMetadata.version);
+  assert.equal(identity.channel, 'stable');
 });
 
 
