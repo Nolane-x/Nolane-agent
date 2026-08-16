@@ -1,9 +1,9 @@
-name: Nolane Agent CI
+name: CI
 
 on:
-  push:
-    branches: [main, master, "release/**", "feature/**", "codex/external-gate-evidence"]
   pull_request:
+  push:
+    branches: [main]
 
 permissions:
   contents: read
@@ -12,46 +12,101 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
 jobs:
-  source-validation:
-    if: ${{ github.event_name != 'pull_request' || github.head_ref != github.event.repository.default_branch }}
+  platform-contracts:
+    name: platform-${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - run: npm ci --ignore-scripts
+      - run: npm run verify:version
+      - run: npm run test:core
+      - run: npm run test:release
+      - run: npm run verify:electron-installer
+
+  full-node:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-      - uses: actions/setup-go@v5
-        with:
-          go-version: '1.24.x'
-      - name: Install locked source dependencies
-        run: npm ci --ignore-scripts
-      - name: Validate Node product
-        run: npm run validate
-      - name: Validate native Go modules
-        run: npm run test:go
-      - name: Build and validate VS Code extension
-        run: npm run build:vscode
-      - name: Verify Nolane runtime purity
-        run: node scripts/verify-nolane-runtime-purity.mjs .
-      - name: Verify Electron installer contract
-        run: npm run verify:electron-installer
+        with: { node-version: '22' }
+      - run: npm ci --ignore-scripts
+      - run: npm test
 
-  windows-electron-contract:
-    if: ${{ github.event_name != 'pull_request' || github.head_ref != github.event.repository.default_branch }}
-    runs-on: windows-latest
-    timeout-minutes: 45
+  native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.24.x' }
+      - run: npm ci --ignore-scripts
+      - run: npm run test:go
+      - run: npm run build:vscode
+
+  ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - run: npm ci --ignore-scripts
+      - run: npm run build:ui
+      - run: npm run verify:ui
+
+  package-dry-run:
+    name: package-${{ matrix.artifact }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: windows
+            artifact: windows
+          - os: macos-latest
+            target: mac
+            artifact: macos
+          - os: ubuntu-latest
+            target: linux
+            artifact: linux
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.24.x' }
+      - run: npm ci --ignore-scripts
+      - name: Build native PTY helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd native/pty
+          if [ "${{ runner.os }}" = "Windows" ]; then go build -trimpath -o NolanePty.exe .; else go build -trimpath -o NolanePty .; fi
+      - name: Install pinned Electron builder
+        run: npm install --no-save --package-lock=false electron-builder@26.15.3
+      - name: Build native desktop package without publishing
+        env:
+          NOLANE_ELECTRON_TARGET: ${{ matrix.target }}
+        run: npm run build:electron:installer
+      - uses: actions/upload-artifact@v4
         with:
-          node-version: 24
-          cache: npm
-      - name: Install locked source dependencies
-        run: npm ci --ignore-scripts
-      - name: Verify Electron and update contracts
-        run: node --test tests/electron-installer-config.test.mjs tests/electron-update-controller.test.mjs tests/electron-update-wiring.test.mjs tests/update-service.test.mjs tests/github-release-workflow.test.mjs
+          name: package-dry-run-${{ matrix.artifact }}
+          path: release/installer/NolaneAgent-*
+          if-no-files-found: error
+          retention-days: 3

@@ -4,19 +4,22 @@ import fs from 'node:fs';
 
 const read = (file) => fs.readFileSync(new URL(`../${file}`, import.meta.url), 'utf8');
 
-test('top-level documentation identifies the current Nolane Agent product', () => {
+test('public documentation identifies the clean Nolane Agent 0.0.0 baseline', () => {
   const readme = read('README.md');
   const architecture = read('docs/ARCHITECTURE.md');
-  assert.match(readme, /^# Nolane Agent/m);
-  assert.doesNotMatch(readme.split('\n')[0], /Native Runtime Conversion Wave/i);
-  assert.match(architecture, /^# Nolane Agent Architecture/m);
-  assert.doesNotMatch(architecture.split('\n')[0], /Forge Studio/i);
+  const releases = read('docs/RELEASES.md');
+  assert.match(readme, /^# Nolane Agent 0\.0\.0/m);
+  assert.match(architecture, /^# Architecture/m);
+  assert.match(releases, /^# Releases/m);
+  for (const document of [readme, architecture, releases]) {
+    assert.doesNotMatch(document, /Product Perfection|Task 1[0-3]|5\.0\.0-beta/i);
+  }
 });
 
-test('documentation states release-generated update trust and retained ForgeOS compatibility truth', () => {
-  const combined = `${read('README.md')}\n${read('docs/ARCHITECTURE.md')}\n${read('docs/COMPATIBILITY-SUBSTRATES.md')}`;
-  assert.match(combined, /config\/update\.json[^\n]*(?:release-generated|generated during release)/i);
-  assert.match(combined, /vendor\/forge-os[^\n]*(?:compatibility|authority)/i);
-  const factualLines = combined.split('\n').map((line) => line.trim()).filter((line) => !/must not claim|does not claim|cannot claim/i.test(line));
-  assert.equal(factualLines.some((line) => /^ForgeOS (?:is|has been) (?:fully )?(?:removed|absent)/i.test(line)), false);
+test('documentation keeps update trust fail-closed until release evidence exists', () => {
+  const combined = `${read('README.md')}\n${read('docs/CONFIGURATION.md')}\n${read('docs/RELEASES.md')}\n${read('docs/PLATFORMS.md')}`;
+  assert.match(combined, /config\/update\.json/i);
+  assert.match(combined, /disabled/i);
+  assert.match(combined, /signing|signature|verified/i);
+  assert.doesNotMatch(combined, /signed (?:Windows|macOS|Linux) release is verified/i);
 });

@@ -10,12 +10,9 @@ const ISOLATED_TESTS = new Set([
   'packaging.test.mjs',
   'performance.test.mjs',
   'project-manifest-generation.test.mjs',
-  'release-artifacts.test.mjs',
   'release-tooling.test.mjs',
-  'source-reconstruction.test.mjs',
   'update-release-tools.test.mjs',
   'worktree-integration-service.test.mjs',
-  'nolane-program-registry.test.mjs',
   'vscode-collaboration-experience.test.mjs',
   'vscode-legacy-migration.test.mjs',
   'vscode-local-worktree-handoff.test.mjs',
@@ -42,9 +39,7 @@ const LOCAL_PACKAGING_SMOKE_TESTS = new Set([
 ]);
 const SERIAL_TESTS = new Set([
   'packaging.test.mjs',
-  'release-artifacts.test.mjs',
   'release-tooling.test.mjs',
-  'nolane-program-registry.test.mjs',
   'vscode-collaboration-experience.test.mjs',
   'vscode-legacy-migration.test.mjs',
   'vscode-local-worktree-handoff.test.mjs',

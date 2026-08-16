@@ -17,7 +17,7 @@ async function fixture() {
   const leasePool = {
     async run(input, fn) { poolCalls.push(input); return fn({ key: input.key }); },
   };
-  const service = new BrowserAgentService({ driver, leasePool, browserRoot: root, getProject: (id) => ({ id, workspaceRoot: root }) });
+  const service = new BrowserAgentService({ driver, leasePool, browserRoot: root, getProject: (id) => ({ id, workspaceRoot: root }), lookup: async () => [{ address: '93.184.216.34', family: 4 }] });
   return { root, service, driverCalls, poolCalls };
 }
 

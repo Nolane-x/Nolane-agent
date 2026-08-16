@@ -2,9 +2,10 @@
 
 const path = require('node:path');
 
-const repository = process.env.GITHUB_REPOSITORY || process.env.NOLANE_GITHUB_REPOSITORY || 'casioreview20-glitch/nolane-agent';
+const repository = process.env.GITHUB_REPOSITORY || process.env.NOLANE_GITHUB_REPOSITORY || 'Nolane-x/Nolane-agent';
 const [owner, repo] = repository.split('/');
 if (!owner || !repo) throw new Error('NOLANE_GITHUB_REPOSITORY must be owner/repo');
+const windowsPublisherName = process.env.NOLANE_WINDOWS_PUBLISHER?.trim();
 
 module.exports = {
   appId: 'com.nolane.agent',
@@ -53,10 +54,11 @@ module.exports = {
   win: {
     target: [{ target: 'nsis', arch: ['x64'] }],
     executableName: 'NolaneAgent',
+    icon: 'build/icon.ico',
     electronUpdaterCompatibility: '>=2.16',
     requestedExecutionLevel: 'asInvoker',
     verifyUpdateCodeSignature: process.env.NOLANE_VERIFY_AUTHENTICODE !== 'false',
-    publisherName: process.env.NOLANE_WINDOWS_PUBLISHER || undefined,
+    ...(windowsPublisherName ? { publisherName: windowsPublisherName } : {}),
   },
   nsis: {
     guid: 'd4f38ef8-b26d-4fc8-9b83-31a988f96251',
@@ -77,11 +79,13 @@ module.exports = {
     target: [{ target: 'dmg', arch: ['x64'] }, { target: 'zip', arch: ['x64'] }],
     artifactName: 'NolaneAgent-${version}-${arch}.${ext}',
     category: 'public.app-category.developer-tools',
+    icon: 'build/icon.png',
   },
   linux: {
     target: [{ target: 'AppImage', arch: ['x64'] }, { target: 'deb', arch: ['x64'] }],
     artifactName: 'NolaneAgent-${version}-${arch}.${ext}',
     category: 'Development',
+    icon: 'build/icon.png',
   },
   publish: [{ provider: 'github', owner, repo, channel: '${channel}', releaseType: 'draft' }],
 };
