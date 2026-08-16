@@ -30,6 +30,8 @@ test('external gate workflow uses least privilege and real Windows Linux macOS r
   assert.match(workflow, /ref:\s*3a837b6f3658ca3618f2022f8707e29739c91364/);
   assert.match(workflow, /path:\s*\.ci\/tree-sitter-grammars\/tree-sitter-javascript/);
   assert.match(workflow, /npm install --global --allow-scripts=tree-sitter-cli tree-sitter-cli@0\.25\.10/);
+  assert.match(workflow, /for attempt in 1 2 3/);
+  assert.match(workflow, /sleep \$\(\(attempt \* 5\)\)/);
   assert.match(workflow, /name:\s*Run real Tree-sitter grammar gate[\s\S]*NOLANE_RUNTIME_TREE_SITTER_GATE:\s*'1'[\s\S]*NOLANE_TREE_SITTER_JAVASCRIPT_DIR:[\s\S]*node --test tests\/tree-sitter-runtime-evidence\.test\.mjs/);
   assert.match(workflow, /name:\s*Run real Podman sandbox gate[\s\S]*if:\s*matrix\.slug == 'linux'[\s\S]*NOLANE_RUNTIME_PODMAN_GATE:\s*'1'[\s\S]*node --test tests\/podman-runtime-evidence\.test\.mjs/);
   assert.match(workflow, /name:\s*Run real macOS sandbox gate[\s\S]*if:\s*matrix\.slug == 'macos'[\s\S]*NOLANE_RUNTIME_MACOS_SANDBOX_GATE:\s*'1'[\s\S]*node --test tests\/macos-sandbox-runtime-evidence\.test\.mjs/);
