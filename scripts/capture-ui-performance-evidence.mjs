@@ -13,6 +13,7 @@ export const PERFORMANCE_BUDGETS = Object.freeze({
   idleCpuPercent: 1,
   homeDomNodes: 1200,
   homeRendererMemoryBytes: 180 * 1024 * 1024,
+  interactiveInputP95Ms: 50,
 });
 
 const ROUTES = Object.freeze([
@@ -22,6 +23,8 @@ const ROUTES = Object.freeze([
   Object.freeze({ id: 'settings', route: '/settings', selector: '.settings-center' }),
   Object.freeze({ id: 'workroom', route: '/workroom', selector: '.workroom-view' }),
   Object.freeze({ id: 'control-plane', route: '/control-plane', selector: '#workspace' }),
+  Object.freeze({ id: 'missions', route: '/missions', selector: '.activity-page' }),
+  Object.freeze({ id: 'browser', route: '/browser', selector: '.browser-workspace' }),
 ]);
 
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
@@ -88,6 +91,45 @@ async function prepareOnboarding(baseUrl, token) {
   });
 }
 
+async function preparePerformanceReviewFixture(baseUrl, token) {
+  const project = await apiJson(baseUrl, token, '/api/projects', {
+    method: 'POST',
+    body: {
+      name: `Performance review fixture ${Date.now()}`,
+      workspaceRoot: process.cwd(),
+      metadata: { evidenceFixture: 'task11-performance-review-v1' },
+    },
+  });
+  const mission = await apiJson(baseUrl, token, '/api/missions/plan', {
+    method: 'POST',
+    body: {
+      projectId: project?.id,
+      objective: 'Measure evidence-bound review interaction without weakening snapshot truth',
+      plan: {
+        summary: 'Create a bounded performance review fixture.',
+        tasks: [{
+          id: 'review',
+          title: 'Review exact diff truth',
+          objective: 'Keep review decisions bound to the current snapshot.',
+          role: 'reviewer',
+          dependencies: [],
+          allowedPaths: ['**'],
+          deniedPaths: ['.env', '.env.*'],
+        }],
+      },
+    },
+  });
+  const review = await apiJson(baseUrl, token, `/api/agent/runs/${encodeURIComponent(String(mission?.id ?? ''))}/diff-review`);
+  if (!project?.id || !mission?.id || !/^[a-f0-9]{64}$/i.test(String(review?.reviewSha256 ?? ''))) {
+    throw new Error('Performance review fixture did not produce an evidence-bound review snapshot');
+  }
+  return Object.freeze({
+    projectId: String(project.id),
+    missionId: String(mission.id),
+    reviewSha256: String(review.reviewSha256),
+  });
+}
+
 function percentile(values, ratio) {
   const sorted = values.filter(Number.isFinite).sort((a, b) => a - b);
   if (!sorted.length) return null;
@@ -132,6 +174,34 @@ async function measureRouteSwitch(page, route) {
   return performance.now() - started;
 }
 
+async function measureSettingsInputToPaint(page) {
+  const settingsRoute = ROUTES.find((route) => route.id === 'settings');
+  if (!settingsRoute) throw new Error('Settings performance route is missing');
+  await warmRoute(page, settingsRoute);
+  const samples = await page.evaluate(async () => {
+    const values = ['a', 'ap', 'app', 'appe', 'appear'];
+    const durations = [];
+    const nextPaint = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    for (const value of values) {
+      const input = document.querySelector('[data-settings-search]');
+      if (!(input instanceof HTMLInputElement)) throw new Error('Settings search input is unavailable');
+      const started = performance.now();
+      input.value = value;
+      input.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: value.at(-1) ?? null }));
+      await nextPaint();
+      durations.push(performance.now() - started);
+    }
+    const input = document.querySelector('[data-settings-search]');
+    if (input instanceof HTMLInputElement) {
+      input.value = '';
+      input.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'deleteContentBackward', data: null }));
+      await nextPaint();
+    }
+    return durations;
+  });
+  return Object.freeze({ samples: Object.freeze(samples), p95: percentile(samples, 0.95) });
+}
+
 function budgetObservation(value, target, comparator = '<=') {
   const measured = Number(value);
   const withinTarget = Number.isFinite(measured) && (comparator === '<' ? measured < target : measured <= target);
@@ -142,6 +212,7 @@ export function evaluatePerformanceCandidate(metrics) {
   return Object.freeze({
     homeInteractive: budgetObservation(metrics.homeInteractiveMs, PERFORMANCE_BUDGETS.homeInteractiveMs),
     routeSwitchP95: budgetObservation(metrics.routeSwitchP95Ms, PERFORMANCE_BUDGETS.routeSwitchP95Ms),
+    interactiveInputP95: budgetObservation(metrics.interactiveInputP95Ms, PERFORMANCE_BUDGETS.interactiveInputP95Ms),
     longTaskMax: budgetObservation(metrics.longTaskMaxMs, PERFORMANCE_BUDGETS.longTaskMaxMs),
     idleCpu: budgetObservation(metrics.idleCpuEstimatePercent, PERFORMANCE_BUDGETS.idleCpuPercent, '<'),
     homeDomNodes: budgetObservation(metrics.homeDomNodes, PERFORMANCE_BUDGETS.homeDomNodes, '<'),
@@ -161,8 +232,12 @@ export async function captureUiPerformanceEvidence({ baseUrl, token, outputDirec
   await mkdir(root, { recursive: true });
   let browser = null;
   let onboardingSetup = null;
+  let reviewFixture = null;
+  let routes = ROUTES;
   try {
     onboardingSetup = await prepareOnboarding(runtimeUrl, credential);
+    reviewFixture = await preparePerformanceReviewFixture(runtimeUrl, credential);
+    routes = Object.freeze([...ROUTES, Object.freeze({ id: 'review', route: `/review/${encodeURIComponent(reviewFixture.missionId)}`, selector: '.review-detail' })]);
     const { chromium } = await import('playwright');
     browser = await chromium.launch({ headless: true, args: ['--enable-precise-memory-info'] });
     const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, reducedMotion: 'reduce' });
@@ -200,16 +275,27 @@ export async function captureUiPerformanceEvidence({ baseUrl, token, outputDirec
     const startupLongTaskMaxMs = startupLongTaskRecords.length ? Math.max(...startupLongTaskRecords.map((item) => Number(item.duration) || 0)) : 0;
     const homeSnapshot = await cdpSnapshot(session);
 
-    for (const route of ROUTES) await warmRoute(page, route);
+    const routeResourceObservations = {};
+    for (const route of routes) {
+      await warmRoute(page, route);
+      routeResourceObservations[route.id] = await cdpSnapshot(session);
+    }
     await page.evaluate(() => { window.__nolaneLongTasks = []; window.__nolanePerfPhase = 'interaction-ready'; });
     const routeSwitchSamplesMs = [];
+    const routeSwitchSamplesByRoute = Object.fromEntries(routes.map((route) => [route.id, []]));
     for (let round = 0; round < 3; round += 1) {
-      for (const route of ROUTES) routeSwitchSamplesMs.push(await measureRouteSwitch(page, route));
+      for (const route of routes) {
+        const duration = await measureRouteSwitch(page, route);
+        routeSwitchSamplesMs.push(duration);
+        routeSwitchSamplesByRoute[route.id].push(duration);
+      }
     }
     const routeSwitchP95Ms = percentile(routeSwitchSamplesMs, 0.95);
+    const routeSwitchP95ByRoute = Object.freeze(Object.fromEntries(Object.entries(routeSwitchSamplesByRoute).map(([id, samples]) => [id, percentile(samples, 0.95)])));
+    const interactiveInput = await measureSettingsInputToPaint(page);
     const routeLongTaskRecords = await page.evaluate(() => Array.isArray(window.__nolaneLongTasks) ? [...window.__nolaneLongTasks] : []);
 
-    await warmRoute(page, ROUTES[0]);
+    await warmRoute(page, routes.find((route) => route.id === 'home') ?? routes[0]);
     await page.evaluate(() => { window.__nolaneLongTasks = []; window.__nolanePerfPhase = 'idle'; });
     const idleBefore = await cdpSnapshot(session);
     const idleStarted = performance.now();
@@ -229,6 +315,10 @@ export async function captureUiPerformanceEvidence({ baseUrl, token, outputDirec
       homeInteractiveMs,
       routeSwitchP95Ms,
       routeSwitchSamplesMs: Object.freeze(routeSwitchSamplesMs),
+      routeSwitchP95ByRoute,
+      routeResourceObservations: Object.freeze(routeResourceObservations),
+      interactiveInputP95Ms: interactiveInput.p95,
+      interactiveInputSamplesMs: interactiveInput.samples,
       rendererJsHeapUsedBytes: homeSnapshot.jsHeapUsedBytes,
       homeDomNodes: homeSnapshot.domNodes,
       homeDocuments: homeSnapshot.documents,
@@ -250,7 +340,7 @@ export async function captureUiPerformanceEvidence({ baseUrl, token, outputDirec
       finalDecision: 'external_gate',
       requirementProjection: Object.freeze({ 'NOL-UI-032': 'external_gate', 'NOL-UI-002': 'external_gate' }),
       machine,
-      setup: onboardingSetup,
+      setup: Object.freeze({ onboarding: onboardingSetup, reviewFixture }),
       budgets: PERFORMANCE_BUDGETS,
       metrics,
       budgetObservations: evaluatePerformanceCandidate(metrics),
@@ -262,6 +352,9 @@ export async function captureUiPerformanceEvidence({ baseUrl, token, outputDirec
         windows8Gb: machine.os === 'win32' && Math.abs(machine.ramGb - 8) < 0.25 ? 'target_machine_candidate' : 'not_target_machine',
         independentReview: false,
         visualBudget: 'separate_ui_runtime_visual_receipt_required',
+        interactiveInput: 'settings_search_input_to_two_animation_frames_source_runtime_proxy',
+        streamingInputResponsiveness: 'not_observed_no_replayable_stream_fixture',
+        changedSurfaceRoutes: Object.freeze(['missions', 'review', 'workroom', 'browser', 'settings', 'control-plane']),
       }),
       claims: Object.freeze({ windows8GbCertified: false, performanceCertified: false }),
     });

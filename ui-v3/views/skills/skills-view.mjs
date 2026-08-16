@@ -5,6 +5,21 @@ const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({
 const asList = (value) => Array.isArray(value) ? value : Array.isArray(value?.skills) ? value.skills : Array.isArray(value?.items) ? value.items : [];
 const SKILL_CATALOG_LIMIT = 500;
 const SKILL_RENDER_BATCH = 48;
+const CAPABILITY_STATE_LABELS = Object.freeze({
+  en: Object.freeze({ installed:'Installed', 'not-installed':'Not installed', enabled:'Enabled', disabled:'Disabled', configured:'Configured', 'not-configured':'Not configured', ready:'Ready', 'not-ready':'Not ready', blocked:'Blocked' }),
+  vi: Object.freeze({ installed:'Đã cài', 'not-installed':'Chưa cài', enabled:'Đã bật', disabled:'Đã tắt', configured:'Đã cấu hình', 'not-configured':'Chưa cấu hình', ready:'Sẵn sàng', 'not-ready':'Chưa sẵn sàng', blocked:'Bị chặn' }),
+});
+function declaredCapabilityStates(item = {}) {
+  const states = [];
+  const facet = (key, yes, no) => { if (typeof item?.[key] !== 'boolean') return; states.push(item[key] ? yes : no); };
+  facet('installed', 'installed', 'not-installed');
+  facet('enabled', 'enabled', 'disabled');
+  facet('configured', 'configured', 'not-configured');
+  facet('ready', 'ready', 'not-ready');
+  if (item?.blocked === true) states.push('blocked');
+  return Object.freeze([...new Set(states)]);
+}
+function capabilityStateLabel(state, language = 'en') { return (CAPABILITY_STATE_LABELS[language === 'vi' ? 'vi' : 'en'] ?? CAPABILITY_STATE_LABELS.en)[state] ?? state; }
 
 function copy(language) {
   const vi = language === 'vi';
@@ -43,6 +58,7 @@ function normalizeSkill(item) {
     license: String(item?.license ?? ''),
     sourceUrl: String(item?.sourceUrl ?? ''),
     contentSha256: String(item?.contentSha256 ?? ''),
+    capabilityStates: declaredCapabilityStates(item),
   });
 }
 
@@ -58,7 +74,7 @@ function visibleSkills(state) {
   return state.skills.filter((skill) => {
     if (catalog && skill.catalog !== catalog) return false;
     if (!query) return true;
-    return [skill.title, skill.id, skill.source, skill.maturity, skill.description].join(' ').toLowerCase().includes(query);
+    return [skill.title, skill.id, skill.source, skill.maturity, skill.description, ...(skill.capabilityStates ?? [])].join(' ').toLowerCase().includes(query);
   });
 }
 
@@ -128,9 +144,10 @@ export function createSkillsLibraryController({ api, language = 'en' } = {}) {
   });
 }
 
-function renderSkillItem(skill, selected, text) {
+function renderSkillItem(skill, selected, text, language = 'en') {
   const meta = [sourceLabel(skill, text), skill.provenanceStatus || skill.maturity].filter(Boolean).join(' · ');
-  return `<button type="button" class="skill-library-item" data-skill-library-select="${esc(skill.id)}" aria-pressed="${selected}" aria-label="${esc(`${text.inspect}: ${skill.title}`)}"><span class="skill-library-item__icon">${icon('spark',{size:17})}</span><span class="skill-library-item__body"><strong>${esc(skill.title)}</strong>${skill.description ? `<small>${esc(skill.description)}</small>` : ''}${meta ? `<em>${esc(meta)}</em>` : ''}</span><span class="skill-library-item__arrow" aria-hidden="true">→</span></button>`;
+  const states = (skill.capabilityStates ?? []).map((state) => `<span data-skill-capability-state="${esc(state)}">${esc(capabilityStateLabel(state, language))}</span>`).join('');
+  return `<button type="button" class="skill-library-item" data-skill-library-select="${esc(skill.id)}" aria-pressed="${selected}" aria-label="${esc(`${text.inspect}: ${skill.title}`)}"><span class="skill-library-item__icon">${icon('spark',{size:17})}</span><span class="skill-library-item__body"><strong>${esc(skill.title)}</strong>${skill.description ? `<small>${esc(skill.description)}</small>` : ''}${states ? `<span class="skill-library-item__states">${states}</span>` : ''}${meta ? `<em>${esc(meta)}</em>` : ''}</span><span class="skill-library-item__arrow" aria-hidden="true">→</span></button>`;
 }
 
 function renderProvenance(preview, text) {
@@ -174,6 +191,6 @@ export function renderSkillsLibrary(state = {}) {
   let body;
   if (state.status === 'loading') body = `<div class="page-loading skills-library__loading" role="status"><span class="spinner"></span>${text.loading}</div>`;
   else if (state.status === 'error' && !state.skills?.length) body = `<div class="page-error skills-library__error" role="alert">${icon('warning',{size:18})}<span>${esc(text.error)}: ${esc(state.error)}</span></div>`;
-  else body = `<div class="skills-library__body"><section class="skills-library__catalog" aria-label="${esc(text.title)}">${skills.length ? `<div class="skills-library__list" role="list">${skills.map((skill) => `<div role="listitem">${renderSkillItem(skill, String(selectedId === skill.id), text)}</div>`).join('')}</div>${remainingSkills > 0 ? `<button type="button" class="skills-library__show-more" data-skills-show-more>${esc(text.showMore)} <span aria-hidden="true">+${remainingSkills}</span></button>` : ''}` : `<div class="empty-state skills-library__empty"><span>${icon('spark',{size:20})}</span><strong>${text.empty}</strong><p>${text.emptyDetail}</p></div>`}</section><aside class="skills-library__preview" aria-live="polite"><header><p class="eyebrow">${text.preview}</p><h2>${preview ? esc(preview.title) : text.preview}</h2>${preview?.catalog ? `<span>${esc(preview.catalog)}</span>` : ''}</header>${preview ? `<div class="skills-library__preview-content">${renderProvenance(preview, text)}<pre>${esc(preview.content || text.previewEmpty)}</pre></div>` : `<div class="skills-library__preview-empty">${icon('eye',{size:20})}<p>${text.previewEmpty}</p></div>`}<footer>${preview ? `${renderInstallation(state, preview, text)}<a href="#/?skill=${encodeURIComponent(preview.id)}" data-route="/?skill=${encodeURIComponent(preview.id)}">${text.useInMission} <span aria-hidden="true">→</span></a><small>${text.useInMissionDetail}</small>` : ''}<a href="#/control-plane/extensions" data-route="/control-plane/extensions">${text.manage} <span aria-hidden="true">→</span></a><small>${text.manageDetail}</small></footer></aside></div>`;
+  else body = `<div class="skills-library__body"><section class="skills-library__catalog" aria-label="${esc(text.title)}">${skills.length ? `<div class="skills-library__list" role="list">${skills.map((skill) => `<div role="listitem">${renderSkillItem(skill, String(selectedId === skill.id), text, state.language)}</div>`).join('')}</div>${remainingSkills > 0 ? `<button type="button" class="skills-library__show-more" data-skills-show-more>${esc(text.showMore)} <span aria-hidden="true">+${remainingSkills}</span></button>` : ''}` : `<div class="empty-state skills-library__empty"><span>${icon('spark',{size:20})}</span><strong>${text.empty}</strong><p>${text.emptyDetail}</p></div>`}</section><aside class="skills-library__preview" aria-live="polite"><header><p class="eyebrow">${text.preview}</p><h2>${preview ? esc(preview.title) : text.preview}</h2>${preview?.catalog ? `<span>${esc(preview.catalog)}</span>` : ''}</header>${preview ? `<div class="skills-library__preview-content">${renderProvenance(preview, text)}<pre>${esc(preview.content || text.previewEmpty)}</pre></div>` : `<div class="skills-library__preview-empty">${icon('eye',{size:20})}<p>${text.previewEmpty}</p></div>`}<footer>${preview ? `${renderInstallation(state, preview, text)}<a href="#/?skill=${encodeURIComponent(preview.id)}" data-route="/?skill=${encodeURIComponent(preview.id)}">${text.useInMission} <span aria-hidden="true">→</span></a><small>${text.useInMissionDetail}</small>` : ''}<a href="#/control-plane/extensions" data-route="/control-plane/extensions">${text.manage} <span aria-hidden="true">→</span></a><small>${text.manageDetail}</small></footer></aside></div>`;
   return `<section class="surface-page skills-library"><header class="surface-page__header"><div><p class="eyebrow">${text.eyebrow}</p><h1>${text.title}</h1><p>${text.subtitle}</p></div></header>${controls}${body}</section>`;
 }

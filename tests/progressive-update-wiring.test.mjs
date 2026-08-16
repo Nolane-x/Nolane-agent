@@ -15,6 +15,11 @@ test('progressive shell mounts one shared update surface in every experience lev
   assert.match(app, /updateStateController\.load\(\)/);
 });
 
+test('blocked update can route to running missions without invoking installer handoff', () => {
+  assert.match(app, /updateAction==='missions'/);
+  assert.match(app, /location\.hash='\/missions'/);
+});
+
 test('renderer update API never accepts a URL, installer path, manifest, or command', () => {
   for (const method of ['getUpdateState', 'checkForUpdates', 'downloadAvailableUpdate', 'deferUpdate', 'ignoreVersion', 'installUpdateAndRestart']) {
     assert.match(preload, new RegExp(`${method}: \\(\\) => electron\\.ipcRenderer\\.invoke`));

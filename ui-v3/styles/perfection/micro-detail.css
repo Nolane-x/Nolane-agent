@@ -1,0 +1,35 @@
+/* Reusable optical mechanisms. Route-specific ownership stays in page styles. */
+.ui-truncate{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ui-machine-id{font-family:var(--machine-id-font);font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;overflow-wrap:anywhere}
+.ui-optical-icon{display:inline-flex;align-items:center;justify-content:center;transform:translateY(var(--optical-icon-nudge-y))}
+.ui-consequence-plate{border-block-start:1px solid var(--instrument-rule);padding-block-start:var(--space-3)}
+.ui-focus-boundary{scroll-margin:var(--focus-scroll-margin)}
+.ui-density-row{min-block-size:var(--density-row-height)}
+.ui-density-control{min-block-size:var(--density-control-height)}
+.ui-readable-copy{max-inline-size:var(--density-explanatory-max)}
+.app-shell :where(.app-topbar__trail,.app-topbar__actions,.surface-page__header,.surface-toolbar){min-width:0}
+.app-shell :where(kbd,.telemetry-value,[data-count],[data-duration]){font-variant-numeric:tabular-nums}
+
+/* Session supervision: one quiet trace language for attention, motion, review and completion. */
+.session-sidebar__section-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 7px 7px}
+.session-sidebar__groups .session-sidebar__section-header h2{margin:0}
+.session-sidebar__section-count{display:inline-flex;align-items:center;justify-content:center;min-inline-size:18px;block-size:18px;padding-inline:5px;border:1px solid var(--border-faint);border-radius:999px;color:var(--text-faint);font-size:9px;font-variant-numeric:tabular-nums;background:color-mix(in srgb,var(--surface-raised) 62%,transparent)}
+.session-row{position:relative;grid-template-columns:10px minmax(0,1fr) auto;gap:9px}
+.session-row__trace{display:block;inline-size:7px;block-size:7px;border:1px solid var(--text-faint);border-radius:50%;background:transparent}
+.session-row__body{display:grid;min-width:0;gap:2px}
+.session-row__body strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:inherit;font-size:11px;font-weight:570;letter-spacing:-.005em}
+.session-row__context{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-secondary);font-size:9px}
+.session-row__status{display:flex;align-items:center;justify-content:flex-end;gap:5px;min-width:0}
+.session-row__status small{max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:none}
+.session-row__attention{display:grid;place-items:center;color:var(--state-warning)}
+.session-row[data-state-kind="attention"]{color:var(--text-primary);background:color-mix(in srgb,var(--state-warning) 5%,transparent)}
+.session-row[data-state-kind="attention"] .session-row__trace{border-radius:2px;border-color:var(--state-warning);background:color-mix(in srgb,var(--state-warning) 24%,transparent);transform:rotate(45deg)}
+.session-row[data-state="blocked"] .session-row__trace,.session-row[data-state="failed"] .session-row__trace,.session-row[data-state="error"] .session-row__trace{border-color:var(--state-error);background:color-mix(in srgb,var(--state-error) 24%,transparent)}
+.session-row[data-state-kind="running"] .session-row__trace{border-color:var(--instrument-trace);box-shadow:inset 0 0 0 2px var(--surface-sidebar)}
+.session-row[data-state-kind="review"] .session-row__trace{border-radius:2px;border-color:var(--state-info);background:color-mix(in srgb,var(--state-info) 16%,transparent)}
+.session-row[data-state-kind="success"] .session-row__trace{border-color:var(--state-success);background:color-mix(in srgb,var(--state-success) 22%,transparent)}
+.session-row[aria-current="page"]{background:var(--surface-selected);color:var(--text-primary);box-shadow:inset 2px 0 0 var(--instrument-trace)}
+.session-row[aria-current="page"] .session-row__body strong{font-weight:650}
+.session-row:hover .session-row__context,.session-row:focus-visible .session-row__context,.session-row[aria-current="page"] .session-row__context{color:var(--text-secondary)}
+@media(prefers-reduced-motion:no-preference){.session-row[data-state-kind="running"] .session-row__trace{transition:border-color var(--duration-fast) var(--ease-standard),box-shadow var(--duration-fast) var(--ease-standard)}}
+@media(forced-colors:active){.session-row__trace{forced-color-adjust:auto}.session-row[data-state-kind="attention"] .session-row__trace,.session-row[data-state-kind="running"] .session-row__trace,.session-row[data-state-kind="review"] .session-row__trace,.session-row[data-state-kind="success"] .session-row__trace{background:CanvasText;border-color:CanvasText}.session-row[aria-current="page"]{outline:1px solid Highlight;box-shadow:none}}

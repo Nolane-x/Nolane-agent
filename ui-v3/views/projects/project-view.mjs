@@ -58,13 +58,19 @@ function trustTone(trust) {
   return trust === 'trusted' ? 'success' : trust === 'blocked' ? 'danger' : 'warning';
 }
 
+function projectTrustLabel(trust, language = 'en') {
+  const value = String(trust ?? 'unknown').toLowerCase();
+  if (language === 'vi') return ({ trusted: 'Tin cậy', blocked: 'Bị chặn', manual: 'Thủ công', local: 'Cục bộ', untrusted: 'Chưa tin cậy', unknown: 'Chưa rõ' })[value] ?? String(trust ?? 'Chưa rõ');
+  return ({ trusted: 'Trusted', blocked: 'Blocked', manual: 'Manual', local: 'Local', untrusted: 'Untrusted', unknown: 'Unknown' })[value] ?? String(trust ?? 'Unknown');
+}
+
 function missionTone(status) {
   return activeStatuses.has(status) ? 'active' : status === 'completed' ? 'success' : status === 'failed' ? 'danger' : 'warning';
 }
 
 function projectCard(project, language) {
   const optionsLabel = language === 'vi' ? `Mở thông tin ${project.name}` : `Open intelligence for ${project.name}`;
-  return `<article class="project-card" data-project-id="${esc(project.id)}"><header><span class="project-card__mark">${icon('projects', { size: 19 })}</span><div><h2>${esc(project.name)}</h2><code>${esc(project.path)}</code></div><a class="project-card__options" href="#${esc(project.openIntelligenceRoute)}" data-route="${esc(project.openIntelligenceRoute)}" aria-label="${esc(optionsLabel)}">${icon('control', { size: 15 })}</a></header><div class="project-card__metrics"><span><strong>${project.activeMissions}</strong><small>${language === 'vi' ? 'đang chạy' : 'active'}</small></span><span><strong>${project.completedMissions}</strong><small>${language === 'vi' ? 'hoàn tất' : 'completed'}</small></span><span><i data-tone="${trustTone(project.trust)}"></i><small>${esc(project.trust)}</small></span></div><footer><a href="#/?project=${encodeURIComponent(project.id)}" data-route="/?project=${encodeURIComponent(project.id)}">${icon('chat', { size: 15 })}${t('projects.open', language)}</a><a href="#${esc(project.openIntelligenceRoute)}" data-route="${esc(project.openIntelligenceRoute)}">${icon('control', { size: 15 })}${t('projects.intelligence', language)}</a></footer></article>`;
+  return `<article class="project-card" data-project-id="${esc(project.id)}"><header><span class="project-card__mark">${icon('projects', { size: 19 })}</span><div><h2>${esc(project.name)}</h2><code>${esc(project.path)}</code></div><a class="project-card__options" href="#${esc(project.openIntelligenceRoute)}" data-route="${esc(project.openIntelligenceRoute)}" aria-label="${esc(optionsLabel)}">${icon('control', { size: 15 })}</a></header><div class="project-card__metrics"><span><strong>${project.activeMissions}</strong><small>${language === 'vi' ? 'đang chạy' : 'active'}</small></span><span><strong>${project.completedMissions}</strong><small>${language === 'vi' ? 'hoàn tất' : 'completed'}</small></span><span><i data-tone="${trustTone(project.trust)}"></i><small>${esc(projectTrustLabel(project.trust, language).toUpperCase())}</small></span></div><footer><a href="#/?project=${encodeURIComponent(project.id)}" data-route="/?project=${encodeURIComponent(project.id)}">${icon('chat', { size: 15 })}${t('projects.open', language)}</a><a href="#${esc(project.openIntelligenceRoute)}" data-route="${esc(project.openIntelligenceRoute)}">${icon('control', { size: 15 })}${t('projects.intelligence', language)}</a></footer></article>`;
 }
 
 function renderProjectActivity({ projects, missions, language }) {
@@ -81,17 +87,20 @@ function renderProjectActivity({ projects, missions, language }) {
 
 export function renderProjectsView(state = {}) {
   const language = state.language ?? 'en';
-  const query = String(state.query ?? '').toLowerCase();
+  const rawQuery = String(state.query ?? '').trim();
+  const query = rawQuery.toLowerCase();
   const projects = (state.projects ?? []).filter((project) => !query || `${project.name} ${project.path} ${project.id}`.toLowerCase().includes(query));
   const view = state.view === 'activity' ? 'activity' : 'grid';
   const content = state.status === 'loading'
-    ? `<div class="page-loading"><span class="spinner"></span>${t('common.loading', language)}</div>`
+    ? `<div class="page-loading" aria-busy="true"><span class="spinner"></span><span role="status" aria-live="polite">${t('common.loading', language)}</span></div>`
     : state.error
-      ? `<div class="page-error">${icon('warning', { size: 18 })}<span>${esc(state.error)}</span></div>`
+      ? `<div class="page-error projects-error">${icon('warning', { size: 18 })}<span role="alert">${esc(state.error)}</span><button type="button" data-project-action="retry">${language === 'vi' ? 'Thử lại' : 'Retry'}</button></div>`
       : !projects.length
-        ? `<div class="empty-state page-empty"><span>${icon('projects', { size: 20 })}</span><strong>${language === 'vi' ? 'Chưa có dự án' : 'No projects yet'}</strong><p>${t('projects.empty', language)}</p></div>`
+        ? rawQuery
+          ? `<div class="empty-state page-empty page-empty--search"><span>${icon('search', { size: 20 })}</span><strong>${language === 'vi' ? 'Không có dự án phù hợp' : 'No matching projects'}</strong><p>${language === 'vi' ? `Không tìm thấy dự án nào cho “${esc(rawQuery)}”.` : `No projects match “${esc(rawQuery)}”.`}</p><button type="button" data-project-action="clear-search">${language === 'vi' ? 'Xóa tìm kiếm' : 'Clear search'}</button></div>`
+          : `<div class="empty-state page-empty"><span>${icon('projects', { size: 20 })}</span><strong>${language === 'vi' ? 'Chưa có dự án' : 'No projects yet'}</strong><p>${t('projects.empty', language)}</p><button type="button" data-project-action="add">${language === 'vi' ? 'Thêm dự án' : 'Add project'}</button></div>`
         : view === 'activity'
           ? renderProjectActivity({ projects, missions: state.missions ?? [], language })
           : `<div class="project-grid">${projects.map((project) => projectCard(project, language)).join('')}</div>`;
-  return `<section class="surface-page projects-page" data-project-view="${view}"><header class="surface-page__header"><div><p class="eyebrow">${language === 'vi' ? 'Danh mục workspace' : 'Workspace registry'}</p><h1>${t('projects.title', language)}</h1><p>${t('projects.subtitle', language)}</p></div><button type="button" class="surface-primary" data-project-action="add">${icon('plus', { size: 16 })}<span>${language === 'vi' ? 'Thêm dự án' : 'Add project'}</span></button></header><div class="surface-toolbar"><label class="surface-search">${icon('search', { size: 15 })}<input type="search" data-project-search placeholder="${language === 'vi' ? 'Tìm dự án…' : 'Search projects…'}" value="${esc(state.query ?? '')}"></label><div class="surface-view-toggle"><button type="button" data-project-view="grid" aria-pressed="${view === 'grid'}" aria-label="${language === 'vi' ? 'Chế độ lưới dự án' : 'Project grid view'}">${icon('projects', { size: 15 })}</button><button type="button" data-project-view="activity" aria-pressed="${view === 'activity'}" aria-label="${language === 'vi' ? 'Chế độ hoạt động dự án' : 'Project activity view'}">${icon('activity', { size: 15 })}</button></div></div>${content}</section>`;
+  return `<section class="surface-page projects-page" data-project-view="${view}"><header class="surface-page__header"><div><p class="eyebrow">${language === 'vi' ? 'Danh mục workspace' : 'Workspace registry'}</p><h1>${t('projects.title', language)}</h1><p>${t('projects.subtitle', language)}</p></div><button type="button" class="surface-primary" data-project-action="add">${icon('plus', { size: 16 })}<span>${language === 'vi' ? 'Thêm dự án' : 'Add project'}</span></button></header><div class="surface-toolbar"><label class="surface-search">${icon('search', { size: 15 })}<input type="search" data-project-search data-preserve-key="projects-search" autocomplete="off" spellcheck="false" placeholder="${language === 'vi' ? 'Tìm dự án…' : 'Search projects…'}" value="${esc(state.query ?? '')}"></label><div class="surface-view-toggle"><button type="button" data-project-view="grid" data-preserve-key="project-view-grid" aria-pressed="${view === 'grid'}" aria-label="${language === 'vi' ? 'Chế độ lưới dự án' : 'Project grid view'}">${icon('projects', { size: 15 })}</button><button type="button" data-project-view="activity" data-preserve-key="project-view-activity" aria-pressed="${view === 'activity'}" aria-label="${language === 'vi' ? 'Chế độ hoạt động dự án' : 'Project activity view'}">${icon('activity', { size: 15 })}</button></div></div>${content}</section>`;
 }

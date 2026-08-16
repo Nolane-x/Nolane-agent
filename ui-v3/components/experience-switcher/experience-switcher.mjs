@@ -21,7 +21,7 @@ export function renderExperienceSwitcher({ current = 'everyday', language = 'en'
   const title = language === 'vi' ? 'Chuyển tầng giao diện' : 'Switch experience level';
   const hint = language === 'vi' ? 'Không thay đổi quyền của agent' : 'Does not change agent permissions';
   return `<div class="experience-switcher" data-experience-switcher>
-    <button type="button" class="experience-pill" data-command="toggle-experience" aria-label="${escapeHtml(title)}" aria-haspopup="listbox" aria-expanded="false" aria-controls="experience-switcher-menu"${busy ? ' disabled' : ''}><span class="experience-pill__dot"></span><span data-experience-current-label>${escapeHtml(copy(meta, language)[0])}</span>${icon('chevron',{size:14})}</button>
+    <button type="button" class="experience-pill" data-command="toggle-experience" aria-label="${escapeHtml(title)}" aria-haspopup="listbox" aria-expanded="false" aria-controls="experience-switcher-menu" aria-busy="${busy ? 'true' : 'false'}"${busy ? ' disabled' : ''}><span class="experience-pill__dot"></span><span data-experience-current-label>${escapeHtml(copy(meta, language)[0])}</span>${icon('chevron',{size:14})}</button>
     <div id="experience-switcher-menu" class="experience-switcher__menu" role="listbox" aria-label="${escapeHtml(title)}" data-experience-menu hidden>
       <header><strong>${escapeHtml(title)}</strong><small>${escapeHtml(hint)}</small></header>
       <div class="experience-switcher__options">${EXPERIENCE_LEVELS.map((level) => {

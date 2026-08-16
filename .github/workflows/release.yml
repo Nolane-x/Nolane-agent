@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
   id-token: write
   attestations: write
 
@@ -25,7 +26,78 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  candidate-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      source_sha: ${{ steps.candidate_identity.outputs.source_sha }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Resolve immutable release candidate identity
+        id: candidate_identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_sha=$(git rev-parse HEAD)
+          test "${#source_sha}" -eq 40
+          echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Verify tag and package version coherence
+        env:
+          GITHUB_SHA: ${{ steps.candidate_identity.outputs.source_sha }}
+        run: node scripts/verify-release-tag.mjs
+
+      - name: Install locked source dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Collect exact-head workflow evidence
+        env:
+          CANDIDATE_SHA: ${{ steps.candidate_identity.outputs.source_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${CANDIDATE_SHA}&per_page=100" > "$RUNNER_TEMP/exact-head-workflows.json"
+          external_run_id=$(node --input-type=module -e "import fs from 'node:fs'; const p=JSON.parse(fs.readFileSync(process.argv[1],'utf8')); const run=(p.workflow_runs||[]).filter(r=>r.name==='External gate evidence'&&r.head_sha===process.env.CANDIDATE_SHA&&r.status==='completed'&&r.conclusion==='success').sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at))[0]; if(!run) process.exit(2); process.stdout.write(String(run.id));" "$RUNNER_TEMP/exact-head-workflows.json")
+          mkdir -p "$RUNNER_TEMP/external-certification"
+          gh run download "$external_run_id" --repo "$GITHUB_REPOSITORY" --name external-gate-certification-candidate --dir "$RUNNER_TEMP/external-certification"
+
+      - name: Verify exact-head release candidate
+        env:
+          CANDIDATE_SHA: ${{ steps.candidate_identity.outputs.source_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          certification=$(find "$RUNNER_TEMP/external-certification" -type f -name '*.json' -print -quit)
+          test -n "$certification"
+          npm run verify:release-candidate -- \
+            --expected-sha "$CANDIDATE_SHA" \
+            --tag-sha "$CANDIDATE_SHA" \
+            --workflow-runs "$RUNNER_TEMP/exact-head-workflows.json" \
+            --external-certification "$certification" \
+            --output release/release-candidate-gate.json
+
+      - name: Upload candidate gate receipt
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: nolane-release-candidate-gate
+          path: release/release-candidate-gate.json
+          if-no-files-found: warn
+          retention-days: 30
+
   macos-release:
+    needs: candidate-gate
     runs-on: macos-latest
     timeout-minutes: 180
     steps:
@@ -51,7 +123,7 @@ jobs:
 
       - name: Verify immutable tag and commit
         env:
-          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_SHA: ${{ needs.candidate-gate.outputs.source_sha }}
         run: node scripts/verify-release-tag.mjs
 
       - name: Install locked source dependencies
@@ -99,6 +171,7 @@ jobs:
             release/installer/latest-mac.yml
 
   linux-release:
+    needs: candidate-gate
     runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:
@@ -124,7 +197,7 @@ jobs:
 
       - name: Verify immutable tag and commit
         env:
-          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_SHA: ${{ needs.candidate-gate.outputs.source_sha }}
         run: node scripts/verify-release-tag.mjs
 
       - name: Install locked source dependencies
@@ -170,7 +243,7 @@ jobs:
             release/installer/latest-linux.yml
 
   windows-release:
-    needs: [macos-release, linux-release]
+    needs: [candidate-gate, macos-release, linux-release]
     runs-on: windows-latest
     timeout-minutes: 180
     steps:
@@ -198,7 +271,7 @@ jobs:
       - name: Verify immutable tag and commit
         shell: pwsh
         env:
-          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_SHA: ${{ needs.candidate-gate.outputs.source_sha }}
         run: node scripts/verify-release-tag.mjs
 
       - name: Install locked source dependencies
@@ -286,7 +359,7 @@ jobs:
             --schema nolane.agent.update.v2 `
             --repository "${{ github.repository }}" `
             --tag "$env:RELEASE_TAG" `
-            --commit "${{ github.sha }}" `
+            --commit "${{ needs.candidate-gate.outputs.source_sha }}" `
             --package-kind nsis `
             --release-notes-url "https://github.com/${{ github.repository }}/releases/tag/$env:RELEASE_TAG" `
             --output "${{ steps.release_identity.outputs.manifest_path }}"
@@ -369,7 +442,7 @@ jobs:
           $refExists = $true
           try { gh api "repos/$repo/git/ref/heads/$branch" | Out-Null } catch { $refExists = $false }
           if (-not $refExists) {
-            gh api --method POST "repos/$repo/git/refs" -f ref="refs/heads/$branch" -f sha='${{ github.sha }}' | Out-Null
+            gh api --method POST "repos/$repo/git/refs" -f ref="refs/heads/$branch" -f sha='${{ needs.candidate-gate.outputs.source_sha }}' | Out-Null
           }
           $existingSha = $null
           try { $existingSha = (gh api "repos/$repo/contents/$feedPath`?ref=$branch" | ConvertFrom-Json).sha } catch {}

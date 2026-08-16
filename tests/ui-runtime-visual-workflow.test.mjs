@@ -56,7 +56,7 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(workflow, /appearance"\s*:\s*\{\s*"theme"\s*:\s*"nocturne"/);
   assert.match(workflow, /NOLANE_UI_VISUAL_STATES=home-nocturne/);
   assert.match(capturer, /chromium\.launch/);
-  assert.match(capturer, /browser\.newContext\(\{ viewport, deviceScaleFactor: 1 \}\)/);
+  assert.match(capturer, /browser\.newContext\(\{ viewport, deviceScaleFactor: 1, \.\.\.\(state\.contextOptions \?\? \{\}\) \}\)/);
   assert.match(capturer, /context\.newPage\(\)/);
   assert.doesNotMatch(capturer, /browser\.newPage\(/);
   assert.match(capturer, /page\.goto/);
@@ -66,7 +66,7 @@ test('UI runtime visual workflow captures authenticated source-rendered states w
   assert.match(capturer, /afterCapture: assertOnboardingRecommendedNavigation/);
   assert.match(capturer, /async function assertOnboardingRecommendedNavigation/);
   assert.match(capturer, /onboarding completion did not navigate to the home workspace/);
-  assert.match(capturer, /UI state did not render: \$\{state\.id\}/);
+  assert.match(capturer, /UI state did not render: ' \+ state\.id/);
   assert.match(capturer, /api\/onboarding\/status/);
   assert.match(capturer, /onboardingStatus/);
   assert.match(capturer, /pageErrors: pageErrors\.map\(redactDiagnosticText\)/);
