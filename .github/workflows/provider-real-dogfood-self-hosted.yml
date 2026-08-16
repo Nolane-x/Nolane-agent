@@ -82,7 +82,7 @@ jobs:
 
       - name: Publish candidate evidence only
         if: always() && steps.validate.outcome == 'success' && hashFiles('.nolane-evidence/provider-dogfood-candidate.json') != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: provider-real-dogfood-candidate-${{ github.run_id }}-${{ github.run_attempt }}
           path: .nolane-evidence/provider-dogfood-candidate.json
