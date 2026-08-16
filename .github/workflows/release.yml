@@ -2,6 +2,7 @@ name: Release
 
 on:
   push:
+    branches: [main]
     tags:
       - 'v0.0.*'
 
@@ -11,7 +12,7 @@ permissions:
   attestations: write
 
 concurrency:
-  group: release-${{ github.ref_name }}
+  group: release-${{ github.sha }}
   cancel-in-progress: false
 
 env:
@@ -21,29 +22,66 @@ env:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 120
     outputs:
       version: ${{ steps.identity.outputs.version }}
+      tag: ${{ steps.identity.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
       - uses: actions/setup-node@v4
         with: { node-version: '22' }
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.24.x' }
       - run: npm ci --ignore-scripts
       - id: identity
         shell: bash
         run: |
           set -euo pipefail
           version=$(node -p "require('./package.json').version")
-          test "${GITHUB_REF_NAME}" = "v${version}"
-          [[ "${GITHUB_REF_NAME}" =~ ^v0\.0\.[0-9]+$ ]]
+          tag="v${version}"
+          [[ "${tag}" =~ ^v0\.0\.[0-9]+$ ]]
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            test "${GITHUB_REF_NAME}" = "${tag}"
+          else
+            test "${GITHUB_REF_NAME}" = "main"
+          fi
           echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
       - run: npm run verify:version
       - run: npm run test:release
       - run: npm run test:core
       - run: npm run verify:electron-installer
+      - run: npm test
+      - run: npm run test:go
+      - run: npm run build:ui
+      - run: npm run verify:ui
+      - run: npm run build:vscode
+
+  ensure-tag:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Create or verify immutable release tag
+        env:
+          TAG: ${{ needs.validate.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --tags --force
+          if git rev-parse -q --verify "refs/tags/${TAG}" >/dev/null; then
+            test "$(git rev-list -n 1 "${TAG}")" = "${GITHUB_SHA}"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag -a "${TAG}" "${GITHUB_SHA}" -m "Nolane Agent ${{ needs.validate.outputs.version }}"
+            git push origin "refs/tags/${TAG}"
+          fi
 
   desktop:
-    needs: validate
+    needs: [validate, ensure-tag]
     strategy:
       fail-fast: false
       matrix:
@@ -89,7 +127,7 @@ jobs:
           if-no-files-found: error
 
   source-and-extension:
-    needs: validate
+    needs: [validate, ensure-tag]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -116,7 +154,7 @@ jobs:
           if-no-files-found: error
 
   publish:
-    needs: [validate, desktop, source-and-extension]
+    needs: [validate, ensure-tag, desktop, source-and-extension]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -132,12 +170,17 @@ jobs:
           name: source-and-extension
           path: release/final
       - name: Build release manifest and SHA256SUMS
-        run: node scripts/create-release-manifest.mjs --dir release/final --version '${{ needs.validate.outputs.version }}' --tag '${{ github.ref_name }}' --commit '${{ github.sha }}'
+        run: node scripts/create-release-manifest.mjs --dir release/final --version '${{ needs.validate.outputs.version }}' --tag '${{ needs.validate.outputs.tag }}' --commit '${{ github.sha }}'
       - name: Publish immutable GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.validate.outputs.tag }}
         shell: bash
         run: |
           set -euo pipefail
           version='${{ needs.validate.outputs.version }}'
-          gh release create "${GITHUB_REF_NAME}" release/final/* --verify-tag --title "Nolane Agent ${version}" --notes-file CHANGELOG.md
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "Release ${TAG} already exists for this immutable tag; refusing duplicate publication."
+            exit 1
+          fi
+          gh release create "${TAG}" release/final/* --verify-tag --title "Nolane Agent ${version}" --notes-file CHANGELOG.md
