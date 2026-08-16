@@ -15,7 +15,12 @@ concurrency:
 
 jobs:
   recover:
-    runs-on: ubuntu-slim
+    name: recover-${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-slim, ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 10
     steps:
       - name: Cancel stale PR workflow runs
@@ -63,7 +68,7 @@ jobs:
                 });
               } catch (error) {
                 if (error.status !== 409) throw error;
-                core.warning(`Standard cancel returned 409 for run ${run.id}; force-cancel will be attempted.`);
+                core.warning(`Standard cancel returned 409 for run ${run.id}; another recovery worker may already have completed it.`);
               }
             }
 
@@ -78,12 +83,17 @@ jobs:
               });
               if (current.status === 'completed') continue;
               core.warning(`Force-cancel run ${run.id}; current status=${current.status}`);
-              await github.request('POST /repos/{owner}/{repo}/actions/runs/{run_id}/force-cancel', {
-                owner,
-                repo,
-                run_id: run.id,
-              });
-              forced += 1;
+              try {
+                await github.request('POST /repos/{owner}/{repo}/actions/runs/{run_id}/force-cancel', {
+                  owner,
+                  repo,
+                  run_id: run.id,
+                });
+                forced += 1;
+              } catch (error) {
+                if (error.status !== 409) throw error;
+                core.warning(`Force-cancel returned 409 for run ${run.id}; another recovery worker may already have completed it.`);
+              }
             }
 
-            core.notice(`Capacity recovery requested cancellation of ${targets.length} stale run(s); force-cancelled ${forced}.`);
+            core.notice(`Capacity recovery requested cancellation of ${targets.length} stale run(s); force-cancel requests=${forced}.`);
