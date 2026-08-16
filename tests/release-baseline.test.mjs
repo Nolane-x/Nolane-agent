@@ -34,14 +34,17 @@ test('0.0.0 source tree does not ship historical or generated process residue', 
   assert.doesNotMatch(readme, /Product Perfection|Task 1[0-3]|checkpoint/i);
 });
 
-test('release configuration targets the canonical repository and v0.0.x tags', async () => {
+test('release configuration targets the canonical repository and publishes 0.0.x from main exactly once', async () => {
   const builder = await text('electron-builder.config.cjs');
   const workflow = await text('.github/workflows/release.yml');
   const update = await json('config/update.example.json');
   assert.match(builder, /Nolane-x\/Nolane-agent/);
   assert.equal(update.repository, 'Nolane-x/Nolane-agent');
   assert.equal(update.channel, 'stable');
-  assert.match(workflow, /v0\.0\.\*/);
+  assert.match(workflow, /branches:\s*\[main\]/);
+  assert.match(workflow, /tag="v\$\{version\}"/);
+  assert.match(workflow, /\^v0\\\.0\\\.\[0-9\]\+\$/);
+  assert.doesNotMatch(workflow, /tags:\s*\n/);
   assert.match(workflow, /SHA256SUMS/);
   assert.doesNotMatch(workflow, /product-perfection|external-gate-evidence|checkpoint/i);
 });
