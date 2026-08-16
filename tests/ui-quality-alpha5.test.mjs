@@ -31,11 +31,9 @@ test('artifact dock exposes connected tabs and tabpanels and shell announces rou
   assert.match(app, /routeTitle:/);
 });
 
-test('Windows 8 GB baseline schema remains explicitly pending until measured on the labelled machine', async () => {
-  const baseline = JSON.parse(await readFile('docs/ui-v3/windows-8gb-baseline.pending.json', 'utf8'));
-  assert.equal(baseline.machine.os, 'Windows 11');
-  assert.equal(baseline.machine.ramGb, 8);
-  assert.equal(baseline.status, 'pending-external-measurement');
-  assert.equal(baseline.claimAllowed, false);
-  assert.deepEqual(baseline.metrics, {});
+test('Windows 8 GB real-machine validation is deferred to 0.0.1 without shipping pending checkpoint artifacts', async () => {
+  const roadmap = await readFile('docs/ROADMAP.md', 'utf8');
+  assert.match(roadmap, /0\.0\.1:[^\n]*real-machine validation/i);
+  assert.match(roadmap, /8 GB Windows/i);
+  await assert.rejects(readFile('docs/ui-v3/windows-8gb-baseline.pending.json', 'utf8'), /ENOENT/);
 });

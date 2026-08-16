@@ -18,9 +18,10 @@ test('capability inventory accounts for all 17 legacy centers and required level
   assert.equal(report.duplicateRoutes.length, 0);
 });
 
-test('capability and token audits are exposed as release commands', async () => {
+test('capability and token audits are consolidated behind the public UI verification command', async () => {
   const { readFile } = await import('node:fs/promises');
   const pkg = JSON.parse(await readFile('package.json', 'utf8'));
-  assert.equal(pkg.scripts['audit:ui-capabilities'], 'node scripts/audit-ui-capabilities.mjs');
-  assert.equal(pkg.scripts['validate:ui-tokens'], 'node scripts/validate-ui-tokens.mjs');
+  assert.equal(pkg.scripts['verify:ui'], 'node scripts/validate-ui-tokens.mjs && node scripts/audit-ui-capabilities.mjs');
+  assert.equal(Object.hasOwn(pkg.scripts, 'audit:ui-capabilities'), false);
+  assert.equal(Object.hasOwn(pkg.scripts, 'validate:ui-tokens'), false);
 });

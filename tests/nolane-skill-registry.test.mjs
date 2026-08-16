@@ -114,9 +114,10 @@ test('rejects malformed standard packages and stale skill content', async (t) =>
 });
 
 test('documents the no-execution Agent Skills supply-chain boundary', async () => {
-  const policy = await readFile('docs/AGENT-SKILLS-SUPPLY-CHAIN.md', 'utf8');
-  assert.match(policy, /Agent Skills/i);
+  const policy = await readFile('SECURITY.md', 'utf8');
+  assert.match(policy, /Agent Skills supply chain/i);
+  assert.match(policy, /untrusted declarative guidance/i);
   assert.match(policy, /does not execute bundled scripts/i);
-  assert.match(policy, /Forge OS[\s\S]*MIT/i);
-  assert.match(policy, /unlicensed[\s\S]*not copied/i);
+  assert.match(policy, /explicit capabilities/i);
+  assert.match(policy, /governed tool or runtime boundary/i);
 });

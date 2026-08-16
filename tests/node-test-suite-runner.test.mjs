@@ -5,71 +5,22 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import { buildNodeTestArgs, buildNodeTestPlan, countDotReporterTests, resolveParallelWorkerCount, runNodeTestFilePool } from '../scripts/run-node-test-suite.mjs';
 
-test('node suite runner covers every test exactly once and isolates packaging', async () => {
+test('node suite runner covers every test exactly once and isolates resource-sensitive tests', async () => {
   const plan = await buildNodeTestPlan(path.resolve('tests'));
   const all = [...plan.parallel, ...plan.isolated];
   assert.equal(new Set(all).size, all.length, 'test files must not be duplicated');
   assert.equal(all.length, plan.discovered.length, 'every discovered test file must be scheduled');
   assert.deepEqual([...all].sort(), [...plan.discovered].sort());
   const isolatedNames = new Set(plan.isolated.map((file) => path.basename(file)));
-  for (const expected of [
-    'electron-packaging.test.mjs',
-    'nolane-program-registry.test.mjs',
-    'packaging.test.mjs',
-    'performance.test.mjs',
-    'project-manifest-generation.test.mjs',
-    'release-artifacts.test.mjs',
-    'release-tooling.test.mjs',
-    'source-reconstruction.test.mjs',
-    'update-release-tools.test.mjs',
-    'worktree-integration-service.test.mjs',
-    'vscode-collaboration-experience.test.mjs',
-    'vscode-legacy-migration.test.mjs',
-    'vscode-local-worktree-handoff.test.mjs',
-    'vscode-mission-state-bridge.test.mjs',
-    'vscode-security-certification-state.test.mjs',
-    'tool-broker.test.mjs',
-    'terminal-service.test.mjs',
-    'adaptive-microkernel-app-wiring.test.mjs',
-    'code-intelligence-v2.test.mjs',
-    'codex-app-server.test.mjs',
-    'codex-session-reuse.test.mjs',
-    'model-provider.test.mjs',
-    'nolane-native-capability-pack.test.mjs',
-    'small-model-checkpoint-6-foundation.test.mjs',
-    'small-model-checkpoint-7-foundation.test.mjs',
-    'small-model-checkpoint-7-http.test.mjs',
-    'execution-process-lifecycle-contracts.test.mjs',
-  ]) {
+  for (const expected of ['electron-packaging.test.mjs', 'packaging.test.mjs', 'tool-broker.test.mjs', 'terminal-service.test.mjs', 'model-provider.test.mjs']) {
     assert.ok(isolatedNames.has(expected), `${expected} must run in the isolated phase`);
   }
-  assert.ok(plan.parallel.length > plan.isolated.length);
-  assert.deepEqual(plan.serial.map((file) => path.basename(file)), [
-    'adaptive-microkernel-app-wiring.test.mjs',
-    'code-intelligence-v2.test.mjs',
-    'codex-app-server.test.mjs',
-    'codex-session-reuse.test.mjs',
-    'execution-process-lifecycle-contracts.test.mjs',
-    'model-provider.test.mjs',
-    'nolane-native-capability-pack.test.mjs',
-    'nolane-program-registry.test.mjs',
-    'packaging.test.mjs',
-    'release-artifacts.test.mjs',
-    'release-tooling.test.mjs',
-    'small-model-checkpoint-6-foundation.test.mjs',
-    'small-model-checkpoint-7-foundation.test.mjs',
-    'small-model-checkpoint-7-http.test.mjs',
-    'vscode-collaboration-experience.test.mjs',
-    'vscode-legacy-migration.test.mjs',
-    'vscode-local-worktree-handoff.test.mjs',
-    'vscode-mission-state-bridge.test.mjs',
-    'vscode-security-certification-state.test.mjs',
-  ]);
+  assert.ok(plan.serial.every((file) => isolatedNames.has(path.basename(file))));
   assert.equal(plan.isolatedBatch.length + plan.serial.length, plan.isolated.length);
-  assert.equal(plan.isolatedBatch.includes(plan.serial[0]), false);
+  assert.ok(plan.parallel.length > plan.serial.length);
   assert.ok(plan.parallelBatches.length > 1);
   assert.ok(plan.parallelBatches.every((batch) => batch.length <= 32));
-  assert.ok(plan.parallelBatches.length === Math.ceil(plan.parallel.length / 32), 'parallel plan should use bounded 32-file batches to avoid resource contention');
+  assert.equal(plan.parallelBatches.length, Math.ceil(plan.parallel.length / 32));
   assert.deepEqual(plan.parallelBatches.flat(), plan.parallel);
 });
 

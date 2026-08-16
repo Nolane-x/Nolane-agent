@@ -15,12 +15,3 @@ test('Projects diagnostics capture geometry, scroll, and fresh versus route-roun
   assert.match(source, /page\.goto/);
   assert.match(source, /location\.hash/);
 });
-
-test('Projects diagnostic workflow runs against the authenticated source runtime and uploads evidence', async () => {
-  const workflow = await read('.github/workflows/product-perfection-projects-diagnostics.yml');
-  assert.match(workflow, /npm ci --ignore-scripts/);
-  assert.match(workflow, /playwright@1\.58\.2/);
-  assert.match(workflow, /node src\/app\.mjs/);
-  assert.match(workflow, /capture-ui-layout-diagnostics\.mjs/);
-  assert.match(workflow, /product-perfection-projects-diagnostics/);
-});

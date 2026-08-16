@@ -2,7 +2,7 @@
 
 const path = require('node:path');
 
-const repository = process.env.GITHUB_REPOSITORY || process.env.NOLANE_GITHUB_REPOSITORY || 'casioreview20-glitch/nolane-agent';
+const repository = process.env.GITHUB_REPOSITORY || process.env.NOLANE_GITHUB_REPOSITORY || 'Nolane-x/Nolane-agent';
 const [owner, repo] = repository.split('/');
 if (!owner || !repo) throw new Error('NOLANE_GITHUB_REPOSITORY must be owner/repo');
 

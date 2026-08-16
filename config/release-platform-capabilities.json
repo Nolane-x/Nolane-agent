@@ -4,36 +4,122 @@
   "platforms": {
     "win32": {
       "label": "Windows",
-      "packageKinds": ["nsis"],
-      "artifactPatterns": ["NolaneAgent-Setup-${version}-x64.exe"],
-      "signing": { "status": "conditional", "mechanism": "Authenticode", "evidenceRequired": "release signing secret plus signature verification receipt" },
-      "notarization": { "status": "not-applicable", "mechanism": null },
-      "updateTrust": { "enabled": true, "mechanism": "Ed25519-signed nolane.agent.update.v2 manifest" },
-      "inAppUpdateHandoff": { "enabled": true, "mechanism": "nolane-signed-nsis", "reason": null },
-      "nativeInstallHandoff": { "enabled": true, "mechanism": "nsis", "reason": null },
-      "recovery": { "preUpdateSnapshot": true, "migrationJournal": true, "postUpdateHealth": true, "realUpdateReplay": "external-gate" }
+      "packageKinds": [
+        "nsis"
+      ],
+      "artifactPatterns": [
+        "NolaneAgent-Setup-${version}-x64.exe"
+      ],
+      "signing": {
+        "status": "conditional",
+        "mechanism": "Authenticode",
+        "evidenceRequired": "release signing secret plus signature verification receipt"
+      },
+      "notarization": {
+        "status": "not-applicable",
+        "mechanism": null
+      },
+      "updateTrust": {
+        "enabled": false,
+        "mechanism": null,
+        "reason": "0.0.0 ships with the update feed disabled until a verified signing key is configured."
+      },
+      "inAppUpdateHandoff": {
+        "enabled": false,
+        "mechanism": null,
+        "reason": "The 0.0.0 release does not assert signed in-app update handoff without release signing evidence."
+      },
+      "nativeInstallHandoff": {
+        "enabled": true,
+        "mechanism": "nsis",
+        "reason": null
+      },
+      "recovery": {
+        "preUpdateSnapshot": true,
+        "migrationJournal": true,
+        "postUpdateHealth": true,
+        "realUpdateReplay": "deferred"
+      }
     },
     "darwin": {
       "label": "macOS",
-      "packageKinds": ["dmg", "zip"],
-      "artifactPatterns": ["NolaneAgent-${version}-x64.dmg", "NolaneAgent-${version}-x64.zip"],
-      "signing": { "status": "conditional", "mechanism": "electron-builder CSC", "evidenceRequired": "release signing receipt" },
-      "notarization": { "status": "unknown", "mechanism": null },
-      "updateTrust": { "enabled": false, "mechanism": null },
-      "inAppUpdateHandoff": { "enabled": false, "mechanism": null, "reason": "Native macOS update handoff is not yet verified." },
-      "nativeInstallHandoff": { "enabled": false, "mechanism": null, "reason": "Native macOS update handoff is not yet verified." },
-      "recovery": { "preUpdateSnapshot": true, "migrationJournal": true, "postUpdateHealth": true, "realUpdateReplay": "unknown" }
+      "packageKinds": [
+        "dmg",
+        "zip"
+      ],
+      "artifactPatterns": [
+        "NolaneAgent-${version}-x64.dmg",
+        "NolaneAgent-${version}-x64.zip"
+      ],
+      "signing": {
+        "status": "conditional",
+        "mechanism": "electron-builder CSC",
+        "evidenceRequired": "release signing receipt"
+      },
+      "notarization": {
+        "status": "unknown",
+        "mechanism": null
+      },
+      "updateTrust": {
+        "enabled": false,
+        "mechanism": null
+      },
+      "inAppUpdateHandoff": {
+        "enabled": false,
+        "mechanism": null,
+        "reason": "Native macOS update handoff is not yet verified."
+      },
+      "nativeInstallHandoff": {
+        "enabled": false,
+        "mechanism": null,
+        "reason": "Native macOS update handoff is not yet verified."
+      },
+      "recovery": {
+        "preUpdateSnapshot": true,
+        "migrationJournal": true,
+        "postUpdateHealth": true,
+        "realUpdateReplay": "deferred"
+      }
     },
     "linux": {
       "label": "Linux",
-      "packageKinds": ["appimage", "deb"],
-      "artifactPatterns": ["NolaneAgent-${version}-x64.AppImage", "NolaneAgent-${version}-x64.deb"],
-      "signing": { "status": "unknown", "mechanism": null, "evidenceRequired": "platform-specific package signing receipt" },
-      "notarization": { "status": "not-applicable", "mechanism": null },
-      "updateTrust": { "enabled": false, "mechanism": null },
-      "inAppUpdateHandoff": { "enabled": false, "mechanism": null, "reason": "Native Linux update handoff is not yet verified." },
-      "nativeInstallHandoff": { "enabled": false, "mechanism": null, "reason": "Native Linux update handoff is not yet verified." },
-      "recovery": { "preUpdateSnapshot": true, "migrationJournal": true, "postUpdateHealth": true, "realUpdateReplay": "unknown" }
+      "packageKinds": [
+        "appimage",
+        "deb"
+      ],
+      "artifactPatterns": [
+        "NolaneAgent-${version}-x64.AppImage",
+        "NolaneAgent-${version}-x64.deb"
+      ],
+      "signing": {
+        "status": "unknown",
+        "mechanism": null,
+        "evidenceRequired": "platform-specific package signing receipt"
+      },
+      "notarization": {
+        "status": "not-applicable",
+        "mechanism": null
+      },
+      "updateTrust": {
+        "enabled": false,
+        "mechanism": null
+      },
+      "inAppUpdateHandoff": {
+        "enabled": false,
+        "mechanism": null,
+        "reason": "Native Linux update handoff is not yet verified."
+      },
+      "nativeInstallHandoff": {
+        "enabled": false,
+        "mechanism": null,
+        "reason": "Native Linux update handoff is not yet verified."
+      },
+      "recovery": {
+        "preUpdateSnapshot": true,
+        "migrationJournal": true,
+        "postUpdateHealth": true,
+        "realUpdateReplay": "deferred"
+      }
     }
   }
 }

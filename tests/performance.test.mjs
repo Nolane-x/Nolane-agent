@@ -44,7 +44,7 @@ test('the canonical product starts on loopback within the lightweight startup bu
 });
 
 test('release documentation and project manifest are complete and contain no fake-control placeholders', async () => {
-  const required = ['README.md', 'docs/ARCHITECTURE.md', 'docs/USER-GUIDE.md', 'docs/SECURITY.md', 'docs/RESEARCH-NOTES.md', 'project-manifest.json', 'scripts/smoke.mjs'];
+  const required = ['README.md', 'CHANGELOG.md', 'CONTRIBUTING.md', 'SECURITY.md', 'SUPPORT.md', 'docs/ARCHITECTURE.md', 'docs/DEVELOPMENT.md', 'docs/CONFIGURATION.md', 'docs/API.md', 'docs/QUALITY.md', 'docs/RELEASES.md', 'docs/PLATFORMS.md', 'docs/ROADMAP.md', 'project-manifest.json', 'scripts/smoke.mjs'];
   for (const file of required) assert.ok((await stat(file)).isFile(), file);
   const combined = (await Promise.all(required.filter((file) => file.endsWith('.md')).map((file) => readFile(file, 'utf8')))).join('\n');
   assert.doesNotMatch(combined, /\b(?:TBD|TODO|coming soon|fake button)\b/i);

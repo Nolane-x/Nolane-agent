@@ -234,8 +234,23 @@ export class SubagentOrchestrator {
       if (signal?.aborted) throw signal.reason ?? new Error('aborted');
       const ready = [...pending.values()].filter((job) => job.dependencies.every((dependency) => completed.has(dependency)));
       if (!ready.length) fail('SUBAGENT_GRAPH_CYCLE', 'Subagent dependency graph contains a cycle');
-      const batch = await Promise.all(ready.map(async (job) => [job.id, await this.run({ parentTask, profileId: job.profileId, objective: job.objective, jobId: job.id, signal })]));
-      for (const [id, result] of batch) { completed.set(id, result); pending.delete(id); }
+      const waveController = new AbortController();
+      const waveSignal = signal ? AbortSignal.any([signal, waveController.signal]) : waveController.signal;
+      const settled = await Promise.allSettled(ready.map(async (job) => {
+        try {
+          return [job.id, await this.run({ parentTask, profileId: job.profileId, objective: job.objective, jobId: job.id, signal: waveSignal })];
+        } catch (error) {
+          if (!waveController.signal.aborted) waveController.abort(error);
+          throw error;
+        }
+      }));
+      const failed = settled.find((entry) => entry.status === 'rejected');
+      if (failed) throw failed.reason;
+      for (const entry of settled) {
+        const [id, result] = entry.value;
+        completed.set(id, result);
+        pending.delete(id);
+      }
     }
     return Object.freeze(jobs.map((job) => completed.get(String(job.id))));
   }
