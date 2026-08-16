@@ -54,6 +54,7 @@ module.exports = {
   win: {
     target: [{ target: 'nsis', arch: ['x64'] }],
     executableName: 'NolaneAgent',
+    icon: 'build/icon.ico',
     electronUpdaterCompatibility: '>=2.16',
     requestedExecutionLevel: 'asInvoker',
     verifyUpdateCodeSignature: process.env.NOLANE_VERIFY_AUTHENTICODE !== 'false',
@@ -78,11 +79,13 @@ module.exports = {
     target: [{ target: 'dmg', arch: ['x64'] }, { target: 'zip', arch: ['x64'] }],
     artifactName: 'NolaneAgent-${version}-${arch}.${ext}',
     category: 'public.app-category.developer-tools',
+    icon: 'build/icon.png',
   },
   linux: {
     target: [{ target: 'AppImage', arch: ['x64'] }, { target: 'deb', arch: ['x64'] }],
     artifactName: 'NolaneAgent-${version}-${arch}.${ext}',
     category: 'Development',
+    icon: 'build/icon.png',
   },
   publish: [{ provider: 'github', owner, repo, channel: '${channel}', releaseType: 'draft' }],
 };
