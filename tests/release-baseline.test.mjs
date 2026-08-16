@@ -49,9 +49,11 @@ test('release configuration targets the canonical repository and publishes 0.0.x
   assert.doesNotMatch(workflow, /product-perfection|external-gate-evidence|checkpoint/i);
 });
 
-test('security workflow cancels stale runs for the same ref', async () => {
+test('security workflow isolates event concurrency and bounds runner occupancy', async () => {
   const workflow = await text('.github/workflows/security.yml');
   assert.match(workflow, /^concurrency:\s*$/m);
-  assert.match(workflow, /group:\s*security-\$\{\{\s*github\.workflow\s*\}\}-\$\{\{\s*github\.ref\s*\}\}/);
+  assert.match(workflow, /group:\s*security-\$\{\{\s*github\.workflow\s*\}\}-\$\{\{\s*github\.event_name\s*\}\}-\$\{\{\s*github\.ref\s*\}\}/);
   assert.match(workflow, /cancel-in-progress:\s*true/);
+  assert.match(workflow, /codeql:\s*\n\s+runs-on:\s*ubuntu-latest\s*\n\s+timeout-minutes:\s*45/);
+  assert.match(workflow, /dependency-contract:\s*\n\s+runs-on:\s*ubuntu-latest\s*\n\s+timeout-minutes:\s*20/);
 });
