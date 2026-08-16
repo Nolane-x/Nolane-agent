@@ -40,6 +40,8 @@ test('runs observe propose verify commit and binds an episode', () => {
   const committed = kernel.commit('task-1', verified.verifiedProposalId);
   assert.equal(committed.allowed, true);
   assert.equal(committed.episodeId.startsWith('episode-'), true);
+  const repeatedCommit = kernel.commit('task-1', verified.verifiedProposalId);
+  assert.equal(repeatedCommit.receiptSha256, committed.receiptSha256);
   const snapshot = kernel.snapshot('task-1');
   assert.equal(snapshot.memoryWriteGate.allowed, true);
   assert.equal(snapshot.episodeCount, 1);

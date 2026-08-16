@@ -47,7 +47,7 @@ export class CognitiveKernel {
       clock: this.clock,
     });
     this.tasks.set(taskId, {
-      taskId, goal, recoveryLease, observations: [], proposals: new Map(), verified: new Map(),
+      taskId, goal, recoveryLease, observations: [], proposals: new Map(), verified: new Map(), committed: new Map(),
       recentErrorRoutes: [], episodeIds: [], rollbackReceipts: [], startedAtMs: Number(this.clock()),
     });
     return this.#record(signed({
@@ -136,6 +136,8 @@ export class CognitiveKernel {
     const task = this.#task(taskId);
     const verified = task.verified.get(text(verifiedProposalId, 'verifiedProposalId', 256));
     if (!verified) throw new RangeError(`unknown verified proposal: ${verifiedProposalId}`);
+    const previous = task.committed.get(verified.verifiedProposalId);
+    if (previous) return previous;
     if (verified.effectVerification.status === 'false_success' || verified.effectVerification.status === 'inconclusive') {
       return this.#record(signed({
         schema: 'forge.cognitive-commit-result.v1', taskId: task.taskId, verifiedProposalId: verified.verifiedProposalId,
@@ -174,11 +176,13 @@ export class CognitiveKernel {
     });
     task.episodeIds.push(episodeId);
     if (verified.agency) this.agency.record(verified.agency);
-    return this.#record(signed({
+    const result = signed({
       schema: 'forge.cognitive-commit-result.v1', taskId: task.taskId, verifiedProposalId: verified.verifiedProposalId,
       allowed: true, reasons: [], gateReceiptSha256: gate.receiptSha256, episodeId,
       episodeReceiptSha256: episode.receiptSha256, effectVerificationReceiptSha256: verified.effectVerification.receiptSha256,
-    }));
+    });
+    task.committed.set(verified.verifiedProposalId, result);
+    return this.#record(result);
   }
 
   rollback(taskId, receiptId) {
@@ -210,7 +214,7 @@ export class CognitiveKernel {
       contextPosterior: context, hypothesisPopulation: hypotheses,
       memoryWriteGate: this.contexts.canWriteDurableMemory(task.taskId),
       recentErrorRoutes: task.recentErrorRoutes.map((route) => ({ primarySubsystem: route.primarySubsystem, ownerMask: [...route.ownerMask], receiptSha256: route.receiptSha256 })),
-      proposalCount: task.proposals.size, verifiedProposalCount: task.verified.size, episodeCount: task.episodeIds.length,
+      proposalCount: task.proposals.size, verifiedProposalCount: task.verified.size, committedProposalCount: task.committed.size, episodeCount: task.episodeIds.length,
       recoveryLeaseId: task.recoveryLease.leaseId,
       claims: { chainOfThoughtStored: false, rawPromptsStored: false, directFileMutation: false, durableMemoryWritesGated: true, causalInterventionLoaded: this._causalInterventionLab !== null },
     });
