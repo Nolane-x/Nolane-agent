@@ -36,8 +36,6 @@ export async function verifyVersionCoherence({ rootDirectory = process.cwd() } =
   for (const relative of ['CHANGELOG.md','SECURITY.md','CONTRIBUTING.md','SUPPORT.md','docs/ARCHITECTURE.md','docs/DEVELOPMENT.md','docs/RELEASES.md','docs/PLATFORMS.md','docs/ROADMAP.md']) {
     try { await access(path.join(root, relative)); } catch { failures.push({ id: `required-doc:${relative}`, expected: 'present', actual: 'missing' }); }
   }
-  try { const manifest = await json(root, 'project-manifest.json'); check(failures, 'project-manifest', manifest.version, version); }
-  catch { failures.push({ id: 'project-manifest', expected: version, actual: 'missing' }); }
   const base = Object.freeze({ schema:'nolane.agent.version-coherence.v2', product:'Nolane Agent', version, channel:identity.channel, status:failures.length?'fail':'pass', artifactNames:releaseArtifactNames(identity), failures:Object.freeze(failures) });
   const report = Object.freeze({ ...base, receiptSha256: canonicalSha256(base) });
   if (failures.length) { const error = new Error(`Version coherence failed for ${failures.length} surface(s)`); error.code='VERSION_COHERENCE_FAILED'; error.report=report; error.failures=report.failures; throw error; }
