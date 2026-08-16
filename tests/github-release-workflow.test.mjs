@@ -68,11 +68,14 @@ test('release workflow gates every platform build on exact-head candidate eviden
   ]);
   assert.match(workflow, /actions: read/);
   assert.match(workflow, /candidate-gate:/);
+  assert.match(workflow, /id: candidate_identity/);
+  assert.match(workflow, /source_sha=\$\(git rev-parse HEAD\)/);
   assert.match(workflow, /npm run verify:release-candidate/);
   assert.match(workflow, /external-gate-certification-candidate/);
   assert.match(workflow, /macos-release:\s*\n\s+needs: candidate-gate/);
   assert.match(workflow, /linux-release:\s*\n\s+needs: candidate-gate/);
-  assert.match(workflow, /windows-release:\s*\n\s+needs: \[macos-release, linux-release\]/);
+  assert.match(workflow, /windows-release:\s*\n\s+needs: \[candidate-gate, macos-release, linux-release\]/);
+  assert.match(workflow, /GITHUB_SHA: \$\{\{ needs\.candidate-gate\.outputs\.source_sha \}\}/);
   assert.match(packageJson, /"verify:release-candidate"\s*:/);
 });
 
