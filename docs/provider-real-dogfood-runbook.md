@@ -14,6 +14,8 @@ Before dispatching the workflow, the dedicated runner service account must set `
 
 Never set this guard in workflow `env`, repository secrets, or workflow inputs. Removing the host variable disables real-provider execution again while preserving the workflow and its candidate contract for review.
 
+The workflow provisions the project's locked Node 24 environment with `npm ci --ignore-scripts` before it touches the provider. That bootstraps the evaluator only; provider authentication remains exclusively on the dedicated host account.
+
 ## Evidence contract
 
 The fixed `provider-real-dogfood.v1` profile has 22 sequential cases: 10 behavioral cases and 12 adversarial probes. Each case records only identifiers, timing, exit classification, input SHA-256, result SHA-256, and result byte count. Task text and provider response content are never persisted in the candidate artifact.

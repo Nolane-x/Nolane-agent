@@ -32,6 +32,18 @@ test('workflow requires a host-owned real-provider opt-in instead of self-author
   assert.match(runbook, /Never set this guard in workflow `env`, repository secrets, or workflow inputs\./);
 });
 
+test('workflow bootstraps the supported locked Node environment before executing a provider', async () => {
+  const [workflow, runbook] = await Promise.all([
+    readFile(workflowPath, 'utf8'),
+    readFile(runbookPath, 'utf8'),
+  ]);
+
+  assert.match(workflow, /actions\/setup-node@v7/);
+  assert.match(workflow, /node-version:\s*'24'/);
+  assert.match(workflow, /npm ci --ignore-scripts/);
+  assert.match(runbook, /locked Node 24 environment/i);
+});
+
 test('workflow passes provider input through a PowerShell argument array and never composes an executable shell command', async () => {
   const source = await readFile(workflowPath, 'utf8');
   assert.match(source, /\$arguments\s*=\s*@\(/);
