@@ -30,6 +30,96 @@ jobs:
       - name: Install locked dependencies
         run: npm ci --ignore-scripts
 
+      - name: Apply Task 12 release-gate source migration
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          package_path = Path('package.json')
+          package = json.loads(package_path.read_text())
+          package['scripts']['verify:release-candidate'] = 'node scripts/verify-release-candidate.mjs'
+          package_path.write_text(json.dumps(package, indent=2) + '\n')
+
+          release_path = Path('.github/workflows/release.yml')
+          source = release_path.read_text()
+          if '  actions: read\n' not in source:
+              source = source.replace('permissions:\n  contents: write\n', 'permissions:\n  contents: write\n  actions: read\n', 1)
+
+          expression = '$' + '{{ github.token }}'
+          if '  candidate-gate:\n' not in source:
+              marker = 'jobs:\n  macos-release:\n'
+              if marker not in source:
+                  raise SystemExit('release workflow macos marker not found')
+              candidate = f'''jobs:
+  candidate-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: {expression}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Verify immutable tag and commit
+        run: node scripts/verify-release-tag.mjs
+
+      - name: Install locked source dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Collect exact-head workflow evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/${{GITHUB_REPOSITORY}}/actions/runs?head_sha=${{GITHUB_SHA}}&per_page=100" > "$RUNNER_TEMP/exact-head-workflows.json"
+          external_run_id=$(node --input-type=module -e "import fs from 'node:fs'; const p=JSON.parse(fs.readFileSync(process.argv[1],'utf8')); const run=(p.workflow_runs||[]).filter(r=>r.name==='External gate evidence'&&r.head_sha===process.env.GITHUB_SHA&&r.status==='completed'&&r.conclusion==='success').sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at))[0]; if(!run) process.exit(2); process.stdout.write(String(run.id));" "$RUNNER_TEMP/exact-head-workflows.json")
+          mkdir -p "$RUNNER_TEMP/external-certification"
+          gh run download "$external_run_id" --repo "$GITHUB_REPOSITORY" --name external-gate-certification-candidate --dir "$RUNNER_TEMP/external-certification"
+
+      - name: Verify exact-head release candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          certification=$(find "$RUNNER_TEMP/external-certification" -type f -name '*.json' -print -quit)
+          test -n "$certification"
+          npm run verify:release-candidate -- \
+            --expected-sha "$GITHUB_SHA" \
+            --tag-sha "$GITHUB_SHA" \
+            --workflow-runs "$RUNNER_TEMP/exact-head-workflows.json" \
+            --external-certification "$certification" \
+            --output release/release-candidate-gate.json
+
+      - name: Upload candidate gate receipt
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: nolane-release-candidate-gate
+          path: release/release-candidate-gate.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  macos-release:
+    needs: candidate-gate
+'''
+              source = source.replace(marker, candidate, 1)
+          elif '  macos-release:\n    needs: candidate-gate\n' not in source:
+              source = source.replace('  macos-release:\n', '  macos-release:\n    needs: candidate-gate\n', 1)
+
+          if '  linux-release:\n    needs: candidate-gate\n' not in source:
+              source = source.replace('  linux-release:\n', '  linux-release:\n    needs: candidate-gate\n', 1)
+          release_path.write_text(source)
+          PY
+
+      - name: Verify Task 12 release-gate contracts
+        run: node --test tests/release-candidate-gate.test.mjs tests/github-release-workflow.test.mjs
+
       - name: Run the complete source contract suite before regeneration
         run: npm test
 
@@ -51,28 +141,28 @@ jobs:
       - name: Verify UI source release boundary
         run: npm run verify:ui-v3-release
 
-      - name: Restrict generator mutations to canonical outputs
+      - name: Restrict mutations to Task 12 source and canonical outputs
         shell: bash
         run: |
           set -euo pipefail
           mapfile -t changed < <(git status --porcelain=v1 | sed -E 's/^.. //')
           for path in "${changed[@]}"; do
             case "$path" in
-              ui-dist/*|requirements/nolane-native-core-conformance.json|requirements/runtime-purity-summary.json|requirements/nolane-agent-v5-requirements.json|requirements/master-acceptance-ledger.json|docs/MASTER-ACCEPTANCE-LEDGER.md|docs/ui-v3/ui-v3-source-release.json) ;;
-              *) echo "Unexpected canonical mutation: $path" >&2; exit 1 ;;
+              package.json|.github/workflows/release.yml|ui-dist/*|requirements/nolane-native-core-conformance.json|requirements/runtime-purity-summary.json|requirements/nolane-agent-v5-requirements.json|requirements/master-acceptance-ledger.json|docs/MASTER-ACCEPTANCE-LEDGER.md|docs/ui-v3/ui-v3-source-release.json) ;;
+              *) echo "Unexpected Task 12 mutation: $path" >&2; exit 1 ;;
             esac
           done
 
-      - name: Commit canonical outputs when changed
+      - name: Commit Task 12 source and canonical outputs when changed
         shell: bash
         run: |
           set -euo pipefail
-          git add ui-dist requirements/nolane-native-core-conformance.json requirements/runtime-purity-summary.json requirements/nolane-agent-v5-requirements.json requirements/master-acceptance-ledger.json docs/MASTER-ACCEPTANCE-LEDGER.md docs/ui-v3/ui-v3-source-release.json
+          git add package.json .github/workflows/release.yml ui-dist requirements/nolane-native-core-conformance.json requirements/runtime-purity-summary.json requirements/nolane-agent-v5-requirements.json requirements/master-acceptance-ledger.json docs/MASTER-ACCEPTANCE-LEDGER.md docs/ui-v3/ui-v3-source-release.json
           if git diff --cached --quiet; then
-            echo 'Canonical outputs already synchronized.'
+            echo 'Task 12 source and canonical outputs already synchronized.'
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'chore(evidence): sync product perfection artifacts'
+          git commit -m 'feat(release): gate packaging on exact-head evidence'
           git push origin HEAD:${GITHUB_REF_NAME}
