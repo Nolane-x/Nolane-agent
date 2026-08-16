@@ -38,3 +38,13 @@ test('supports explicit rejection or abort without fabricating execution', () =>
   flow.create({ decisionId: 'd2', missionId: 'm1', taskId: 't1', specificationReceiptSha256: sha('c') });
   assert.equal(flow.transition('d2', { to: 'aborted', receiptKind: 'abort', receiptSha256: sha('d') }).state, 'aborted');
 });
+
+test('rejects invalid initial clock values before recording a decision', () => {
+  for (const clockValue of [NaN, Infinity, -1, Number.MAX_SAFE_INTEGER + 1]) {
+    const flow = new DecisionStateMachine({ clock: () => clockValue });
+    assert.throws(
+      () => flow.create({ decisionId: 'd1', missionId: 'm1', taskId: 't1', specificationReceiptSha256: sha('a') }),
+      /timestamp/i,
+    );
+  }
+});

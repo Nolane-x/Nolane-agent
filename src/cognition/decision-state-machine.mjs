@@ -11,6 +11,12 @@ function sha(value, label) {
   return output;
 }
 
+function timestamp(value, label = 'timestamp') {
+  const atMs = Math.trunc(Number(value));
+  if (!Number.isSafeInteger(atMs) || atMs < 0) throw new TypeError(`${label} must be a non-negative safe integer`);
+  return atMs;
+}
+
 export class DecisionStateMachine {
   constructor({ clock = () => Date.now(), maxDecisions = 20_000, maxHistory = 64 } = {}) {
     this.clock = typeof clock === 'function' ? clock : () => Date.now();
@@ -26,7 +32,7 @@ export class DecisionStateMachine {
     const missionId = text(input.missionId, 'missionId', 256);
     const taskId = text(input.taskId, 'taskId', 256);
     const receiptSha256 = sha(input.specificationReceiptSha256, 'specificationReceiptSha256');
-    const atMs = Math.trunc(Number(this.clock()));
+    const atMs = timestamp(this.clock());
     const history = [{ from: null, to: 'specified', receiptKind: 'specification', receiptSha256, atMs }];
     this.decisions.set(decisionId, { decisionId, missionId, taskId, state: 'specified', history, lastAtMs: atMs });
     return this.snapshot(decisionId);
@@ -43,8 +49,8 @@ export class DecisionStateMachine {
     if (receiptKind !== requiredKind) throw new TypeError(`transition to ${to} requires ${requiredKind} receipt`);
     const receiptSha256 = sha(input.receiptSha256, 'receiptSha256');
     if (record.history.some((item) => item.receiptSha256 === receiptSha256)) throw new TypeError(`duplicate transition receipt: ${receiptSha256}`);
-    const atMs = input.atMs === undefined ? Math.trunc(Number(this.clock())) : Math.trunc(Number(input.atMs));
-    if (!Number.isSafeInteger(atMs) || atMs < record.lastAtMs) throw new TypeError('transition time must be monotonic');
+    const atMs = timestamp(input.atMs === undefined ? this.clock() : input.atMs);
+    if (atMs < record.lastAtMs) throw new TypeError('transition time must be monotonic');
     record.history.push({ from: record.state, to, receiptKind, receiptSha256, atMs });
     if (record.history.length > this.maxHistory) record.history.splice(0, record.history.length - this.maxHistory);
     record.state = to;
