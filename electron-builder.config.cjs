@@ -5,6 +5,7 @@ const path = require('node:path');
 const repository = process.env.GITHUB_REPOSITORY || process.env.NOLANE_GITHUB_REPOSITORY || 'Nolane-x/Nolane-agent';
 const [owner, repo] = repository.split('/');
 if (!owner || !repo) throw new Error('NOLANE_GITHUB_REPOSITORY must be owner/repo');
+const windowsPublisherName = process.env.NOLANE_WINDOWS_PUBLISHER?.trim();
 
 module.exports = {
   appId: 'com.nolane.agent',
@@ -56,7 +57,7 @@ module.exports = {
     electronUpdaterCompatibility: '>=2.16',
     requestedExecutionLevel: 'asInvoker',
     verifyUpdateCodeSignature: process.env.NOLANE_VERIFY_AUTHENTICODE !== 'false',
-    publisherName: process.env.NOLANE_WINDOWS_PUBLISHER || undefined,
+    ...(windowsPublisherName ? { publisherName: windowsPublisherName } : {}),
   },
   nsis: {
     guid: 'd4f38ef8-b26d-4fc8-9b83-31a988f96251',
