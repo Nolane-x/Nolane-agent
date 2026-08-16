@@ -87,3 +87,45 @@ test('pending states expose aria-busy while idle, checking, up-to-date, deferred
     assert.equal(renderUpdateNotice({ state, platformTruth: windowsTruth }, { experience: 'everyday', language: 'en' }), '');
   }
 });
+
+test('blocked install names the obstacle and offers a route to running missions instead of a deterministic retry loop', () => {
+  const html = renderUpdateNotice({
+    state: 'blocked', version: '5.0.0-beta.7', ready: true, activeMissionCount: 2,
+    platformTruth: windowsTruth, packageKind: 'nsis'
+  }, { experience: 'everyday', language: 'en' });
+  assert.match(html, /2 missions? (?:is|are) running|2 mission/i);
+  assert.match(html, /data-update-action="missions"/);
+  assert.match(html, /View running missions/);
+  assert.match(html, /Later/);
+  assert.doesNotMatch(html, /data-update-action="install"/);
+});
+
+test('workspace update surface exposes a truthful qualitative evidence spine without fabricated progress percentages', () => {
+  const html = renderUpdateNotice({
+    state: 'installing', version: '5.0.0-beta.7', ready: true,
+    platformTruth: windowsTruth, packageKind: 'nsis', signatureVerified: true,
+    snapshotId: 'snap-17', snapshotReceiptSha256: 'b'.repeat(64), migrationJournalReceiptSha256: 'c'.repeat(64),
+    preservation: { preparationStarted: true, snapshotPrepared: true, migrationJournalRecorded: true, postUpdateHealthy: false }
+  }, { experience: 'workspace', language: 'en' });
+  assert.match(html, /data-update-phase="install"/);
+  assert.match(html, /data-update-severity="progress"/);
+  assert.match(html, /class="update-notice__evidence"/);
+  assert.match(html, /Release integrity/);
+  assert.match(html, /Recovery snapshot/);
+  assert.match(html, /Migration journal/);
+  assert.match(html, /Install handoff/);
+  assert.match(html, /data-evidence-status="verified"/);
+  assert.match(html, /data-evidence-status="active"/);
+  assert.doesNotMatch(html, /\b(?:10|25|50|75|90|100)%\b/);
+});
+
+test('failure detail uses a bounded alert region while the whole notice remains a polite status surface', () => {
+  const html = renderUpdateNotice({
+    state: 'downloadFailed', version: '5.0.0-beta.7', error: 'Network connection reset',
+    platformTruth: windowsTruth, packageKind: 'nsis'
+  }, { experience: 'workspace', language: 'en' });
+  assert.match(html, /role="status"/);
+  assert.match(html, /class="update-notice__error" role="alert"/);
+  assert.match(html, /Network connection reset/);
+  assert.match(html, /data-update-severity="error"/);
+});
