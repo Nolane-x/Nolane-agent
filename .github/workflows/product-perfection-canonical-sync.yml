@@ -52,63 +52,64 @@ jobs:
               marker = 'jobs:\n  macos-release:\n'
               if marker not in source:
                   raise SystemExit('release workflow macos marker not found')
-              candidate = f'''jobs:
-  candidate-gate:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    env:
-      GH_TOKEN: {expression}
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '24'
-          cache: npm
-
-      - name: Verify immutable tag and commit
-        run: node scripts/verify-release-tag.mjs
-
-      - name: Install locked source dependencies
-        run: npm ci --ignore-scripts
-
-      - name: Collect exact-head workflow evidence
-        shell: bash
-        run: |
-          set -euo pipefail
-          gh api "repos/${{GITHUB_REPOSITORY}}/actions/runs?head_sha=${{GITHUB_SHA}}&per_page=100" > "$RUNNER_TEMP/exact-head-workflows.json"
-          external_run_id=$(node --input-type=module -e "import fs from 'node:fs'; const p=JSON.parse(fs.readFileSync(process.argv[1],'utf8')); const run=(p.workflow_runs||[]).filter(r=>r.name==='External gate evidence'&&r.head_sha===process.env.GITHUB_SHA&&r.status==='completed'&&r.conclusion==='success').sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at))[0]; if(!run) process.exit(2); process.stdout.write(String(run.id));" "$RUNNER_TEMP/exact-head-workflows.json")
-          mkdir -p "$RUNNER_TEMP/external-certification"
-          gh run download "$external_run_id" --repo "$GITHUB_REPOSITORY" --name external-gate-certification-candidate --dir "$RUNNER_TEMP/external-certification"
-
-      - name: Verify exact-head release candidate
-        shell: bash
-        run: |
-          set -euo pipefail
-          certification=$(find "$RUNNER_TEMP/external-certification" -type f -name '*.json' -print -quit)
-          test -n "$certification"
-          npm run verify:release-candidate -- \
-            --expected-sha "$GITHUB_SHA" \
-            --tag-sha "$GITHUB_SHA" \
-            --workflow-runs "$RUNNER_TEMP/exact-head-workflows.json" \
-            --external-certification "$certification" \
-            --output release/release-candidate-gate.json
-
-      - name: Upload candidate gate receipt
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: nolane-release-candidate-gate
-          path: release/release-candidate-gate.json
-          if-no-files-found: warn
-          retention-days: 30
-
-  macos-release:
-    needs: candidate-gate
-'''
-              source = source.replace(marker, candidate, 1)
+              candidate_lines = [
+                  'jobs:',
+                  '  candidate-gate:',
+                  '    runs-on: ubuntu-latest',
+                  '    timeout-minutes: 30',
+                  '    env:',
+                  f'      GH_TOKEN: {expression}',
+                  '    steps:',
+                  '      - uses: actions/checkout@v6',
+                  '        with:',
+                  '          fetch-depth: 0',
+                  '',
+                  '      - uses: actions/setup-node@v7',
+                  '        with:',
+                  "          node-version: '24'",
+                  '          cache: npm',
+                  '',
+                  '      - name: Verify immutable tag and commit',
+                  '        run: node scripts/verify-release-tag.mjs',
+                  '',
+                  '      - name: Install locked source dependencies',
+                  '        run: npm ci --ignore-scripts',
+                  '',
+                  '      - name: Collect exact-head workflow evidence',
+                  '        shell: bash',
+                  '        run: |',
+                  '          set -euo pipefail',
+                  '          gh api "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${GITHUB_SHA}&per_page=100" > "$RUNNER_TEMP/exact-head-workflows.json"',
+                  '          external_run_id=$(node --input-type=module -e "import fs from \'node:fs\'; const p=JSON.parse(fs.readFileSync(process.argv[1],\'utf8\')); const run=(p.workflow_runs||[]).filter(r=>r.name===\'External gate evidence\'&&r.head_sha===process.env.GITHUB_SHA&&r.status===\'completed\'&&r.conclusion===\'success\').sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at))[0]; if(!run) process.exit(2); process.stdout.write(String(run.id));" "$RUNNER_TEMP/exact-head-workflows.json")',
+                  '          mkdir -p "$RUNNER_TEMP/external-certification"',
+                  '          gh run download "$external_run_id" --repo "$GITHUB_REPOSITORY" --name external-gate-certification-candidate --dir "$RUNNER_TEMP/external-certification"',
+                  '',
+                  '      - name: Verify exact-head release candidate',
+                  '        shell: bash',
+                  '        run: |',
+                  '          set -euo pipefail',
+                  '          certification=$(find "$RUNNER_TEMP/external-certification" -type f -name \'*.json\' -print -quit)',
+                  '          test -n "$certification"',
+                  '          npm run verify:release-candidate -- \\',
+                  '            --expected-sha "$GITHUB_SHA" \\',
+                  '            --tag-sha "$GITHUB_SHA" \\',
+                  '            --workflow-runs "$RUNNER_TEMP/exact-head-workflows.json" \\',
+                  '            --external-certification "$certification" \\',
+                  '            --output release/release-candidate-gate.json',
+                  '',
+                  '      - name: Upload candidate gate receipt',
+                  '        if: always()',
+                  '        uses: actions/upload-artifact@v6',
+                  '        with:',
+                  '          name: nolane-release-candidate-gate',
+                  '          path: release/release-candidate-gate.json',
+                  '          if-no-files-found: warn',
+                  '          retention-days: 30',
+                  '',
+                  '  macos-release:',
+                  '    needs: candidate-gate',
+              ]
+              source = source.replace(marker, '\n'.join(candidate_lines) + '\n', 1)
           elif '  macos-release:\n    needs: candidate-gate\n' not in source:
               source = source.replace('  macos-release:\n', '  macos-release:\n    needs: candidate-gate\n', 1)
 
