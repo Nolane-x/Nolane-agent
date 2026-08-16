@@ -3,8 +3,6 @@ name: Release
 on:
   push:
     branches: [main]
-    tags:
-      - 'v0.0.*'
 
 permissions:
   contents: write
@@ -12,7 +10,7 @@ permissions:
   attestations: write
 
 concurrency:
-  group: release-${{ github.sha }}
+  group: release-main
   cancel-in-progress: false
 
 env:
@@ -38,14 +36,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "main"
           version=$(node -p "require('./package.json').version")
           tag="v${version}"
           [[ "${tag}" =~ ^v0\.0\.[0-9]+$ ]]
-          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
-            test "${GITHUB_REF_NAME}" = "${tag}"
-          else
-            test "${GITHUB_REF_NAME}" = "main"
-          fi
           echo "version=${version}" >> "$GITHUB_OUTPUT"
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
       - run: npm run verify:version
