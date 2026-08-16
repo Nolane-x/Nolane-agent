@@ -20,6 +20,9 @@ test('native desktop package identities and targets are stable and NolaneNative-
   assert.match(config.mac.artifactName, /NolaneAgent-\$\{version\}-\$\{arch\}\.\$\{ext\}/);
   assert.deepEqual(config.linux.target, [{ target: 'AppImage', arch: ['x64'] }, { target: 'deb', arch: ['x64'] }]);
   assert.match(config.linux.artifactName, /NolaneAgent-\$\{version\}-\$\{arch\}\.\$\{ext\}/);
+  assert.equal(config.win.icon, 'build/icon.ico');
+  assert.equal(config.mac.icon, 'build/icon.png');
+  assert.equal(config.linux.icon, 'build/icon.png');
   assert.ok(config.files.some((entry) => entry === '!vendor/nolane_native-agent/**'));
   assert.ok(config.files.some((entry) => entry === '!src/nolane_native/**'));
 });
@@ -28,6 +31,9 @@ test('package pins Electron builder and updater versions for GitHub reproducibil
   const metadata = JSON.parse(await readFile('package.json', 'utf8'));
   assert.equal(config.electronVersion, '43.2.0');
   assert.equal(metadata.releaseToolchain['electron-builder'], '26.15.3');
+  assert.equal(metadata.author?.name, 'Nolane Agent contributors');
+  assert.match(metadata.author?.email ?? '', /@users\.noreply\.github\.com$/);
+  assert.equal(metadata.repository?.url, 'git+https://github.com/Nolane-x/Nolane-agent.git');
   assert.equal(metadata.scripts['build:electron:installer'], 'node scripts/build-electron-installer.mjs');
   assert.equal(metadata.scripts['verify:electron-installer'], 'node scripts/verify-electron-installer-config.mjs');
 });
