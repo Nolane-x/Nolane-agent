@@ -85,6 +85,15 @@ export class CognitiveKernel {
     this.#assertOpen();
     const task = this.#task(taskId);
     const selection = this.selector.select(input);
+    if (!selection.selected) {
+      return this.#record(signed({
+        schema: 'forge.cognitive-abstention.v1', taskId: task.taskId, decision: 'abstain',
+        selectionReceiptSha256: selection.receiptSha256, uncertainty: selection.uncertainty,
+        rejectedActionIds: selection.ranked.filter((item) => !item.eligible).map((item) => item.id),
+        reasonCodes: [...new Set(selection.ranked.map((item) => item.rejectedReason).filter(Boolean))],
+        createdAtMs: Number(this.clock()),
+      }));
+    }
     const proposalId = `proposal-${++this.sequence}`;
     const proposal = signed({
       schema: 'forge.cognitive-proposal.v1', proposalId, taskId: task.taskId,

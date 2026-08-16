@@ -67,6 +67,25 @@ test('denies commit when posterior is dispersed and records routed errors', () =
   assert.equal(kernel.snapshot('task-2').recentErrorRoutes[0].primarySubsystem, 'execution');
 });
 
+test('emits an explicit abstention instead of a null-action proposal', () => {
+  const kernel = new CognitiveKernel();
+  kernel.startTask({
+    taskId: 'task-abstain', goal: 'avoid unsafe work', recoveryLeaseId: 'lease-abstain',
+    contexts: [{ id: 'code', probability: 1 }],
+    hypotheses: [{ id: 'h1', claim: 'unsafe action', probability: 1, predictions: ['risk remains'], falsificationCondition: 'risk is bounded', testCost: 1 }],
+  });
+  const abstention = kernel.propose('task-abstain', {
+    uncertainty: 0,
+    irreversibilityLimit: 0.2,
+    actions: [{ id: 'overwrite-history', kind: 'patch', taskUtility: 1, informationGain: 0, tokenCost: 1, ramMbSeconds: 1, timeMs: 1, irreversibility: 0.200001 }],
+  });
+  assert.equal(abstention.schema, 'forge.cognitive-abstention.v1');
+  assert.equal(abstention.decision, 'abstain');
+  assert.deepEqual(abstention.rejectedActionIds, ['overwrite-history']);
+  assert.equal(kernel.snapshot('task-abstain').proposalCount, 0);
+  assert.throws(() => kernel.verify('task-abstain', 'proposal-1', {}), /unknown proposal/i);
+});
+
 
 test('denies commit when a declared tool success has a mismatched observed effect', () => {
   const kernel = new CognitiveKernel();
