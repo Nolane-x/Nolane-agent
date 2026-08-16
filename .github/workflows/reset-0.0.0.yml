@@ -57,6 +57,8 @@ jobs:
               delete_member = tf.getmember('delete.txt')
               deletes = tf.extractfile(delete_member).read().decode('utf-8').splitlines()
               for rel in deletes:
+                  if rel.startswith('.github/workflows/'):
+                      continue
                   candidate = (root / rel).resolve()
                   if candidate != root and root not in candidate.parents:
                       raise SystemExit(f'unsafe delete path: {rel}')
@@ -69,6 +71,8 @@ jobs:
                   if not member.isfile() or not member.name.startswith('files/'):
                       continue
                   rel = member.name[len('files/'):]
+                  if rel.startswith('.github/workflows/'):
+                      continue
                   candidate = (root / rel).resolve()
                   if root not in candidate.parents:
                       raise SystemExit(f'unsafe write path: {rel}')
@@ -81,9 +85,11 @@ jobs:
           rm -rf checkpoints recovered-artifacts .superpowers requirements models
           rm -rf docs/checkpoints docs/product-perfection docs/superpowers
           rm -rf .nolane-reset
-          rm -f .github/workflows/reset-0.0.0.yml
           rm -f project-manifest.json
+          cp .github/workflows/reset-0.0.0.yml /tmp/reset-0.0.0.yml
+          rm .github/workflows/reset-0.0.0.yml
           node scripts/generate-manifest.mjs . project-manifest.json
+          mv /tmp/reset-0.0.0.yml .github/workflows/reset-0.0.0.yml
 
       - name: Install locked dependencies
         run: npm ci
@@ -106,7 +112,10 @@ jobs:
           set -euo pipefail
           rm -f release/version-coherence-0.0.0.json
           rm -f project-manifest.json
+          cp .github/workflows/reset-0.0.0.yml /tmp/reset-0.0.0.yml
+          rm .github/workflows/reset-0.0.0.yml
           node scripts/generate-manifest.mjs . project-manifest.json
+          mv /tmp/reset-0.0.0.yml .github/workflows/reset-0.0.0.yml
 
       - name: Verify clean source surface
         shell: bash
@@ -121,7 +130,13 @@ jobs:
           test ! -e docs/superpowers
           test ! -e MILESTONE-VERIFICATION-MANIFEST.json
           test ! -e .nolane-reset
-          test ! -e .github/workflows/reset-0.0.0.yml
+          test -f .github/workflows/reset-0.0.0.yml
+          test -f .github/workflows/ci.yml
+          test -f .github/workflows/security.yml
+          test -f .github/workflows/release.yml
+          test ! -e .github/workflows/external-gates.yml
+          test ! -e .github/workflows/product-perfection-bootstrap.yml
+          test ! -e .github/workflows/ui-runtime-visual.yml
           test -f README.md
           grep -q '^# Nolane Agent 0\.0\.0$' README.md
 
@@ -133,5 +148,7 @@ jobs:
           git config user.email "278117157+Nolane-x@users.noreply.github.com"
           git add -A
           git diff --cached --check
+          git diff --cached --name-only | grep -v '^\.github/workflows/' >/dev/null
+          test -z "$(git diff --cached --name-only | grep '^\.github/workflows/' || true)"
           git commit -m "release: establish Nolane Agent 0.0.0 baseline"
           git push origin HEAD:codex/0.0.0-baseline
