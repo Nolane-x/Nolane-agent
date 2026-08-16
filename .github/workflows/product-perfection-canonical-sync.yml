@@ -1,0 +1,89 @@
+name: Product Perfection canonical evidence sync
+
+on:
+  push:
+    branches:
+      - codex/product-perfection-system-v3
+
+permissions:
+  contents: write
+
+concurrency:
+  group: product-perfection-canonical-sync
+  cancel-in-progress: true
+
+jobs:
+  regenerate-and-verify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Run update-truth source contracts before regeneration
+        run: >-
+          node --test
+          tests/electron-update-coordinator.test.mjs
+          tests/electron-update-coordinator-wiring.test.mjs
+          tests/update-state-controller.test.mjs
+          tests/progressive-update-notice.test.mjs
+          tests/progressive-update-wiring.test.mjs
+          tests/update-service.test.mjs
+          tests/pre-update-snapshot.test.mjs
+          tests/electron-update-controller.test.mjs
+          tests/electron-update-wiring.test.mjs
+          tests/checkpoint-14-foundation-verifier.test.mjs
+
+      - name: Regenerate deterministic UI distribution
+        run: npm run build:ui-v3
+
+      - name: Regenerate native-core conformance
+        run: node scripts/generate-native-core-conformance.mjs
+
+      - name: Regenerate Nolane requirement evidence
+        run: node scripts/generate-nolane-program.mjs
+
+      - name: Regenerate master acceptance ledger last
+        run: node scripts/generate-master-acceptance-ledger.mjs
+
+      - name: Verify evidence freshness
+        run: npm run audit:evidence-freshness
+
+      - name: Verify UI source release boundary
+        run: npm run verify:ui-v3-release
+
+      - name: Restrict generator mutations to canonical outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t changed < <(git status --porcelain=v1 | sed -E 's/^.. //')
+          for path in "${changed[@]}"; do
+            case "$path" in
+              ui-dist/*|requirements/nolane-native-core-conformance.json|requirements/runtime-purity-summary.json|requirements/nolane-agent-v5-requirements.json|requirements/master-acceptance-ledger.json|docs/MASTER-ACCEPTANCE-LEDGER.md|docs/ui-v3/ui-v3-source-release.json) ;;
+              *) echo "Unexpected canonical mutation: $path" >&2; exit 1 ;;
+            esac
+          done
+
+      - name: Commit canonical outputs when changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add ui-dist requirements/nolane-native-core-conformance.json requirements/runtime-purity-summary.json requirements/nolane-agent-v5-requirements.json requirements/master-acceptance-ledger.json docs/MASTER-ACCEPTANCE-LEDGER.md docs/ui-v3/ui-v3-source-release.json
+          if git diff --cached --quiet; then
+            echo 'Canonical outputs already synchronized.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore(evidence): sync product perfection artifacts'
+          git push origin HEAD:${GITHUB_REF_NAME}
