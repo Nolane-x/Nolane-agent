@@ -61,6 +61,21 @@ test('release workflow verifies tag/version coherence and fails closed without t
   assert.match(verifier, /GITHUB_SHA/);
 });
 
+test('release workflow gates every platform build on exact-head candidate evidence', async () => {
+  const [workflow, packageJson] = await Promise.all([
+    read('.github/workflows/release.yml'),
+    read('package.json')
+  ]);
+  assert.match(workflow, /actions: read/);
+  assert.match(workflow, /candidate-gate:/);
+  assert.match(workflow, /npm run verify:release-candidate/);
+  assert.match(workflow, /external-gate-certification-candidate/);
+  assert.match(workflow, /macos-release:\s*\n\s+needs: candidate-gate/);
+  assert.match(workflow, /linux-release:\s*\n\s+needs: candidate-gate/);
+  assert.match(workflow, /windows-release:\s*\n\s+needs: \[macos-release, linux-release\]/);
+  assert.match(packageJson, /"verify:release-candidate"\s*:/);
+});
+
 test('Dependabot keeps GitHub Actions and npm release tooling current', async () => {
   const source = await read('.github/dependabot.yml');
   assert.match(source, /package-ecosystem: "github-actions"/);
