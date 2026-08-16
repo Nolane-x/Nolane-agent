@@ -57,3 +57,16 @@ test('SettingsService validates catalog fields and resets selected paths atomica
   assert.equal(reset.effective.value.appearance.theme, 'system');
   assert.equal(reset.effective.value.experience.level, 'research');
 });
+
+test('SettingsService serializes concurrent updates to one settings layer without losing fields', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-settings-concurrent-')); t.after(() => rm(root, { recursive: true, force: true }));
+  const flags = Object.fromEntries(Array.from({ length: 24 }, (_, index) => [`flag${index}`, false]));
+  const service = new SettingsService({
+    dataDir: path.join(root, 'data'),
+    getProject: () => null,
+    defaults: { flags },
+  });
+  await Promise.all(Object.keys(flags).map((name) => service.update({ layer: 'user', patch: { flags: { [name]: true } } })));
+  const effective = await service.effective();
+  for (const name of Object.keys(flags)) assert.equal(effective.value.flags[name], true, name);
+});

@@ -1,4 +1,5 @@
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
+import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import { LayeredSettings } from './layered-settings.mjs';
@@ -57,14 +58,32 @@ async function readJson(file) {
   catch (error) { if (error.code === 'ENOENT') return {}; throw error; }
 }
 
+const TRANSIENT_RENAME_CODES = new Set(['EACCES', 'EBUSY', 'EPERM']);
+
+const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
 async function atomicJson(file, value) {
   await mkdir(path.dirname(file), { recursive: true });
-  const temp = `${file}.${process.pid}.${Date.now()}.tmp`;
-  await writeFile(temp, `${JSON.stringify(value, null, 2)}\n`, { mode: 0o600 });
-  await rename(temp, file);
+  const temp = `${file}.${process.pid}.${randomUUID()}.tmp`;
+  try {
+    await writeFile(temp, `${JSON.stringify(value, null, 2)}\n`, { mode: 0o600 });
+    for (let attempt = 0; ; attempt += 1) {
+      try {
+        await rename(temp, file);
+        return;
+      } catch (error) {
+        if (!TRANSIENT_RENAME_CODES.has(error?.code) || attempt >= 6) throw error;
+        await wait(10 * (2 ** attempt));
+      }
+    }
+  } finally {
+    await unlink(temp).catch((error) => { if (error?.code !== 'ENOENT') throw error; });
+  }
 }
 
 export class SettingsService {
+  #writeQueues = new Map();
+
   constructor({ dataDir, getProject, defaults = {}, lockedKeys = [], catalog = createSettingsCatalog() } = {}) {
     if (typeof getProject !== 'function') throw new TypeError('SettingsService getProject is required');
     this.dataDir = path.resolve(String(dataDir ?? '.'));
@@ -84,6 +103,20 @@ export class SettingsService {
   }
 
   catalog() { return structuredClone(this.settingsCatalog); }
+
+  async #withWriteLock(file, operation) {
+    const preceding = this.#writeQueues.get(file) ?? Promise.resolve();
+    let release;
+    const current = new Promise((resolve) => { release = resolve; });
+    this.#writeQueues.set(file, current);
+    await preceding;
+    try {
+      return await operation();
+    } finally {
+      release();
+      if (this.#writeQueues.get(file) === current) this.#writeQueues.delete(file);
+    }
+  }
 
   #validate(input, layer) {
     const definitions = new Map(this.settingsCatalog.categories.flatMap((category) => category.fields.map((item) => [item.path, item])));
@@ -122,8 +155,11 @@ export class SettingsService {
     const files = this.#files(projectId);
     const file = files[cleanLayer];
     if (!file) throw new TypeError(`settings layer ${cleanLayer} requires a project`);
-    const next = merge(await readJson(file), input);
-    await atomicJson(file, next);
+    const next = await this.#withWriteLock(file, async () => {
+      const value = merge(await readJson(file), input);
+      await atomicJson(file, value);
+      return value;
+    });
     return Object.freeze({ layer: cleanLayer, projectId: projectId == null ? null : String(projectId), value: Object.freeze(structuredClone(next)), effective: await this.effective(projectId) });
   }
 
@@ -133,11 +169,13 @@ export class SettingsService {
     const files = this.#files(projectId);
     const file = files[cleanLayer];
     if (!file) throw new TypeError(`settings layer ${cleanLayer} requires a project`);
-    const current = await readJson(file);
     const requested = paths == null ? null : [...new Set((Array.isArray(paths) ? paths : [paths]).map(String).map((item) => item.trim()).filter(Boolean))];
-    const next = requested == null ? {} : structuredClone(current);
-    if (requested) for (const pathValue of requested) deleteAt(next, pathValue);
-    await atomicJson(file, next);
+    const next = await this.#withWriteLock(file, async () => {
+      const value = requested == null ? {} : structuredClone(await readJson(file));
+      if (requested) for (const pathValue of requested) deleteAt(value, pathValue);
+      await atomicJson(file, value);
+      return value;
+    });
     return Object.freeze({ layer: cleanLayer, projectId: projectId == null ? null : String(projectId), resetPaths: requested == null ? null : Object.freeze(requested), value: Object.freeze(structuredClone(next)), effective: await this.effective(projectId) });
   }
 }
