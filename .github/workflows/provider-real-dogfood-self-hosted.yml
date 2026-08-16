@@ -33,7 +33,7 @@ jobs:
       NOLANE_DOGFOOD_MODEL: ${{ inputs.model }}
     steps:
       - name: Checkout without repository credentials
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 

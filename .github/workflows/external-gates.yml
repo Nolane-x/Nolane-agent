@@ -53,12 +53,12 @@ jobs:
             fullSourceSuite: true
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Checkout pinned Tree-sitter JavaScript grammar
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: tree-sitter/tree-sitter-javascript
           ref: 3a837b6f3658ca3618f2022f8707e29739c91364
@@ -165,7 +165,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
