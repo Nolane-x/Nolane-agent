@@ -1,4 +1,4 @@
-import { renderOptionPicker } from '../../components/option-picker.mjs';
+import { renderOptionPicker } from '../../components/option-picker.5444ccf30861.mjs';
 
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[character]);
 const CAPABILITY_LABELS = Object.freeze({ text: ['Text', 'Văn bản'], tools: ['Tools', 'Công cụ'], parallelTools: ['Parallel tools', 'Công cụ song song'], structuredOutput: ['Structured output', 'Đầu ra có cấu trúc'], streaming: ['Streaming', 'Phát trực tiếp'], vision: ['Vision', 'Hình ảnh'], audio: ['Audio', 'Âm thanh'], reasoning: ['Reasoning', 'Suy luận'], cancellation: ['Cancellation', 'Hủy'] });
