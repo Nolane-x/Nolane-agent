@@ -9,7 +9,7 @@ test('external gate workflow uses least privilege and real Windows Linux macOS r
   assert.match(workflow, /pull_request:\s*\n\s+paths:/);
   assert.match(workflow, /- 'native\/\*\*'/);
   assert.match(workflow, /- 'scripts\/\*\*'/);
-  assert.match(workflow, /push:\s*\n\s+branches:\s*\n\s+- codex\/external-gate-evidence/);
+  assert.match(workflow, /push:\s*\n\s+branches:\s*\n\s+- main\s*\n\s+- codex\/external-gate-evidence/);
   assert.match(workflow, /runner-evidence:\s*\n\s+if:\s*\$\{\{\s*github\.event_name != 'pull_request' \|\| github\.head_ref != github\.event\.repository\.default_branch\s*\}\}/);
   assert.match(workflow, /ubuntu-latest/);
   assert.match(workflow, /windows-latest/);
@@ -40,7 +40,7 @@ test('external gate workflow uses least privilege and real Windows Linux macOS r
   assert.match(workflow, /if: github\.event_name == 'pull_request'/);
   assert.match(workflow, /Get-Content -Raw -LiteralPath \$env:GITHUB_EVENT_PATH \| ConvertFrom-Json/);
   assert.match(workflow, /-match '\(\?im\)\^\\s\*closes\\s\+#\\d\+\\b'/);
-  assert.match(workflow, /certification-candidate:\s*\n\s*if:\s*\$\{\{\s*\(github\.event_name\s*==\s*'pull_request'\s*\|\|\s*github\.event_name\s*==\s*'push'\)\s*&&\s*needs\.runner-evidence\.result\s*==\s*'success'\s*\}\}/);
+  assert.match(workflow, /certification-candidate:\s*\n\s*if:\s*\$\{\{\s*\(github\.event_name\s*==\s*'pull_request'\s*\|\|\s*github\.event_name\s*==\s*'push'\s*\|\|\s*github\.event_name\s*==\s*'workflow_dispatch'\)\s*&&\s*needs\.runner-evidence\.result\s*==\s*'success'\s*\}\}/);
   assert.match(workflow, /name:\s*Upload bounded external certification candidate/);
   assert.doesNotMatch(workflow, /electron-builder|build:electron|smoke:packaged|release:matrix/);
 });
