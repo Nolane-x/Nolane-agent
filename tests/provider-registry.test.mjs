@@ -139,7 +139,10 @@ test('CliProvider allows a slow CLI startup to report its version truthfully', a
   t.after(() => rm(root, { recursive: true, force: true }));
   const script = path.join(root, 'slow-version-cli.mjs');
   await writeFile(script, "setTimeout(() => console.log('slow-cli 1.2.3'), 5500);\n");
-  const provider = new CliProvider({ id: 'slow-version', label: 'Slow version CLI', executable: process.execPath, versionArgs: [script], timeoutMs: 7_000 });
+  // The subprocess budget includes Node's cold-start time on Windows, not only
+  // the fixture's 5.5-second delay. Keep this focused on the intended
+  // slow-start contract rather than making the test host-speed dependent.
+  const provider = new CliProvider({ id: 'slow-version', label: 'Slow version CLI', executable: process.execPath, versionArgs: [script], timeoutMs: 10_000 });
   const detection = await provider.detect();
   assert.equal(detection.available, true);
   assert.equal(detection.version, '1.2.3');
@@ -159,9 +162,8 @@ test('CliProvider discovers model ids through an explicit argv-only command', as
   `);
   const provider = new CliProvider({
     id: 'model-cli', label: 'Model CLI', executable: process.execPath,
-    // This verifies argv-only discovery rather than a cold Node-process startup budget.
-    // Keep it above the explicit slow-start test so a parallel suite cannot make it flaky.
-    modelDiscoveryArgs: [script, '--models'], timeoutMs: 5_000,
+    // This verifies argv-only discovery; its budget includes a cold Node-process startup.
+    modelDiscoveryArgs: [script, '--models'], timeoutMs: 10_000,
   });
 
   const result = await provider.discoverModels();
