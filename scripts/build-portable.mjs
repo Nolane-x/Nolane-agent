@@ -34,6 +34,7 @@ export async function buildPortable({ sourceRoot = path.resolve('.'), destinatio
   await rm(path.join(target, 'app', 'src', 'release'), { recursive: true, force: true });
   await mkdir(path.join(target, 'app', 'src', 'release'), { recursive: true });
   await copyPath(path.join(source, 'src', 'release', 'dependency-preflight-service.mjs'), path.join(target, 'app', 'src', 'release', 'dependency-preflight-service.mjs'));
+  await copyPath(path.join(source, 'src', 'release', 'evidence-file-hash.mjs'), path.join(target, 'app', 'src', 'release', 'evidence-file-hash.mjs'));
   await copyPath(path.join(source, 'config', 'product-identity.json'), path.join(target, 'app', 'config', 'product-identity.json'));
   await copyPath(path.join(source, 'config', 'model-families.json'), path.join(target, 'app', 'config', 'model-families.json'));
   await copyPath(path.join(source, 'ui'), path.join(target, 'app', 'ui'));

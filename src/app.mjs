@@ -12,14 +12,14 @@ import { ForgeOsBridge } from './forge/forgeos-bridge.mjs';
 import { ForgeOsToolGateway } from './forge/forgeos-tool-gateway.mjs';
 import { ProviderRegistry, createBuiltInCliProviders } from './providers/provider-registry.mjs';
 import { CodexAppServerClient } from './providers/codex-app-server.mjs';
-import { CliAuthAdapter } from './providers/cli-auth-adapter.mjs';
+import { CliAuthAdapter, createAvailabilityOnlyCliAuthAdapter } from './providers/cli-auth-adapter.mjs';
 import { ProviderConnectionService } from './providers/provider-connection-service.mjs';
 import { OutcomeAwareProviderRouter, OutcomeMetricsStore } from './providers/outcome-aware-router.mjs';
 import { ProviderOutcomeFeedbackService } from './providers/provider-outcome-feedback-service.mjs';
 import { createAdaptiveHarnessLab } from './providers/adaptive-harness-lab.mjs';
 import { ToolBroker } from './execution/tool-broker.mjs';
 import { AutonomyPolicy } from './security/autonomy-policy.mjs';
-import { AutonomyGuardedBroker } from './security/autonomy-guarded-broker.mjs';
+import { AutonomyGuardedBroker, createTaskEnvironmentAttester } from './security/autonomy-guarded-broker.mjs';
 import { TaskWorkspaceService } from './execution/task-workspace.mjs';
 import { LocalTaskHandoffService } from './execution/local-task-handoff-service.mjs';
 import { ContextBuilder } from './agent/context-builder.mjs';
@@ -173,6 +173,7 @@ const config = loadConfig({
   workspaceRoot: nolaneEnvironment.get('WORKSPACE'),
   forgeOsRoot: path.join(appRoot, 'vendor', 'forge-os'),
   authToken: nolaneEnvironment.get('TOKEN'),
+  allowRemote: nolaneEnvironment.get('ALLOW_REMOTE_BINDING') === 'true',
 });
 await mkdir(config.dataDir, { recursive: true });
 const eventHub = new DurableEventHub({ maxSubscribers: 256 });
@@ -397,7 +398,7 @@ const providers = new ProviderRegistry({ executionPool: providerRuntimePool, ses
 const providerSandboxRoot = path.join(config.dataDir, 'provider-sandboxes');
 await mkdir(providerSandboxRoot, { recursive: true });
 const providerOverrides = {};
-for (const id of ['codex', 'claude', 'gemini', 'opencode']) {
+for (const id of ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'cursor-agent', 'grok-build', 'kiro-cli', 'factory-droid', 'auggie', 'amp', 'amazon-q', 'crush', 'roo-code', 'qwen-code', 'continue-cli', 'cline', 'mistral-vibe-code', 'aider', 'goose', 'qoder', 'pi', 'kilo', 'kimi-code']) {
   const cwd = path.join(providerSandboxRoot, id); await mkdir(cwd, { recursive: true }); providerOverrides[id] = { cwd };
 }
 for (const provider of createBuiltInCliProviders(providerOverrides)) providers.register(provider);
@@ -422,11 +423,85 @@ const providerConnections = new ProviderConnectionService({
       logoutArgs: ['auth', 'logout'],
       cwd: path.join(providerSandboxRoot, 'claude'),
     }),
+    'github-copilot': createAvailabilityOnlyCliAuthAdapter({
+      id: 'github-copilot',
+      label: 'GitHub Copilot CLI',
+      executable: 'copilot',
+      statusArgs: ['--version'],
+      loginArgs: { github: ['login'] },
+      cwd: path.join(providerSandboxRoot, 'github-copilot'),
+    }),
+    cline: createAvailabilityOnlyCliAuthAdapter({
+      id: 'cline',
+      label: 'Cline CLI',
+      executable: 'cline',
+      statusArgs: ['--version'],
+      loginArgs: { provider: ['auth'] },
+      cwd: path.join(providerSandboxRoot, 'cline'),
+    }),
+    'cursor-agent': createAvailabilityOnlyCliAuthAdapter({
+      id: 'cursor-agent',
+      label: 'Cursor Agent CLI',
+      executable: 'agent',
+      statusArgs: ['--version'],
+      loginArgs: { cursor: ['login'] },
+      cwd: path.join(providerSandboxRoot, 'cursor-agent'),
+    }),
+    'kiro-cli': createAvailabilityOnlyCliAuthAdapter({
+      id: 'kiro-cli',
+      label: 'Kiro CLI',
+      executable: 'kiro-cli',
+      statusArgs: ['--version'],
+      loginArgs: { kiro: ['login'] },
+      cwd: path.join(providerSandboxRoot, 'kiro-cli'),
+    }),
+    auggie: createAvailabilityOnlyCliAuthAdapter({
+      id: 'auggie',
+      label: 'Augment Auggie CLI',
+      executable: 'auggie',
+      statusArgs: ['--version'],
+      loginArgs: { augment: ['login'] },
+      cwd: path.join(providerSandboxRoot, 'auggie'),
+    }),
+    qoder: createAvailabilityOnlyCliAuthAdapter({
+      id: 'qoder',
+      label: 'Qoder CLI',
+      executable: 'qodercli',
+      statusArgs: ['--version'],
+      loginArgs: { interactive: [] },
+      cwd: path.join(providerSandboxRoot, 'qoder'),
+    }),
+    pi: createAvailabilityOnlyCliAuthAdapter({
+      id: 'pi',
+      label: 'Pi Coding Agent',
+      executable: 'pi',
+      statusArgs: ['--version'],
+      loginArgs: { interactive: [] },
+      cwd: path.join(providerSandboxRoot, 'pi'),
+    }),
+    kilo: createAvailabilityOnlyCliAuthAdapter({
+      id: 'kilo',
+      label: 'Kilo Code CLI',
+      executable: 'kilo',
+      statusArgs: ['--version'],
+      loginArgs: { interactive: [] },
+      cwd: path.join(providerSandboxRoot, 'kilo'),
+    }),
+    'kimi-code': createAvailabilityOnlyCliAuthAdapter({
+      id: 'kimi-code',
+      label: 'Kimi Code CLI',
+      executable: 'kimi',
+      statusArgs: ['--version'],
+      loginArgs: { device: ['login'] },
+      cwd: path.join(providerSandboxRoot, 'kimi-code'),
+    }),
   },
 });
 await providerConnections.load();
+const providerProfiles = modelProfiles.publicView().models;
 for (const connection of providerConnections.list()) {
-  const modelId = connection.config?.model ?? (connection.kind === 'cli' || connection.kind === 'codex-app-server' ? 'cli-selected' : null);
+  const hasExactModel = providerProfiles.some((profile) => profile.providerId === connection.id);
+  const modelId = connection.config?.model ?? (!hasExactModel && (connection.kind === 'cli' || connection.kind === 'codex-app-server') ? 'cli-selected' : null);
   if (!modelId) continue;
   const capabilityKeys = new Map([
     ['structured-output', 'structuredOutput'], ['subscription-auth', 'subscriptionAuth'], ['long-context', 'longContext'],
@@ -480,6 +555,11 @@ const autonomyPolicy = new AutonomyPolicy();
 const brokerForTask = (task, { verification = false } = {}) => {
   const project = store.getProject(task.projectId);
   if (!project) throw new Error(`Unknown project: ${task.projectId}`);
+  const environmentAttester = createTaskEnvironmentAttester({
+    projectResolver: (projectId) => store.getProject(projectId),
+    taskResolver: (taskId) => store.getTask(taskId) ?? (String(task.id ?? '') === taskId ? task : null),
+    worktreesRoot: path.join(config.dataDir, 'worktrees'),
+  });
   const broker = new ToolBroker({
     workspaceRoot: task.metadata?.executionWorkspace ?? project.workspaceRoot,
     allowedPaths: verification ? ['**'] : (task.allowedPaths?.length ? task.allowedPaths : ['**']),
@@ -491,7 +571,7 @@ const brokerForTask = (task, { verification = false } = {}) => {
     commandGovernance: commandExecutionGovernance,
     managedProcessRegistry: managedProcesses,
   });
-  return new AutonomyGuardedBroker({ broker, policy: autonomyPolicy, store, task });
+  return new AutonomyGuardedBroker({ broker, policy: autonomyPolicy, store, task, environmentAttester });
 };
 const outcomeMetricsStore = new OutcomeMetricsStore({ file: path.join(config.dataDir, 'provider-outcomes.db') });
 const providerOutcomeFeedback = new ProviderOutcomeFeedbackService({ metrics: outcomeMetricsStore, taskResolver: (taskId) => store.getTask(taskId) });
@@ -535,7 +615,7 @@ const codebaseKnowledge = Object.freeze({
 });
 const semanticDependency = new SemanticDependencyIntelligenceService({ store, repositoryIntelligence, codebaseKnowledge: codebaseKnowledgeGraph });
 const codeRelationships = new CodeRelationshipIntelligenceService({ store, codebaseKnowledge: codebaseKnowledgeGraph });
-const treeSitterRuntime = new TreeSitterRuntimeService({ projectResolver: (projectId) => store.getProject(projectId), expectedVersion: nolaneEnvironment.get('TREE_SITTER_VERSION') ?? null });
+const treeSitterRuntime = new TreeSitterRuntimeService({ projectResolver: (projectId) => store.getProject(projectId), expectedVersion: nolaneEnvironment.get('TREE_SITTER_VERSION') ?? null, configPath: nolaneEnvironment.get('TREE_SITTER_CONFIG_PATH') ?? null });
 let languageServerDefinitions = [];
 if (nolaneEnvironment.get('LANGUAGE_SERVERS_JSON')) {
   languageServerDefinitions = JSON.parse(nolaneEnvironment.get('LANGUAGE_SERVERS_JSON'));
@@ -985,7 +1065,7 @@ evidenceContextRuntime = new EvidenceContextRuntime({
   packets: evidencePackets,
   eventSink: (event) => store.appendEvent(createEvent(event.type, event, { projectId: event.projectId, taskId: event.taskId ?? null })),
 });
-agentLoop = new AgentLoop({ forge: governedForge, providers, router, repositoryIndex: repositoryIntelligence, instructionDiscovery: governedInstructionDiscovery, instructionPolicy: governedInstructionPolicy, memoryService: projectMemorySidecar, evidenceContextRuntime, mcpGateway, browserGateway, goalGateway, forgeGateway, operatingPlaneGateway, adaptiveIntelligenceGateway, dynamicToolCatalog, hookEngineFactory, pluginService: governedPluginContext, contentIngress, decisionPlane: missionResourceFabric.decision, broker: brokerForTask, store, contextBuilder: new ContextBuilder(), harnessComposer: adaptiveHarness.composer, harnessFailureStore: adaptiveHarness.failureStore, harnessFailureClassifier: adaptiveHarness.failureClassifier, modelObservationSink: ({ providerId, modelId, observation }) => { const profile = modelProfiles.resolveIntelligence(providerId, modelId); modelManager.recordExecution(profile.canonicalId, observation); } });
+agentLoop = new AgentLoop({ forge: governedForge, providers, router, repositoryIndex: repositoryIntelligence, instructionDiscovery: governedInstructionDiscovery, instructionPolicy: governedInstructionPolicy, memoryService: projectMemorySidecar, evidenceContextRuntime, mcpGateway, browserGateway, goalGateway, forgeGateway, operatingPlaneGateway, adaptiveIntelligenceGateway, dynamicToolCatalog, hookEngineFactory, pluginService: governedPluginContext, contentIngress, decisionPlane: missionResourceFabric.decision, broker: brokerForTask, store, contextBuilder: new ContextBuilder(), harnessComposer: adaptiveHarness.composer, harnessFailureStore: adaptiveHarness.failureStore, harnessFailureClassifier: adaptiveHarness.failureClassifier, skillContextResolver: async (id) => nativeOrchestration.loadSkill(id, { grantedCapabilities: [] }), modelObservationSink: ({ providerId, modelId, observation }) => { const profile = modelProfiles.resolveIntelligence(providerId, modelId); modelManager.recordExecution(profile.canonicalId, observation); } });
 const scheduler = new TaskScheduler({ store });
 const missionRunner = new MissionRunner({ store, scheduler, agentLoop, forge: governedForge, interrupts, workspaceService, memoryService, baselineProvider: captureTaskTestBaseline, outcomeService: providerOutcomeFeedback });
 const missionCompletion = new MissionCompletionOrchestrator({
@@ -1073,10 +1153,11 @@ const parseReviewResult = (text) => {
 const independentReviewer = new IndependentReviewService({
   file: path.join(config.dataDir, 'independent-reviews.db'),
   reviewer: async (request) => {
+    const { independentReviewerSystemPrompt } = await import('./review/independent-reviewer-prompt.mjs');
     const provider = router.select({ mode: 'intelligence', task: { kind: 'code-review', complexity: 0.9 }, requiredCapabilities: ['coding'] });
     const completion = await provider.complete({
       messages: [
-        { role: 'system', content: 'You are an independent code reviewer. Return strict JSON only: {"findings":[{"path":"...","line":1,"severity":"info|low|medium|high|critical","category":"...","message":"...","evidence":"...","suggestion":"..."}]}. Review only the supplied diff and rules. Do not claim to have run tests.' },
+        { role: 'system', content: independentReviewerSystemPrompt() },
         { role: 'user', content: JSON.stringify(request) },
       ],
       tools: [],
@@ -1096,17 +1177,27 @@ const automationService = new DurableAutomationService({
       maxTasks: 32,
       mcpAllowedTools: request.mcpServers,
     });
+    await runCoordinator.whenSettled(snapshot.mission.id);
+    const mission = store.getMission(snapshot.mission.id);
+    const output = {
+      schema: 'forge.automation-mission-output.v1',
+      outputPolicy: request.outputPolicy,
+      missionId: snapshot.mission.id,
+      missionStatus: mission?.status ?? 'missing',
+      capabilities: request.capabilities,
+      skills: request.skills,
+    };
+    if (mission?.status !== 'completed') {
+      return {
+        status: 'fail',
+        output,
+        error: `Automated mission ended with ${mission?.status ?? 'missing'} status`,
+      };
+    }
     return {
       status: 'pass',
-      output: {
-        schema: 'forge.automation-mission-output.v1',
-        outputPolicy: request.outputPolicy,
-        missionId: snapshot.mission.id,
-        missionStatus: snapshot.mission.status,
-        capabilities: request.capabilities,
-        skills: request.skills,
-      },
-      memory: `mission:${snapshot.mission.id}:${snapshot.mission.status}`,
+      output,
+      memory: `mission:${mission.id}:completed`,
     };
   },
 });
@@ -1187,12 +1278,12 @@ const repositoryFingerprint = async (goal) => {
   const project = store.getProject(goal.projectId);
   if (!project) throw new Error(`Unknown project: ${goal.projectId}`);
   const broker = new ToolBroker({ workspaceRoot: project.workspaceRoot, allowedPaths: ['**'], deniedPaths: [], allowedCommands: ['git'], maxOutputBytes: 256_000, managedProcessRegistry: managedProcesses });
-  const head = await broker.execute({ kind: 'process.run', executable: 'git', args: ['rev-parse', 'HEAD'], cwd: '.', timeoutMs: 10_000, networkPolicy: 'deny' }).catch(() => ({ stdout: 'no-head' }));
-  const status = await broker.execute({ kind: 'process.run', executable: 'git', args: ['status', '--porcelain=v1', '-uno'], cwd: '.', timeoutMs: 10_000, networkPolicy: 'deny' }).catch(() => ({ stdout: 'no-status' }));
+  const head = await broker.execute({ tool: 'process.run', input: { executable: 'git', args: ['rev-parse', 'HEAD'], cwd: '.', timeoutMs: 10_000, networkPolicy: 'deny' } }).catch(() => ({ stdout: 'no-head' }));
+  const status = await broker.execute({ tool: 'process.run', input: { executable: 'git', args: ['status', '--porcelain=v1', '-uno'], cwd: '.', timeoutMs: 10_000, networkPolicy: 'deny' } }).catch(() => ({ stdout: 'no-status' }));
   return `${String(head.stdout ?? '').trim()}
 ${String(status.stdout ?? '').trim()}`;
 };
-const goalScheduler = new GoalScheduler({ store, goalService, runGoal: async (goal) => { await workspaceTrust.requireTrusted(goal.projectId, 'background'); const result = goalRunService.start(goal.id); return { runId: result.run?.id ?? result.run?.mission?.id ?? null, ...result }; }, repositoryFingerprint, tickEveryMs: 30_000 });
+const goalScheduler = new GoalScheduler({ store, goalService, runGoal: async (goal) => { await workspaceTrust.requireTrusted(goal.projectId, 'background'); const result = await goalRunService.startAndWait(goal.id); return { runId: result.runId, ...result }; }, repositoryFingerprint, tickEveryMs: 30_000 });
 goalScheduler.start();
 const evalRunner = new EvalRunner({ executor: async ({ evalCase, providerId, signal }) => {
   const provider = providers.get(providerId);
@@ -1280,7 +1371,7 @@ if (runtimeFile) {
   await writeFile(temporary, JSON.stringify({ url: service.url, token: service.token, pid: process.pid, startedAt: new Date().toISOString() }), { mode: 0o600 });
   await rename(temporary, path.resolve(runtimeFile));
 }
-console.log(JSON.stringify({ product: PRODUCT_NAME, version: VERSION, url: service.url, token: service.token, pid: process.pid }));
+console.log(JSON.stringify({ product: PRODUCT_NAME, version: VERSION, url: service.url, tokenConfigured: Boolean(service.token), pid: process.pid }));
 
 let closing = false;
 async function shutdown(signal) {

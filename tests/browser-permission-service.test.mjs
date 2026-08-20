@@ -24,7 +24,7 @@ async function fixture(t) {
 test('browser permissions persist explicit write grants and propagate them to active mission tasks', async (t) => {
   const f = await fixture(t);
   const granted = f.service.grant({ goalId: f.goal.id, actions: ['click', 'fill', 'press'] });
-  assert.deepEqual(granted.writeActions, ['click', 'fill', 'press']);
+  assert.deepEqual(granted.writeActions, ['open', 'click', 'fill', 'press']);
   assert.deepEqual(f.goals.get(f.goal.id).metadata.browserAllowedActions, ['open', 'snapshot', 'click', 'fill', 'press']);
   assert.deepEqual(f.store.getMission(f.mission.id).metadata.browserAllowedActions, ['open', 'snapshot', 'click', 'fill', 'press']);
   assert.deepEqual(f.store.getTask(f.task.id).metadata.browserAllowedActions, ['open', 'snapshot', 'click', 'fill', 'press']);
@@ -36,4 +36,14 @@ test('browser permissions revoke write actions, reject unknown actions, and pres
   const revoked = f.service.revoke({ goalId: f.goal.id, actions: ['click'] });
   assert.deepEqual(revoked.allowedActions, ['open', 'snapshot', 'fill']);
   assert.throws(() => f.service.grant({ goalId: f.goal.id, actions: ['purchase'] }), /unsupported browser write action/i);
+});
+
+test('browser navigation requires an explicit per-goal grant', async (t) => {
+  const f = await fixture(t);
+  const initial = f.service.inspect({ goalId: f.goal.id });
+  assert.equal(initial.readActions.includes('open'), false);
+  assert.ok(initial.availableWriteActions.includes('open'));
+  assert.ok(initial.availableWriteActions.includes('goto'));
+  const granted = f.service.grant({ goalId: f.goal.id, actions: ['open', 'goto'] });
+  assert.deepEqual(granted.writeActions, ['open', 'goto']);
 });

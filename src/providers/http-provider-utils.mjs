@@ -28,9 +28,17 @@ export function functionTool(tool) {
 export function normalizeMessages(messages) { return sanitizeMessages(messages ?? []); }
 export function parseArguments(value) { return repairToolArguments(typeof value === 'string' ? value : JSON.stringify(value ?? {})); }
 
+export function providerFailure(message, { code = 'PROVIDER_EXECUTION_FAILED', cause = undefined } = {}) {
+  const error = Object.assign(new Error(message), { code });
+  if (cause !== undefined) error.cause = cause;
+  return error;
+}
+
 export async function resolveCredential({ apiKey, credentialRef, credentialResolver }) {
-  const key = credentialRef ? await credentialResolver?.(credentialRef) : apiKey;
-  if (!key) throw new Error('Provider credential is not available');
+  let key;
+  try { key = credentialRef ? await credentialResolver?.(credentialRef) : apiKey; }
+  catch (error) { throw providerFailure('Provider credential is unavailable', { code: 'PROVIDER_SETUP_REQUIRED', cause: error }); }
+  if (!key) throw providerFailure('Provider credential is unavailable', { code: 'PROVIDER_SETUP_REQUIRED' });
   return String(key);
 }
 
@@ -45,9 +53,9 @@ export async function postJson({ url, headers, body, timeoutMs, signal, fetchImp
   try {
     response = await fetchImpl(url, { method: 'POST', headers: { 'content-type': 'application/json', accept: 'application/json', ...headers }, body: JSON.stringify(body), signal: controller.signal });
   } catch (error) {
-    if (timedOut) throw new Error(`Model request timed out after ${timeoutMs}ms`, { cause: error });
-    if (signal?.aborted) throw new Error('Model request cancelled', { cause: error });
-    throw new Error(redactSecrets(String(error?.message ?? error), { secretValues }), { cause: error });
+    if (timedOut) throw providerFailure('Provider request timed out', { cause: error });
+    if (signal?.aborted) throw providerFailure('Provider request cancelled', { cause: error });
+    throw providerFailure('Provider request failed', { cause: new Error(redactSecrets(String(error?.message ?? error), { secretValues })) });
   } finally {
     clearTimeout(timer);
     signal?.removeEventListener?.('abort', abort);
@@ -55,10 +63,10 @@ export async function postJson({ url, headers, body, timeoutMs, signal, fetchImp
   const raw = await response.text();
   let payload;
   try { payload = raw ? JSON.parse(raw) : {}; }
-  catch { throw new Error(`Model returned invalid JSON with HTTP ${response.status}`); }
+  catch { throw providerFailure('Provider returned an invalid response'); }
   if (!response.ok) {
     const message = payload?.error?.message ?? payload?.message ?? raw.slice(0, 500);
-    throw new Error(redactSecrets(`Model HTTP ${response.status}: ${message}`, { secretValues }));
+    throw providerFailure('Provider request was rejected', { cause: new Error(redactSecrets(`Model HTTP ${response.status}: ${message}`, { secretValues })) });
   }
   return payload;
 }

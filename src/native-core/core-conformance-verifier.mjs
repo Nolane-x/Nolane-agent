@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { evidenceFileSha256 } from '../release/evidence-file-hash.mjs';
+import { PRODUCT_IDENTITY } from '../product-identity.mjs';
 
 const VALID_STATUSES = new Set(['verified', 'external_gate', 'implemented_not_wired', 'not_implemented']);
 const sha256 = (value) => crypto.createHash('sha256').update(value).digest('hex');
@@ -12,7 +13,7 @@ function canonical(value) {
   return value;
 }
 
-export function buildNativeCoreCatalog({ contracts, productVersion = '5.0.0-beta.6' } = {}) {
+export function buildNativeCoreCatalog({ contracts, productVersion = PRODUCT_IDENTITY.version } = {}) {
   const withoutReceipt = {
     schema: 'nolane.native-core.contract-catalog.v1',
     product: 'Nolane Agent',

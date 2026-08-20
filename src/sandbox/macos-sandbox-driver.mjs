@@ -15,7 +15,7 @@ export class MacOsSandboxDriver {
   constructor({ platform = process.platform, executable = '/usr/bin/sandbox-exec', profileRoot = path.join(os.tmpdir(), 'forge-studio-sandbox-profiles'), runner = defaultRunner } = {}) { this.platform = platform; this.executable = executable; this.profileRoot = path.resolve(profileRoot); this.runner = runner; }
   async capabilities() {
     if (this.platform !== 'darwin') return Object.freeze({ schema: 'forge.macos-sandbox-capabilities.v1', available: false, platform: this.platform, externalOsRuntime: true, reason: 'wrong-platform' });
-    try { await this.runner(this.executable, ['-h'], { timeoutMs: 5_000, maxOutputBytes: 64_000 }); return Object.freeze({ schema: 'forge.macos-sandbox-capabilities.v1', available: true, platform: this.platform, executable: this.executable, externalOsRuntime: true }); }
+    try { await this.runner(this.executable, ['-p', '(version 1) (allow default)', '/usr/bin/true'], { timeoutMs: 5_000, maxOutputBytes: 64_000 }); return Object.freeze({ schema: 'forge.macos-sandbox-capabilities.v1', available: true, platform: this.platform, executable: this.executable, externalOsRuntime: true }); }
     catch (error) { return Object.freeze({ schema: 'forge.macos-sandbox-capabilities.v1', available: false, platform: this.platform, executable: this.executable, externalOsRuntime: true, reason: error?.code === 'ENOENT' ? 'not-installed' : 'probe-failed' }); }
   }
   async prepare({ id, workspaceRoot, command, allowNetwork = false } = {}) {

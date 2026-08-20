@@ -1,0 +1,40 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+
+test('runtime performance evidence uses canonical budgets, route attribution, and candidate-only claims', async () => {
+  const source = await readFile('scripts/capture-ui-performance-evidence.mjs', 'utf8');
+
+  assert.match(source, /homeInteractiveMs:\s*250/);
+  assert.match(source, /routeSwitchP95Ms:\s*100/);
+  assert.match(source, /longTaskMaxMs:\s*50/);
+  assert.match(source, /idleCpuPercent:\s*1/);
+  assert.match(source, /homeDomNodes:\s*1200/);
+  assert.match(source, /homeRendererMemoryBytes:\s*180\s*\*\s*1024\s*\*\s*1024/);
+  assert.match(source, /Performance\.getMetrics/);
+  assert.match(source, /Memory\.getDOMCounters/);
+  assert.match(source, /TaskDuration/);
+  assert.match(source, /JSHeapUsedSize/);
+  assert.match(source, /PerformanceObserver/);
+  assert.match(source, /__nolanePerfPhase/);
+  assert.match(source, /longTaskRecords/);
+  assert.match(source, /phase:\s*window\.__nolanePerfPhase/);
+  assert.match(source, /warmRoute/);
+  assert.match(source, /\/api\/onboarding\/status/);
+  assert.match(source, /\/api\/onboarding\/recommended/);
+  assert.match(source, /primaryUse:\s*'software'/);
+  assert.match(source, /setup:\s*onboardingSetup/);
+  assert.match(source, /coldPageToHomeMs/);
+  assert.match(source, /\.locator\('\.app-shell'\)\.waitFor/);
+  assert.match(source, /window\.__nolaneLongTasks\s*=\s*\[\]/);
+  assert.match(source, /startupLongTaskMaxMs/);
+  assert.match(source, /homeInteractive:\s*'source_shell_visible_proxy_not_electron_window_show'/);
+  assert.match(source, /nolane\.ui\.performance-runtime-failure\.v1/);
+  assert.match(source, /writeFile\(path\.join\(root, 'failure\.json'\)/);
+  assert.match(source, /candidate_unverified/);
+  assert.match(source, /finalDecision:\s*'external_gate'/);
+  assert.match(source, /'NOL-UI-032':\s*'external_gate'/);
+  assert.match(source, /'NOL-UI-002':\s*'external_gate'/);
+  assert.match(source, /readyToShowMs:\s*null/);
+  assert.doesNotMatch(source, /finalDecision:\s*'pass'|windows8GbCertified:\s*true/);
+});

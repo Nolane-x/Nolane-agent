@@ -16,7 +16,7 @@ test('progressive experience retains all four product layers', () => {
 });
 
 test('legacy global navigation contract remains available', () => {
-  assert.deepEqual(GLOBAL_DESTINATIONS.map((item) => item.id), ['home', 'missions', 'projects', 'review', 'workroom', 'control-plane', 'search', 'settings']);
+  assert.deepEqual(GLOBAL_DESTINATIONS.map((item) => item.id), ['home', 'missions', 'projects', 'review', 'workroom', 'browser', 'control-plane', 'search', 'settings']);
   for (const item of GLOBAL_DESTINATIONS) assert.ok(item.path.startsWith('/'));
 });
 

@@ -8,13 +8,14 @@ const version = String(packageMetadata.version);
 const isNolane = packageMetadata.name === 'nolane-agent';
 const product = isNolane ? 'Nolane Agent' : 'Forge Studio';
 const output = path.resolve(root, process.argv[3] ?? 'project-manifest.json');
-const excluded = new Set(['.git', '.worktrees', '.cache', 'release', 'node_modules', 'data']);
+const excluded = new Set(['.git', '.worktrees', '.cache', '.serena', 'release', 'node_modules', 'data']);
 const excludedVendorParts = new Set(['.git', 'node_modules', 'release', '.cache', 'coverage', '.forgeos-data', 'dist']);
 
 function include(relative) {
   const normalized = relative.replaceAll('\\', '/');
   const first = normalized.split('/')[0];
   if (excluded.has(first)) return false;
+  if (normalized === 'semgrep-current.json') return false;
   if (normalized.split('/').includes('__pycache__') || /\.py[co]$/i.test(normalized)) return false;
   if (normalized.split('/').includes('.forge-vscode-build.lock')) return false;
   if (!normalized.startsWith('vendor/')) return true;

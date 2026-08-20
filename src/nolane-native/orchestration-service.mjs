@@ -6,6 +6,7 @@ import { NolaneGatewayRegistry } from './gateway-registry.mjs';
 import { NolanePluginHost } from './plugin-host.mjs';
 import { NolaneSkillRegistry } from './skill-registry.mjs';
 import { ForgeOsSkillCatalog } from './forgeos-skill-catalog.mjs';
+import { ForgeOsSkillInstaller } from './forgeos-skill-installer.mjs';
 import { NolaneSubagentManager } from './subagent-manager.mjs';
 import { NolaneTrajectoryStore } from './trajectory-store.mjs';
 import { NolaneSessionStore } from './session-store.mjs';
@@ -63,6 +64,7 @@ export class NolaneNativeOrchestrationService {
     this.eventSink = eventSink;
     this.skills = new NolaneSkillRegistry({ roots: skillRoots });
     this.forgeOsSkills = new ForgeOsSkillCatalog({ roots: forgeOsRoots });
+    this.skillInstaller = skillRoots[0] ? new ForgeOsSkillInstaller({ catalog: this.forgeOsSkills, destinationRoot: skillRoots[0] }) : null;
     this.subagents = new NolaneSubagentManager({ clock });
     this.gateways = new NolaneGatewayRegistry();
     this.plugins = new NolanePluginHost({ allowedCapabilities: ['message:send', 'event:read'] });
@@ -374,6 +376,12 @@ export class NolaneNativeOrchestrationService {
     });
   }
   loadSkill(id, options) { return String(id).startsWith('forgeos:') ? this.forgeOsSkills.load(id, options) : this.skills.load(id, options); }
+  async installForgeOsSkill(id) {
+    if (!this.skillInstaller) throw new Error('local Skill library is not configured');
+    const result = await this.skillInstaller.install(id);
+    await this.skills.discover();
+    return result;
+  }
   spawnSubagent(input) { return this.subagents.spawn(input); }
   completeSubagent(id, input) { return this.subagents.complete(id, input); }
   cancelMission(missionId, input) { return this.subagents.cancelMission(missionId, input); }

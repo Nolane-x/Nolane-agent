@@ -20,6 +20,8 @@ function fakeDriver() {
   };
 }
 
+const publicLookup = async () => [{ address: '93.184.216.34', family: 4 }];
+
 test('PlaywrightCliDriver detects global then local official CLI without shell execution', async () => {
   const calls = [];
   const driver = new PlaywrightCliDriver({
@@ -44,7 +46,7 @@ test('BrowserAgentService isolates named persistent sessions and returns bounded
   t.after(() => rm(root, { recursive: true, force: true }));
   const driver = fakeDriver();
   const project = { id: 'project_1', workspaceRoot: path.join(root, 'workspace') };
-  const service = new BrowserAgentService({ driver, browserRoot: path.join(root, 'browser'), getProject: (id) => id === project.id ? project : null, maxOutputBytes: 256 });
+  const service = new BrowserAgentService({ driver, browserRoot: path.join(root, 'browser'), getProject: (id) => id === project.id ? project : null, maxOutputBytes: 256, lookup: publicLookup });
 
   const opened = await service.open({ projectId: project.id, url: 'https://www.youtube.com/watch?v=abc', headed: true });
   assert.equal(opened.available, true);
@@ -69,11 +71,15 @@ test('BrowserAgentService rejects unsafe URLs, traversal artifacts, oversized in
   t.after(() => rm(root, { recursive: true, force: true }));
   const project = { id: 'p', workspaceRoot: root };
   const missing = { detect: async () => ({ available: false, reason: 'not installed' }), run: async () => { throw new Error('should not run'); } };
-  const service = new BrowserAgentService({ driver: missing, browserRoot: path.join(root, 'browser'), getProject: () => project });
+  const service = new BrowserAgentService({ driver: missing, browserRoot: path.join(root, 'browser'), getProject: () => project, lookup: publicLookup });
   await assert.rejects(() => service.open({ projectId: 'p', url: 'javascript:alert(1)' }), /URL|protocol/i);
   await assert.rejects(() => service.open({ projectId: 'p', url: 'file:///etc/passwd' }), /URL|protocol/i);
   await assert.rejects(() => service.open({ projectId: 'p', url: 'https://example.com' }), /Playwright CLI.*not installed/i);
-  const ready = new BrowserAgentService({ driver: fakeDriver(), browserRoot: path.join(root, 'browser2'), getProject: () => project });
+  const ready = new BrowserAgentService({ driver: fakeDriver(), browserRoot: path.join(root, 'browser2'), getProject: () => project, lookup: publicLookup });
+  await assert.rejects(() => ready.open({ projectId: 'p', url: 'http://127.0.0.1:3000' }), /private|local|URL/i);
+  await assert.rejects(() => ready.open({ projectId: 'p', url: 'http://localhost:3000' }), /private|local|URL/i);
+  const privateDestination = new BrowserAgentService({ driver: fakeDriver(), browserRoot: path.join(root, 'browser3'), getProject: () => project, lookup: async () => [{ address: '10.0.0.8', family: 4 }] });
+  await assert.rejects(() => privateDestination.goto({ projectId: 'p', url: 'https://internal.example' }), /private|local|URL/i);
   await assert.rejects(() => ready.fill({ projectId: 'p', target: 'e1', text: 'x'.repeat(100_001) }), /too long/i);
   await assert.rejects(() => ready.screenshot({ projectId: 'p', filename: '../escape.png' }), /filename/i);
 });
@@ -89,7 +95,7 @@ test('BrowserAgentService serves only bounded project-scoped screenshot artifact
       return { exitCode: 0, stdout: '', stderr: '', durationMs: 1 };
     },
   };
-  const service = new BrowserAgentService({ driver, browserRoot: path.join(root, 'browser'), getProject: (id) => id === project.id ? project : null });
+  const service = new BrowserAgentService({ driver, browserRoot: path.join(root, 'browser'), getProject: (id) => id === project.id ? project : null, lookup: publicLookup });
   await service.screenshot({ projectId: project.id, filename: 'workspace.png' });
   const artifact = await service.artifact({ projectId: project.id, filename: 'workspace.png' });
   assert.equal(artifact.mimeType, 'image/png');

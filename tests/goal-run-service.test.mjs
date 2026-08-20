@@ -20,6 +20,10 @@ async function fixture(t) {
       const mission = store.createMission({ projectId: input.projectId, objective: input.objective, status: 'planning', metadata: { providerId: input.providerId } });
       return { mission, project, messages: [], activities: {} };
     },
+    async whenSettled(missionId) {
+      store.updateMission(missionId, { status: 'completed' });
+      return { missionId, status: 'completed' };
+    },
   };
   const goals = new GoalService({ store });
   return { store, project, calls, goals, service: new GoalRunService({ store, goalService: goals, runCoordinator }) };
@@ -43,6 +47,27 @@ test('GoalRunService starts existing active goals and rejects completed goals', 
   assert.equal(started.goal.id, goal.id);
   f.goals.update(goal.id, { status: 'completed' });
   assert.throws(() => f.service.start(goal.id), /not active/i);
+});
+
+test('GoalRunService waits for a scheduled mission outcome instead of treating dispatch as completion', async (t) => {
+  const f = await fixture(t);
+  const goal = f.goals.create({ projectId: f.project.id, title: 'Scheduled', objective: 'Run after debounce.' });
+
+  const settled = await f.service.startAndWait(goal.id);
+
+  assert.equal(settled.runId, settled.run.mission.id);
+  assert.equal(settled.missionStatus, 'completed');
+});
+
+test('GoalRunService rejects scheduled missions that settle without completion', async (t) => {
+  const f = await fixture(t);
+  f.service.runs.whenSettled = async (missionId) => {
+    f.store.updateMission(missionId, { status: 'failed' });
+    return { missionId, status: 'failed' };
+  };
+  const goal = f.goals.create({ projectId: f.project.id, title: 'Scheduled', objective: 'Run after debounce.' });
+
+  await assert.rejects(() => f.service.startAndWait(goal.id), /did not complete/i);
 });
 
 

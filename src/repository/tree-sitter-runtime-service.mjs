@@ -7,24 +7,35 @@ import { canonicalSha256 } from '../../vendor/forge-os/src/core/canonical-json.m
 
 const execFileAsync = promisify(execFile);
 const SOURCE_EXTENSIONS = new Set(['.js', '.mjs', '.cjs', '.jsx', '.ts', '.mts', '.cts', '.tsx', '.json', '.py', '.go', '.rs', '.java', '.c', '.h', '.cc', '.cpp', '.hpp', '.cs', '.rb', '.php', '.swift', '.kt', '.kts']);
+const DEFAULT_PARSE_TIMEOUT_MS = 60_000;
 
 function coded(code, message, statusCode = 400) { return Object.assign(new Error(message), { code, statusCode }); }
 function required(value, label) { const text = String(value ?? '').trim(); if (!text) throw new TypeError(`${label} is required`); return text; }
+function quoteWindowsCommandArgument(value) {
+  const text = String(value);
+  if (/[\r\n&|<>()^%!]/.test(text)) throw coded('TREE_SITTER_COMMAND_ARGUMENT_DENIED', 'Tree-sitter cannot process Windows paths containing shell metacharacters', 400);
+  return `"${text}"`;
+}
 function defaultRunner(command, args, options = {}) {
-  return execFileAsync(command, args, { cwd: options.cwd, windowsHide: true, timeout: options.timeoutMs ?? 15_000, maxBuffer: options.maxOutputBytes ?? 2_000_000 });
+  if (process.platform === 'win32' && command === 'tree-sitter') {
+    const commandLine = ['tree-sitter.cmd', ...args.map(quoteWindowsCommandArgument)].join(' ');
+    return execFileAsync(process.env.ComSpec ?? 'cmd.exe', ['/d', '/s', '/c', commandLine], { cwd: options.cwd, windowsHide: true, windowsVerbatimArguments: true, timeout: options.timeoutMs ?? DEFAULT_PARSE_TIMEOUT_MS, maxBuffer: options.maxOutputBytes ?? 2_000_000 });
+  }
+  return execFileAsync(command, args, { cwd: options.cwd, windowsHide: true, timeout: options.timeoutMs ?? DEFAULT_PARSE_TIMEOUT_MS, maxBuffer: options.maxOutputBytes ?? 2_000_000 });
 }
 function within(root, target) { const relative = path.relative(root, target); return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative)); }
 function versionFrom(stdout) { return String(stdout ?? '').match(/tree-sitter\s+v?([0-9]+(?:\.[0-9]+){1,3})/i)?.[1] ?? null; }
 function freeze(value) { if (!value || typeof value !== 'object') return value; if (Array.isArray(value)) { value.forEach(freeze); return Object.freeze(value); } Object.values(value).forEach(freeze); return Object.freeze(value); }
 
 export class TreeSitterRuntimeService {
-  constructor({ projectResolver, runner = defaultRunner, command = 'tree-sitter', expectedVersion = null, timeoutMs = 15_000, maxOutputBytes = 2_000_000 } = {}) {
+  constructor({ projectResolver, runner = defaultRunner, command = 'tree-sitter', expectedVersion = null, configPath = null, timeoutMs = DEFAULT_PARSE_TIMEOUT_MS, maxOutputBytes = 2_000_000 } = {}) {
     if (typeof projectResolver !== 'function') throw new TypeError('projectResolver is required');
     this.projectResolver = projectResolver;
     this.runner = runner;
     this.command = required(command, 'tree-sitter command');
     this.expectedVersion = expectedVersion ? String(expectedVersion) : null;
-    this.timeoutMs = Number(timeoutMs) || 15_000;
+    this.configPath = configPath ? path.resolve(required(configPath, 'tree-sitter config path')) : null;
+    this.timeoutMs = Number(timeoutMs) || DEFAULT_PARSE_TIMEOUT_MS;
     this.maxOutputBytes = Number(maxOutputBytes) || 2_000_000;
   }
 
@@ -61,12 +72,25 @@ export class TreeSitterRuntimeService {
     return { projectId, root, target, relativeFile: path.relative(root, target).split(path.sep).join('/') };
   }
 
+  async #resolveConfigPath() {
+    if (!this.configPath) return null;
+    try {
+      const resolved = await realpath(this.configPath);
+      const info = await stat(resolved);
+      if (!info.isFile()) throw new Error('not a file');
+      return resolved;
+    } catch {
+      throw coded('TREE_SITTER_CONFIG_INVALID', 'Tree-sitter grammar configuration is unavailable or invalid', 503);
+    }
+  }
+
   async parse({ projectId, principalId, file } = {}) {
     const principal = required(principalId, 'principalId');
     const resolved = await this.#resolveProjectFile(projectId, file);
+    const configPath = await this.#resolveConfigPath();
     const capability = await this.capabilities();
     if (!capability.available) throw coded('TREE_SITTER_RUNTIME_UNAVAILABLE', `Tree-sitter runtime unavailable: ${capability.reason}`, 503);
-    const { stdout = '', stderr = '' } = await this.runner(this.command, ['parse', '--json', '--quiet', '--', resolved.target], { cwd: resolved.root, timeoutMs: this.timeoutMs, maxOutputBytes: this.maxOutputBytes });
+    const { stdout = '', stderr = '' } = await this.runner(this.command, ['parse', '--json', '--quiet', ...(configPath ? ['--config-path', configPath] : []), '--', resolved.target], { cwd: resolved.root, timeoutMs: this.timeoutMs, maxOutputBytes: this.maxOutputBytes });
     if (Buffer.byteLength(String(stdout)) > this.maxOutputBytes) throw coded('TREE_SITTER_OUTPUT_TOO_LARGE', 'Tree-sitter output exceeds the configured limit', 413);
     let tree;
     try { tree = JSON.parse(String(stdout)); } catch { throw coded('TREE_SITTER_OUTPUT_INVALID', 'Tree-sitter returned invalid JSON', 502); }

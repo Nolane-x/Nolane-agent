@@ -1,0 +1,12 @@
+/* Intentional browser/OS residue. Native behavior remains where it improves usability. */
+.app-shell{accent-color:var(--accent);caret-color:var(--caret-color)}
+.app-shell ::selection{background:var(--selection-bg);color:var(--selection-fg)}
+.app-shell :where(input,textarea,[contenteditable="true"]){caret-color:var(--caret-color)}
+.app-shell textarea{resize:vertical}
+:where(#workspace,.session-sidebar,.output-summary-root){scrollbar-color:var(--scrollbar-thumb) transparent;scrollbar-width:thin}
+:where(#workspace,.session-sidebar,.output-summary-root)::-webkit-scrollbar{width:10px;height:10px}
+:where(#workspace,.session-sidebar,.output-summary-root)::-webkit-scrollbar-track{background:transparent}
+:where(#workspace,.session-sidebar,.output-summary-root)::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);border:3px solid transparent;background-clip:padding-box;border-radius:var(--radius-round)}
+:where(#workspace,.session-sidebar,.output-summary-root)::-webkit-scrollbar-thumb:hover{background:var(--scrollbar-thumb-hover);border:3px solid transparent;background-clip:padding-box}
+[data-resize-region="sidebar"],[data-resize-region="dock"]{cursor:col-resize}
+[aria-disabled="true"],[disabled]{cursor:not-allowed}

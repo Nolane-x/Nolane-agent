@@ -7,6 +7,8 @@ const read = (file) => readFile(new URL(`../${file}`, import.meta.url), 'utf8');
 test('Electron main wires the staged updater through trusted IPC and marks a successful startup healthy', async () => {
   const source = await read('desktop/main.cjs');
   assert.match(source, /ElectronUpdateController/);
+  assert.match(source, /loadPackagedGitHubReleaseUpdater/);
+  assert.match(source, /\['darwin', 'linux'\]/);
   assert.match(source, /nolane:update-status/);
   assert.match(source, /nolane:update-install-and-restart/);
   assert.match(source, /safeSender\(event\)/);

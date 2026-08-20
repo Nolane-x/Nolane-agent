@@ -17,6 +17,7 @@ function profileOf(provider, detection = null) {
     available: profile.available !== false,
     authenticated: profile.authenticated !== false,
     healthy: profile.healthy !== false,
+    executionSafety: String(profile.executionSafety ?? 'verified'),
   };
 }
 
@@ -72,6 +73,7 @@ export class AdaptiveProviderRouter {
       if (!profile.available) return [{ provider, eligible: false, reason: 'provider unavailable', score: Number.NEGATIVE_INFINITY, profile }];
       if (!profile.authenticated) return [{ provider, eligible: false, reason: 'provider authentication required', score: Number.NEGATIVE_INFINITY, profile }];
       if (!profile.healthy) return [{ provider, eligible: false, reason: 'provider connection is not healthy', score: Number.NEGATIVE_INFINITY, profile }];
+      if (profile.executionSafety === 'external-plan-config-required') return [{ provider, eligible: false, reason: 'safe plan configuration required', score: Number.NEGATIVE_INFINITY, profile }];
       return [{ provider, eligible: true, reason: 'explicit override', score: Number.POSITIVE_INFINITY, profile }];
     }
     const required = new Set(requiredCapabilities.map(String));
@@ -86,6 +88,7 @@ export class AdaptiveProviderRouter {
       if (!profile.available) { eligible = false; reason = 'provider unavailable'; }
       else if (!profile.authenticated) { eligible = false; reason = 'provider authentication required'; }
       else if (!profile.healthy) { eligible = false; reason = 'provider connection is not healthy'; }
+      else if (profile.executionSafety === 'external-plan-config-required') { eligible = false; reason = 'safe plan configuration required'; }
       else if (missing.length) { eligible = false; reason = `missing capabilities: ${missing.join(', ')}`; }
       else if (localOnly && !profile.local) { eligible = false; reason = 'not local'; }
       else if (profile.costTier > Number(maxCostTier)) { eligible = false; reason = `cost tier ${profile.costTier} exceeds ${maxCostTier}`; }

@@ -1,6 +1,6 @@
 {
   "name": "nolane-agent",
-  "version": "5.0.0-beta.6",
+  "version": "0.0.0",
   "description": "Local-first evidence-driven autonomous engineering agent with a progressive Workspace and Control Plane",
   "type": "module",
   "private": true,
@@ -9,8 +9,9 @@
   },
   "scripts": {
     "start": "node src/app.mjs",
+    "dev:browser": "node scripts/start-source-browser.mjs",
     "test": "node scripts/run-node-test-suite.mjs",
-    "validate": "npm test && node --check src/app.mjs",
+    "validate": "npm run audit:evidence-freshness && npm test && node --check src/app.mjs",
     "smoke": "node scripts/smoke.mjs",
     "build:portable": "node scripts/build-portable.mjs",
     "build:windows": "bash scripts/build-windows.sh",
@@ -28,7 +29,7 @@
     "release:matrix": "node scripts/full-release-matrix.mjs",
     "verify:version": "node scripts/verify-version-coherence.mjs .",
     "build:ui-v3": "node scripts/build-ui-v3.mjs",
-    "program:nolane": "node scripts/generate-nolane-program.mjs",
+    "program:nolane": "node scripts/generate-nolane-program.mjs && node scripts/generate-native-core-conformance.mjs && node scripts/generate-master-acceptance-ledger.mjs",
     "audit:ui-capabilities": "node scripts/audit-ui-capabilities.mjs",
     "validate:ui-tokens": "node scripts/validate-ui-tokens.mjs",
     "audit:evidence-freshness": "node scripts/verify-nolane-evidence-freshness.mjs",
@@ -97,7 +98,11 @@
     "test:checkpoint-14-time-travel": "node --test tests/time-travel-service.test.mjs tests/time-travel-http-api.test.mjs tests/ui-v3-time-travel.test.mjs tests/ui-v3-progressive-activity.test.mjs tests/checkpoint-14-time-travel-verifier.test.mjs",
     "verify:checkpoint-14-time-travel": "node scripts/verify-checkpoint-14-time-travel.mjs --write",
     "audit:runtime-purity": "node scripts/verify-nolane-runtime-purity.mjs .",
-    "verify:forgeos-upstream": "node scripts/verify-forgeos-upstream.mjs"
+    "verify:forgeos-upstream": "node scripts/verify-forgeos-upstream.mjs",
+    "generate:product-perfection-catalog": "node scripts/generate-product-perfection-catalog.mjs",
+    "generate:product-perfection-matrix": "node scripts/generate-product-perfection-matrix.mjs",
+    "verify:product-perfection": "node scripts/verify-product-perfection-matrix.mjs",
+    "verify:release-candidate": "node scripts/verify-release-candidate.mjs"
   },
   "license": "MIT",
   "main": "desktop/main.cjs",
@@ -105,5 +110,8 @@
   "releaseToolchain": {
     "electron-builder": "26.15.3",
     "electron": "43.2.0"
+  },
+  "dependencies": {
+    "electron-updater": "6.8.9"
   }
 }

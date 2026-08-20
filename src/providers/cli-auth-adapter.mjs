@@ -36,8 +36,17 @@ async function launchProcess({ executable, args, cwd = null }) {
   return Object.freeze({ launched: true, pid: child.pid ?? null });
 }
 
-function parseStatus(result) {
+function parseStatus(result, { mode = 'authenticated' } = {}) {
   const combined = `${result?.stdout ?? ''}\n${result?.stderr ?? ''}`.trim();
+  const available = result?.error?.code !== 'ENOENT';
+  if (mode === 'available-only') return Object.freeze({
+    available,
+    authenticated: false,
+    healthy: false,
+    email: null,
+    planType: null,
+    error: available ? 'connection-test-required' : 'not-installed',
+  });
   let payload = null;
   try { payload = result?.stdout?.trim() ? JSON.parse(result.stdout) : null; } catch {}
   const explicit = payload?.authenticated ?? payload?.loggedIn ?? payload?.isAuthenticated ?? payload?.logged_in;
@@ -46,7 +55,7 @@ function parseStatus(result) {
   const email = payload?.email ?? payload?.account?.email ?? null;
   const planType = payload?.subscriptionType ?? payload?.planType ?? payload?.account?.planType ?? null;
   return Object.freeze({
-    available: result?.error?.code !== 'ENOENT',
+    available,
     authenticated,
     healthy: authenticated && result?.exitCode === 0,
     email: email == null ? null : String(email).slice(0, 200),
@@ -55,12 +64,39 @@ function parseStatus(result) {
   });
 }
 
+export function createAvailabilityOnlyCliAuthAdapter({ id, label, executable, statusArgs = ['--version'], loginArgs = {}, runner = runProcess, launcher = launchProcess, timeoutMs = 15_000, cwd = null } = {}) {
+  const cleanId = required(id, 'adapter id');
+  const cleanLabel = required(label ?? id, 'adapter label');
+  const cleanExecutable = required(executable, 'executable');
+  const cleanStatusArgs = safeArgs(statusArgs, 'statusArgs');
+  const cleanLoginArgs = Object.freeze(Object.fromEntries(Object.entries(loginArgs).map(([key, args]) => [String(key), safeArgs(args, `loginArgs.${key}`)])));
+  const cleanTimeout = Number(timeoutMs);
+  if (!Number.isInteger(cleanTimeout) || cleanTimeout < 10) throw new TypeError('timeoutMs is invalid');
+  return Object.freeze({
+    id: cleanId,
+    label: cleanLabel,
+    loginArgs: cleanLoginArgs,
+    logoutArgs: null,
+    async status() {
+      const result = await runner({ executable: cleanExecutable, args: cleanStatusArgs, timeoutMs: cleanTimeout, cwd });
+      return Object.freeze({ id: cleanId, label: cleanLabel, ...parseStatus(result, { mode: 'available-only' }) });
+    },
+    async startLogin({ type = Object.keys(cleanLoginArgs)[0] } = {}) {
+      const args = cleanLoginArgs[String(type)];
+      if (!args) throw new TypeError(`Unsupported ${cleanLabel} login type: ${type}`);
+      return Object.freeze({ id: cleanId, type: String(type), ...(await launcher({ executable: cleanExecutable, args, cwd })) });
+    },
+  });
+}
+
 export class CliAuthAdapter {
-  constructor({ id, label, executable, statusArgs, loginArgs = {}, logoutArgs = null, runner = runProcess, launcher = launchProcess, timeoutMs = 15_000, cwd = null } = {}) {
+  constructor({ id, label, executable, statusArgs, statusMode = 'authenticated', loginArgs = {}, logoutArgs = null, runner = runProcess, launcher = launchProcess, timeoutMs = 15_000, cwd = null } = {}) {
     this.id = required(id, 'adapter id');
     this.label = required(label ?? id, 'adapter label');
     this.executable = required(executable, 'executable');
     this.statusArgs = safeArgs(statusArgs, 'statusArgs');
+    if (!['authenticated', 'available-only'].includes(statusMode)) throw new TypeError('statusMode is invalid');
+    this.statusMode = statusMode;
     this.loginArgs = Object.fromEntries(Object.entries(loginArgs).map(([key, args]) => [String(key), safeArgs(args, `loginArgs.${key}`)]));
     this.logoutArgs = logoutArgs == null ? null : safeArgs(logoutArgs, 'logoutArgs');
     this.runner = runner; this.launcher = launcher; this.timeoutMs = Number(timeoutMs); this.cwd = cwd;
@@ -68,7 +104,7 @@ export class CliAuthAdapter {
 
   async status() {
     const result = await this.runner({ executable: this.executable, args: this.statusArgs, timeoutMs: this.timeoutMs, cwd: this.cwd });
-    return Object.freeze({ id: this.id, label: this.label, ...parseStatus(result) });
+    return Object.freeze({ id: this.id, label: this.label, ...parseStatus(result, { mode: this.statusMode }) });
   }
 
   async startLogin({ type = Object.keys(this.loginArgs)[0] } = {}) {

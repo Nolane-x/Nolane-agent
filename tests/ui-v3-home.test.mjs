@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { INTENT_PRESETS, createMissionRequest } from '../ui-v3/core/intent-presets.mjs';
+import { closeComposerPickers, isComposerPickerInteraction } from '../ui-v3/components/composer-picker.mjs';
 import { buildHomeViewModel, createHomeController, modelDeploymentKey, renderHomeView } from '../ui-v3/views/home/home-view.mjs';
 
 test('four intent presets map to enforceable backend boundaries', () => {
@@ -49,6 +50,109 @@ test('home composer preserves a distinct deployment key for every provider model
   assert.doesNotMatch(html, /<select\b/);
 });
 
+test('home composer keeps every ready discovered model selectable', () => {
+  const models = Array.from({ length: 51 }, (_value, index) => ({
+    providerId: 'codex', modelId: `model-${index + 1}`, displayName: `Model ${index + 1}`,
+  }));
+  const html = renderHomeView(buildHomeViewModel({
+    providers: [{ id: 'codex', available: true, authenticated: true, healthy: true }],
+    models,
+  }));
+  const modelMenu = html.match(/data-composer-picker="modelChoice"[\s\S]*?<div id="composer-modelChoice-menu"[\s\S]*?<\/div>/)?.[0] ?? '';
+
+  assert.match(modelMenu, /data-picker-value="codex\/model-51"/);
+  assert.match(modelMenu, /data-composer-picker-search/);
+  assert.match(modelMenu, /placeholder="Search models…"/);
+});
+
+test('composer picker helpers distinguish inside interactions and close every menu', async () => {
+  const attributes = [];
+  const trigger = { setAttribute(...args) { attributes.push(args); } };
+  const picker = { querySelector(selector) { assert.equal(selector, '[data-composer-picker-toggle]'); return trigger; } };
+  const menu = { hidden: false, closest(selector) { assert.equal(selector, '[data-composer-picker]'); return picker; } };
+  closeComposerPickers({ querySelectorAll(selector) { assert.equal(selector, '[data-composer-picker-menu]'); return [menu]; } });
+  assert.equal(menu.hidden, true);
+  assert.deepEqual(attributes, [['aria-expanded', 'false']]);
+  assert.equal(isComposerPickerInteraction({ closest() { return picker; } }), true);
+  assert.equal(isComposerPickerInteraction({ closest() { return null; } }), false);
+  const source = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
+  assert.match(source, /if \(!isComposerPickerInteraction\(event\.target\)\) closeComposerPickers\(document\);/);
+});
+
+test('home composer offers only ready provider deployments and disables send until a provider is usable', () => {
+  const html = renderHomeView(buildHomeViewModel({
+    projects: [{ id: 'p1', name: 'Project' }],
+    providers: [
+      { id: 'ready', available: true, authenticated: true, healthy: true },
+      { id: 'login-required', available: true, authenticated: false, healthy: false },
+      { id: 'plan-required', available: true, authenticated: true, healthy: true, executionSafety: 'external-plan-config-required' },
+    ],
+    models: [
+      { providerId: 'ready', modelId: 'safe-model', displayName: 'Safe model' },
+      { providerId: 'login-required', modelId: 'blocked-model', displayName: 'Blocked model' },
+      { providerId: 'plan-required', modelId: 'unsafe-model', displayName: 'Unsafe model' },
+    ],
+  }));
+  const modelMenu = html.match(/data-composer-picker="modelChoice"[\s\S]*?<div id="composer-modelChoice-menu"[\s\S]*?<\/div>/)?.[0] ?? '';
+  assert.match(modelMenu, /data-picker-value="ready\/safe-model"/);
+  assert.doesNotMatch(modelMenu, /login-required\/blocked-model|plan-required\/unsafe-model/);
+
+  const blocked = renderHomeView(buildHomeViewModel({
+    projects: [{ id: 'p1', name: 'Project' }],
+    providers: [{ id: 'login-required', available: true, authenticated: false, healthy: false }],
+  }));
+  assert.match(blocked, /class="composer-submit" type="submit" disabled/);
+});
+
+test('home composer preserves an unavailable saved model instead of silently routing it automatically', () => {
+  const html = renderHomeView(buildHomeViewModel({
+    projects: [{ id: 'p1', name: 'Project' }],
+    selectedModel: 'login-required/blocked-model',
+    providers: [
+      { id: 'ready', available: true, authenticated: true, healthy: true },
+      { id: 'login-required', available: true, authenticated: false, healthy: false },
+    ],
+    models: [
+      { providerId: 'ready', modelId: 'safe-model', displayName: 'Safe model' },
+      { providerId: 'login-required', modelId: 'blocked-model', displayName: 'Blocked model' },
+    ],
+  }));
+  const modelMenu = html.match(/data-composer-picker="modelChoice"[\s\S]*?<div id="composer-modelChoice-menu"[\s\S]*?<\/div>/)?.[0] ?? '';
+
+  assert.match(html, /<input type="hidden" name="modelChoice" value="login-required\/blocked-model"/);
+  assert.match(html, /data-picker-label="Blocked model — Not ready"/);
+  assert.match(modelMenu, /data-picker-value="login-required\/blocked-model"[^>]*aria-selected="true"[^>]*disabled/);
+  assert.match(modelMenu, /<small>login-required · blocked-model · Not ready<\/small>/);
+  assert.match(html, /class="composer-submit" type="submit" disabled/);
+});
+
+test('home composer explains when a preserved model is unavailable', () => {
+  const input = {
+    projects: [{ id: 'p1', name: 'Project' }],
+    selectedModel: 'login-required/blocked-model',
+    providers: [{ id: 'login-required', available: true, authenticated: false, healthy: false }],
+    models: [{ providerId: 'login-required', modelId: 'blocked-model', displayName: 'Blocked model' }],
+  };
+
+  const english = renderHomeView(buildHomeViewModel(input));
+  assert.match(english, /Selected model is not ready\. Choose another model or sign in to its provider\./);
+  assert.match(english, /composer-runtime" data-state="limited"/);
+
+  const vietnamese = renderHomeView(buildHomeViewModel({ ...input, language: 'vi' }));
+  assert.match(vietnamese, /Model đã chọn chưa sẵn sàng\. Hãy chọn model khác hoặc đăng nhập provider đó\./);
+  assert.match(vietnamese, /composer-runtime" data-state="limited"/);
+});
+
+test('home uses a compact task-first composition instead of an oversized generic hero', async () => {
+  const html = renderHomeView(buildHomeViewModel());
+  const styles = await readFile(new URL('../ui-v3/styles/pages/home.css', import.meta.url), 'utf8');
+  assert.match(html, /class="home-intro"/);
+  assert.doesNotMatch(html, /home-ambient|home-hero/);
+  assert.match(styles, /\.home-intro\{display:grid/);
+  assert.match(styles, /font-size:clamp\(32px,3\.6vw,52px\)/);
+  assert.doesNotMatch(styles, /font-size:clamp\(38px,5\.2vw,72px\)/);
+});
+
 test('home composer sends provider and model separately for the selected deployment', async () => {
   const calls = [];
   const api = {
@@ -64,6 +168,90 @@ test('home composer sends provider and model separately for the selected deploym
   await controller.load();
   await controller.submit({ objective: 'Plan this', projectId: 'p1', modelChoice: 'codex-app-server/gpt-5.6-sol' });
   assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Plan this', planningProviderId: 'codex-app-server', planningModelId: 'gpt-5.6-sol', deploymentKey: 'codex-app-server/gpt-5.6-sol', mcpAllowedTools: [] }]]);
+});
+
+test('home composer exposes and submits only catalog-advertised reasoning effort for any provider model', async () => {
+  const calls = [];
+  const api = {
+    async get(path) {
+      if (path === '/api/projects') return [{ id: 'p1', name: 'Project' }];
+      if (path === '/api/provider-connections') return [{ id: 'opencode', state: 'ready' }];
+      if (path === '/api/model-profiles') return [{ key: 'opencode/openai/gpt-5.6-sol', providerId: 'opencode', modelId: 'openai/gpt-5.6-sol', displayName: 'GPT-5.6 Sol via OpenCode', reasoning: { controllable: true, defaultLevel: 'high', levels: ['low', 'high', 'max', 'ultra'] } }];
+      return [];
+    },
+    async post(path, body) { calls.push([path, body]); return { id: 'mission-effort', objective: body.objective }; },
+  };
+  const controller = createHomeController({ api });
+  await controller.load();
+  controller.setModel('opencode/openai/gpt-5.6-sol');
+  controller.setEffort('ultra');
+  const html = renderHomeView(controller.snapshot());
+
+  assert.match(html, /data-composer-picker="planningEffort"/);
+  assert.match(html, /data-picker-value="max"/);
+  assert.match(html, /data-picker-value="ultra"/);
+  assert.doesNotMatch(html, /Codex reasoning effort/);
+  await controller.submit({ objective: 'Use careful reasoning', projectId: 'p1', modelChoice: 'opencode/openai/gpt-5.6-sol', planningEffort: 'ultra' });
+  assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Use careful reasoning', planningProviderId: 'opencode', planningModelId: 'openai/gpt-5.6-sol', deploymentKey: 'opencode/openai/gpt-5.6-sol', planningEffort: 'ultra', mcpAllowedTools: [] }]]);
+});
+
+test('home composer uses the persisted routing default until the user chooses another model', async () => {
+  const api = {
+    async get(path) {
+      if (path === '/api/projects') return [{ id: 'p1', name: 'Project' }];
+      if (path === '/api/provider-connections') return [{ id: 'codex', available: true, authenticated: true, healthy: true }];
+      if (path === '/api/model-profiles') return [{ key: 'codex/gpt-5.6-codex', providerId: 'codex', modelId: 'gpt-5.6-codex', displayName: 'Codex 5.6' }];
+      if (path === '/api/settings/effective') return { value: { agent: { model: 'codex/gpt-5.6-codex' } } };
+      return [];
+    },
+  };
+  const controller = createHomeController({ api });
+  await controller.load();
+
+  assert.equal(controller.snapshot().selectedModel, 'codex/gpt-5.6-codex');
+  assert.match(renderHomeView(controller.snapshot()), /<input type="hidden" name="modelChoice" value="codex\/gpt-5\.6-codex"/);
+
+  controller.setModel('auto');
+  assert.equal(controller.snapshot().selectedModel, 'auto');
+});
+
+test('home composer turns an explicit Skill selection into a removable mission context receipt request', async () => {
+  const calls = [];
+  const api = {
+    async get(path) {
+      if (path === '/api/projects') return [{ id: 'p1', name: 'Project' }];
+      if (path === '/api/provider-connections') return [{ id: 'codex', state: 'ready' }];
+      if (path === '/api/skills/catalog?limit=120') return [{ id: 'browser-audit', title: 'Browser audit', source: 'nolane', catalog: 'local' }];
+      return [];
+    },
+    async post(path, body) { calls.push([path, body]); return { id: 'mission-1', objective: body.objective }; },
+  };
+  const controller = createHomeController({ api });
+  await controller.load();
+  controller.addSkill('browser-audit');
+  const html = renderHomeView(controller.snapshot());
+  assert.match(html, /Browser audit/);
+  assert.match(html, /data-selected-skill-remove="browser-audit"/);
+  await controller.submit({ objective: 'Review this flow', projectId: 'p1' });
+  assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Review this flow', planningProviderId: 'auto', mcpAllowedTools: [], skillIds: ['browser-audit'] }]]);
+});
+
+test('home composer rejects an unavailable selected model before making a mission request', async () => {
+  const calls = [];
+  const api = {
+    async get(path) {
+      if (path === '/api/projects') return [{ id: 'p1', name: 'Project' }];
+      if (path === '/api/provider-connections') return [{ id: 'cline', available: true, authenticated: false, healthy: false }];
+      if (path === '/api/model-profiles') return [{ key: 'cline/claude-sonnet', providerId: 'cline', modelId: 'claude-sonnet', displayName: 'Claude Sonnet' }];
+      return [];
+    },
+    async post(path, body) { calls.push([path, body]); return { id: 'mission-1' }; },
+  };
+  const controller = createHomeController({ api, language: 'vi' });
+  await controller.load();
+  await assert.rejects(() => controller.submit({ objective: 'Lập kế hoạch', projectId: 'p1', modelChoice: 'cline/claude-sonnet' }), /chưa sẵn sàng/);
+  assert.deepEqual(calls, []);
+  assert.equal(controller.snapshot().error, 'Model đã chọn chưa sẵn sàng. Hãy đăng nhập hoặc kiểm tra provider trước khi gửi.');
 });
 
 test('Vietnamese home renders composer labels without leftover English copy', () => {
@@ -117,9 +305,39 @@ test('composer context menu exposes ForgeOS skills and keeps provenance visible'
   assert.match(html, /data-menu-kind="skill"/);
 });
 
-test('composer project creation event is wired to the desktop picker', async () => {
+test('composer finds skills and commands beyond the compact unfiltered menu', () => {
+  const skills = Array.from({ length: 15 }, (_value, index) => ({
+    id: `skill-${index + 1}`,
+    name: index === 14 ? 'Needle skill' : `Skill ${index + 1}`,
+    source: 'ForgeOS',
+  }));
+  const commands = Array.from({ length: 21 }, (_value, index) => ({
+    id: index === 20 ? 'needle-command' : `command-${index + 1}`,
+    title: index === 20 ? 'Needle command' : `Command ${index + 1}`,
+  }));
+
+  const context = renderHomeView(buildHomeViewModel({ menu: { type: 'context', query: 'needle' }, skills }));
+  const command = renderHomeView(buildHomeViewModel({ menu: { type: 'command', query: 'needle' }, commands }));
+
+  assert.match(context, /Needle skill/);
+  assert.match(command, /Needle command/);
+});
+
+test('composer context search recognizes skills and plugins by their type', () => {
+  const skills = [{ id: 'forge-reference', name: 'Repository reference', source: 'ForgeOS' }];
+  const plugins = [{ id: 'semantic-index', name: 'Semantic index', state: 'installed' }];
+  const skillMenu = renderHomeView(buildHomeViewModel({ menu: { type: 'context', query: 'skill' }, skills }));
+  const pluginMenu = renderHomeView(buildHomeViewModel({ menu: { type: 'context', query: 'plugin' }, plugins }));
+
+  assert.match(skillMenu, /Repository reference/);
+  assert.match(pluginMenu, /Semantic index/);
+});
+
+test('composer project creation supports a local-folder fallback outside Electron', async () => {
   const source = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
   assert.match(source, /addEventListener\('nolane:project-create-requested',\s*requestProjectCreation\)/);
+  assert.match(source, /openProjectCreateDialog/);
+  assert.doesNotMatch(source, /Creating a project requires the Electron desktop launcher/);
 });
 
 test('composer surfaces planning-input failures instead of a generic internal error', async () => {

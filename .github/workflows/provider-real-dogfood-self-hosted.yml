@@ -1,0 +1,112 @@
+name: Provider real dogfood (self-hosted)
+
+on:
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: Verified plan/read-only CLI provider to exercise on the dedicated host
+        required: true
+        type: choice
+        options:
+          - codex
+          - claude
+          - gemini
+      model:
+        description: Optional provider model selector; leave blank to use the authenticated CLI default
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: provider-real-dogfood-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  provider-real-dogfood:
+    runs-on: [self-hosted, Windows, X64, nolane-provider-dogfood]
+    timeout-minutes: 30
+    env:
+      NOLANE_DOGFOOD_PROVIDER: ${{ inputs.provider }}
+      NOLANE_DOGFOOD_MODEL: ${{ inputs.model }}
+    steps:
+      - name: Checkout without repository credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install locked source dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Guard dedicated host and prepare isolated directories
+        shell: pwsh
+        run: |
+          if ($env:RUNNER_OS -ne 'Windows') { throw 'Dedicated provider dogfood runner must be Windows.' }
+          if ($env:GITHUB_EVENT_NAME -ne 'workflow_dispatch') { throw 'Provider dogfood is manual-only.' }
+          if ($env:NOLANE_PROVIDER_DOGFOOD_ALLOW_REAL_RUN -ne '1') { throw 'Dedicated host has not explicitly opted into a real provider run.' }
+          $allowedProviders = @('codex', 'claude', 'gemini')
+          if ($env:NOLANE_DOGFOOD_PROVIDER -notin $allowedProviders) { throw 'Provider is not in the verified dogfood allow-list.' }
+          $workRoot = Join-Path $env:RUNNER_TEMP "nolane-provider-dogfood-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
+          $evidenceRoot = Join-Path $env:GITHUB_WORKSPACE '.nolane-evidence'
+          Remove-Item $workRoot -Recurse -Force -ErrorAction SilentlyContinue
+          Remove-Item $evidenceRoot -Recurse -Force -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Path $workRoot -Force | Out-Null
+          New-Item -ItemType Directory -Path $evidenceRoot -Force | Out-Null
+          "NOLANE_DOGFOOD_WORKSPACE=$workRoot" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "NOLANE_DOGFOOD_CANDIDATE=$(Join-Path $evidenceRoot 'provider-dogfood-candidate.json')" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Execute bounded provider profile
+        id: dogfood
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          $arguments = @(
+            'scripts/run-provider-dogfood-candidate.mjs',
+            '--provider', $env:NOLANE_DOGFOOD_PROVIDER,
+            '--workspace', $env:NOLANE_DOGFOOD_WORKSPACE,
+            '--output', $env:NOLANE_DOGFOOD_CANDIDATE,
+            '--machine-label', $env:RUNNER_NAME,
+            '--acknowledge-real-provider-run'
+          )
+          if (-not [string]::IsNullOrWhiteSpace($env:NOLANE_DOGFOOD_MODEL)) { $arguments += @('--model', $env:NOLANE_DOGFOOD_MODEL) }
+          & node @arguments
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Validate finalized candidate contract
+        id: validate
+        if: always()
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          if (-not (Test-Path $env:NOLANE_DOGFOOD_CANDIDATE)) { throw 'Sanitized candidate was not produced.' }
+          & node 'scripts/validate-provider-dogfood-candidate.mjs' $env:NOLANE_DOGFOOD_CANDIDATE
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Publish candidate evidence only
+        if: always() && steps.validate.outcome == 'success' && hashFiles('.nolane-evidence/provider-dogfood-candidate.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-real-dogfood-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .nolane-evidence/provider-dogfood-candidate.json
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Fail closed on execution or validation failure
+        if: always()
+        shell: pwsh
+        run: |
+          if ('${{ steps.dogfood.outcome }}' -ne 'success') { throw 'Provider dogfood execution did not complete cleanly.' }
+          if ('${{ steps.validate.outcome }}' -ne 'success') { throw 'Provider dogfood candidate validation failed.' }
+
+      - name: Cleanup isolated state
+        if: always()
+        shell: pwsh
+        run: |
+          Remove-Item $env:NOLANE_DOGFOOD_WORKSPACE -Recurse -Force -ErrorAction SilentlyContinue
+          Remove-Item (Join-Path $env:GITHUB_WORKSPACE '.nolane-evidence') -Recurse -Force -ErrorAction SilentlyContinue

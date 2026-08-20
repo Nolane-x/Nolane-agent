@@ -8,13 +8,14 @@ test('onboarding HTTP API exposes status, progress, complete, recommended defaul
   const calls=[];
   const onboardingService={
     status:async()=>({schema:'status'}), saveProgress:async(body)=>{calls.push(['progress',body]);return{schema:'progress'};},
-    complete:async(body)=>{calls.push(['complete',body]);return{schema:'complete'};}, recommended:async(body)=>{calls.push(['recommended',body]);return{schema:'recommended'};}, skip:async()=>({schema:'skip'})
+    complete:async(body)=>{calls.push(['complete',body]);return{schema:'complete'};}, recommended:async(body)=>{calls.push(['recommended',body]);return{schema:'recommended'};}, skip:async(body)=>{calls.push(['skip',body]);return{schema:'skip'}}
   };
   const route=createRoutes({onboardingService});
   assert.equal((await call(route,{pathname:'/api/onboarding/status'})).body.schema,'status');
   assert.equal((await call(route,{method:'POST',pathname:'/api/onboarding/progress',body:{currentStep:1}})).body.schema,'progress');
   assert.equal((await call(route,{method:'POST',pathname:'/api/onboarding/complete',body:{answers:{language:'vi'}}})).body.schema,'complete');
   assert.equal((await call(route,{method:'POST',pathname:'/api/onboarding/recommended',body:{primaryUse:'software'}})).body.schema,'recommended');
-  assert.equal((await call(route,{method:'POST',pathname:'/api/onboarding/skip',body:{}})).body.schema,'skip');
+  assert.equal((await call(route,{method:'POST',pathname:'/api/onboarding/skip',body:{answers:{language:'vi'}}})).body.schema,'skip');
   assert.deepEqual(calls[0],['progress',{currentStep:1}]);
+  assert.deepEqual(calls.at(-1),['skip',{answers:{language:'vi'}}]);
 });

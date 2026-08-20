@@ -35,7 +35,6 @@ const READ_ONLY_KINDS = new Set([
   'git.status',
   'git.diff',
   'memory.read',
-  'web.fetch',
   'process.listManaged',
 ]);
 
@@ -120,8 +119,14 @@ export class AutonomyPolicy {
     }
 
     if (profile === 'sandbox-autopilot') {
-      if (context.inSandbox === true) return decision('allow', 'Hành động nằm trong sandbox cô lập đã được cấp quyền.', { category: 'sandbox' });
-      return decision('ask', 'Sandbox Autopilot chỉ tự động khi tiến trình được cô lập trong sandbox.', { category: 'sandbox-boundary' });
+      if (context.inSandbox !== true) return decision('ask', 'Sandbox Autopilot chỉ tự động khi tiến trình được cô lập trong sandbox.', { category: 'sandbox-boundary' });
+      if (!WORKSPACE_ALLOWED_KINDS.has(kind)) return decision('ask', 'Loại hành động này chưa được cấp quyền tự động cho sandbox.', { category: 'sandbox-action' });
+      if (kind === 'process.run' || kind === 'process.startManaged') {
+        const commandClass = String(action.commandClass ?? 'arbitrary');
+        if (!WORKSPACE_COMMANDS.has(commandClass)) return decision('ask', 'Lệnh trong sandbox không thuộc nhóm phát triển đã được cấp trước.', { category: 'command' });
+        if (commandClass === 'dependency-install' && String(action.network ?? 'deny') !== 'allowlisted') return decision('ask', 'Cài dependency trong sandbox chỉ tự động với mạng bị chặn hoặc allowlist.', { category: 'network' });
+      }
+      return decision('allow', 'Hành động nằm trong sandbox cô lập và thuộc nhóm đã được cấp trước.', { category: 'sandbox' });
     }
 
     if (!context.withinWorkspace || !context.inManagedWorktree) {
@@ -135,7 +140,7 @@ export class AutonomyPolicy {
     if (kind === 'process.run' || kind === 'process.startManaged') {
       const commandClass = String(action.commandClass ?? 'arbitrary');
       if (!WORKSPACE_COMMANDS.has(commandClass)) return decision('ask', 'Lệnh không thuộc nhóm phát triển đã được cấp trước.', { category: 'command' });
-      if (commandClass === 'dependency-install' && !['deny', 'allowlisted'].includes(String(action.network ?? 'deny'))) {
+      if (commandClass === 'dependency-install' && String(action.network ?? 'deny') !== 'allowlisted') {
         return decision('ask', 'Cài dependency chỉ được tự động với mạng bị chặn hoặc allowlist.', { category: 'network' });
       }
     }

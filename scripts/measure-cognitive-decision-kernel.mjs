@@ -64,7 +64,7 @@ export async function measureCognitiveDecisionKernel({ rootDirectory = process.c
   kernel.observe(taskId, { eventId: 'evidence-2', type: 'falsify-hypothesis', hypothesisId: 'units' });
   kernel.observe(taskId, { eventId: 'error-1', type: 'error', error: { category: 'missing-binary', code: 'ENOENT' } });
   kernel.observe(taskId, { eventId: 'strategy-1', type: 'strategy-failure', strategyFingerprint: 'repeat-broad-rewrite', failureReceiptId: 'failure-receipt-1' });
-  kernel.observe(taskId, {
+  const unverifiedAgencyObservation = kernel.observe(taskId, {
     eventId: 'agency-1', type: 'agency', agency: {
       actionId: 'action-1', taskId, intent: 'restart test server', commandKind: 'process-restart',
       commandFingerprint: 'sha256:measurement-command', expectedEffect: 'new listener appears', actualEffect: 'old listener remained',
@@ -99,7 +99,7 @@ export async function measureCognitiveDecisionKernel({ rootDirectory = process.c
   const missingBinary = router.route({ category: 'missing-binary', code: 'ENOENT' });
   const staleMemory = router.route({ category: 'stale-symbol-memory', code: 'STALE_SYMBOL' });
   const agencySnapshot = kernel.agency.snapshot();
-  const agencyEntry = agencySnapshot.entries.find((entry) => entry.actionId === 'action-1');
+  const agencyEntry = agencySnapshot.entries.find((entry) => entry.actionId === 'action-2');
   const source = await readFile(path.join(root, 'src/app.mjs'), 'utf8');
   const base = {
     schema: 'forge.studio.cognitive-decision-kernel-measurement.v1',
@@ -130,8 +130,12 @@ export async function measureCognitiveDecisionKernel({ rootDirectory = process.c
       unrelatedSubsystemsMasked: missingBinary.claims.unrelatedSubsystemsMasked,
     },
     agency: {
-      expectedActualMismatch: agencyEntry?.expectedEffect !== agencyEntry?.actualEffect,
+      unverifiedClaimExcluded: agencySnapshot.entries.every((entry) => entry.actionId !== 'action-1'),
+      unverifiedClaimReceiptSha256: unverifiedAgencyObservation.effects.agencyClaim ?? null,
+      verifiedEffectReceiptBound: agencyEntry?.effectVerificationReceiptSha256 === secondVerified.effectVerification.receiptSha256,
+      expectedVerifiedMismatch: agencyEntry?.expectedEffect !== agencyEntry?.verifiedEffect,
       controllability: agencyEntry?.controllability ?? null,
+      learningEligible: agencyEntry?.learningEligible ?? false,
       rawCommandStored: agencyEntry?.claims.rawCommandStored ?? true,
       receiptSha256: agencyEntry?.receiptSha256 ?? null,
     },

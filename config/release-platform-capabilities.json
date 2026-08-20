@@ -1,0 +1,39 @@
+{
+  "schema": "nolane.release-platform-capabilities.v1",
+  "authority": "release-workflow-and-electron-builder",
+  "platforms": {
+    "win32": {
+      "label": "Windows",
+      "packageKinds": ["nsis"],
+      "artifactPatterns": ["NolaneAgent-Setup-${version}-x64.exe"],
+      "signing": { "status": "conditional", "mechanism": "Authenticode", "evidenceRequired": "release signing secret plus signature verification receipt" },
+      "notarization": { "status": "not-applicable", "mechanism": null },
+      "updateTrust": { "enabled": true, "mechanism": "Ed25519-signed nolane.agent.update.v2 manifest" },
+      "inAppUpdateHandoff": { "enabled": true, "mechanism": "nolane-signed-nsis", "reason": null },
+      "nativeInstallHandoff": { "enabled": true, "mechanism": "nsis", "reason": null },
+      "recovery": { "preUpdateSnapshot": true, "migrationJournal": true, "postUpdateHealth": true, "realUpdateReplay": "external-gate" }
+    },
+    "darwin": {
+      "label": "macOS",
+      "packageKinds": ["dmg", "zip"],
+      "artifactPatterns": ["NolaneAgent-${version}-x64.dmg", "NolaneAgent-${version}-x64.zip"],
+      "signing": { "status": "conditional", "mechanism": "electron-builder CSC", "evidenceRequired": "release signing receipt" },
+      "notarization": { "status": "unknown", "mechanism": null },
+      "updateTrust": { "enabled": true, "mechanism": "electron-updater GitHub Releases metadata plus macOS code-signing verification" },
+      "inAppUpdateHandoff": { "enabled": true, "mechanism": "electron-updater-github", "reason": null },
+      "nativeInstallHandoff": { "enabled": true, "mechanism": "electron-updater-github", "reason": null },
+      "recovery": { "preUpdateSnapshot": true, "migrationJournal": true, "postUpdateHealth": true, "realUpdateReplay": "external-gate" }
+    },
+    "linux": {
+      "label": "Linux",
+      "packageKinds": ["appimage", "deb"],
+      "artifactPatterns": ["NolaneAgent-${version}-x64.AppImage", "NolaneAgent-${version}-x64.deb"],
+      "signing": { "status": "unknown", "mechanism": null, "evidenceRequired": "platform-specific package signing receipt" },
+      "notarization": { "status": "not-applicable", "mechanism": null },
+      "updateTrust": { "enabled": true, "mechanism": "electron-updater GitHub Releases metadata" },
+      "inAppUpdateHandoff": { "enabled": true, "mechanism": "electron-updater-github", "reason": null },
+      "nativeInstallHandoff": { "enabled": true, "mechanism": "electron-updater-github", "reason": null },
+      "recovery": { "preUpdateSnapshot": true, "migrationJournal": true, "postUpdateHealth": true, "realUpdateReplay": "external-gate" }
+    }
+  }
+}

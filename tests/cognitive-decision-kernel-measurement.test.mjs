@@ -9,5 +9,8 @@ test('current cognitive measurement supplies independent effect receipts for den
   assert.equal(report.commit.deniedBeforeEvidence, true);
   assert.deepEqual(report.commit.deniedReasons, ['tool-effect-false-success']);
   assert.equal(report.commit.allowedAfterEvidence, true);
+  assert.equal(report.agency.unverifiedClaimExcluded, true);
+  assert.match(report.agency.unverifiedClaimReceiptSha256, /^[a-f0-9]{64}$/);
+  assert.equal(report.agency.verifiedEffectReceiptBound, true);
   assert.match(report.receiptSha256, /^[a-f0-9]{64}$/);
 });

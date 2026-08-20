@@ -1,15 +1,42 @@
 import { createHash } from 'node:crypto';
+import { lookup as lookupHost } from 'node:dns/promises';
 import { mkdir, readFile, stat } from 'node:fs/promises';
+import { isIP } from 'node:net';
 import path from 'node:path';
 import { redactSecrets } from '../security/redaction.mjs';
 
 function required(value, label, max = 100_000) { const text = String(value ?? '').trim(); if (!text) throw new TypeError(`${label} is required`); if (text.length > max) throw new TypeError(`${label} is too long`); return text; }
 function sessionName(projectId) { const slug = String(projectId).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 24) || 'project'; const hash = createHash('sha256').update(String(projectId)).digest('hex').slice(0, 8); return `forge-${slug}-${hash}`; }
-function safeUrl(value) {
+function privateAddress(value) {
+  const address = String(value ?? '').trim().toLowerCase().replace(/^\[|\]$/g, '');
+  const family = isIP(address);
+  if (family === 4) {
+    const [first, second] = address.split('.').map(Number);
+    return first === 0 || first === 10 || first === 127 || first >= 224
+      || (first === 100 && second >= 64 && second <= 127)
+      || (first === 169 && second === 254)
+      || (first === 172 && second >= 16 && second <= 31)
+      || (first === 192 && second === 168);
+  }
+  if (family === 6) {
+    const mapped = /^::ffff:(.+)$/.exec(address);
+    return address === '::' || address === '::1' || /^(?:fc|fd|fe[89ab])/.test(address) || Boolean(mapped && privateAddress(mapped[1]));
+  }
+  return false;
+}
+
+async function safeUrl(value, { lookup = lookupHost } = {}) {
   const raw = required(value ?? 'about:blank', 'browser URL', 16_384);
   if (raw === 'about:blank') return raw;
   let url; try { url = new URL(raw); } catch { throw new TypeError('browser URL is invalid'); }
-  if (!['http:', 'https:'].includes(url.protocol)) throw new TypeError(`browser URL protocol is not allowed: ${url.protocol}`);
+  if (!['http:', 'https:'].includes(url.protocol)) throw new TypeError('browser URL protocol is not allowed: ' + url.protocol);
+  const hostname = url.hostname.toLowerCase().replace(/^\[|\]$/g, '');
+  if (hostname === 'localhost' || hostname.endsWith('.localhost') || privateAddress(hostname)) throw new TypeError('browser URL targets a private or local address');
+  if (!isIP(hostname)) {
+    let addresses;
+    try { addresses = await lookup(hostname, { all: true, verbatim: true }); } catch { throw new TypeError('browser URL host cannot be resolved'); }
+    if (!Array.isArray(addresses) || addresses.length === 0 || addresses.some((entry) => privateAddress(entry?.address))) throw new TypeError('browser URL resolves to a private or local address');
+  }
   url.username = ''; url.password = '';
   return url.toString();
 }
@@ -28,7 +55,7 @@ function outputView(result, maxOutputBytes) {
 }
 
 export class BrowserAgentService {
-  constructor({ driver, leasePool = null, journeyRecorder = null, browserRoot, getProject, maxOutputBytes = 500_000, timeoutMs = 60_000 } = {}) {
+  constructor({ driver, leasePool = null, journeyRecorder = null, browserRoot, getProject, lookup = lookupHost, maxOutputBytes = 500_000, timeoutMs = 60_000 } = {}) {
     if (!driver?.detect || !driver?.run) throw new TypeError('browser driver is required');
     if (leasePool !== null && typeof leasePool?.run !== 'function') throw new TypeError('leasePool must expose run()');
     if (typeof getProject !== 'function') throw new TypeError('getProject is required');
@@ -38,6 +65,8 @@ export class BrowserAgentService {
     this.journeyRecorder = journeyRecorder;
     this.browserRoot = path.resolve(required(browserRoot, 'browserRoot'));
     this.getProject = getProject;
+    if (typeof lookup !== 'function') throw new TypeError('browser host lookup must be a function');
+    this.lookup = lookup;
     this.maxOutputBytes = Math.max(4_096, Number(maxOutputBytes) || 500_000);
     this.timeoutMs = Math.max(1_000, Number(timeoutMs) || 60_000);
   }
@@ -71,7 +100,7 @@ export class BrowserAgentService {
 
   async detect() { return this.driver.detect(); }
   async open({ projectId, url = 'about:blank', headed = true, persistent = true, mobile = false, leaseContext = null, signal = null } = {}) {
-    const normalizedUrl = safeUrl(url);
+    const normalizedUrl = await safeUrl(url, { lookup: this.lookup });
     return this.#withLease(projectId, { leaseContext, signal, action: 'open' }, async () => {
       const ctx = await this.#context(projectId); const args = ['open', normalizedUrl];
       if (persistent) args.push('--persistent', `--profile=${ctx.profile}`); if (headed) args.push('--headed'); if (mobile) args.push('--mobile');
@@ -80,7 +109,9 @@ export class BrowserAgentService {
       return Object.freeze({ available: true, sessionName: ctx.sessionName, url: normalizedUrl, headed: Boolean(headed), persistent: Boolean(persistent), ...outputView(result, this.maxOutputBytes) });
     });
   }
-  async goto({ projectId, url, leaseContext = null, signal = null } = {}) { return this.#run(projectId, ['goto', safeUrl(url)], { leaseContext, signal, action: 'goto' }); }
+  async goto({ projectId, url, leaseContext = null, signal = null } = {}) {
+    return this.#run(projectId, ['goto', await safeUrl(url, { lookup: this.lookup })], { leaseContext, signal, action: 'goto' });
+  }
   async snapshot({ projectId, depth = 4, target = null, leaseContext = null, signal = null } = {}) { const safeDepth = Math.max(1, Math.min(12, Number(depth) || 4)); return this.#run(projectId, ['snapshot', ...(target ? [safeTarget(target)] : []), `--depth=${safeDepth}`], { leaseContext, signal, action: 'snapshot' }); }
   async find({ projectId, query, regex = false, leaseContext = null, signal = null } = {}) { return this.#run(projectId, ['find', ...(regex ? ['--regex'] : []), required(query, 'browser find query', 5_000)], { leaseContext, signal, action: 'find' }); }
   async click({ projectId, target, button = null, leaseContext = null, signal = null } = {}) { return this.#run(projectId, ['click', safeTarget(target), ...(button ? [required(button, 'mouse button', 32)] : [])], { leaseContext, signal, action: 'click' }); }

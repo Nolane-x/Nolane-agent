@@ -16887,7 +16887,7 @@
     "not_implemented": 0,
     "verified": 873
   },
-  "catalogReceiptSha256": "4e87add77c3de1df0921b9bc8a04b5925071e7e437735d9663eeb3e3b6fa063c",
+  "catalogReceiptSha256": "cd8f8ec36edb03b9050401f241de2ee80c491a19cdd2d40255493b7e0d3f41e9",
   "evidence": [
     {
       "candidateFiles": 5,
@@ -17080,7 +17080,7 @@
         {
           "contains": "PromptTierAssembler",
           "path": "src/agent/context-builder.mjs",
-          "sha256": "f9a1c8251d833546f4ae36d3be37623f7c8b10352bd7e2d09f75c3e10d9f88b4"
+          "sha256": "65f8def289b63a6a55618cc47c20897ee01b8e956938d500fedeaa681686e0d0"
         }
       ],
       "status": "verified",
@@ -17225,7 +17225,7 @@
       "entrypoints": [
         {
           "path": "src/providers/provider-registry.mjs",
-          "sha256": "6a04e6b0f2cf1674b87b88252a99f1a098022f115d76120cc16c0c78ea4e7d06"
+          "sha256": "abdcc5f3805fc1340ee397149253f28225865b00b63664035ce92d65b8e5a25a"
         }
       ],
       "externalCondition": "Run each provider adapter with real credentials or local endpoint and attach replayable request, usage, rate-limit and cancellation receipts.",
@@ -17233,21 +17233,21 @@
       "negativeTests": [
         {
           "path": "tests/direct-api-providers.test.mjs",
-          "sha256": "356221c91df05e609c163f09a23b5ed739b358df83e3761f8ae479c6e7dfe6e9"
+          "sha256": "0d9c3df27a9e47d2db95226aab26b43236880ab73172f479b5dee4f46bc94649"
         }
       ],
       "productionWiring": [
         {
           "contains": "new ProviderRegistry",
           "path": "src/app.mjs",
-          "sha256": "0a52f0062c872b07b546359a9e80a9b3504c86c17658cea4e2de81618d50d241"
+          "sha256": "2cf85d985ae12c3708f14e59ef37bcb9351b7d586f825c50abfe21dd5d3e28ee"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/direct-api-providers.test.mjs",
-          "sha256": "356221c91df05e609c163f09a23b5ed739b358df83e3761f8ae479c6e7dfe6e9"
+          "sha256": "0d9c3df27a9e47d2db95226aab26b43236880ab73172f479b5dee4f46bc94649"
         }
       ],
       "title": "Provider-specific transports and real credential execution",
@@ -17660,7 +17660,7 @@
         {
           "contains": "ToolExecutionFabric",
           "path": "src/execution/tool-broker.mjs",
-          "sha256": "faaf587b28767e01ee72b5a9c370a589792637e36397aed58d491a6708180916"
+          "sha256": "cf0287ff3a655c86e29cf3aedb979c8987e0bfa914910f8b45dfcdc1b797005e"
         }
       ],
       "status": "verified",
@@ -17775,7 +17775,7 @@
         {
           "contains": "new LocalResourceSandboxService",
           "path": "src/app.mjs",
-          "sha256": "0a52f0062c872b07b546359a9e80a9b3504c86c17658cea4e2de81618d50d241"
+          "sha256": "2cf85d985ae12c3708f14e59ef37bcb9351b7d586f825c50abfe21dd5d3e28ee"
         }
       ],
       "status": "external_gate",
@@ -17840,7 +17840,7 @@
         {
           "contains": "new FileService",
           "path": "src/app.mjs",
-          "sha256": "0a52f0062c872b07b546359a9e80a9b3504c86c17658cea4e2de81618d50d241"
+          "sha256": "2cf85d985ae12c3708f14e59ef37bcb9351b7d586f825c50abfe21dd5d3e28ee"
         }
       ],
       "status": "verified",
@@ -17900,7 +17900,7 @@
         {
           "contains": "CodeIntelligenceService.pooled",
           "path": "src/app.mjs",
-          "sha256": "0a52f0062c872b07b546359a9e80a9b3504c86c17658cea4e2de81618d50d241"
+          "sha256": "2cf85d985ae12c3708f14e59ef37bcb9351b7d586f825c50abfe21dd5d3e28ee"
         }
       ],
       "status": "verified",
@@ -17990,7 +17990,7 @@
         {
           "contains": "MediaCoreRuntimeWave14",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -18090,7 +18090,7 @@
         {
           "contains": "TrustCoreRuntimeWave13",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -18150,7 +18150,7 @@
         {
           "contains": "TrustCoreRuntimeWave13",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -18245,7 +18245,7 @@
         {
           "contains": "AdapterEcosystemRuntimeWave12",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -18295,7 +18295,7 @@
         {
           "contains": "AdapterEcosystemRuntimeWave12",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -18335,7 +18335,7 @@
         {
           "contains": "AdapterEcosystemRuntimeWave12",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -18385,7 +18385,7 @@
         {
           "contains": "AdapterEcosystemRuntimeWave12",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -18430,7 +18430,7 @@
         {
           "contains": "AdapterEcosystemRuntimeWave12",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -18475,7 +18475,7 @@
         {
           "contains": "BrowserEngineWave11",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -18545,7 +18545,7 @@
       "entrypoints": [
         {
           "path": "src/browser/browser-agent-service.mjs",
-          "sha256": "b9f8733785d30f67acaff01f4fcd8f021692cf9c0ef801b1eba6429bb8d1af49"
+          "sha256": "406faa9a2c33340978055d5c3230d3aeb5a200d344590dee1ffe5447a72294fe"
         }
       ],
       "externalCondition": "Run Playwright/CDP, search-provider and computer-use journeys on a real desktop/browser with visual, download and permission receipts.",
@@ -18553,21 +18553,21 @@
       "negativeTests": [
         {
           "path": "tests/browser-agent-service.test.mjs",
-          "sha256": "c98714530dda30d258f0c32219de27887de10edddc50f9bc6ff0fd3859b2cf75"
+          "sha256": "1dc730e4d2f5b0bde3db39ef6f739055a9a84dd45b0a1b6919864cedcf05dcf3"
         }
       ],
       "productionWiring": [
         {
           "contains": "new BrowserAgentService",
           "path": "src/app.mjs",
-          "sha256": "0a52f0062c872b07b546359a9e80a9b3504c86c17658cea4e2de81618d50d241"
+          "sha256": "2cf85d985ae12c3708f14e59ef37bcb9351b7d586f825c50abfe21dd5d3e28ee"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/browser-agent-service.test.mjs",
-          "sha256": "c98714530dda30d258f0c32219de27887de10edddc50f9bc6ff0fd3859b2cf75"
+          "sha256": "1dc730e4d2f5b0bde3db39ef6f739055a9a84dd45b0a1b6919864cedcf05dcf3"
         }
       ],
       "title": "Browser and computer-use actions with approvals and bounded output",
@@ -18770,7 +18770,7 @@
         {
           "contains": "SessionMemoryLearningFabric",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -18810,7 +18810,7 @@
         {
           "contains": "SessionMemoryLearningFabric",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -18880,7 +18880,7 @@
         {
           "contains": "NativeAdapterTck",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "external_gate",
@@ -19060,7 +19060,7 @@
         {
           "contains": "ExtensionAutomationFabric",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -19100,7 +19100,7 @@
         {
           "contains": "NativeAdapterTck",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -19155,7 +19155,7 @@
         {
           "contains": "NativeAdapterTck",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "external_gate",
@@ -19205,7 +19205,7 @@
         {
           "contains": "ExtensionAutomationFabric",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -19245,7 +19245,7 @@
         {
           "contains": "ExtensionAutomationFabric",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -19340,7 +19340,7 @@
         {
           "contains": "NativeAdapterTck",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "external_gate",
@@ -19380,7 +19380,7 @@
         {
           "contains": "ExtensionAutomationFabric",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -19435,7 +19435,7 @@
         {
           "contains": "MixtureOfAgentsCoordinator",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -19480,7 +19480,7 @@
         {
           "contains": "GatewayApiSurface",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -19630,7 +19630,7 @@
         {
           "contains": "NativeAdapterTck",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "external_gate",
@@ -20240,7 +20240,7 @@
         {
           "contains": "/api/nolane/native-core/status",
           "path": "src/server/routes.mjs",
-          "sha256": "98a3e2be6709e51e93e79dbfb0aaa860ecdcf96b4e2eea2fc8a53b699b78321c"
+          "sha256": "95144dcc76e35f230639b513a4bb260eef3a69ef39cea38d5d117bafad55f71b"
         }
       ],
       "status": "verified",
@@ -20350,7 +20350,7 @@
         {
           "contains": "GatewayApiSurface",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -20620,7 +20620,7 @@
         {
           "contains": "OperationsSecurityFabric",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -20695,7 +20695,7 @@
         {
           "contains": "NativeAdapterTck",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "external_gate",
@@ -20740,7 +20740,7 @@
         {
           "contains": "OperationsSecurityFabric",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -20815,7 +20815,7 @@
         {
           "contains": "OperationsSecurityFabric",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "external_gate",
@@ -20935,7 +20935,7 @@
         {
           "contains": "/api/nolane/native-core/status",
           "path": "src/server/routes.mjs",
-          "sha256": "98a3e2be6709e51e93e79dbfb0aaa860ecdcf96b4e2eea2fc8a53b699b78321c"
+          "sha256": "95144dcc76e35f230639b513a4bb260eef3a69ef39cea38d5d117bafad55f71b"
         }
       ],
       "status": "verified",
@@ -21020,7 +21020,7 @@
         {
           "contains": "new TerminalManager",
           "path": "src/app.mjs",
-          "sha256": "0a52f0062c872b07b546359a9e80a9b3504c86c17658cea4e2de81618d50d241"
+          "sha256": "2cf85d985ae12c3708f14e59ef37bcb9351b7d586f825c50abfe21dd5d3e28ee"
         }
       ],
       "status": "verified",
@@ -21065,7 +21065,7 @@
       "entrypoints": [
         {
           "path": "desktop/main.cjs",
-          "sha256": "c065778aa2d580b9e2babb87afb88dd4dfa272d633ae6064c8d066db9ea33469"
+          "sha256": "2f722cb8d4eeee8917ee13214753418d93feb83a7e37e212245c8ade13c899db"
         }
       ],
       "externalCondition": "Build and execute the signed NSIS installer on Windows, then attach update, performance, accessibility and recovery receipts.",
@@ -21080,7 +21080,7 @@
         {
           "contains": "BrowserWindow",
           "path": "desktop/main.cjs",
-          "sha256": "c065778aa2d580b9e2babb87afb88dd4dfa272d633ae6064c8d066db9ea33469"
+          "sha256": "2f722cb8d4eeee8917ee13214753418d93feb83a7e37e212245c8ade13c899db"
         }
       ],
       "status": "external_gate",
@@ -24510,7 +24510,7 @@
         {
           "contains": "/api/nolane/native-core/status",
           "path": "src/server/routes.mjs",
-          "sha256": "98a3e2be6709e51e93e79dbfb0aaa860ecdcf96b4e2eea2fc8a53b699b78321c"
+          "sha256": "95144dcc76e35f230639b513a4bb260eef3a69ef39cea38d5d117bafad55f71b"
         }
       ],
       "status": "external_gate",
@@ -25425,7 +25425,7 @@
       "entrypoints": [
         {
           "path": "src/settings/settings-service.mjs",
-          "sha256": "57e319b28b8b1871bead7814d50c961757b68a2ad7531560ab1dfbc317b5d9aa"
+          "sha256": "39d180ebeded136ad19eee552cee4e07c229a83d2a4d82fb35998131c25545e6"
         }
       ],
       "externalCondition": null,
@@ -25433,7 +25433,7 @@
       "negativeTests": [
         {
           "path": "tests/settings-service.test.mjs",
-          "sha256": "9930e1a44a0694bdfc36260d774da0c0acba7ac919945816cf36e03d62ed431c"
+          "sha256": "14db0d80b23dc4a8f07b1b7cb7c7dbf59c0026459906cbcb05d86f0f884adf25"
         }
       ],
       "productionWiring": [
@@ -25447,7 +25447,7 @@
       "tests": [
         {
           "path": "tests/settings-service.test.mjs",
-          "sha256": "9930e1a44a0694bdfc36260d774da0c0acba7ac919945816cf36e03d62ed431c"
+          "sha256": "14db0d80b23dc4a8f07b1b7cb7c7dbf59c0026459906cbcb05d86f0f884adf25"
         }
       ],
       "title": "Layered settings, profiles, migrations and secret references",
@@ -25500,7 +25500,7 @@
         {
           "contains": "new UpdateService",
           "path": "src/app.mjs",
-          "sha256": "0a52f0062c872b07b546359a9e80a9b3504c86c17658cea4e2de81618d50d241"
+          "sha256": "2cf85d985ae12c3708f14e59ef37bcb9351b7d586f825c50abfe21dd5d3e28ee"
         }
       ],
       "status": "verified",
@@ -25525,7 +25525,7 @@
       "entrypoints": [
         {
           "path": "electron-builder.config.cjs",
-          "sha256": "1feafe4ada852cba5c2802159b05ebfafd4ea6356b84ec9f2c13f21377be8e40"
+          "sha256": "84b36f9bfe528638e6e4f19656a4c5f1330c6ff6f684aa520bbd192da0842958"
         }
       ],
       "externalCondition": "Build, install, upgrade, uninstall and recover on each supported operating system with data-preservation receipts.",
@@ -25533,21 +25533,21 @@
       "negativeTests": [
         {
           "path": "tests/electron-installer-config.test.mjs",
-          "sha256": "734c2f11064887e32d27e18fea6db5fc3f5e3a8276de2963fb232310ac1d686b"
+          "sha256": "7a84e660a8574ca9e42e859f24cf7f472f553c5ff9af3d8113dc9e6bb261fd90"
         }
       ],
       "productionWiring": [
         {
           "contains": "nsis",
           "path": "electron-builder.config.cjs",
-          "sha256": "1feafe4ada852cba5c2802159b05ebfafd4ea6356b84ec9f2c13f21377be8e40"
+          "sha256": "84b36f9bfe528638e6e4f19656a4c5f1330c6ff6f684aa520bbd192da0842958"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/electron-installer-config.test.mjs",
-          "sha256": "734c2f11064887e32d27e18fea6db5fc3f5e3a8276de2963fb232310ac1d686b"
+          "sha256": "7a84e660a8574ca9e42e859f24cf7f472f553c5ff9af3d8113dc9e6bb261fd90"
         }
       ],
       "title": "Installer and bootstrap journeys across supported operating systems",
@@ -25710,7 +25710,7 @@
         {
           "contains": "DelegationContextRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -25765,7 +25765,7 @@
         {
           "contains": "ProviderProtocolRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -25815,7 +25815,7 @@
         {
           "contains": "repositoryIndex.search",
           "path": "src/app.mjs",
-          "sha256": "0a52f0062c872b07b546359a9e80a9b3504c86c17658cea4e2de81618d50d241"
+          "sha256": "2cf85d985ae12c3708f14e59ef37bcb9351b7d586f825c50abfe21dd5d3e28ee"
         }
       ],
       "status": "verified",
@@ -25875,7 +25875,7 @@
         {
           "contains": "nativeOrchestration.attachRuntimeWave3",
           "path": "src/app.mjs",
-          "sha256": "0a52f0062c872b07b546359a9e80a9b3504c86c17658cea4e2de81618d50d241"
+          "sha256": "2cf85d985ae12c3708f14e59ef37bcb9351b7d586f825c50abfe21dd5d3e28ee"
         }
       ],
       "status": "verified",
@@ -25915,7 +25915,7 @@
         {
           "contains": "/api/nolane/native-core/acp",
           "path": "src/server/routes.mjs",
-          "sha256": "98a3e2be6709e51e93e79dbfb0aaa860ecdcf96b4e2eea2fc8a53b699b78321c"
+          "sha256": "95144dcc76e35f230639b513a4bb260eef3a69ef39cea38d5d117bafad55f71b"
         }
       ],
       "status": "verified",
@@ -25965,7 +25965,7 @@
         {
           "contains": "GatewayAdapterRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -26130,7 +26130,7 @@
         {
           "contains": "/api/nolane/native-core/commands/execute",
           "path": "src/server/routes.mjs",
-          "sha256": "98a3e2be6709e51e93e79dbfb0aaa860ecdcf96b4e2eea2fc8a53b699b78321c"
+          "sha256": "95144dcc76e35f230639b513a4bb260eef3a69ef39cea38d5d117bafad55f71b"
         }
       ],
       "status": "verified",
@@ -26275,7 +26275,7 @@
         {
           "contains": "UsageObservabilityRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -26330,7 +26330,7 @@
         {
           "contains": "AgentBehaviorRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -26450,7 +26450,7 @@
         {
           "contains": "SessionLifecycleRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -26665,7 +26665,7 @@
         {
           "contains": "ToolGovernanceRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -26770,7 +26770,7 @@
         {
           "contains": "ProfileConfigurationRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -27085,7 +27085,7 @@
         {
           "contains": "/api/nolane/native-core/oauth/begin",
           "path": "src/server/routes.mjs",
-          "sha256": "98a3e2be6709e51e93e79dbfb0aaa860ecdcf96b4e2eea2fc8a53b699b78321c"
+          "sha256": "95144dcc76e35f230639b513a4bb260eef3a69ef39cea38d5d117bafad55f71b"
         }
       ],
       "status": "verified",
@@ -27155,7 +27155,7 @@
         {
           "contains": "LocalObservabilityRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -27205,7 +27205,7 @@
         {
           "contains": "SkillBundleRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -27260,7 +27260,7 @@
         {
           "contains": "DashboardAuthRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -27310,7 +27310,7 @@
         {
           "contains": "/api/nolane/native-core/session-search",
           "path": "src/server/routes.mjs",
-          "sha256": "98a3e2be6709e51e93e79dbfb0aaa860ecdcf96b4e2eea2fc8a53b699b78321c"
+          "sha256": "95144dcc76e35f230639b513a4bb260eef3a69ef39cea38d5d117bafad55f71b"
         }
       ],
       "status": "verified",
@@ -27350,7 +27350,7 @@
         {
           "contains": "JsonFastPathRuntime",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -27390,7 +27390,7 @@
         {
           "contains": "beginNativeMcpOAuth",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -27440,7 +27440,7 @@
         {
           "contains": "executeNativeSupervisedBrowser",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -27490,7 +27490,7 @@
         {
           "contains": "spawnNativeDelegation",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -27535,7 +27535,7 @@
         {
           "contains": "startNativePtySession",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -27580,7 +27580,7 @@
         {
           "contains": "heartbeatNativeGatewayHost",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -27650,7 +27650,7 @@
         {
           "contains": "putNativeLocalMedia",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -27730,7 +27730,7 @@
         {
           "contains": "ProviderTransportRuntimeWave9",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -27775,7 +27775,7 @@
         {
           "contains": "ProviderTransportRuntimeWave9",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -27815,7 +27815,7 @@
         {
           "contains": "ProviderTransportRuntimeWave9",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -27855,7 +27855,7 @@
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -27920,7 +27920,7 @@
         {
           "contains": "ProviderTransportRuntimeWave9",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -27970,7 +27970,7 @@
         {
           "contains": "SessionProductRuntimeWave8",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -28030,7 +28030,7 @@
         {
           "contains": "ExecutionRuntimeWave7",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -28075,7 +28075,7 @@
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -28150,7 +28150,7 @@
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -28280,7 +28280,7 @@
         {
           "contains": "EntitlementPolicy",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -28350,7 +28350,7 @@
         {
           "contains": "ExecutionRuntimeWave7",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -28400,7 +28400,7 @@
         {
           "contains": "GatewayMessagingRuntimeWave10",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -28460,7 +28460,7 @@
         {
           "contains": "GatewayMessagingRuntimeWave10",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -28540,7 +28540,7 @@
         {
           "contains": "GatewayMessagingRuntimeWave10",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -28590,7 +28590,7 @@
         {
           "contains": "TrustCoreRuntimeWave13",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -28630,7 +28630,7 @@
         {
           "contains": "GatewayMessagingRuntimeWave10",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -28700,7 +28700,7 @@
         {
           "contains": "GatewayMessagingRuntimeWave10",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -28795,7 +28795,7 @@
         {
           "contains": "GatewayMessagingRuntimeWave10",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -28875,7 +28875,7 @@
         {
           "contains": "MediaCoreRuntimeWave14",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -28950,7 +28950,7 @@
         {
           "contains": "ExecutionRuntimeWave7",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -29010,7 +29010,7 @@
         {
           "contains": "ProviderTransportRuntimeWave9",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -29050,7 +29050,7 @@
         {
           "contains": "MediaCoreRuntimeWave14",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -29110,7 +29110,7 @@
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -29200,7 +29200,7 @@
         {
           "contains": "AdapterEcosystemRuntimeWave12",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -29240,7 +29240,7 @@
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -29320,7 +29320,7 @@
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -29395,7 +29395,7 @@
         {
           "contains": "TrustCoreRuntimeWave13",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -29450,7 +29450,7 @@
         {
           "contains": "SessionProductRuntimeWave8",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -29515,7 +29515,7 @@
         {
           "contains": "SessionProductRuntimeWave8",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -29560,7 +29560,7 @@
         {
           "contains": "SessionProductRuntimeWave8",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -29640,7 +29640,7 @@
         {
           "contains": "SessionProductRuntimeWave8",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -29710,7 +29710,7 @@
         {
           "contains": "SessionProductRuntimeWave8",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -29750,7 +29750,7 @@
         {
           "contains": "SessionProductRuntimeWave8",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -29865,7 +29865,7 @@
         {
           "contains": "SessionProductRuntimeWave8",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -29910,7 +29910,7 @@
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -29960,7 +29960,7 @@
         {
           "contains": "ExecutionRuntimeWave7",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -30035,7 +30035,7 @@
         {
           "contains": "ToolExecutionFabric",
           "path": "src/execution/tool-broker.mjs",
-          "sha256": "faaf587b28767e01ee72b5a9c370a589792637e36397aed58d491a6708180916"
+          "sha256": "cf0287ff3a655c86e29cf3aedb979c8987e0bfa914910f8b45dfcdc1b797005e"
         }
       ],
       "status": "external_gate",
@@ -30105,7 +30105,7 @@
         {
           "contains": "ExecutionRuntimeWave7",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -30195,7 +30195,7 @@
         {
           "contains": "ToolExecutionFabric",
           "path": "src/execution/tool-broker.mjs",
-          "sha256": "faaf587b28767e01ee72b5a9c370a589792637e36397aed58d491a6708180916"
+          "sha256": "cf0287ff3a655c86e29cf3aedb979c8987e0bfa914910f8b45dfcdc1b797005e"
         }
       ],
       "status": "external_gate",
@@ -30335,7 +30335,7 @@
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -30920,7 +30920,7 @@
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -31035,7 +31035,7 @@
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -31115,7 +31115,7 @@
         {
           "contains": "MediaCoreRuntimeWave14",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -31175,7 +31175,7 @@
         {
           "contains": "ProductConfigurationRuntimeWave15",
           "path": "src/nolane-native/orchestration-service.mjs",
-          "sha256": "19c15d5de531147aaf774e3ff84e9a4f87edee4d7551d7f49e9cb4bec0133374"
+          "sha256": "05143f7b14a1fdfe635da7a09d48bcdfea6316e3f21046479b95ced5f71d94ce"
         }
       ],
       "status": "verified",
@@ -31465,8 +31465,8 @@
       ]
     }
   ],
-  "productVersion": "5.0.0-beta.7",
-  "receiptSha256": "a66514eb6ab94bdb332ed1aee060fce94bf9b6e389f84d28a50b6ff24ddbf23f",
+  "productVersion": "0.0.0",
+  "receiptSha256": "752cdaf5fac89eea1e2c1e02383480a55800c1f2faa2cb223bcd352c3aa42551",
   "schema": "nolane.native-core.conformance-receipt.v1",
   "status": "pass",
   "summary": {

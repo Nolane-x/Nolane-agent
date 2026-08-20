@@ -19,6 +19,7 @@ test('canonical orchestration API delegates only typed bounded operations', asyn
     listSkills: async (options) => (listOptions = options, [{ id: 'repair' }]),
     skillCatalog: async (options) => (listOptions = options, { schema: 'nolane.agent.skill-hub-catalog.v1', readOnly: true, skills: [{ id: 'forgeos:v2:repair' }], counts: { total: 1 } }),
     loadSkill: async (id, body) => (calls.push(['load', id, body]), { id, receiptSha256: 'a'.repeat(64) }),
+    installForgeOsSkill: async (id) => (calls.push(['install', id]), { id, provenanceStatus: 'forge-os-imported', receiptSha256: 'e'.repeat(64) }),
     spawnSubagent: (body) => (calls.push(['spawn', body]), { agentId: body.agentId, status: 'running' }),
     completeSubagent: (id, body) => (calls.push(['complete', id, body]), { handoffSha256: 'b'.repeat(64) }),
     startGateway: async (id) => ({ id, status: 'running' }), stopGateway: async (id) => ({ id, status: 'stopped' }), gatewayStatus: (id) => ({ id, status: 'stopped' }),
@@ -36,9 +37,14 @@ test('canonical orchestration API delegates only typed bounded operations', asyn
   assert.equal(hub.readOnly, true);
   assert.equal(hub.skills[0].id, 'forgeos:v2:repair');
   assert.deepEqual(listOptions, { source: 'forge-os', catalog: 'v2', query: 'inspect', limit: 7 });
+  assert.equal((await fetch(`${server.url}/api/skills/catalog/forgeos%3Av2%3Arepair/install`, auth({ method: 'POST', body: '{}' }))).status, 400);
+  const installed = await fetch(`${server.url}/api/skills/catalog/forgeos%3Av2%3Arepair/install`, auth({ method: 'POST', body: JSON.stringify({ confirmed: true }) }));
+  assert.equal(installed.status, 201);
+  assert.equal((await installed.json()).provenanceStatus, 'forge-os-imported');
+  assert.deepEqual(calls.at(-1), ['install', 'forgeos:v2:repair']);
   assert.equal((await fetch(`${server.url}/api/nolane/orchestration/subagents`, auth({ method: 'POST', body: JSON.stringify({ agentId: 'a1' }) }))).status, 201);
   assert.equal((await fetch(`${server.url}/api/nolane/orchestration/messages`, auth({ method: 'POST', body: JSON.stringify({ channel: 'local', text: 'hello' }) }))).status, 201);
-  assert.equal(calls[0][0], 'spawn');
+  assert.ok(calls.some(([kind]) => kind === 'spawn'));
 });
 
 test('application opens and passes Nolane native orchestration service', async () => {
@@ -48,4 +54,5 @@ test('application opens and passes Nolane native orchestration service', async (
   assert.match(source, /await nativeOrchestration\.open\(\)/);
   assert.match(source, /forgeOsRoots: \[config\.forgeOsRoot\]/);
   assert.match(source, /nativeOrchestration,/);
+  assert.match(source, /skillContextResolver:\s*async \(id\) => nativeOrchestration\.loadSkill\(id, \{ grantedCapabilities: \[\] \}\)/);
 });

@@ -19,6 +19,11 @@ function likelihood(value, fallback, label) {
   return number;
 }
 
+function unit(value, fallback) {
+  const number = value === undefined ? fallback : Number(value);
+  return Math.max(0, Math.min(1, Number.isFinite(number) ? number : fallback));
+}
+
 function freeze(value) {
   if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
   for (const child of Object.values(value)) freeze(child);
@@ -43,10 +48,12 @@ function normalizedEntropy(items) {
 }
 
 export class ContextPosteriorManager {
-  constructor({ maxContexts = 5, maxNormalizedEntropyForMemory = 0.45, minLeaderProbabilityForMemory = 0.7, maxEvidencePerContext = 128 } = {}) {
+  constructor({ maxContexts = 5, maxNormalizedEntropyForMemory = 0.45, minLeaderProbabilityForMemory = 0.7, maxNormalizedEntropyForActionCommit, minLeaderProbabilityForActionCommit, maxEvidencePerContext = 128 } = {}) {
     this.maxContexts = Math.max(1, Math.min(16, Math.floor(Number(maxContexts) || 5)));
     this.maxNormalizedEntropyForMemory = Math.max(0, Math.min(1, Number(maxNormalizedEntropyForMemory) || 0));
     this.minLeaderProbabilityForMemory = Math.max(0, Math.min(1, Number(minLeaderProbabilityForMemory) || 0));
+    this.maxNormalizedEntropyForActionCommit = Math.max(this.maxNormalizedEntropyForMemory, unit(maxNormalizedEntropyForActionCommit, Math.max(this.maxNormalizedEntropyForMemory, 0.7)));
+    this.minLeaderProbabilityForActionCommit = Math.min(this.minLeaderProbabilityForMemory, unit(minLeaderProbabilityForActionCommit, Math.min(this.minLeaderProbabilityForMemory, 0.6)));
     this.maxEvidencePerContext = Math.max(1, Math.min(1_000, Math.floor(Number(maxEvidencePerContext) || 128)));
     this.tasks = new Map();
   }
@@ -104,6 +111,23 @@ export class ContextPosteriorManager {
     if ((leader?.probability ?? 0) < this.minLeaderProbabilityForMemory) reasons.push('leader-probability-low');
     return signed({
       schema: 'forge.context-memory-write-gate.v1',
+      taskId: snapshot.taskId,
+      allowed: reasons.length === 0,
+      reasons,
+      leaderContextId: leader?.id ?? null,
+      leaderProbability: leader?.probability ?? 0,
+      normalizedEntropy: snapshot.normalizedEntropy,
+    });
+  }
+
+  canCommitAction(taskId) {
+    const snapshot = this.snapshot(taskId);
+    const leader = snapshot.contexts[0];
+    const reasons = [];
+    if (snapshot.normalizedEntropy > this.maxNormalizedEntropyForActionCommit) reasons.push('posterior-dispersed');
+    if ((leader?.probability ?? 0) < this.minLeaderProbabilityForActionCommit) reasons.push('leader-probability-low');
+    return signed({
+      schema: 'forge.context-action-commit-gate.v1',
       taskId: snapshot.taskId,
       allowed: reasons.length === 0,
       reasons,

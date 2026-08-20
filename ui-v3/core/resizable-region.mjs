@@ -3,7 +3,7 @@ const REGION_KEY = Object.freeze({ sidebar: 'sidebarWidth', dock: 'dockWidth', b
 export function calculateResize({ region, start, delta }) { const key = REGION_KEY[region]; if (!key) throw new TypeError(`Unknown resize region: ${region}`); return clampLayoutValue(key, Number(start) + Number(delta)); }
 export function createResizableRegionController({ root = document, layoutStore, step = 16 } = {}) {
   if (!layoutStore) throw new TypeError('layoutStore is required'); let drag = null;
-  const apply = () => layoutStore.apply(root.documentElement ?? document.documentElement);
+  const apply = () => { const snapshot = layoutStore.apply(root.documentElement ?? document.documentElement); root.querySelectorAll?.('[data-resize-region]').forEach((handle) => { const key = REGION_KEY[handle.dataset.resizeRegion]; if (key) handle.setAttribute('aria-valuenow', String(snapshot[key])); }); return snapshot; };
   const pointerDown = (event) => { const handle = event.target.closest?.('[data-resize-region]'); if (!handle) return; const region = handle.dataset.resizeRegion; const snapshot = layoutStore.snapshot(); const key = REGION_KEY[region]; drag = { region, key, startValue: snapshot[key], startX: event.clientX, startY: event.clientY, pointerId: event.pointerId }; handle.setPointerCapture?.(event.pointerId); event.preventDefault(); };
   const pointerMove = (event) => { if (!drag) return; const delta = drag.region === 'bottom' ? drag.startY - event.clientY : event.clientX - drag.startX; const signed = drag.region === 'dock' ? -delta : delta; layoutStore.update({ [drag.key]: calculateResize({ region: drag.region, start: drag.startValue, delta: signed }) }); apply(); };
   const pointerUp = () => { drag = null; };

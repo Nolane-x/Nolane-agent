@@ -17,12 +17,21 @@ test('commit requires concentrated context dominant hypothesis bounded scope and
     scope: { files: 1, changedLines: 7 }, limits: { files: 2, changedLines: 80 }, verificationProbeId: 'test-1', blockedInvariantIds: [],
   });
   assert.equal(denied.allowed, false);
-  assert.ok(denied.reasons.includes('context-posterior-dispersed'));
+  assert.ok(denied.reasons.includes('action-posterior-dispersed'));
   const allowed = evaluateCommitGate({
     contextGate: { allowed: true }, dominantHypothesis: { id: 'h1', probability: 0.82, status: 'active' },
     scope: { files: 1, changedLines: 7 }, limits: { files: 2, changedLines: 80 }, verificationProbeId: 'test-1', blockedInvariantIds: [],
   });
   assert.equal(allowed.allowed, true);
+});
+
+test('uses the action-commit gate instead of the durable-memory gate', () => {
+  const result = evaluateCommitGate({
+    contextGate: { allowed: false }, actionGate: { allowed: true },
+    dominantHypothesis: { id: 'h1', probability: 0.8, status: 'active' },
+    scope: { files: 1, changedLines: 7 }, limits: { files: 2, changedLines: 80 }, verificationProbeId: 'test-1', blockedInvariantIds: [],
+  });
+  assert.equal(result.allowed, true);
 });
 
 test('stop is allowed after all criteria receipts or low remaining information gain', () => {

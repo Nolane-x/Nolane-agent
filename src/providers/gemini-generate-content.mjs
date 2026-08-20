@@ -1,5 +1,12 @@
 import { functionTool, normalizeMessages, postJson, required, resolveCredential, secureBaseUrl } from './http-provider-utils.mjs';
 
+function thinkingLevel(value) {
+  const level = String(value ?? '').trim().toUpperCase();
+  if (!level) return null;
+  if (level.length > 64 || !/^[A-Z0-9][A-Z0-9._-]*$/.test(level)) throw new TypeError('thinking level is invalid');
+  return level;
+}
+
 export class GeminiGenerateContentProvider {
   constructor({ id, model, baseUrl = 'https://generativelanguage.googleapis.com/v1beta', apiKey = null, credentialRef = null, credentialResolver = null, timeoutMs = 120_000, fetchImpl = fetch, profile = {} } = {}) {
     this.id = required(id, 'provider id'); this.kind = 'gemini-generate-content'; this.model = required(model, 'model'); this.baseUrl = secureBaseUrl(baseUrl, 'https://generativelanguage.googleapis.com/v1beta'); this.url = `${this.baseUrl}/models/${encodeURIComponent(this.model)}:generateContent`;
@@ -8,11 +15,12 @@ export class GeminiGenerateContentProvider {
   }
   publicView() { return Object.freeze({ id: this.id, kind: this.kind, label: 'Google Gemini API', model: this.model, baseUrl: this.baseUrl, ...this.profile }); }
   async detect() { try { await resolveCredential(this); return Object.freeze({ ...this.publicView(), available: true, authenticated: true, healthy: true }); } catch (error) { return Object.freeze({ ...this.publicView(), available: true, authenticated: false, healthy: false, error: String(error.message ?? error) }); } }
-  async complete({ messages = [], tools = [], signal = null } = {}) {
+  async complete({ messages = [], tools = [], signal = null, effort = null } = {}) {
     const key = await resolveCredential(this); const clean = normalizeMessages(messages);
+    const selectedThinkingLevel = thinkingLevel(effort);
     const system = clean.filter((item) => item.role === 'system' || item.role === 'developer').map((item) => item.content).join('\n\n');
     const contents = clean.filter((item) => item.role !== 'system' && item.role !== 'developer').map((item) => ({ role: item.role === 'assistant' ? 'model' : 'user', parts: [{ text: item.content }] }));
-    const body = { contents, ...(system ? { systemInstruction: { parts: [{ text: system }] } } : {}), ...(tools.length ? { tools: [{ functionDeclarations: tools.map((tool) => { const value = functionTool(tool); return { name: value.name, description: value.description, parametersJsonSchema: value.parameters }; }) }] } : {}) };
+    const body = { contents, ...(system ? { systemInstruction: { parts: [{ text: system }] } } : {}), ...(selectedThinkingLevel ? { generationConfig: { thinkingConfig: { thinkingLevel: selectedThinkingLevel } } } : {}), ...(tools.length ? { tools: [{ functionDeclarations: tools.map((tool) => { const value = functionTool(tool); return { name: value.name, description: value.description, parametersJsonSchema: value.parameters }; }) }] } : {}) };
     const payload = await postJson({ url: this.url, headers: { 'x-goog-api-key': key }, body, timeoutMs: this.timeoutMs, signal, fetchImpl: this.fetchImpl, secretValues: [key] });
     const candidate = payload.candidates?.[0] ?? {}; const parts = candidate.content?.parts ?? [];
     const text = parts.filter((part) => typeof part.text === 'string').map((part) => part.text).join('');

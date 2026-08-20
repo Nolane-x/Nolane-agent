@@ -10,7 +10,7 @@ import { StudioStore } from '../src/storage/studio-store.mjs';
 import { ProviderRegistry } from '../src/providers/provider-registry.mjs';
 import { createEvent } from '../src/protocol/events.mjs';
 
-async function fixture(t) {
+async function fixture(t, { host = '127.0.0.1', allowRemoteBinding = false } = {}) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-http-'));
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
   const providers = new ProviderRegistry();
@@ -18,7 +18,7 @@ async function fixture(t) {
   const calls = [];
   const projectService = { create(input) { calls.push(['createProject', input.name]); return store.createProject(input); } };
   const missionRunner = {
-    async plan({ projectId, objective, planner }) { const planned = await planner({ projectId, objective }); calls.push(['plan', projectId, objective, planned.summary]); const mission = store.createMission({ projectId, objective, status: 'running' }); return { ...mission, tasks: planned.tasks ?? [] }; },
+    async plan({ projectId, objective, planner, planningMetadata = {} }) { const planned = await planner({ projectId, objective }); calls.push(['plan', projectId, objective, planned.summary]); const mission = store.createMission({ projectId, objective, status: 'running', metadata: planningMetadata }); return { ...mission, tasks: planned.tasks ?? [] }; },
     async runNext(input) { calls.push(['runNext', input.missionId]); return { task: { id: 'task-1', status: 'review' }, result: { state: 'awaiting-verification' } }; },
     stop(id, reason) { calls.push(['stop', id, reason]); return store.updateMission(id, { status: 'stopped' }); },
     resume(id) { calls.push(['resume', id]); return store.updateMission(id, { status: 'running' }); },
@@ -40,7 +40,7 @@ async function fixture(t) {
   const evalRunner = { async runSuite(suite, options) { calls.push(['eval', suite.id, options.providerIds[0]]); return { suiteId: suite.id, reportSha256: 'e'.repeat(64), providers: { fake: { passRate: 1 } }, cases: [] }; } };
   const verificationRunner = { async runTask(taskId) { calls.push(['autoVerify', taskId]); return { taskId, status: 'pass', evidence: [{ kind: 'diff-check', status: 'pass', commit: 'abc', artifactSha256: 'a'.repeat(64), receiptSha256: 'b'.repeat(64) }] }; } };
   const autopilot = { async run(input) { calls.push(['autopilot', input.missionId, input.providerId, input.modelId ?? null, input.maxTasks]); return { missionId: input.missionId, status: 'completed', completedTasks: 3, reports: [] }; } };
-  const plannerService = { async plan(input) { calls.push(['intelligentPlan', input.providerId, input.modelId ?? null]); return { summary: 'AI plan', tasks: [{ id: 'review', title: 'Review', objective: input.objective, role: 'reviewer', dependencies: [], allowedPaths: ['**'], deniedPaths: ['.env'] }] }; } };
+  const plannerService = { async plan(input) { calls.push(['intelligentPlan', input.providerId, input.modelId ?? null, input.effort ?? null]); return { summary: 'AI plan', tasks: [{ id: 'review', title: 'Review', objective: input.objective, role: 'reviewer', dependencies: [], allowedPaths: ['**'], deniedPaths: ['.env'] }] }; } };
   const gitInspector = {
     async snapshot(input) {
       const projectId = String(input.projectId ?? '').trim();
@@ -117,8 +117,9 @@ async function fixture(t) {
   };
   await mkdir(path.join(root, 'xterm'), { recursive: true }); await writeFile(path.join(root, 'xterm', 'probe.mjs'), 'export const probe = true;');
   const service = await createHttpServer({
-    config: { host: '127.0.0.1', port: 0, authToken: 'test-token' }, store, providers, missionRunner, runCoordinator, projectService, webIntelligence,
+    config: { host, port: 0, authToken: 'test-token' }, store, providers, missionRunner, runCoordinator, projectService, webIntelligence,
     repositoryIndex, router, mcpRegistry, evalRunner, verificationRunner, plannerService, memoryService, gitInspector, browserService, browserPermissionService, autopilot, terminalManager, fileService, credentialVault, uiAssets, updateService, updatePreparation, instructionDiscovery, runtimeStatus, forgeBridge, uiRoot: path.resolve('ui'), uiAssetsRoot: root,
+    allowRemoteBinding,
   });
   t.after(() => service.close());
   t.after(() => rm(root, { recursive: true, force: true }));
@@ -133,15 +134,39 @@ test('HTTP server binds loopback, requires auth, sets CSP, and rejects traversal
   const health = await fetch(`${f.url}/health`); assert.equal(health.status, 200);
   assert.equal((await health.json()).status, 'ok');
   const unauthorized = await fetch(`${f.url}/api/projects`); assert.equal(unauthorized.status, 401);
-  const ui = await fetch(`${f.url}/?token=test-token`); assert.equal(ui.status, 200);
+  const ui = await fetch(`${f.url}/`); assert.equal(ui.status, 200);
   assert.match(ui.headers.get('content-security-policy'), /default-src 'self'/);
   assert.match(await ui.text(), /Nolane Agent/);
-  const traversal = await fetch(`${f.url}/..%2Fpackage.json?token=test-token`); assert.ok([400, 404].includes(traversal.status));
+  const traversal = await fetch(`${f.url}/..%2Fpackage.json`); assert.ok([400, 404].includes(traversal.status));
+  const tokenInQuery = await fetch(`${f.url}/api/projects?token=test-token`); assert.equal(tokenInQuery.status, 401);
   const moduleAsset = await fetch(`${f.url}/vendor-assets/xterm/probe.mjs`); assert.equal(moduleAsset.status, 200); assert.match(moduleAsset.headers.get('content-type'), /text\/javascript/);
+});
+
+test('local session bootstrap exchanges an authorization header for an HttpOnly same-site cookie', async (t) => {
+  const f = await fixture(t);
+  const bootstrap = await fetch(`${f.url}/api/local-session/bootstrap`, auth({ method: 'POST', body: '{}' }));
+  assert.equal(bootstrap.status, 200);
+  assert.deepEqual(await bootstrap.json(), { authenticated: true, transport: 'local-session-cookie' });
+  const setCookie = bootstrap.headers.get('set-cookie');
+  assert.match(setCookie, /^nolane_local_session=test-token;/);
+  assert.match(setCookie, /HttpOnly/);
+  assert.match(setCookie, /SameSite=Strict/);
+  const session = await fetch(`${f.url}/api/projects`, { headers: { cookie: setCookie.split(';')[0] } });
+  assert.equal(session.status, 200);
+});
+
+test('local session bootstrap refuses an explicitly remote-bound runtime', async (t) => {
+  const f = await fixture(t, { host: '0.0.0.0', allowRemoteBinding: true });
+  const localUrl = f.url.replace('0.0.0.0', '127.0.0.1');
+  const bootstrap = await fetch(`${localUrl}/api/local-session/bootstrap`, auth({ method: 'POST', body: '{}' }));
+  assert.equal(bootstrap.status, 403);
+  assert.equal((await bootstrap.json()).error, 'local-session-bootstrap-loopback-only');
 });
 
 test('project, task, provider, and mission endpoints execute real handlers', async (t) => {
   const f = await fixture(t);
+  const missingFolder = await fetch(`${f.url}/api/projects`, auth({ method: 'POST', body: JSON.stringify({ name: 'Missing', workspaceRoot: path.join(f.root, 'does-not-exist') }) }));
+  assert.equal(missingFolder.status, 400);
   const createdResponse = await fetch(`${f.url}/api/projects`, auth({ method: 'POST', body: JSON.stringify({ name: 'Demo', workspaceRoot: f.root }) }));
   assert.equal(createdResponse.status, 201);
   const project = await createdResponse.json();
@@ -174,7 +199,7 @@ test('SSE replays durable events and UI contains only wired action controls', as
   const f = await fixture(t);
   f.store.appendEvent(createEvent('test.event', { value: 7 }));
   const controller = new AbortController();
-  const response = await fetch(`${f.url}/events?token=test-token&after=0`, { signal: controller.signal });
+  const response = await fetch(`${f.url}/events?after=0`, { headers: { authorization: 'Bearer test-token' }, signal: controller.signal });
   assert.equal(response.status, 200);
   const reader = response.body.getReader();
   let text = '';
@@ -183,8 +208,8 @@ test('SSE replays durable events and UI contains only wired action controls', as
   assert.match(text, /event: test\.event/);
   assert.match(text, /"value":7/);
 
-  const appJs = await (await fetch(`${f.url}/app.js?token=test-token`)).text();
-  const workroomJs = await (await fetch(`${f.url}/workroom.js?token=test-token`)).text();
+  const appJs = await (await fetch(`${f.url}/app.js`)).text();
+  const workroomJs = await (await fetch(`${f.url}/workroom.js`)).text();
   for (const endpoint of ['/api/workroom/tree', '/api/workroom/file', '/api/credentials', '/api/ui-assets', '/api/updates/check', '/api/instructions', '/api/runtime']) assert.match(workroomJs, new RegExp(endpoint.replace('/', '\\/')));
   assert.doesNotMatch(workroomJs, /TODO|coming soon|fake button/i);
   for (const endpoint of ['/api/projects', '/api/agent/runs', '/messages', '/pause', '/resume', '/stop', '/retry', '/autonomy']) assert.match(appJs, new RegExp(endpoint.replace('/', '\\/')));
@@ -228,12 +253,33 @@ test('automatic verification endpoint runs checks and passes generated evidence 
 test('mission planning uses the intelligent planner with explicit provider routing', async (t) => {
   const f = await fixture(t);
   const project = await (await fetch(`${f.url}/api/projects`, auth({ method: 'POST', body: JSON.stringify({ name: 'Plan', workspaceRoot: f.root }) }))).json();
-  const response = await fetch(`${f.url}/api/missions/plan`, auth({ method: 'POST', body: JSON.stringify({ projectId: project.id, objective: 'Refactor router', planningProviderId: 'fake', planningModelId: 'fake-model-v2', mcpAllowedTools: ['docs__search'] }) }));
+  const response = await fetch(`${f.url}/api/missions/plan`, auth({ method: 'POST', body: JSON.stringify({ projectId: project.id, objective: 'Refactor router', planningProviderId: 'fake', planningModelId: 'fake-model-v2', planningEffort: 'high', mcpAllowedTools: ['docs__search'] }) }));
   assert.equal(response.status, 201);
   const mission = await response.json();
+  assert.equal(mission.metadata.planningEffort, 'high');
+  assert.deepEqual(mission.metadata.mcpAllowedTools, ['docs__search']);
   assert.equal(mission.tasks[0].role, 'reviewer');
-  assert.deepEqual(mission.tasks[0].metadata.mcpAllowedTools, ['docs__search']);
-  assert.deepEqual(f.calls.filter((item) => item[0] === 'intelligentPlan')[0], ['intelligentPlan', 'fake', 'fake-model-v2']);
+  assert.deepEqual(f.calls.filter((item) => item[0] === 'intelligentPlan')[0], ['intelligentPlan', 'fake', 'fake-model-v2', 'high']);
+});
+
+test('mission planning rejects an unsupported effort before invoking a provider', async (t) => {
+  const f = await fixture(t);
+  const project = await (await fetch(`${f.url}/api/projects`, auth({ method: 'POST', body: JSON.stringify({ name: 'Plan validation', workspaceRoot: f.root }) }))).json();
+  const response = await fetch(`${f.url}/api/missions/plan`, auth({ method: 'POST', body: JSON.stringify({ projectId: project.id, objective: 'Refactor router', planningEffort: 'unbounded' }) }));
+  assert.equal(response.status, 400);
+  assert.equal((await response.json()).code, 'PLANNING_EFFORT_INVALID');
+  assert.equal(f.calls.some((item) => item[0] === 'intelligentPlan'), false);
+});
+
+test('mission planning preserves catalog-supported max and ultra effort values', async (t) => {
+  const f = await fixture(t);
+  const project = await (await fetch(`${f.url}/api/projects`, auth({ method: 'POST', body: JSON.stringify({ name: 'Effort values', workspaceRoot: f.root }) }))).json();
+
+  for (const effort of ['max', 'ultra']) {
+    const response = await fetch(`${f.url}/api/missions/plan`, auth({ method: 'POST', body: JSON.stringify({ projectId: project.id, objective: `Plan with ${effort}`, planningEffort: effort }) }));
+    assert.equal(response.status, 201);
+    assert.equal((await response.json()).metadata.planningEffort, effort);
+  }
 });
 
 
@@ -324,8 +370,12 @@ test('terminal WebSocket requires authentication and forwards bounded terminal p
     const socket = new WebSocket(`${f.url.replace('http:', 'ws:')}/terminal`);
     await new Promise((resolve, reject) => { socket.onopen = resolve; socket.onerror = () => reject(new Error('unauthorized')); });
   }, /unauthorized/);
+  await assert.rejects(async () => {
+    const socket = new WebSocket(`${f.url.replace('http:', 'ws:')}/terminal?token=test-token`);
+    await new Promise((resolve, reject) => { socket.onopen = resolve; socket.onerror = () => reject(new Error('unauthorized')); });
+  }, /unauthorized/);
 
-  const socket = new WebSocket(`${f.url.replace('http:', 'ws:')}/terminal?token=test-token`);
+  const socket = new WebSocket(`${f.url.replace('http:', 'ws:')}/terminal`, ['nolane-auth.test-token']);
   t.after(() => socket.close());
   await new Promise((resolve, reject) => { socket.onopen = resolve; socket.onerror = reject; });
   const messages = [];
@@ -369,7 +419,7 @@ test('workroom, credential, asset, update, and instruction endpoints are wired t
 test('terminal WebSocket reclaims sessions for the same durable client identity', async (t) => {
   const f = await fixture(t);
   const connect = async () => {
-    const socket = new WebSocket(`${f.url.replace('http:', 'ws:')}/terminal?token=test-token&clientId=workroom-client`);
+    const socket = new WebSocket(`${f.url.replace('http:', 'ws:')}/terminal?clientId=workroom-client`, ['nolane-auth.test-token']);
     await new Promise((resolve, reject) => { socket.onopen = resolve; socket.onerror = reject; });
     return socket;
   };

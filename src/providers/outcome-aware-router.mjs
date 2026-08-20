@@ -30,6 +30,7 @@ function profileOf(provider, detection = null) {
     available: source.available !== false,
     authenticated: source.authenticated !== false,
     healthy: source.healthy !== false,
+    executionSafety: String(source.executionSafety ?? 'verified'),
     cacheIdentity: String(source.cacheIdentity ?? provider.id),
     specialties: new Set((source.specialties ?? []).map(String)),
   });
@@ -212,6 +213,7 @@ export class OutcomeAwareProviderRouter {
       if (!profile.available) { eligible = false; reason = 'provider unavailable'; }
       else if (!profile.authenticated) { eligible = false; reason = 'provider authentication required'; }
       else if (!profile.healthy) { eligible = false; reason = 'provider connection is not healthy'; }
+      else if (profile.executionSafety === 'external-plan-config-required') { eligible = false; reason = 'safe plan configuration required'; }
       else if (missing.length) { eligible = false; reason = `missing capabilities: ${missing.join(', ')}`; }
       else if (localOnly && !profile.local) { eligible = false; reason = 'not local'; }
       else if (profile.costTier > finite(maxCostTier, Number.POSITIVE_INFINITY)) { eligible = false; reason = `cost tier ${profile.costTier} exceeds ${maxCostTier}`; }

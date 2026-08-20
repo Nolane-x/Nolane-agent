@@ -38,11 +38,43 @@ test('OpenAICompatibleProvider returns text, normalized tool calls, and usage', 
 test('OpenAICompatibleProvider rejects HTTP errors and times out', async (t) => {
   const errorUrl = await fakeModel(t, (_req, res) => { res.statusCode = 429; res.end('{"error":{"message":"rate limited"}}'); });
   const provider = new OpenAICompatibleProvider({ id: 'error', baseUrl: errorUrl, model: 'x', timeoutMs: 100 });
-  await assert.rejects(() => provider.complete({ messages: [] }), /429.*rate limited/i);
+  await assert.rejects(
+    () => provider.complete({ messages: [] }),
+    (error) => error?.code === 'PROVIDER_EXECUTION_FAILED' && error?.message === 'Provider request was rejected' && /429.*rate limited/i.test(String(error?.cause?.message)),
+  );
 
   const slowUrl = await fakeModel(t, async (_req, res) => { await new Promise((resolve) => setTimeout(resolve, 200)); res.end('{}'); });
   const slow = new OpenAICompatibleProvider({ id: 'slow', baseUrl: slowUrl, model: 'x', timeoutMs: 20 });
   await assert.rejects(() => slow.complete({ messages: [] }), /timed out/i);
+});
+
+test('OpenAICompatibleProvider uses stable setup and execution failure codes', async () => {
+  const missingCredential = new OpenAICompatibleProvider({
+    id: 'missing', baseUrl: 'http://127.0.0.1:32123/v1', model: 'x',
+    secretRef: { service: 'forge.provider.missing', account: 'default' }, credentialResolver: async () => null,
+  });
+  await assert.rejects(
+    () => missingCredential.complete({ messages: [] }),
+    (error) => error?.code === 'PROVIDER_SETUP_REQUIRED' && error?.message === 'Provider credential is unavailable',
+  );
+
+  const failedRequest = new OpenAICompatibleProvider({
+    id: 'failed-request', baseUrl: 'http://127.0.0.1:32123/v1', model: 'x', apiKey: 'local-private',
+    fetchImpl: async () => { throw new Error('network rejected local-private'); },
+  });
+  await assert.rejects(
+    () => failedRequest.complete({ messages: [] }),
+    (error) => error?.code === 'PROVIDER_EXECUTION_FAILED' && error?.message === 'Provider request failed' && !String(error.message).includes('local-private'),
+  );
+
+  const invalidResponse = new OpenAICompatibleProvider({
+    id: 'invalid-response', baseUrl: 'http://127.0.0.1:32123/v1', model: 'x',
+    fetchImpl: async () => new Response('{}', { status: 200 }),
+  });
+  await assert.rejects(
+    () => invalidResponse.complete({ messages: [] }),
+    (error) => error?.code === 'PROVIDER_EXECUTION_FAILED' && error?.message === 'Provider returned an invalid response',
+  );
 });
 
 test('message sanitation repairs malformed tool JSON and isolated surrogates', () => {

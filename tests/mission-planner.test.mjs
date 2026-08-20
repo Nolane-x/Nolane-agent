@@ -30,14 +30,16 @@ test('MissionPlanner asks an eligible planning provider for a bounded structured
   assert.match(calls[1].messages[1].content, /Add task isolation/);
 });
 
-test('MissionPlanner forwards the selected model without collapsing it to the provider', async () => {
+test('MissionPlanner forwards the selected model and per-turn effort without collapsing them to the provider', async () => {
   let request;
   const provider = { id: 'codex-app-server', async complete(input) { request = input; return { model: 'gpt-5.6-sol', text: JSON.stringify(validPlan) }; } };
   const planner = new MissionPlanner({ router: { select: ({ providerId }) => { assert.equal(providerId, 'codex-app-server'); return provider; } } });
-  const result = await planner.plan({ projectId: 'p', objective: 'Use the selected model', providerId: 'codex-app-server', modelId: 'gpt-5.6-sol' });
+  const result = await planner.plan({ projectId: 'p', objective: 'Use the selected model', providerId: 'codex-app-server', modelId: 'gpt-5.6-sol', effort: 'high' });
   assert.equal(request.model, 'gpt-5.6-sol');
+  assert.equal(request.effort, 'high');
   assert.equal(result.metadata.providerId, 'codex-app-server');
   assert.equal(result.metadata.modelId, 'gpt-5.6-sol');
+  assert.equal(result.metadata.effort, 'high');
 });
 
 test('MissionPlanner performs one repair turn when the first response is invalid JSON', async () => {
@@ -53,6 +55,18 @@ test('MissionPlanner rejects plans outside the role and task-count safety envelo
   const provider = { id: 'planner', async complete() { return { text: JSON.stringify({ tasks: [{ id: 'x', title: 'X', objective: 'X', role: 'admin', dependencies: [], allowedPaths: ['**'] }] }) }; } };
   const planner = new MissionPlanner({ router: { select: () => provider }, maxAttempts: 1 });
   await assert.rejects(() => planner.plan({ projectId: 'p', objective: 'Build' }), /role|planner/i);
+});
+
+test('MissionPlanner defaults omitted write scope to no paths and retains non-negotiable secret denials', async () => {
+  const planWithoutScope = structuredClone(validPlan);
+  delete planWithoutScope.tasks[1].allowedPaths;
+  planWithoutScope.tasks[1].deniedPaths = [];
+  const provider = { id: 'planner', async complete() { return { text: JSON.stringify(planWithoutScope) }; } };
+  const planner = new MissionPlanner({ router: { select: () => provider } });
+  const result = await planner.plan({ projectId: 'p', objective: 'Build' });
+  assert.deepEqual(result.tasks[1].allowedPaths, []);
+  assert.ok(result.tasks[1].deniedPaths.includes('.env'));
+  assert.ok(result.tasks[1].deniedPaths.includes('**/*.key'));
 });
 
 test('MissionPlanner requests user input before provider execution when planning evidence is ambiguous', async () => {
@@ -90,4 +104,30 @@ test('MissionPlanner returns evidence-enriched bounded plan metadata when govern
   assert.equal(result.planningEvidence.scope.band, 'small');
   assert.equal(calls[0][0], 'preflight');
   assert.equal(calls[1][0], 'enrich');
+});
+
+test('MissionPlanner translates unavailable provider routing into a safe composer-facing state', async () => {
+  const unavailable = new Error('No eligible provider. stale-provider: provider authentication required; token=super-secret-value');
+  const planner = new MissionPlanner({ router: { select() { throw unavailable; } } });
+
+  await assert.rejects(() => planner.plan({ projectId: 'p', objective: 'Plan safely' }), (error) => {
+    assert.equal(error.code, 'PROVIDER_SETUP_REQUIRED');
+    assert.equal(error.message, 'No provider is ready for planning');
+    assert.equal(error.cause, unavailable);
+    assert.doesNotMatch(error.message, /secret|stale-provider|authentication/i);
+    return true;
+  });
+});
+
+test('MissionPlanner identifies a stale explicit provider selection without exposing router diagnostics', async () => {
+  const unavailable = new Error('No eligible provider. codex-app-server: provider connection is not healthy');
+  const planner = new MissionPlanner({ router: { select() { throw unavailable; } } });
+
+  await assert.rejects(() => planner.plan({ projectId: 'p', objective: 'Plan safely', providerId: 'codex-app-server' }), (error) => {
+    assert.equal(error.code, 'SELECTED_MODEL_NOT_READY');
+    assert.equal(error.message, 'The selected provider is not ready');
+    assert.equal(error.cause, unavailable);
+    assert.doesNotMatch(error.message, /codex|connection|healthy/i);
+    return true;
+  });
 });

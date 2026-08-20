@@ -11,6 +11,8 @@ test('onboarding has four compact screens and never asks cloud versus local mode
   for (let step=0;step<4;step+=1) {
     const html=renderOnboardingView({status:'ready',required:true,step,answers:{language:'en',primaryUse:'software',explanationDepth:'detailed',responseStyle:'reviewer',askBeforeAmbiguousChanges:true,experience:'studio',theme:'system',accent:'violet',density:'comfortable',motion:'system',memoryMode:'approved',notifications:{desktop:true,taskCompletion:true,approvals:true,errors:true},telemetry:false}});
     assert.match(html,new RegExp(`data-state="current"`));
+    assert.match(html, new RegExp(`onboarding-progress" role="progressbar"[^>]*aria-valuemin="1"[^>]*aria-valuemax="4"[^>]*aria-valuenow="${step + 1}"`));
+    assert.match(html, /<span aria-hidden="true" data-state=/);
   }
   assert.doesNotMatch(source,/cloud\s*(?:or|vs\.?|versus|\/)[\s-]*local|local\s*(?:or|vs\.?|versus|\/)[\s-]*cloud/i);
   assert.doesNotMatch(source,/api key|provider setup/i);
@@ -28,6 +30,23 @@ test('onboarding controller restores progress and sends explicit completion', as
   assert.equal(controller.snapshot().completed,true);
   assert.equal(calls.at(-1)[0],'/api/onboarding/complete');
   assert.equal(calls.at(-1)[1].source,'guided');
+});
+
+test('onboarding appearance options use the themed option picker instead of native select menus', () => {
+  const html = renderOnboardingView({ status: 'ready', required: true, step: 2, answers: { language: 'en', theme: 'nocturne', accent: 'violet', density: 'comfortable', motion: 'system' } });
+  for (const id of ['onboarding-theme', 'onboarding-accent', 'onboarding-density', 'onboarding-motion']) assert.match(html, new RegExp(`data-option-picker="${id}"`));
+  assert.doesNotMatch(html, /<select[^>]*data-onboarding-select/);
+});
+
+test('onboarding skip preserves a deliberately selected interface language', async () => {
+  const calls=[];
+  const api={
+    get:async()=>({required:true,state:{currentStep:0,draft:{language:'en'}}}),
+    post:async(path,body)=>{calls.push([path,body]);return{profile:{preferences:{experience:{level:'everyday'}}}};}
+  };
+  const controller=createOnboardingController({api});await controller.load();
+  controller.set('language','vi');await controller.skip();
+  assert.deepEqual(calls.at(-1),['/api/onboarding/skip',{answers:{language:'vi'}}]);
 });
 
 test('fresh product defaults begin in Everyday instead of a legacy experience alias', () => {

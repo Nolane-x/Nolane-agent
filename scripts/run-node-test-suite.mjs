@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { mkdir, readFile, readdir, rename, writeFile } from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import { execFileSync, spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -34,6 +35,11 @@ const ISOLATED_TESTS = new Set([
   'execution-process-lifecycle-contracts.test.mjs',
 ]);
 const PARALLEL_BATCH_SIZE = 32;
+const GIBIBYTE = 1024 ** 3;
+const LOCAL_PACKAGING_SMOKE_TESTS = new Set([
+  'electron-packaging.test.mjs',
+  'packaging.test.mjs',
+]);
 const SERIAL_TESTS = new Set([
   'packaging.test.mjs',
   'release-artifacts.test.mjs',
@@ -56,22 +62,30 @@ const SERIAL_TESTS = new Set([
   'execution-process-lifecycle-contracts.test.mjs',
 ]);
 
-export async function buildNodeTestPlan(testsDirectory = path.resolve('tests')) {
+export async function buildNodeTestPlan(testsDirectory = path.resolve('tests'), {
+  skipLocalPackagingSmoke = process.env.NOLANE_AGENT_SKIP_LOCAL_PACKAGING_SMOKE === '1',
+} = {}) {
   const entries = await readdir(testsDirectory, { withFileTypes: true });
   const discovered = entries
     .filter((entry) => entry.isFile() && entry.name.endsWith('.test.mjs'))
     .map((entry) => path.join(testsDirectory, entry.name))
     .sort();
+  const skipped = skipLocalPackagingSmoke
+    ? discovered.filter((file) => LOCAL_PACKAGING_SMOKE_TESTS.has(path.basename(file)))
+    : [];
+  const skippedNames = new Set(skipped.map((file) => path.basename(file)));
+  const scheduledCandidates = discovered.filter((file) => !skipped.includes(file));
 
-  const isolated = discovered.filter((file) => ISOLATED_TESTS.has(path.basename(file)));
-  const parallel = discovered.filter((file) => !ISOLATED_TESTS.has(path.basename(file)));
+  const isolated = scheduledCandidates.filter((file) => ISOLATED_TESTS.has(path.basename(file)));
+  const parallel = scheduledCandidates.filter((file) => !ISOLATED_TESTS.has(path.basename(file)));
   const scheduled = [...parallel, ...isolated];
 
-  if (scheduled.length !== discovered.length || new Set(scheduled).size !== discovered.length) {
+  if (scheduled.length !== scheduledCandidates.length || new Set(scheduled).size !== scheduledCandidates.length) {
     throw new Error('Node test plan must schedule every discovered test exactly once');
   }
-  if (isolated.length !== ISOLATED_TESTS.size) {
-    const missing = [...ISOLATED_TESTS].filter((name) => !isolated.some((file) => path.basename(file) === name));
+  const requiredIsolated = [...ISOLATED_TESTS].filter((name) => !skippedNames.has(name));
+  if (isolated.length !== requiredIsolated.length) {
+    const missing = requiredIsolated.filter((name) => !isolated.some((file) => path.basename(file) === name));
     throw new Error(`Missing isolated test files: ${missing.join(', ')}`);
   }
 
@@ -82,14 +96,16 @@ export async function buildNodeTestPlan(testsDirectory = path.resolve('tests')) 
 
   const serial = isolated.filter((file) => SERIAL_TESTS.has(path.basename(file)));
   const isolatedBatch = isolated.filter((file) => !SERIAL_TESTS.has(path.basename(file)));
-  if (serial.length !== SERIAL_TESTS.size) {
-    const missing = [...SERIAL_TESTS].filter((name) => !serial.some((file) => path.basename(file) === name));
+  const requiredSerial = [...SERIAL_TESTS].filter((name) => !skippedNames.has(name));
+  if (serial.length !== requiredSerial.length) {
+    const missing = requiredSerial.filter((name) => !serial.some((file) => path.basename(file) === name));
     throw new Error(`Missing serial test files: ${missing.join(', ')}`);
   }
 
   return Object.freeze({
     testsDirectory,
     discovered: Object.freeze(discovered),
+    skipped: Object.freeze(skipped),
     parallel: Object.freeze(parallel),
     parallelBatches: Object.freeze(parallelBatches),
     isolated: Object.freeze(isolated),
@@ -119,6 +135,19 @@ export function countDotReporterTests(output) {
     .split(/\r?\n/)
     .filter((line) => /^[.X]+$/.test(line))
     .reduce((total, line) => total + line.length, 0);
+}
+
+export function resolveParallelWorkerCount({
+  configuredWorkers = Number(process.env.NOLANE_AGENT_TEST_WORKERS),
+  cleanRoom = process.env.NOLANE_AGENT_CLEAN_ROOM === '1',
+  freeMemoryBytes = os.freemem(),
+} = {}) {
+  if (Number.isInteger(configuredWorkers) && configuredWorkers > 0) return Math.min(configuredWorkers, 32);
+  if (cleanRoom) return 32;
+  const free = Number(freeMemoryBytes);
+  if (!Number.isFinite(free) || free < 1.5 * GIBIBYTE) return 1;
+  if (free < 3 * GIBIBYTE) return 2;
+  return 4;
 }
 
 export function runNodeTests(files, { concurrency, label, quiet = false }) {
@@ -258,12 +287,10 @@ export async function runNodeTestSuite() {
   const plan = await buildNodeTestPlan();
   const cache = await createTestCache();
   process.stdout.write(`Discovered ${plan.discovered.length} Node test files; every file is scheduled exactly once.\n`);
+  if (plan.skipped.length) process.stdout.write(`Local policy skipped packaging smoke: ${plan.skipped.map((file) => path.basename(file)).join(', ')}.\n`);
   process.stdout.write(`Test cache: ${cache.summary().cachePath} @ ${cache.commit}\n`);
   let passedTests = 0;
-  const configuredWorkers = Number(process.env.NOLANE_AGENT_TEST_WORKERS);
-  const parallelWorkers = Number.isInteger(configuredWorkers) && configuredWorkers > 0
-    ? Math.min(configuredWorkers, 32)
-    : process.env.NOLANE_AGENT_CLEAN_ROOM === '1' ? 32 : 4;
+  const parallelWorkers = resolveParallelWorkerCount();
   passedTests += await runNodeTestFilePool(plan.parallel, { concurrency: parallelWorkers, label: 'Parallel isolated-file pool', cache });
   passedTests += await runNodeTestFilePool(plan.isolatedBatch, { concurrency: 4, label: 'Bounded packaging and integration pool', cache });
   for (const file of plan.serial) passedTests += await runCachedSingle(file, cache, `Serial ${path.basename(file)}`);

@@ -29,10 +29,10 @@ export const EXTERNAL_GATE_CLASSES = Object.freeze(Object.fromEntries(
 ));
 
 function bounded(value, limit = 160) {
-  return String(value ?? '').replace(/[\r\n\t]+/g, ' ').trim().slice(0, limit);
+  return String(value ?? '').replace(/[\x00-\x1F\x7F]+/g, ' ').trim().slice(0, limit);
 }
 
-function commandProbe(command, args) {
+export function commandProbe(command, args) {
   return new Promise((resolve) => {
     let stdout = '';
     let stderr = '';
@@ -212,6 +212,11 @@ function currentEnvironment() {
     githubEventName: bounded(process.env.GITHUB_EVENT_NAME, 64),
     githubRepository: bounded(process.env.GITHUB_REPOSITORY, 160),
     githubRef: bounded(process.env.GITHUB_REF, 320),
+    githubSha: bounded(process.env.GITHUB_SHA, 64),
+    githubHeadSha: bounded(process.env.NOLANE_GITHUB_HEAD_SHA || process.env.GITHUB_SHA, 64),
+    githubRunId: bounded(process.env.GITHUB_RUN_ID, 32),
+    githubWorkflow: bounded(process.env.GITHUB_WORKFLOW, 160),
+    githubWorkflowRef: bounded(process.env.GITHUB_WORKFLOW_REF, 320),
     githubIssueLinked: process.env.NOLANE_GITHUB_ISSUE_LINKED === 'true',
     runnerOs: bounded(process.env.RUNNER_OS || process.platform, 64),
   });

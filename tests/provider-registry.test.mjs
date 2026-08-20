@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -32,7 +32,7 @@ test('CliProvider detects versions and invokes through argv/stdin without a shel
     versionArgs: [fake.script, '--version'],
     baseArgs: [fake.script],
     promptMode: 'stdin',
-    timeoutMs: 1000,
+    timeoutMs: 5000,
   });
   const detection = await provider.detect();
   assert.equal(detection.available, true);
@@ -46,16 +46,92 @@ test('CliProvider detects versions and invokes through argv/stdin without a shel
   assert.deepEqual(completion.toolCalls, []);
 });
 
+test('CliProvider forwards an advertised reasoning effort through its documented argv flag', async (t) => {
+  const fake = await fakeCli(t);
+  const provider = new CliProvider({
+    id: 'effort-cli',
+    label: 'Effort CLI',
+    executable: fake.executable,
+    baseArgs: [fake.script, '-'],
+    promptMode: 'stdin',
+    effortFlag: '--effort',
+    effortLevels: ['low', 'high', 'max'],
+  });
+
+  const result = await provider.invoke({ prompt: 'Think carefully', effort: 'max' });
+  const payload = JSON.parse(result.stdout);
+
+  assert.deepEqual(payload.args.slice(-3), ['--effort', 'max', '-']);
+  assert.deepEqual(provider.publicView().effort, { supported: true, mode: 'forwarded', levels: ['low', 'high', 'max'] });
+});
+
+test('CliProvider keeps a completed Codex agent message when a later tool event reports an error', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-codex-events-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const script = path.join(root, 'codex-events.mjs');
+  await writeFile(script, `
+    console.log(JSON.stringify({ type: 'thread.started', thread_id: 'thread-1' }));
+    console.log(JSON.stringify({ type: 'agent_message', text: 'NOLANE_PROVIDER_OK' }));
+    console.log(JSON.stringify({ type: 'item.completed', item: { type: 'error', content: 'sandbox helper unavailable' } }));
+  `);
+  const provider = new CliProvider({ id: 'codex-events', label: 'Codex events', executable: process.execPath, baseArgs: [script], promptMode: 'stdin' });
+  const completion = await provider.complete({ messages: [{ role: 'user', content: 'Ping' }] });
+  assert.equal(completion.text, 'NOLANE_PROVIDER_OK');
+});
+
 test('CliProvider classifies a non-zero CLI configuration failure without exposing diagnostics', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-config-'));
   t.after(() => rm(root, { recursive: true, force: true }));
   const script = path.join(root, 'config-cli.mjs');
-  await writeFile(script, "console.error('Invalid configuration: apiKey=sk-private-test'); process.exit(7);\n");
+  await writeFile(script, "console.error('Invalid configuration: apiKey=sk-private-test rt_prefix=refresh-prefix-private'); process.exit(7);\n");
   const provider = new CliProvider({ id: 'config-cli', label: 'Config CLI', executable: process.execPath, versionArgs: [script, '--version'] });
   const detection = await provider.detect();
   assert.equal(detection.available, false);
   assert.equal(detection.error, 'configuration-error');
   assert.equal(JSON.stringify(detection).includes('sk-private-test'), false);
+  assert.equal(JSON.stringify(detection).includes('refresh-prefix-private'), false);
+});
+
+test('CliProvider rejects a zero-exit configuration diagnostic without exposing a local settings path', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-config-zero-exit-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const script = path.join(root, 'config-cli.mjs');
+  await writeFile(script, "console.log('gemini 0.49.0\\nInvalid configuration in C:\\\\Users\\\\example\\\\.gemini\\\\settings.json\\nExpected array, received boolean'); process.exit(0);\\n");
+  const provider = new CliProvider({ id: 'config-zero-exit', label: 'Config zero-exit CLI', executable: process.execPath, versionArgs: [script, '--version'] });
+
+  const detection = await provider.detect();
+
+  assert.equal(detection.available, false);
+  assert.equal(detection.authenticated, false);
+  assert.equal(detection.healthy, false);
+  assert.equal(detection.version, '0.49.0');
+  assert.equal(detection.error, 'configuration-error');
+  assert.equal('versionOutput' in detection, false);
+  assert.equal(JSON.stringify(detection).includes('C:\\Users\\example'), false);
+});
+
+test('CliProvider only forwards explicitly allowlisted parent credentials to a child CLI', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-isolated-env-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const script = path.join(root, 'environment-cli.mjs');
+  await writeFile(script, "console.log(JSON.stringify({ parent: process.env.NOLANE_TEST_PARENT_SECRET ?? null, provider: process.env.NOLANE_TEST_PROVIDER_SECRET ?? null, path: Boolean(process.env.PATH), home: Boolean(process.env.HOME || process.env.USERPROFILE) }));\n");
+  const priorParent = process.env.NOLANE_TEST_PARENT_SECRET;
+  const priorProvider = process.env.NOLANE_TEST_PROVIDER_SECRET;
+  process.env.NOLANE_TEST_PARENT_SECRET = 'must-not-cross-provider-boundary';
+  process.env.NOLANE_TEST_PROVIDER_SECRET = 'provider-only-credential';
+  t.after(() => {
+    if (priorParent == null) delete process.env.NOLANE_TEST_PARENT_SECRET; else process.env.NOLANE_TEST_PARENT_SECRET = priorParent;
+    if (priorProvider == null) delete process.env.NOLANE_TEST_PROVIDER_SECRET; else process.env.NOLANE_TEST_PROVIDER_SECRET = priorProvider;
+  });
+  const provider = new CliProvider({ id: 'isolated-env', label: 'Isolated env CLI', executable: process.execPath, baseArgs: [script], promptMode: 'stdin', secretEnvKeys: ['NOLANE_TEST_PROVIDER_SECRET'] });
+
+  const result = await provider.invoke({ prompt: 'inspect environment' });
+  const childEnvironment = JSON.parse(result.stdout);
+
+  assert.equal(childEnvironment.parent, null);
+  assert.equal(childEnvironment.provider, 'provider-only-credential');
+  assert.equal(childEnvironment.path, true);
+  assert.equal(childEnvironment.home, true);
 });
 
 test('CliProvider allows a slow CLI startup to report its version truthfully', async (t) => {
@@ -83,7 +159,9 @@ test('CliProvider discovers model ids through an explicit argv-only command', as
   `);
   const provider = new CliProvider({
     id: 'model-cli', label: 'Model CLI', executable: process.execPath,
-    modelDiscoveryArgs: [script, '--models'], timeoutMs: 1000,
+    // This verifies argv-only discovery rather than a cold Node-process startup budget.
+    // Keep it above the explicit slow-start test so a parallel suite cannot make it flaky.
+    modelDiscoveryArgs: [script, '--models'], timeoutMs: 5_000,
   });
 
   const result = await provider.discoverModels();
@@ -130,6 +208,19 @@ test('CliProvider enforces timeout and cancellation', async (t) => {
   assert.equal(aborted.aborted, true);
 });
 
+test('CliProvider exposes a stable provider failure code for any CLI label', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-provider-failure-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const script = path.join(root, 'failing-cli.mjs');
+  await writeFile(script, "console.error('apiKey=private-value'); process.exit(7);\n");
+  const provider = new CliProvider({ id: 'github-copilot', label: 'GitHub Copilot CLI', executable: process.execPath, baseArgs: [script] });
+
+  await assert.rejects(
+    () => provider.complete({ messages: [{ role: 'user', content: 'Plan safely.' }] }),
+    (error) => error?.code === 'PROVIDER_EXECUTION_FAILED' && error?.message === 'CLI provider execution failed' && /private-value/.test(String(error?.cause?.message)),
+  );
+});
+
 test('ProviderRegistry exposes secret-free public views and built-in official CLI definitions', async (t) => {
   const fake = await fakeCli(t);
   const registry = new ProviderRegistry();
@@ -144,15 +235,172 @@ test('ProviderRegistry exposes secret-free public views and built-in official CL
   assert.doesNotMatch(publicJson, /super-secret|API_KEY/);
 
   const builtIns = createBuiltInCliProviders();
-  assert.deepEqual([...builtIns].map((item) => item.id), ['codex', 'claude', 'gemini', 'opencode']);
+  assert.deepEqual([...builtIns].map((item) => item.id), ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'cursor-agent', 'grok-build', 'kiro-cli', 'factory-droid', 'auggie', 'amp', 'amazon-q', 'crush', 'roo-code', 'qwen-code', 'continue-cli', 'cline', 'mistral-vibe-code', 'aider', 'goose', 'qoder', 'pi', 'kilo', 'kimi-code']);
   assert.ok([...builtIns].every((item) => item.credentialOwner === 'official-cli'));
   assert.ok(builtIns.filter((item) => ['codex', 'claude', 'gemini'].includes(item.id)).every((item) => item.profile.capabilities.includes('governed-actions')));
   assert.ok(builtIns.find((item) => item.id === 'codex').baseArgs.includes('read-only'));
   assert.ok(builtIns.find((item) => item.id === 'codex').baseArgs.includes('--skip-git-repo-check'));
   assert.ok(builtIns.find((item) => item.id === 'gemini').baseArgs.includes('plan'));
-  assert.equal(builtIns.find((item) => item.id === 'codex').publicView().modelDiscovery.mode, 'compatibility-catalog');
+  // Codex gets its live account catalogue from the authenticated App Server.
+  // The other compatibility catalogs are documented CLI selectors, never a
+  // claim about which models the connected account can actually use.
+  assert.equal(builtIns.find((item) => item.id === 'codex').modelCatalog.length, 0);
+  assert.deepEqual(builtIns.find((item) => item.id === 'claude').modelCatalog, ['sonnet', 'opus']);
+  assert.deepEqual(builtIns.find((item) => item.id === 'gemini').modelCatalog, ['auto', 'pro', 'flash', 'flash-lite']);
+  assert.equal(builtIns.find((item) => item.id === 'codex').publicView().modelDiscovery.mode, 'unsupported');
   assert.equal(builtIns.find((item) => item.id === 'opencode').publicView().modelDiscovery.mode, 'command');
   assert.equal(builtIns.find((item) => item.id === 'opencode').publicView().modelDiscovery.live, true);
+  assert.deepEqual(builtIns.find((item) => item.id === 'opencode').modelDiscoveryArgs, ['models', '--refresh']);
+  const kimi = builtIns.find((item) => item.id === 'kimi-code');
+  assert.equal(kimi.executable, 'kimi');
+  assert.deepEqual(kimi.baseArgs, ['--output-format', 'stream-json']);
+  assert.equal(kimi.promptMode, 'arg');
+  assert.equal(kimi.promptFlag, '--prompt');
+  assert.equal(kimi.modelFlag, '--model');
+  assert.equal(kimi.publicView().modelDiscovery.supported, false);
+  assert.equal(kimi.publicView().executionSafety, 'external-plan-config-required');
+  assert.equal(kimi.profile.capabilities.includes('governed-actions'), false);
+  assert.ok(!kimi.baseArgs.includes('--yolo'));
+  assert.ok(!kimi.baseArgs.includes('--auto'));
+  const copilot = builtIns.find((item) => item.id === 'github-copilot');
+  assert.deepEqual(copilot.modelCatalog, ['claude-sonnet-4.6', 'gpt-5.4', 'claude-haiku-4.5', 'gpt-5.3-codex', 'gemini-3.1-pro-preview', 'gemini-3.5-flash', 'gemini-3.6-flash', 'mai-code-1-flash']);
+  assert.equal(copilot.publicView().modelDiscovery.mode, 'compatibility-catalog');
+  assert.ok(copilot.baseArgs.includes('plan'));
+  assert.ok(copilot.baseArgs.includes('--sandbox'));
+  assert.ok(copilot.baseArgs.includes('--no-remote'));
+  const cursor = builtIns.find((item) => item.id === 'cursor-agent');
+  assert.equal(cursor.executable, 'cursor-agent');
+  assert.equal(cursor.publicView().executionSafety, 'verified');
+  assert.deepEqual(cursor.baseArgs, ['-p', '--output-format', 'json']);
+  assert.equal(cursor.baseArgs.includes('--force'), false);
+  assert.equal(cursor.baseArgs.includes('--yolo'), false);
+  assert.equal(cursor.modelFlag, '--model');
+  assert.equal(cursor.publicView().modelSelection.mode, 'forwarded');
+  const grok = builtIns.find((item) => item.id === 'grok-build');
+  assert.equal(grok.executable, 'agent');
+  assert.equal(grok.publicView().executionSafety, 'verified');
+  assert.deepEqual(grok.baseArgs, ['--permission-mode', 'plan', '--output-format', 'json']);
+  assert.equal(grok.promptMode, 'arg');
+  assert.equal(grok.promptFlag, '-p');
+  assert.equal(grok.modelFlag, '--model');
+  assert.deepEqual(grok.modelDiscoveryArgs, ['models']);
+  assert.equal(grok.publicView().modelDiscovery.live, true);
+  const kiro = builtIns.find((item) => item.id === 'kiro-cli');
+  assert.equal(kiro.publicView().executionSafety, 'verified');
+  assert.deepEqual(kiro.baseArgs, ['chat', '--no-interactive', '--trust-tools=read,grep']);
+  assert.equal(kiro.modelFlag, null);
+  assert.equal(kiro.publicView().modelSelection.mode, 'cli-config');
+  assert.deepEqual(kiro.modelDiscoveryArgs, ['chat', '--list-models', '--format', 'json']);
+  assert.equal(kiro.publicView().modelDiscovery.live, true);
+  assert.equal(kiro.profile.capabilities.includes('governed-actions'), false);
+  const droid = builtIns.find((item) => item.id === 'factory-droid');
+  assert.equal(droid.publicView().executionSafety, 'verified');
+  assert.deepEqual(droid.baseArgs, ['exec', '--use-spec', '--output-format', 'json']);
+  assert.equal(droid.baseArgs.includes('--auto'), false);
+  assert.equal(droid.baseArgs.includes('--skip-permissions-unsafe'), false);
+  assert.equal(droid.modelFlag, '--model');
+  assert.equal(droid.publicView().modelSelection.mode, 'forwarded');
+  assert.equal(droid.profile.capabilities.includes('governed-actions'), false);
+  const auggie = builtIns.find((item) => item.id === 'auggie');
+  assert.equal(auggie.publicView().executionSafety, 'verified');
+  assert.deepEqual(auggie.baseArgs, ['--print', '--quiet', '--output-format', 'json', '--dont-save-session', '--ask']);
+  assert.equal(auggie.modelFlag, '--model');
+  assert.deepEqual(auggie.modelDiscoveryArgs, ['models', 'list', '--json']);
+  assert.equal(auggie.publicView().modelDiscovery.live, true);
+  assert.equal(auggie.profile.capabilities.includes('governed-actions'), false);
+  const amp = builtIns.find((item) => item.id === 'amp');
+  assert.equal(amp.publicView().executionSafety, 'external-plan-config-required');
+  assert.deepEqual(amp.baseArgs, ['--execute', '--stream-json']);
+  assert.equal(amp.publicView().modelSelection.mode, 'cli-config');
+  assert.equal(amp.profile.capabilities.includes('governed-actions'), false);
+  const amazonQ = builtIns.find((item) => item.id === 'amazon-q');
+  assert.equal(amazonQ.publicView().executionSafety, 'external-plan-config-required');
+  assert.deepEqual(amazonQ.baseArgs, ['chat', '--no-interactive']);
+  assert.equal(amazonQ.publicView().modelSelection.mode, 'cli-config');
+  assert.equal(amazonQ.profile.capabilities.includes('governed-actions'), false);
+  const crush = builtIns.find((item) => item.id === 'crush');
+  assert.equal(crush.publicView().executionSafety, 'external-plan-config-required');
+  assert.deepEqual(crush.baseArgs, ['run']);
+  assert.equal(crush.publicView().modelSelection.mode, 'cli-config');
+  assert.equal(crush.profile.capabilities.includes('governed-actions'), false);
+  const roo = builtIns.find((item) => item.id === 'roo-code');
+  assert.equal(roo.publicView().executionSafety, 'external-plan-config-required');
+  assert.deepEqual(roo.baseArgs, []);
+  assert.equal(roo.publicView().modelSelection.mode, 'cli-config');
+  assert.equal(roo.profile.capabilities.includes('governed-actions'), false);
+  const qwen = builtIns.find((item) => item.id === 'qwen-code');
+  assert.equal(qwen.publicView().modelDiscovery.mode, 'unsupported');
+  assert.ok(qwen.baseArgs.includes('json'));
+  assert.equal(qwen.baseArgs.includes('--approval-mode'), false);
+  assert.equal(qwen.publicView().executionSafety, 'external-plan-config-required');
+  assert.equal(qwen.profile.capabilities.includes('governed-actions'), false);
+  const continueCli = builtIns.find((item) => item.id === 'continue-cli');
+  assert.equal(continueCli.modelFlag, null);
+  assert.equal(continueCli.publicView().modelSelection.mode, 'cli-config');
+  assert.ok(continueCli.baseArgs.includes('--exclude'));
+  assert.ok(continueCli.baseArgs.includes('Write'));
+  assert.ok(continueCli.baseArgs.includes('Edit'));
+  assert.ok(continueCli.baseArgs.includes('Bash'));
+  const cline = builtIns.find((item) => item.id === 'cline');
+  assert.equal(cline.publicView().executionSafety, 'verified');
+  assert.equal(cline.modelFlag, '-m');
+  assert.ok(cline.baseArgs.includes('--plan'));
+  assert.ok(cline.baseArgs.includes('--auto-approve'));
+  assert.ok(cline.baseArgs.includes('false'));
+  assert.ok(cline.profile.capabilities.includes('governed-actions'));
+  const vibe = builtIns.find((item) => item.id === 'mistral-vibe-code');
+  assert.equal(vibe.publicView().executionSafety, 'verified');
+  assert.equal(vibe.modelFlag, null);
+  assert.equal(vibe.publicView().modelSelection.mode, 'cli-config');
+  assert.ok(vibe.baseArgs.includes('plan'));
+  assert.equal(vibe.promptFlag, '--prompt');
+  const aider = builtIns.find((item) => item.id === 'aider');
+  assert.equal(aider.publicView().executionSafety, 'external-plan-config-required');
+  assert.equal(aider.modelFlag, '--model');
+  assert.ok(aider.baseArgs.includes('--no-auto-commits'));
+  assert.equal(aider.profile.capabilities.includes('governed-actions'), false);
+  const goose = builtIns.find((item) => item.id === 'goose');
+  assert.equal(goose.publicView().executionSafety, 'external-plan-config-required');
+  assert.equal(goose.modelFlag, null);
+  assert.equal(goose.publicView().modelSelection.mode, 'cli-config');
+  assert.ok(goose.baseArgs.includes('--no-session'));
+  assert.ok(goose.baseArgs.includes('json'));
+  assert.equal(goose.profile.capabilities.includes('governed-actions'), false);
+  const qoder = builtIns.find((item) => item.id === 'qoder');
+  assert.equal(qoder.executable, 'qodercli');
+  assert.equal(qoder.publicView().executionSafety, 'verified');
+  assert.equal(qoder.promptMode, 'arg');
+  assert.equal(qoder.promptFlag, '-p');
+  assert.equal(qoder.modelFlag, '--model');
+  assert.deepEqual(qoder.modelDiscoveryArgs, ['--list-models']);
+  assert.deepEqual(qoder.baseArgs, ['--permission-mode', 'dont_ask', '--tools', 'Read', 'Grep', 'Glob', '--allowed-tools', 'Read,Grep,Glob']);
+  const pi = builtIns.find((item) => item.id === 'pi');
+  assert.equal(pi.executable, 'pi');
+  assert.equal(pi.publicView().executionSafety, 'verified');
+  assert.equal(pi.promptMode, 'arg');
+  assert.equal(pi.modelFlag, '--model');
+  assert.ok(pi.baseArgs.includes('--print'));
+  assert.ok(pi.baseArgs.includes('--no-approve'));
+  assert.ok(pi.baseArgs.includes('read,grep,find,ls'));
+  assert.ok(pi.baseArgs.includes('--no-extensions'));
+  assert.ok(pi.baseArgs.includes('--no-skills'));
+  const kilo = builtIns.find((item) => item.id === 'kilo');
+  assert.equal(kilo.executable, 'kilo');
+  assert.equal(kilo.publicView().executionSafety, 'external-plan-config-required');
+  assert.deepEqual(kilo.baseArgs, ['run']);
+  assert.equal(kilo.promptMode, 'arg');
+  assert.equal(kilo.modelFlag, null);
+  assert.equal(kilo.publicView().modelSelection.mode, 'cli-config');
+  assert.deepEqual(kilo.modelDiscoveryArgs, ['models']);
+});
+
+test('application gives every built-in CLI an isolated provider sandbox', async () => {
+  const app = await readFile(fileURLToPath(new URL('../src/app.mjs', import.meta.url)), 'utf8');
+  const declaration = app.match(/for \(const id of (\[[\s\S]*?\])\) \{\r?\n  const cwd = path\.join\(providerSandboxRoot, id\);/);
+  assert.ok(declaration, 'provider sandbox declaration is present');
+  const sandboxedIds = [...declaration[1].matchAll(/'([^']+)'/g)].map((match) => match[1]);
+  assert.deepEqual(sandboxedIds, createBuiltInCliProviders().map((provider) => provider.id));
+  assert.match(app, /'kimi-code': createAvailabilityOnlyCliAuthAdapter\(\{[\s\S]*?executable: 'kimi',[\s\S]*?loginArgs: \{ device: \['login'\] \}/);
 });
 
 test('CliProvider forwards an explicitly selected model before the prompt sentinel', async (t) => {

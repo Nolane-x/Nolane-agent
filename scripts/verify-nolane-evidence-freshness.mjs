@@ -5,6 +5,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { canonicalSha256 } from '../vendor/forge-os/src/core/canonical-json.mjs';
 import { evidenceFileSha256 } from '../src/release/evidence-file-hash.mjs';
+import { verifyMasterAcceptanceLedger } from '../src/release/master-ledger-verifier.mjs';
+import { verifyNativeCoreParity } from '../src/release/native-core-parity-verifier.mjs';
 
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 
@@ -26,6 +28,7 @@ async function bytesOrFailure(root, relative, requirementId, kind, failures) {
 export async function verifyNolaneEvidenceFreshness({
   projectRoot = process.cwd(),
   registryFile = 'requirements/nolane-agent-v5-requirements.json',
+  verifyReleaseEvidence = true,
 } = {}) {
   const root = path.resolve(projectRoot);
   const registry = JSON.parse(await readFile(path.resolve(root, registryFile), 'utf8'));
@@ -48,6 +51,21 @@ export async function verifyNolaneEvidenceFreshness({
     const expectedReplay = sha256(JSON.stringify({ id: requirement.id, ...actualEvidence }));
     if (expectedReplay !== acceptance.replayReceiptSha256) failures.push({ requirementId: requirement.id, code: 'REPLAY_RECEIPT_MISMATCH' });
   }
+  const releaseEvidence = {};
+  if (verifyReleaseEvidence) {
+    for (const [id, verify] of [
+      ['masterAcceptanceLedger', verifyMasterAcceptanceLedger],
+      ['nativeCoreParity', verifyNativeCoreParity],
+    ]) {
+      try {
+        const result = await verify({ rootDirectory: root });
+        releaseEvidence[id] = Object.freeze({ status: result.status, receiptSha256: result.receiptSha256 ?? result.conformanceReceiptSha256 ?? null });
+      } catch (error) {
+        releaseEvidence[id] = Object.freeze({ status: 'fail', receiptSha256: null });
+        failures.push({ requirementId: 'RELEASE_EVIDENCE', code: `${id.toUpperCase()}_STALE`, path: null });
+      }
+    }
+  }
   const base = {
     schema: 'nolane.agent.evidence-freshness-report.v1',
     product: registry.product ?? 'Nolane Agent',
@@ -55,9 +73,10 @@ export async function verifyNolaneEvidenceFreshness({
     status: failures.length === 0 ? 'pass' : 'fail',
     checked,
     failures,
-    claims: { missingEvidenceAccepted: false, staleEvidenceAccepted: false, sourceAndTestHashesRequired: true },
+    releaseEvidence,
+    claims: { missingEvidenceAccepted: false, staleEvidenceAccepted: false, sourceAndTestHashesRequired: true, releaseReceiptFreshnessRequired: verifyReleaseEvidence },
   };
-  return Object.freeze({ ...base, failures: Object.freeze(failures.map(Object.freeze)), claims: Object.freeze(base.claims), receiptSha256: canonicalSha256(base) });
+  return Object.freeze({ ...base, failures: Object.freeze(failures.map(Object.freeze)), releaseEvidence: Object.freeze(releaseEvidence), claims: Object.freeze(base.claims), receiptSha256: canonicalSha256(base) });
 }
 
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);

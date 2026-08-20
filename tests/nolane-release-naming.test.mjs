@@ -7,7 +7,7 @@ import { loadReleaseNaming, releaseArtifactNames } from '../src/release/release-
 test('Nolane release identity produces canonical artifact, root and schema names', async () => {
   const naming = await loadReleaseNaming({ rootDirectory: path.resolve('.') });
   assert.equal(naming.product, 'Nolane Agent');
-  assert.equal(naming.channel, 'beta');
+  assert.equal(naming.channel, 'stable');
   assert.equal(naming.manifestSchema, 'nolane.agent.release-manifest.v1');
   const names = releaseArtifactNames(naming, '5.0.0-beta.1');
   assert.deepEqual(names, {

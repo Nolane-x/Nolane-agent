@@ -66,6 +66,7 @@ test('language sync restores the active view state after a full route render', a
     rerender: async () => calls.push('render'),
     reconcile: async () => ({ language: 'en' }),
     invalidate: () => calls.push('invalidate'),
+    settle: async () => calls.push('settle'),
     captureViewState: () => {
       calls.push('capture');
       return state;
@@ -76,5 +77,40 @@ test('language sync restores the active view state after a full route render', a
   });
 
   await controller.preview('vi', '/settings');
-  assert.deepEqual(calls, ['capture', 'invalidate', 'render', ['restore', state]]);
+  assert.deepEqual(calls, ['capture', 'invalidate', 'render', 'settle', ['restore', state]]);
+});
+
+test('language sync forwards a captured navigation intent to a delayed settings rerender', async () => {
+  const rerenders = [];
+  const controller = createLanguageSyncController({
+    preferenceDocument: () => ({ general: { language: 'en' } }),
+    apply: (value) => value,
+    rerender: async (path, options) => rerenders.push({ path, options }),
+    reconcile: async () => ({ language: 'vi' }),
+    invalidate: () => {},
+  });
+
+  await controller.commit('/settings', { intent: 41 });
+  assert.deepEqual(rerenders, [{ path: '/settings', options: { intent: 41 } }]);
+});
+
+test('language sync retains the preview intent when save completion races with a new route', async () => {
+  let currentIntent = 8;
+  const rerenders = [];
+  const controller = createLanguageSyncController({
+    preferenceDocument: () => ({ general: { language: 'en' } }),
+    apply: (value) => value,
+    rerender: async (path, options) => rerenders.push({ path, options }),
+    reconcile: async () => ({ language: 'vi' }),
+    invalidate: () => {},
+    getRenderIntent: () => currentIntent,
+  });
+
+  await controller.preview('vi', '/settings');
+  currentIntent = 9;
+  await controller.commit('/settings');
+  assert.deepEqual(rerenders, [
+    { path: '/settings', options: { intent: 8 } },
+    { path: '/settings', options: { intent: 8 } },
+  ]);
 });

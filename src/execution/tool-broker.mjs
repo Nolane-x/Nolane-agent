@@ -390,11 +390,13 @@ export class ToolBroker {
     const { cwd, safeEnv, stdin } = await this.#commandEnvironment(input);
     const governance = this.#authorizeCommand({ ...input, command, args, cwd: this.policy.relative(cwd), env: safeEnv, stdin }, context);
     const timeoutMs = bounded(input.timeoutMs, this.timeoutMs, 10, 24 * 60 * 60_000, 'timeoutMs');
+    const requestedOutputBytes = input.maxOutputBytes === undefined ? this.maxOutputBytes : bounded(input.maxOutputBytes, this.maxOutputBytes, 256, 100_000_000, 'maxOutputBytes');
+    const maxOutputBytes = Math.min(this.maxOutputBytes, requestedOutputBytes);
     let stdout = ''; let stderr = ''; let keptBytes = 0; let truncated = false; let timedOut = false;
     const child = spawn(command, args, { cwd, env: safeEnv, shell: false, stdio: ['pipe', 'pipe', 'pipe'], detached: process.platform !== 'win32', windowsHide: true });
     const append = (kind, chunk) => {
       const buffer = Buffer.from(chunk);
-      const available = Math.max(0, this.maxOutputBytes - keptBytes);
+      const available = Math.max(0, maxOutputBytes - keptBytes);
       const kept = buffer.subarray(0, available);
       keptBytes += kept.length;
       if (buffer.length > available) truncated = true;

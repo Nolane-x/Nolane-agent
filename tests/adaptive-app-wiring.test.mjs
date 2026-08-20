@@ -34,3 +34,11 @@ test('application bootstrap composes the adaptive intelligence plane into agent 
   assert.match(source, /new TerminalHistoryRecorder\(\{[\s\S]*archive:\s*contextHistoryArchive/);
   assert.match(source, /new AgentLoop\(\{[\s\S]*dynamicToolCatalog/);
 });
+
+test('automation completion is bound to the terminal mission state rather than its dispatch', async () => {
+  const source = await readFile(new URL('../src/app.mjs', import.meta.url), 'utf8');
+  assert.match(source, /await runCoordinator\.whenSettled\(snapshot\.mission\.id\)/);
+  assert.match(source, /const mission = store\.getMission\(snapshot\.mission\.id\)/);
+  assert.match(source, /if \(mission\?\.status !== 'completed'\)\s*\{\s*return \{\s*status: 'fail'/);
+  assert.match(source, /memory: `mission:\$\{mission\.id\}:completed`/);
+});

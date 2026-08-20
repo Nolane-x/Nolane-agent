@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { localRequestToken, sameLocalSecret, terminalAuthProtocol } from './local-session-auth.mjs';
 
 const WS_GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 
@@ -65,6 +66,26 @@ function publicError(error) {
   return { code: String(error?.code ?? 'TERMINAL_ERROR'), message: message.replace(/(?:api[_-]?key|token|secret|password)\s*[:=]\s*\S+/gi, '[redacted]').slice(0, 500) };
 }
 
+function isLoopbackHostname(hostname) {
+  return ['127.0.0.1', '::1', 'localhost'].includes(String(hostname ?? '').toLowerCase());
+}
+
+export function isAllowedTerminalOrigin({ origin, host } = {}) {
+  const receivedOrigin = String(origin ?? '').trim();
+  if (!receivedOrigin) return true;
+  try {
+    const requested = new URL(receivedOrigin);
+    const target = new URL(`http://${String(host ?? '').trim()}`);
+    return requested.protocol === 'http:'
+      && isLoopbackHostname(requested.hostname)
+      && isLoopbackHostname(target.hostname)
+      && requested.hostname === target.hostname
+      && requested.port === target.port;
+  } catch {
+    return false;
+  }
+}
+
 export function attachTerminalWebSocket({ server, token, terminalManager, path = '/terminal', maxFrameBytes = 1024 * 1024, maxQueueBytes = 2 * 1024 * 1024, reconnectGraceMs = 5 * 60_000 } = {}) {
   if (!server || !terminalManager) return { close() {} };
   const peers = new Set(); const ownership = new Map(); const orphanOutput = new Map();
@@ -87,14 +108,16 @@ export function attachTerminalWebSocket({ server, token, terminalManager, path =
   const upgrade = (req, socket, head) => {
     const url = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`);
     if (url.pathname !== path) return httpReject(socket, '404 Not Found', 'not found');
-    const authorization = String(req.headers.authorization ?? ''); const actual = authorization.startsWith('Bearer ') ? authorization.slice(7) : url.searchParams.get('token');
-    if (!actual || actual !== token) return httpReject(socket, '401 Unauthorized', 'unauthorized');
+    if (!isAllowedTerminalOrigin({ origin: req.headers.origin, host: req.headers.host })) return httpReject(socket, '403 Forbidden', 'forbidden origin');
+    const actual = localRequestToken(req, { allowTerminalProtocol: true });
+    if (!actual || !sameLocalSecret(actual, token)) return httpReject(socket, '401 Unauthorized', 'unauthorized');
     const requestedClientId = String(url.searchParams.get('clientId') ?? '');
     const clientId = /^[A-Za-z0-9._:-]{1,128}$/.test(requestedClientId) ? requestedClientId : `ephemeral-${Math.random().toString(36).slice(2)}`;
     if (String(req.headers.upgrade ?? '').toLowerCase() !== 'websocket' || String(req.headers['sec-websocket-version'] ?? '') !== '13') return httpReject(socket, '426 Upgrade Required', 'websocket version 13 required');
     const key = String(req.headers['sec-websocket-key'] ?? ''); if (!/^[A-Za-z0-9+/]{22}==$/.test(key)) return httpReject(socket, '400 Bad Request', 'invalid websocket key');
     const accept = createHash('sha1').update(key + WS_GUID).digest('base64');
-    socket.write(`HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: ${accept}\r\n\r\n`);
+    const selectedProtocol = terminalAuthProtocol(req.headers['sec-websocket-protocol']);
+    socket.write(`HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: ${accept}\r\n${selectedProtocol ? `Sec-WebSocket-Protocol: ${selectedProtocol}\r\n` : ''}\r\n`);
     const peer = new WebSocketPeer(socket, { maxFrameBytes, maxQueueBytes }); peers.add(peer); if (head?.length) socket.unshift(head);
     const sessions = new Set();
     peer.onClose = () => {

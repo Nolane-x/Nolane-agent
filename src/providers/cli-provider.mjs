@@ -32,6 +32,29 @@ function normalizeModelId(value) {
   return candidate;
 }
 
+function normalizeEffort(value) {
+  const candidate = String(value ?? '').trim().toLowerCase();
+  if (!candidate) return null;
+  if (candidate.length > 64 || !/^[a-z0-9][a-z0-9._-]*$/.test(candidate)) throw new TypeError('effort must be a bounded provider variant');
+  return candidate;
+}
+
+function effortList(value, label) {
+  if (!Array.isArray(value)) throw new TypeError(`${label} must be an array of strings`);
+  return Object.freeze([...new Set(value.map(normalizeEffort).filter(Boolean))]);
+}
+
+function effortByModel(value) {
+  if (value == null) return Object.freeze({});
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new TypeError('effortByModel must be an object');
+  const entries = Object.entries(value).map(([modelId, levels]) => {
+    const normalizedModel = normalizeModelId(modelId);
+    if (!normalizedModel) throw new TypeError('effortByModel has an invalid model id');
+    return [normalizedModel, effortList(levels, `effortByModel.${modelId}`)];
+  });
+  return Object.freeze(Object.fromEntries(entries));
+}
+
 function modelCandidates(output) {
   const values = [];
   for (const line of String(output ?? '').split(/\r?\n/)) {
@@ -50,12 +73,27 @@ function modelCandidates(output) {
   return [...new Set(values)];
 }
 
-function discoveryModel(providerId, modelId, source, observedAt) {
-  return Object.freeze({ id: modelId, modelId, displayName: modelId, providerId, discoveredAt: observedAt, source: Object.freeze({ ...source, observedAt }) });
+function discoveryModel(providerId, modelId, source, observedAt, reasoningEfforts = []) {
+  const metadata = reasoningEfforts.length ? Object.freeze({ supportedReasoningEfforts: reasoningEfforts }) : Object.freeze({});
+  return Object.freeze({ id: modelId, modelId, displayName: modelId, providerId, discoveredAt: observedAt, source: Object.freeze({ ...source, observedAt }), metadata });
 }
 
 function diagnostic(output) {
-  return String(output ?? '').replace(ANSI_ESCAPE, '').replace(/(?:sk|key|token)-[A-Za-z0-9._-]+/gi, '[REDACTED]').replace(/(api[_-]?key|authorization|password|secret)\s*[:=]\s*\S+/gi, '$1=[REDACTED]').trim().slice(0, 500);
+  return String(output ?? '').replace(ANSI_ESCAPE, '').replace(/(?:sk|key|token)-[A-Za-z0-9._-]+/gi, '[REDACTED]').replace(/\b(api[_-]?key|authorization|password|secret|(?:refresh[_-]?)?token|rt_prefix)\b\s*[:=]\s*\S+/gi, '$1=[REDACTED]').trim().slice(0, 500);
+}
+
+function childEnvironment(env = {}, secretEnvKeys = []) {
+  const names = process.platform === 'win32'
+    ? ['PATH', 'Path', 'SYSTEMROOT', 'SystemRoot', 'WINDIR', 'COMSPEC', 'PATHEXT', 'TEMP', 'TMP', 'USERPROFILE', 'APPDATA', 'LOCALAPPDATA']
+    : ['PATH', 'HOME', 'TMPDIR', 'TMP', 'TEMP', 'XDG_CONFIG_HOME', 'XDG_DATA_HOME', 'XDG_CACHE_HOME'];
+  const base = {};
+  for (const name of [...names, ...secretEnvKeys]) {
+    const value = process.env[name];
+    if (typeof value !== 'string' || !value) continue;
+    if (name === 'Path' && base.PATH) continue;
+    base[name === 'Path' ? 'PATH' : name] = value;
+  }
+  return { ...base, ...env };
 }
 
 function detectError(result) {
@@ -67,6 +105,19 @@ function detectError(result) {
 function estimateTokens(value) {
   const bytes = Buffer.byteLength(String(value ?? ''), 'utf8');
   return Math.max(1, Math.min(10_000_000, Math.ceil(bytes / 4)));
+}
+
+function cliExecutionError(error) {
+  if (error?.code === 'PROVIDER_EXECUTION_FAILED' || error?.code === 'PROVIDER_SETUP_REQUIRED' || error?.code === 'PROVIDER_WORKSPACE_TRUST_REQUIRED') return error;
+  const wrapped = Object.assign(new Error('CLI provider execution failed'), { code: 'PROVIDER_EXECUTION_FAILED' });
+  wrapped.cause = error;
+  return wrapped;
+}
+
+function isNonAssistantCompletedEvent(item) {
+  if (item?.type !== 'item.completed') return false;
+  const type = String(item?.item?.type ?? '').toLowerCase();
+  return !['agent_message', 'assistant', 'assistant_message', 'message'].includes(type);
 }
 
 const WINDOWS_EXECUTABLE_EXTENSIONS = new Set(['.exe', '.com']);
@@ -109,7 +160,7 @@ async function resolveNpmWindowsWrapper(candidate) {
 export class CliProvider {
   #resolvedExecutable = null;
 
-  constructor({ id, label, executable, versionArgs = ['--version'], baseArgs = [], promptMode = 'stdin', promptFlag = null, modelFlag = '--model', modelDiscoveryArgs = null, modelCatalog = [], timeoutMs = 10 * 60_000, env = {}, secretEnvKeys = [], cwd = null, credentialOwner = 'official-cli', harnessFamily = 'generic-local', profile = {} } = {}) {
+  constructor({ id, label, executable, versionArgs = ['--version'], baseArgs = [], promptMode = 'stdin', promptFlag = null, modelFlag = '--model', modelSelection = null, effortFlag = null, effortLevels = [], effortByModel: configuredEffortByModel = null, executionSafety = 'verified', modelDiscoveryArgs = null, modelCatalog = [], timeoutMs = 10 * 60_000, env = {}, secretEnvKeys = [], cwd = null, credentialOwner = 'official-cli', harnessFamily = 'generic-local', profile = {} } = {}) {
     this.id = text(id, 'provider id');
     this.label = text(label ?? id, 'provider label');
     this.kind = 'cli';
@@ -120,6 +171,14 @@ export class CliProvider {
     this.promptMode = promptMode;
     this.promptFlag = promptFlag == null ? null : String(promptFlag);
     this.modelFlag = modelFlag == null ? null : String(modelFlag).trim() || null;
+    this.modelSelection = modelSelection ?? (this.modelFlag ? 'forwarded' : 'cli-config');
+    if (!['forwarded', 'cli-config'].includes(this.modelSelection)) throw new TypeError('modelSelection is invalid');
+    this.effortFlag = effortFlag == null ? null : String(effortFlag).trim() || null;
+    this.effortLevels = effortList(effortLevels, 'effortLevels');
+    this.effortByModel = effortByModel(configuredEffortByModel);
+    if (!this.effortFlag && (this.effortLevels.length || Object.keys(this.effortByModel).length)) throw new TypeError('effortFlag is required when a CLI advertises reasoning effort');
+    if (!['verified', 'external-plan-config-required'].includes(executionSafety)) throw new TypeError('executionSafety is invalid');
+    this.executionSafety = executionSafety;
     this.modelDiscoveryArgs = modelDiscoveryArgs == null ? null : argv(modelDiscoveryArgs, 'modelDiscoveryArgs');
     if (!Array.isArray(modelCatalog) || modelCatalog.some((item) => typeof item !== 'string')) throw new TypeError('modelCatalog must be an array of strings');
     this.modelCatalog = Object.freeze([...new Set(modelCatalog.map(normalizeModelId).filter(Boolean))]);
@@ -142,24 +201,32 @@ export class CliProvider {
       credentialOwner: this.credentialOwner,
       promptMode: this.promptMode,
       harnessFamily: this.harnessFamily,
+      executionSafety: this.executionSafety,
       modelDiscovery: Object.freeze({
         supported: Boolean(this.modelDiscoveryArgs?.length || this.modelCatalog.length),
         mode: this.modelDiscoveryArgs?.length ? 'command' : (this.modelCatalog.length ? 'compatibility-catalog' : 'unsupported'),
         live: Boolean(this.modelDiscoveryArgs?.length),
       }),
+      modelSelection: Object.freeze({ mode: this.modelSelection, forwarded: this.modelSelection === 'forwarded' }),
+      effort: Object.freeze({ supported: Boolean(this.effortFlag), mode: this.effortFlag ? 'forwarded' : 'unsupported', levels: this.effortLevels }),
       ...this.profile,
     });
+  }
+
+  #effortLevelsForModel(modelId) {
+    return this.effortByModel[normalizeModelId(modelId) ?? ''] ?? this.effortLevels;
   }
 
   async discoverModels({ timeoutMs = Math.min(this.timeoutMs, 15_000) } = {}) {
     const observedAt = new Date().toISOString();
     if (this.modelCatalog.length) {
       const source = Object.freeze({ type: 'cli-compatibility-catalog', live: false });
-      const models = this.modelCatalog.map((modelId) => discoveryModel(this.id, modelId, source, observedAt));
+      const models = this.modelCatalog.map((modelId) => discoveryModel(this.id, modelId, source, observedAt, this.#effortLevelsForModel(modelId)));
       return Object.freeze({ schema: 'nolane.cli-model-discovery.v1', providerId: this.id, status: 'compatibility', source, models: Object.freeze(models), errors: Object.freeze([]), observedAt });
     }
     if (!this.modelDiscoveryArgs?.length) {
-      return Object.freeze({ schema: 'nolane.cli-model-discovery.v1', providerId: this.id, status: 'unsupported', source: Object.freeze({ type: 'cli-capability', live: false }), models: Object.freeze([]), errors: Object.freeze([]), reason: 'CLI does not expose a model listing command; add a model manually.', observedAt });
+      const reason = this.modelSelection === 'cli-config' ? 'CLI selects its model from its own configuration and does not expose a model listing command.' : 'CLI does not expose a model listing command; add a model manually.';
+      return Object.freeze({ schema: 'nolane.cli-model-discovery.v1', providerId: this.id, status: 'unsupported', source: Object.freeze({ type: 'cli-capability', live: false }), models: Object.freeze([]), errors: Object.freeze([]), reason, observedAt });
     }
     try {
       const result = await this.#spawn(this.modelDiscoveryArgs, { timeoutMs, input: '' });
@@ -167,7 +234,7 @@ export class CliProvider {
       if (result.aborted) throw new Error('model discovery cancelled');
       if (result.exitCode !== 0) throw new Error(`model discovery exited with ${result.exitCode}`);
       const source = Object.freeze({ type: 'cli-command', live: true });
-      const models = modelCandidates(`${result.stdout}\n${result.stderr}`).map((modelId) => discoveryModel(this.id, modelId, source, observedAt));
+      const models = modelCandidates(`${result.stdout}\n${result.stderr}`).map((modelId) => discoveryModel(this.id, modelId, source, observedAt, this.#effortLevelsForModel(modelId)));
       return Object.freeze({ schema: 'nolane.cli-model-discovery.v1', providerId: this.id, status: 'discovered', source, models: Object.freeze(models), errors: Object.freeze([]), observedAt });
     } catch (error) {
       return Object.freeze({ schema: 'nolane.cli-model-discovery.v1', providerId: this.id, status: 'error', source: Object.freeze({ type: 'cli-command', live: true }), models: Object.freeze([]), errors: Object.freeze([String(error?.message ?? error).slice(0, 300)]), observedAt });
@@ -181,37 +248,44 @@ export class CliProvider {
       // much longer execution timeout used for actual agent work.
       const result = await this.#spawn(this.versionArgs, { timeoutMs: Math.min(this.timeoutMs, 15_000), input: '' });
       const output = `${result.stdout}\n${result.stderr}`.trim();
-      return Object.freeze({ ...this.publicView(), available: result.exitCode === 0, version: parseVersion(output), versionOutput: diagnostic(output), error: detectError(result) });
+      const error = detectError(result);
+      if (error) return Object.freeze({ ...this.publicView(), available: false, authenticated: false, healthy: false, version: parseVersion(output), error });
+      return Object.freeze({ ...this.publicView(), available: true, version: parseVersion(output), versionOutput: diagnostic(output), error: null });
     } catch (error) {
       return Object.freeze({ ...this.publicView(), available: false, version: null, error: error.code === 'ENOENT' ? 'not-found' : diagnostic(error.message) || 'spawn-error' });
     }
   }
 
-  async complete({ messages = [], tools = [], model = null, signal = null, timeoutMs = this.timeoutMs, cwd = this.cwd } = {}) {
-    const prompt = buildForgeActionPrompt(messages, tools);
-    const result = await this.invoke({ prompt, model, signal, timeoutMs, cwd });
-    if (result.timedOut) throw new Error(`${this.label} timed out`);
-    if (result.aborted) throw new Error(`${this.label} cancelled`);
-    if (result.exitCode !== 0) throw new Error(`${this.label} exited with ${result.exitCode}: ${result.stderr.slice(0, 1000)}`);
-    const lines = result.stdout.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-    let outputText = '';
-    for (const line of lines) {
-      try {
-        const item = JSON.parse(line);
-        const candidate = item.result ?? item.response ?? item.text ?? item.output ?? item.message?.content ?? item.item?.text ?? item.item?.content;
-        if (typeof candidate === 'string') outputText = candidate;
-        else if (item.type === 'item.completed' && typeof item.item?.text === 'string') outputText = item.item.text;
-        else if (!outputText) outputText = JSON.stringify(item);
-      } catch { if (!outputText) outputText = line; else outputText += `\n${line}`; }
+  async complete({ messages = [], tools = [], model = null, effort = null, signal = null, timeoutMs = this.timeoutMs, cwd = this.cwd } = {}) {
+    try {
+      const prompt = buildForgeActionPrompt(messages, tools);
+      const result = await this.invoke({ prompt, model, effort, signal, timeoutMs, cwd });
+      if (result.timedOut) throw new Error(`${this.label} timed out`);
+      if (result.aborted) throw new Error(`${this.label} cancelled`);
+      if (result.exitCode !== 0) throw new Error(`${this.label} exited with ${result.exitCode}: ${result.stderr.slice(0, 1000)}`);
+      const lines = result.stdout.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+      let outputText = '';
+      for (const line of lines) {
+        try {
+          const item = JSON.parse(line);
+          if (isNonAssistantCompletedEvent(item)) continue;
+          const candidate = item.result ?? item.response ?? item.text ?? item.output ?? item.message?.content ?? item.item?.text ?? item.item?.content;
+          if (typeof candidate === 'string') outputText = candidate;
+          else if (item.type === 'item.completed' && typeof item.item?.text === 'string') outputText = item.item.text;
+          else if (!outputText) outputText = JSON.stringify(item);
+        } catch { if (!outputText) outputText = line; else outputText += `\n${line}`; }
+      }
+      const envelope = parseForgeActionEnvelope(outputText || result.stdout, tools);
+      const finalText = envelope ? envelope.text : (outputText || result.stdout);
+      const promptTokens = estimateTokens(prompt);
+      const completionTokens = estimateTokens(finalText);
+      return Object.freeze({ providerId: this.id, model: model && !['auto', 'cli-selected'].includes(String(model)) ? String(model) : this.id, text: finalText, toolCalls: envelope?.toolCalls ?? Object.freeze([]), finishReason: 'stop', usage: Object.freeze({ promptTokens, completionTokens, totalTokens: promptTokens + completionTokens, estimated: true }), raw: result });
+    } catch (error) {
+      throw cliExecutionError(error);
     }
-    const envelope = parseForgeActionEnvelope(outputText || result.stdout, tools);
-    const finalText = envelope ? envelope.text : (outputText || result.stdout);
-    const promptTokens = estimateTokens(prompt);
-    const completionTokens = estimateTokens(finalText);
-    return Object.freeze({ providerId: this.id, model: model && !['auto', 'cli-selected'].includes(String(model)) ? String(model) : this.id, text: finalText, toolCalls: envelope?.toolCalls ?? Object.freeze([]), finishReason: 'stop', usage: Object.freeze({ promptTokens, completionTokens, totalTokens: promptTokens + completionTokens, estimated: true }), raw: result });
   }
 
-  async invoke({ prompt = '', model = null, args = [], cwd = this.cwd, env = {}, timeoutMs = this.timeoutMs, signal = null } = {}) {
+  async invoke({ prompt = '', model = null, effort = null, args = [], cwd = this.cwd, env = {}, timeoutMs = this.timeoutMs, signal = null } = {}) {
     const extraArgs = argv(args, 'args');
     const finalArgs = [...this.baseArgs];
     const selectedModel = String(model ?? '').trim();
@@ -219,6 +293,12 @@ export class CliProvider {
       const sentinel = finalArgs.indexOf('-');
       const insertion = sentinel >= 0 ? sentinel : finalArgs.length;
       finalArgs.splice(insertion, 0, this.modelFlag, selectedModel);
+    }
+    const selectedEffort = normalizeEffort(effort);
+    if (this.effortFlag && selectedEffort) {
+      const sentinel = finalArgs.indexOf('-');
+      const insertion = sentinel >= 0 ? sentinel : finalArgs.length;
+      finalArgs.splice(insertion, 0, this.effortFlag, selectedEffort);
     }
     let input = '';
     if (this.promptMode === 'stdin') input = String(prompt);
@@ -258,7 +338,7 @@ export class CliProvider {
   }
 
   async #spawn(args, { cwd = this.cwd, env = {}, timeoutMs = this.timeoutMs, signal = null, input = '' } = {}) {
-    const safeEnv = { ...process.env, ...this.env, ...Object.fromEntries(Object.entries(env).map(([key, value]) => [String(key), String(value)])) };
+    const safeEnv = childEnvironment({ ...this.env, ...Object.fromEntries(Object.entries(env).map(([key, value]) => [String(key), String(value)])) }, this.secretEnvKeys);
     const resolved = await this.#resolveExecutable();
     const child = spawn(resolved.executable, [...resolved.prefix, ...args], { cwd: cwd ?? undefined, env: safeEnv, shell: false, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'], detached: process.platform !== 'win32' });
     let stdout = ''; let stderr = ''; let timedOut = false; let aborted = false;

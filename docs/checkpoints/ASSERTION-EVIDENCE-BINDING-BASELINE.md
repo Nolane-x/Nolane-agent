@@ -7,6 +7,6 @@
 - Negative-bound: 48
 - Over-broad test files: 0
 - Certifiable: **true**
-- Receipt: `63de32d310add1bf4bf9ccc528c31c67eaf1f26af36136104581a4f48a4734b9`
+- Receipt: `9b2f77c938cb612f84ad395a869a59e3e134ea6a3f3732e69d8c07f9ace7b229`
 
 Unbound requirements remain explicitly unverified at assertion level. File existence is not accepted as behavior proof.

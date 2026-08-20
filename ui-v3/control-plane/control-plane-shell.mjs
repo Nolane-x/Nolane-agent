@@ -3,6 +3,7 @@ export const CONTROL_PLANE_DOMAINS = Object.freeze(['overview', 'agent-kernel', 
 const LABEL_KEYS = Object.freeze(Object.fromEntries(CONTROL_PLANE_DOMAINS.map((domain) => [domain, `control.domain.${domain}`])));
 const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 function parsePath(value) { const path = String(value ?? '/control-plane/overview').split('?')[0].replace(/\/+$/, ''); const segments = path.split('/').filter(Boolean); if (segments[0] !== 'control-plane') throw new Error(`Invalid Control Plane path: ${value}`); return { path, domain: segments[1] ?? 'overview', subroute: segments.slice(2).join('/') || null }; }
+export function normalizeControlPlanePath(value) { return String(value ?? '').split('?')[0].replace(/\/+$/, '') === '/browser' ? '/control-plane/runtime/browser' : value; }
 export function createControlPlaneModel({ missionContext = null, loader } = {}) {
   if (typeof loader !== 'function') throw new Error('Control Plane requires loader');
   const cache = new Map(); let active = null;

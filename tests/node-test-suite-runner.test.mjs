@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import path from 'node:path';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
-import { buildNodeTestArgs, buildNodeTestPlan, countDotReporterTests, runNodeTestFilePool } from '../scripts/run-node-test-suite.mjs';
+import { buildNodeTestArgs, buildNodeTestPlan, countDotReporterTests, resolveParallelWorkerCount, runNodeTestFilePool } from '../scripts/run-node-test-suite.mjs';
 
 test('node suite runner covers every test exactly once and isolates packaging', async () => {
   const plan = await buildNodeTestPlan(path.resolve('tests'));
@@ -73,6 +73,19 @@ test('node suite runner covers every test exactly once and isolates packaging', 
   assert.deepEqual(plan.parallelBatches.flat(), plan.parallel);
 });
 
+test('node suite runner can explicitly skip local packaging smoke without weakening the default CI plan', async () => {
+  const plan = await buildNodeTestPlan(path.resolve('tests'), { skipLocalPackagingSmoke: true });
+  const scheduled = [...plan.parallel, ...plan.isolated].map((file) => path.basename(file));
+
+  assert.deepEqual(plan.skipped.map((file) => path.basename(file)), [
+    'electron-packaging.test.mjs',
+    'packaging.test.mjs',
+  ]);
+  assert.equal(scheduled.includes('electron-packaging.test.mjs'), false);
+  assert.equal(scheduled.includes('packaging.test.mjs'), false);
+  assert.equal(plan.discovered.length, scheduled.length + plan.skipped.length);
+});
+
 
 test('node suite runner uses a concise reporter with bounded force-exit after test completion', () => {
   const args = buildNodeTestArgs(['/tmp/example.test.mjs'], { concurrency: 8 });
@@ -104,6 +117,17 @@ test('node suite runner lets LSP child fixtures close gracefully', () => {
 test('node suite runner lets route telemetry fixtures close gracefully', () => {
   const args = buildNodeTestArgs(['tests/route-security-telemetry.test.mjs'], { concurrency: 1 });
   assert.equal(args.includes('--test-force-exit'), false);
+});
+
+test('node suite runner reduces default parallelism under memory pressure without overriding explicit modes', () => {
+  const gigabyte = 1024 ** 3;
+  const noConfiguredWorkers = Number.NaN;
+
+  assert.equal(resolveParallelWorkerCount({ configuredWorkers: noConfiguredWorkers, freeMemoryBytes: 700 * 1024 ** 2 }), 1);
+  assert.equal(resolveParallelWorkerCount({ configuredWorkers: noConfiguredWorkers, freeMemoryBytes: 2 * gigabyte }), 2);
+  assert.equal(resolveParallelWorkerCount({ configuredWorkers: noConfiguredWorkers, freeMemoryBytes: 4 * gigabyte }), 4);
+  assert.equal(resolveParallelWorkerCount({ configuredWorkers: 12, freeMemoryBytes: 1 }), 12);
+  assert.equal(resolveParallelWorkerCount({ configuredWorkers: noConfiguredWorkers, cleanRoom: true, freeMemoryBytes: 1 }), 32);
 });
 
 

@@ -563,7 +563,7 @@ export class StudioStore {
     if (missionId) { clauses.push('mission_id=?'); values.push(missionId); }
     if (role) { clauses.push('role=?'); values.push(role); }
     const safeLimit = Math.max(1, Math.min(5_000, Number(limit) || 500));
-    const sql = `SELECT * FROM conversation_messages${clauses.length ? ` WHERE ${clauses.join(' AND ')}` : ''} ORDER BY created_at,id LIMIT ?`;
+    const sql = `SELECT * FROM conversation_messages${clauses.length ? ` WHERE ${clauses.join(' AND ')}` : ''} ORDER BY created_at,rowid LIMIT ?`;
     return this.db.prepare(sql).all(...values, safeLimit).map((row) => this.#message(row));
   }
 

@@ -12,7 +12,9 @@ test('UI summary combines bounded outputs processes terminals and sources', asyn
   });
   const view = await service.snapshot({ projectId: 'p1' });
   assert.equal(view.outputs[0].path, '/repo');
-  assert.equal(view.processes.length, 2);
+  assert.equal(view.processes.length, 1);
+  assert.equal(view.terminals.length, 1);
+  assert.equal(view.terminals[0].id, 'term-1');
   assert.equal(view.sources[0].id, 'context7');
   assert.deepEqual(view.availability, { outputs: true, processes: true, terminals: true, sources: true });
   assert.ok(view.processes[0].stdout.length <= 120);

@@ -91,11 +91,15 @@ test('portable watcher refreshes changed repositories once and stops cleanly', a
   await service.index(project);
   const events = [];
   const watcher = new CodebaseKnowledgeWatcher({ service, intervalMs: 30, debounceMs: 20, onIndexed: (event) => events.push(event) });
+  const signatureBeforeWatch = await service.signature(project);
   t.after(async () => { await watcher.close(); await cleanup(); });
   await watcher.start(project);
   await writeFile(path.join(root, 'src', 'new-route.mjs'), `export function attach(app) { app.get('/api/new', () => true); }\n`);
+  assert.notEqual(await service.signature(project), signatureBeforeWatch);
   const deadline = Date.now() + 3_000;
   while (!events.length && Date.now() < deadline) await new Promise((resolve) => setTimeout(resolve, 30));
+  const watcherStatus = watcher.status(project.id);
+  assert.equal(watcherStatus.lastError, null, watcherStatus.lastError ?? undefined);
   assert.equal(events.length, 1);
   assert.ok(service.snapshot(project.id).entities.some((item) => item.name === 'GET /api/new'));
   await watcher.stop(project.id);

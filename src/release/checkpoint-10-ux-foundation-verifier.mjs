@@ -1,6 +1,7 @@
 import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { canonicalSha256 } from '../../vendor/forge-os/src/core/canonical-json.mjs';
+import { PRODUCT_IDENTITY } from '../product-identity.mjs';
 
 const REQUIRED_CATEGORIES = Object.freeze(['general','appearance','accessibility','notifications','shortcuts','personalization','permissions','terminal','git','browser','voice','memory','models','integrations','data','updates','diagnostics','research']);
 const NON_CLAIMS = Object.freeze({
@@ -19,7 +20,7 @@ async function source(root, relative, failures) {
 function requirePattern(text, pattern, label, failures) { if (!pattern.test(text)) failures.push(label); }
 async function requireFiles(root, files, failures) { for (const file of files) try { await access(path.join(root, file)); } catch { failures.push(`missing file: ${file}`); } }
 
-export async function verifyCheckpoint10UxFoundation({ rootDirectory = process.cwd(), version = '5.0.0-beta.6' } = {}) {
+export async function verifyCheckpoint10UxFoundation({ rootDirectory = process.cwd(), version = PRODUCT_IDENTITY.version } = {}) {
   const root = path.resolve(rootDirectory);
   const failures = [];
   const files = [

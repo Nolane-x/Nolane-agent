@@ -2,7 +2,7 @@ name: Nolane Agent CI
 
 on:
   push:
-    branches: [main, master, "release/**", "feature/**"]
+    branches: [main, master, "release/**", "feature/**", "codex/external-gate-evidence"]
   pull_request:
 
 permissions:
@@ -14,6 +14,7 @@ concurrency:
 
 jobs:
   source-validation:
+    if: ${{ github.event_name != 'pull_request' || github.head_ref != github.event.repository.default_branch }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -41,6 +42,7 @@ jobs:
         run: npm run verify:electron-installer
 
   windows-electron-contract:
+    if: ${{ github.event_name != 'pull_request' || github.head_ref != github.event.repository.default_branch }}
     runs-on: windows-latest
     timeout-minutes: 45
     steps:

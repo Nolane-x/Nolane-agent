@@ -15,7 +15,7 @@ export class PodmanSandboxDriver {
   constructor({ runner = defaultRunner, command = 'podman' } = {}) { this.runner = runner; this.command = String(command); }
   async capabilities() {
     try {
-      const { stdout = '' } = await this.runner(this.command, ['version', '--format', 'json'], { timeoutMs: 5_000, maxOutputBytes: 256_000 });
+      const { stdout = '' } = await this.runner(this.command, ['version', '--format', 'json'], { timeoutMs: 15_000, maxOutputBytes: 256_000 });
       const parsed = JSON.parse(String(stdout)); const version = parsed?.Client?.Version ?? parsed?.client?.version ?? null;
       return Object.freeze({ schema: 'forge.podman-capabilities.v1', available: Boolean(version), version, externalRuntime: true, rootlessRequired: true, networkDefault: 'deny' });
     } catch (error) { return Object.freeze({ schema: 'forge.podman-capabilities.v1', available: false, version: null, externalRuntime: true, rootlessRequired: true, networkDefault: 'deny', reason: error?.code === 'ENOENT' ? 'not-installed' : 'probe-failed' }); }

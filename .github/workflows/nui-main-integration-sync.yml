@@ -1,0 +1,84 @@
+name: NUI main integration canonical sync
+
+on:
+  push:
+    branches:
+      - codex/nui-main-integration-repair
+      - codex/nui-flagship-integration
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nui-main-integration-canonical-sync-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  regenerate-and-verify:
+    if: github.actor != 'github-actions[bot]' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Run focused trust and NUI contracts before regeneration
+        run: >-
+          node --test
+          tests/provider-dogfood-candidate-runner.test.mjs
+          tests/provider-dogfood-self-hosted-workflow.test.mjs
+          tests/nui-host-sidecar.test.mjs
+          tests/nui-context-builder.test.mjs
+          tests/nui-proofline-mission-cockpit.test.mjs
+          tests/ui-runtime-visual-workflow.test.mjs
+
+      - name: Regenerate deterministic UI distribution
+        run: npm run build:ui-v3
+
+      - name: Regenerate native-core conformance from the verifier
+        run: node scripts/generate-native-core-conformance.mjs
+
+      - name: Regenerate Nolane requirement evidence
+        run: node scripts/generate-nolane-program.mjs
+
+      - name: Regenerate the master acceptance ledger last
+        run: node scripts/generate-master-acceptance-ledger.mjs
+
+      - name: Validate the regenerated source and evidence graph
+        run: npm run validate
+
+      - name: Restrict generator mutations to canonical outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t changed < <(git status --porcelain=v1 | sed -E 's/^.. //')
+          for path in "${changed[@]}"; do
+            case "$path" in
+              ui-dist/*|requirements/nolane-native-core-conformance.json|requirements/runtime-purity-summary.json|requirements/nolane-agent-v5-requirements.json|requirements/master-acceptance-ledger.json|docs/MASTER-ACCEPTANCE-LEDGER.md) ;;
+              *) echo "Unexpected generator mutation: $path" >&2; exit 1 ;;
+            esac
+          done
+
+      - name: Commit canonical generated outputs when changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add ui-dist requirements/nolane-native-core-conformance.json requirements/runtime-purity-summary.json requirements/nolane-agent-v5-requirements.json requirements/master-acceptance-ledger.json docs/MASTER-ACCEPTANCE-LEDGER.md
+          if git diff --cached --quiet; then
+            echo 'Canonical outputs already synchronized.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore(evidence): sync canonical NUI integration artifacts'
+          git push origin HEAD:"$GITHUB_REF_NAME"

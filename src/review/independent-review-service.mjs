@@ -57,27 +57,28 @@ function normalizeReviewContext(value) {
   });
 }
 
-function additions(diff) {
+function changedLines(diff) {
   const result = [];
-  let currentPath = null;
+  let currentPath = null; let currentHunk = null;
   for (const line of String(diff).split(/\r?\n/)) {
     if (line.startsWith('diff --git ')) {
       const match = line.match(/^diff --git a\/(.+?) b\/(.+)$/);
-      currentPath = match?.[2] ?? null;
+      currentPath = match?.[2] ?? null; currentHunk = null;
     } else if (line.startsWith('+++ b/')) currentPath = line.slice(6);
-    else if (line.startsWith('+') && !line.startsWith('+++')) result.push({ path: currentPath, line });
+    else if (line.startsWith('@@ ')) currentHunk = line;
+    else if ((line.startsWith('+') && !line.startsWith('+++')) || (line.startsWith('-') && !line.startsWith('---'))) result.push({ path: currentPath, hunk: currentHunk, line });
   }
   return result;
 }
 
 function incrementalDiff(previous, next) {
   const prior = new Map();
-  for (const item of additions(previous)) {
+  for (const item of changedLines(previous)) {
     const key = `${item.path ?? ''}\0${item.line}`;
     prior.set(key, (prior.get(key) ?? 0) + 1);
   }
   const selected = [];
-  for (const item of additions(next)) {
+  for (const item of changedLines(next)) {
     const key = `${item.path ?? ''}\0${item.line}`;
     const count = prior.get(key) ?? 0;
     if (count > 0) { prior.set(key, count - 1); continue; }
@@ -85,12 +86,14 @@ function incrementalDiff(previous, next) {
   }
   if (selected.length === 0) return '';
   const output = [];
-  let activePath = null;
+  let activePath = null; let activeHunk = null;
   for (const item of selected) {
     if (item.path !== activePath) {
       activePath = item.path;
-      output.push(`diff --git a/${activePath ?? 'unknown'} b/${activePath ?? 'unknown'}`, `+++ b/${activePath ?? 'unknown'}`);
+      activeHunk = null;
+      output.push(`diff --git a/${activePath ?? 'unknown'} b/${activePath ?? 'unknown'}`, `--- a/${activePath ?? 'unknown'}`, `+++ b/${activePath ?? 'unknown'}`);
     }
+    if (item.hunk && item.hunk !== activeHunk) { output.push(item.hunk); activeHunk = item.hunk; }
     output.push(item.line);
   }
   return `${output.join('\n')}\n`;
@@ -107,10 +110,29 @@ function normalizeFinding(raw, source = 'reviewer') {
     message: String(raw.message ?? '').trim().slice(0, 2_000),
     evidence: String(raw.evidence ?? '').trim().slice(0, 4_000),
     suggestion: raw.suggestion == null ? null : String(raw.suggestion).trim().slice(0, 4_000),
-    source,
   };
   if (!finding.message) throw new TypeError('review finding message is required');
-  return Object.freeze({ ...finding, fingerprint: canonicalSha256(finding) });
+  return Object.freeze({ ...finding, source, sources: Object.freeze([source]), fingerprint: canonicalSha256(finding) });
+}
+
+function mergeFindings(findings) {
+  const merged = new Map();
+  for (const finding of findings) {
+    const existing = merged.get(finding.fingerprint);
+    if (!existing) { merged.set(finding.fingerprint, finding); continue; }
+    const sources = Object.freeze([...new Set([...existing.sources, ...finding.sources])]);
+    merged.set(finding.fingerprint, Object.freeze({ ...existing, sources }));
+  }
+  return [...merged.values()];
+}
+
+function storedFinding(finding) {
+  const sources = Array.isArray(finding.sources) && finding.sources.length ? finding.sources : [finding.source].filter(Boolean);
+  return Object.freeze({ ...finding, sources: Object.freeze(sources) });
+}
+
+function reviewLineageSha256({ executorId, baseSha, headSha }) {
+  return canonicalSha256({ executorId: String(executorId), baseSha: baseSha ?? null, headSha: headSha ?? null });
 }
 
 export class IndependentReviewService {
@@ -134,12 +156,16 @@ export class IndependentReviewService {
         prior_review_id TEXT,
         full_diff TEXT NOT NULL,
         reviewed_diff TEXT NOT NULL,
+        review_context_sha256 TEXT NOT NULL DEFAULT '',
+        review_lineage_sha256 TEXT NOT NULL,
         findings_json TEXT NOT NULL,
         receipt_sha256 TEXT NOT NULL,
         created_at INTEGER NOT NULL,
-        UNIQUE(project_id,diff_sha256,rules_sha256,reviewer_id)
+        UNIQUE(project_id,diff_sha256,rules_sha256,reviewer_id,review_lineage_sha256)
       );
     `);
+    const columns = new Set(this.db.prepare('PRAGMA table_info(independent_reviews)').all().map((column) => String(column.name)));
+    if (!columns.has('review_lineage_sha256')) this.#migrateLegacyStorage();
   }
 
   async review({ projectId, diff, executorId, reviewerId, rules = [], reviewContext = null, baseSha = null, headSha = null, priorReviewId = null, secretValues = [] } = {}) {
@@ -152,7 +178,8 @@ export class IndependentReviewService {
     const safeReviewContext = normalizeReviewContext(reviewContext);
     const reviewContextSha256 = canonicalSha256(safeReviewContext);
     const diffSha256 = canonicalSha256(fullDiff); const rulesSha256 = canonicalSha256({ rules: safeRules, reviewContextSha256 });
-    const duplicate = this.db.prepare('SELECT * FROM independent_reviews WHERE project_id=? AND diff_sha256=? AND rules_sha256=? AND reviewer_id=?').get(project, diffSha256, rulesSha256, reviewerIdValue);
+    const reviewLineage = reviewLineageSha256({ executorId: executor, baseSha, headSha });
+    const duplicate = this.db.prepare('SELECT * FROM independent_reviews WHERE project_id=? AND diff_sha256=? AND rules_sha256=? AND reviewer_id=? AND review_lineage_sha256=?').get(project, diffSha256, rulesSha256, reviewerIdValue, reviewLineage);
     if (duplicate) return Object.freeze({ ...this.#row(duplicate), deduplicated: true });
 
     let reviewedDiff = fullDiff;
@@ -168,13 +195,13 @@ export class IndependentReviewService {
       if (!scanner?.id || typeof scanner.scan !== 'function') throw new TypeError('review scanner requires id and scan()');
       for (const raw of await scanner.scan({ projectId: project, diff: fullDiff, baseSha, headSha })) findings.push(normalizeFinding(redactSecrets(raw, { secretValues }), `scanner:${scanner.id}`));
     }
-    const unique = [...new Map(findings.map((finding) => [finding.fingerprint, finding])).values()].sort((left, right) => ['critical', 'high', 'medium', 'low', 'info'].indexOf(left.severity) - ['critical', 'high', 'medium', 'low', 'info'].indexOf(right.severity) || left.path.localeCompare(right.path) || left.line - right.line);
+    const unique = mergeFindings(findings).sort((left, right) => ['critical', 'high', 'medium', 'low', 'info'].indexOf(left.severity) - ['critical', 'high', 'medium', 'low', 'info'].indexOf(right.severity) || left.path.localeCompare(right.path) || left.line - right.line);
     const reviewId = id('review'); const createdAt = Math.trunc(this.clock());
-    const receiptBase = { schema: 'forge.independent-review-receipt.v2', reviewId, projectId: project, diffSha256, rulesSha256, reviewContextSha256, executorId: executor, reviewerId: reviewerIdValue, baseSha, headSha, priorReviewId, reviewedDiffSha256: canonicalSha256(reviewedDiff), findingFingerprints: unique.map((finding) => finding.fingerprint), createdAt };
+    const receiptBase = { schema: 'forge.independent-review-receipt.v2', reviewId, projectId: project, diffSha256, rulesSha256, reviewContextSha256, reviewLineageSha256: reviewLineage, executorId: executor, reviewerId: reviewerIdValue, baseSha, headSha, priorReviewId, reviewedDiffSha256: canonicalSha256(reviewedDiff), findingFingerprints: unique.map((finding) => finding.fingerprint), findingProvenance: unique.map((finding) => ({ fingerprint: finding.fingerprint, sources: finding.sources })), createdAt };
     const receiptSha256 = canonicalSha256(receiptBase);
-    this.db.prepare(`INSERT INTO independent_reviews(id,project_id,diff_sha256,rules_sha256,executor_id,reviewer_id,base_sha,head_sha,prior_review_id,full_diff,reviewed_diff,findings_json,receipt_sha256,created_at)
-      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(reviewId, project, diffSha256, rulesSha256, executor, reviewerIdValue, baseSha, headSha, priorReviewId, fullDiff, reviewedDiff, JSON.stringify(unique), receiptSha256, createdAt);
-    return Object.freeze({ schema: 'forge.independent-review.v2', reviewId, projectId: project, diffSha256, rulesSha256, reviewContextSha256, executorId: executor, reviewerId: reviewerIdValue, baseSha, headSha, priorReviewId, reviewedDiffSha256: receiptBase.reviewedDiffSha256, findings: Object.freeze(unique), receiptSha256, createdAt, deduplicated: false });
+    this.db.prepare(`INSERT INTO independent_reviews(id,project_id,diff_sha256,rules_sha256,executor_id,reviewer_id,base_sha,head_sha,prior_review_id,full_diff,reviewed_diff,review_context_sha256,review_lineage_sha256,findings_json,receipt_sha256,created_at)
+      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(reviewId, project, diffSha256, rulesSha256, executor, reviewerIdValue, baseSha, headSha, priorReviewId, fullDiff, reviewedDiff, reviewContextSha256, reviewLineage, JSON.stringify(unique), receiptSha256, createdAt);
+    return Object.freeze({ schema: 'forge.independent-review.v2', reviewId, projectId: project, diffSha256, rulesSha256, reviewContextSha256, reviewLineageSha256: reviewLineage, executorId: executor, reviewerId: reviewerIdValue, baseSha, headSha, priorReviewId, reviewedDiffSha256: receiptBase.reviewedDiffSha256, findings: Object.freeze(unique), receiptSha256, createdAt, deduplicated: false });
   }
 
   get(reviewId) {
@@ -185,12 +212,33 @@ export class IndependentReviewService {
   createRepairHandoff(reviewId, { targetAgentProfile = 'fixer' } = {}) {
     const review = this.get(reviewId);
     if (!review) throw new Error(`Unknown review: ${reviewId}`);
-    const base = { schema: 'forge.review-repair-handoff.v1', reviewId: review.reviewId, projectId: review.projectId, targetAgentProfile: String(targetAgentProfile), baseSha: review.baseSha, headSha: review.headSha, findings: review.findings.map((finding) => ({ fingerprint: finding.fingerprint, path: finding.path, line: finding.line, severity: finding.severity, category: finding.category, message: finding.message, evidence: finding.evidence, suggestion: finding.suggestion })), sourceReceiptSha256: review.receiptSha256 };
+    const base = { schema: 'forge.review-repair-handoff.v1', reviewId: review.reviewId, projectId: review.projectId, targetAgentProfile: String(targetAgentProfile), baseSha: review.baseSha, headSha: review.headSha, findings: review.findings.map((finding) => ({ fingerprint: finding.fingerprint, path: finding.path, line: finding.line, severity: finding.severity, category: finding.category, message: finding.message, evidence: finding.evidence, suggestion: finding.suggestion, sources: finding.sources })), sourceReceiptSha256: review.receiptSha256 };
     return Object.freeze({ ...base, handoffSha256: canonicalSha256(base) });
   }
 
   #row(row) {
-    return { schema: 'forge.independent-review.v1', reviewId: row.id, projectId: row.project_id, diffSha256: row.diff_sha256, rulesSha256: row.rules_sha256, executorId: row.executor_id, reviewerId: row.reviewer_id, baseSha: row.base_sha, headSha: row.head_sha, priorReviewId: row.prior_review_id, reviewedDiffSha256: canonicalSha256(row.reviewed_diff), findings: Object.freeze(JSON.parse(row.findings_json)), receiptSha256: row.receipt_sha256, createdAt: Number(row.created_at), deduplicated: false };
+    return { schema: 'forge.independent-review.v2', reviewId: row.id, projectId: row.project_id, diffSha256: row.diff_sha256, rulesSha256: row.rules_sha256, reviewContextSha256: row.review_context_sha256 || null, reviewLineageSha256: row.review_lineage_sha256, executorId: row.executor_id, reviewerId: row.reviewer_id, baseSha: row.base_sha, headSha: row.head_sha, priorReviewId: row.prior_review_id, reviewedDiffSha256: canonicalSha256(row.reviewed_diff), findings: Object.freeze(JSON.parse(row.findings_json).map(storedFinding)), receiptSha256: row.receipt_sha256, createdAt: Number(row.created_at), deduplicated: false };
+  }
+
+  #migrateLegacyStorage() {
+    const rows = this.db.prepare('SELECT * FROM independent_reviews').all();
+    this.db.exec('BEGIN IMMEDIATE');
+    try {
+      this.db.exec(`CREATE TABLE independent_reviews_rebuild(
+        id TEXT PRIMARY KEY, project_id TEXT NOT NULL, diff_sha256 TEXT NOT NULL, rules_sha256 TEXT NOT NULL,
+        executor_id TEXT NOT NULL, reviewer_id TEXT NOT NULL, base_sha TEXT, head_sha TEXT, prior_review_id TEXT,
+        full_diff TEXT NOT NULL, reviewed_diff TEXT NOT NULL, review_context_sha256 TEXT NOT NULL DEFAULT '',
+        review_lineage_sha256 TEXT NOT NULL, findings_json TEXT NOT NULL, receipt_sha256 TEXT NOT NULL, created_at INTEGER NOT NULL,
+        UNIQUE(project_id,diff_sha256,rules_sha256,reviewer_id,review_lineage_sha256)
+      )`);
+      const insert = this.db.prepare(`INSERT INTO independent_reviews_rebuild(id,project_id,diff_sha256,rules_sha256,executor_id,reviewer_id,base_sha,head_sha,prior_review_id,full_diff,reviewed_diff,review_context_sha256,review_lineage_sha256,findings_json,receipt_sha256,created_at)
+        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+      for (const row of rows) insert.run(row.id, row.project_id, row.diff_sha256, row.rules_sha256, row.executor_id, row.reviewer_id, row.base_sha, row.head_sha, row.prior_review_id, row.full_diff, row.reviewed_diff, row.review_context_sha256 ?? '', reviewLineageSha256({ executorId: row.executor_id, baseSha: row.base_sha, headSha: row.head_sha }), row.findings_json, row.receipt_sha256, row.created_at);
+      this.db.exec('DROP TABLE independent_reviews; ALTER TABLE independent_reviews_rebuild RENAME TO independent_reviews; COMMIT');
+    } catch (error) {
+      this.db.exec('ROLLBACK');
+      throw error;
+    }
   }
 
   close() { this.db.close(); }

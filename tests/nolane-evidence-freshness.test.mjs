@@ -11,6 +11,9 @@ test('evidence freshness verifier accepts current registry and detects stale sou
   assert.equal(current.status, 'pass');
   assert.equal(current.failures.length, 0);
   assert.ok(current.checked >= 60);
+  assert.equal(current.releaseEvidence.masterAcceptanceLedger.status, 'pass');
+  assert.equal(current.releaseEvidence.nativeCoreParity.status, 'pass');
+  assert.equal(current.claims.releaseReceiptFreshnessRequired, true);
   assert.match(current.receiptSha256, /^[a-f0-9]{64}$/);
 
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-evidence-freshness-'));
@@ -30,7 +33,7 @@ test('evidence freshness verifier accepts current registry and detects stale sou
     schema: 'nolane.agent.requirements.v5',
     requirements: [{ id: 'NOL-X-001', status: 'verified_source_test', acceptance: { entrypoint: 'src/feature.mjs', exactTest: 'tests/feature.test.mjs', evidence, replayReceiptSha256 } }],
   }));
-  assert.equal((await verifyNolaneEvidenceFreshness({ projectRoot: root })).status, 'pass');
+  assert.equal((await verifyNolaneEvidenceFreshness({ projectRoot: root, verifyReleaseEvidence: false })).status, 'pass');
   await writeFile(path.join(root, 'src', 'feature.mjs'), 'export const value = 2;\n');
   const stale = await verifyNolaneEvidenceFreshness({ projectRoot: root });
   assert.equal(stale.status, 'fail');

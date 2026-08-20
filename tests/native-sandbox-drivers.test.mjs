@@ -19,6 +19,7 @@ test('Podman driver is fail-closed and builds a bounded no-shell container contr
     return { stdout: '', stderr: '' };
   } });
   assert.equal((await driver.capabilities()).available, true);
+  assert.equal(calls[0]?.options?.timeoutMs, 15_000);
   const result = await driver.create({ id: 'task-1', image: 'node:22-alpine', workspaceRoot: workspace, limits: { cpuPercent: 150, memoryBytes: 536870912, processCount: 64 }, command: ['node', '--version'] });
   assert.equal(result.containerId, 'container-id');
   const args = calls.find((call) => call.args[0] === 'create').args;
@@ -62,6 +63,7 @@ test('macOS sandbox driver refuses non-macOS hosts and writes a deny-default pro
   const calls = [];
   const mac = new MacOsSandboxDriver({ platform: 'darwin', profileRoot: path.join(root, 'profiles'), runner: async (command, args) => { calls.push({ command, args }); return { stdout: '', stderr: '' }; } });
   assert.equal((await mac.capabilities()).available, true);
+  assert.deepEqual(calls[0], { command: '/usr/bin/sandbox-exec', args: ['-p', '(version 1) (allow default)', '/usr/bin/true'] });
   const prepared = await mac.prepare({ id: 'mac-1', workspaceRoot: root, command: ['node', '--version'], allowNetwork: false });
   assert.match(prepared.profile, /\(deny default\)/);
   assert.match(prepared.profile, /\(deny network\*\)/);

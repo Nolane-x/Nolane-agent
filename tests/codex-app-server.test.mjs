@@ -9,8 +9,41 @@ const root = path.dirname(fileURLToPath(import.meta.url));
 const fixture = path.join(root, 'fixtures', 'codex-app-server.mjs');
 
 function client(overrides = {}) {
-  return new CodexAppServerClient({ executable: process.execPath, args: [fixture], timeoutMs: 1_000, approvalHandler: async (request) => ({ decision: request.command?.[0] === 'git' ? 'accept' : 'decline' }), ...overrides });
+  return new CodexAppServerClient({ executable: process.execPath, args: [fixture], timeoutMs: 5_000, approvalHandler: async (request) => ({ decision: request.command?.[0] === 'git' ? 'accept' : 'decline' }), ...overrides });
 }
+
+test('CodexAppServerClient does not pass undeclared parent variables to its app-server child', async (t) => {
+  const inheritedName = 'NOLANE_TEST_PARENT_SECRET';
+  const grantedName = 'NOLANE_TEST_CODEX_GRANTED';
+  const previous = process.env[inheritedName];
+  process.env[inheritedName] = 'parent-only';
+  t.after(() => {
+    if (previous === undefined) delete process.env[inheritedName];
+    else process.env[inheritedName] = previous;
+  });
+
+  const codex = client({ env: { [grantedName]: 'granted-only' } });
+  t.after(() => codex.close());
+  await codex.connect();
+  const result = await codex.rpc.request('test/environment', { names: [inheritedName, grantedName] });
+
+  assert.deepEqual(result.present, { [inheritedName]: false, [grantedName]: true });
+});
+
+test('CodexAppServerClient detection does not pass undeclared parent variables to its probe child', async (t) => {
+  const inheritedName = 'NOLANE_TEST_PARENT_SECRET';
+  const previous = process.env[inheritedName];
+  process.env[inheritedName] = 'parent-only';
+  t.after(() => {
+    if (previous === undefined) delete process.env[inheritedName];
+    else process.env[inheritedName] = previous;
+  });
+
+  const detected = await client({ detectArgs: [fixture, '--environment-probe'] }).detect();
+
+  assert.equal(detected.available, true);
+  assert.match(detected.versionOutput, /secret-absent/);
+});
 
 test('CodexAppServerClient sends the thread sandbox enum and turn sandboxPolicy object', async (t) => {
   const codex = client();
@@ -27,6 +60,14 @@ test('CodexAppServerClient sends the thread sandbox enum and turn sandboxPolicy 
   assert.equal(result.text, 'fixture answer');
   assert.equal(result.usage.totalTokens, 16);
   assert.deepEqual(result.approvals.map((item) => item.decision), ['accept']);
+});
+
+test('CodexAppServerClient forwards a documented per-turn reasoning effort', async (t) => {
+  const codex = client();
+  t.after(() => codex.close());
+  const thread = await codex.startThread({ cwd: process.cwd(), ephemeral: true });
+  const result = await codex.startTurn({ threadId: thread.id, input: 'verify high effort', model: 'gpt-5.6-codex', effort: 'high' });
+  assert.equal(result.status, 'completed');
 });
 
 test('CodexAppServerClient complete() preserves method-specific sandbox shapes and retry classification', async (t) => {
@@ -67,4 +108,59 @@ test('CodexAppServerClient exposes documented account login, cancel, and logout 
   await codex.logout();
   const account = await codex.accountRead();
   assert.equal(account.account, null);
+});
+
+test('CodexAppServerClient complete() preserves the selected project working directory', async (t) => {
+  const codex = client();
+  t.after(() => codex.close());
+  const calls = [];
+  codex.startThread = async (request) => { calls.push(['thread', request]); return { id: 'thr_project' }; };
+  codex.completeInSession = async (session, request) => { calls.push(['turn', session, request]); return { providerId: 'codex-app-server', text: 'fixture answer' }; };
+
+  const cwd = path.join(process.cwd(), 'project-root');
+  await codex.complete({ cwd, messages: [{ role: 'user', content: 'Work here.' }] });
+
+  assert.equal(calls[0][1].cwd, cwd);
+  assert.equal(calls[1][1].cwd, cwd);
+});
+
+test('CodexAppServerClient marks opaque app-server failures as provider failures', async (t) => {
+  const codex = client();
+  t.after(() => codex.close());
+  codex.startTurn = async () => { throw new Error('JSON-RPC request timed out: turn/start'); };
+
+  await assert.rejects(
+    () => codex.completeInSession({ id: 'thr_timeout' }, { messages: [{ role: 'user', content: 'Plan safely' }] }),
+    (error) => error?.code === 'PROVIDER_EXECUTION_FAILED' && error?.message === 'Codex app server execution failed' && /JSON-RPC request timed out/.test(String(error?.cause?.message)),
+  );
+});
+
+test('CodexAppServerClient imports the app-server model catalog without inventing capabilities', async (t) => {
+  const codex = client();
+  t.after(() => codex.close());
+
+  const catalog = await codex.listModels();
+
+  assert.equal(catalog.status, 'fresh');
+  assert.equal(catalog.models.length, 1);
+  assert.deepEqual(catalog.models[0], {
+    id: 'gpt-5.6-codex',
+    displayName: 'GPT-5.6 Codex',
+    discoveredAt: catalog.observedAt,
+    metadata: {
+      source: 'codex-app-server',
+      hidden: false,
+      defaultReasoningEffort: 'medium',
+      supportedReasoningEfforts: ['low', 'medium', 'high'],
+      additionalSpeedTiers: ['standard', 'fast'],
+      serviceTiers: ['default', 'flex'],
+      defaultServiceTier: 'default',
+      modelSpecialty: 'coding',
+      multiAgentVersion: null,
+      upgrade: null,
+      upgradeInfo: null,
+      availabilityNux: null,
+    },
+  });
+  assert.equal(catalog.models[0].capabilities, undefined);
 });

@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 
 import { createProjectPickerModel, renderProjectPicker } from '../ui-v3/shell/project-picker.mjs';
 
@@ -36,4 +37,20 @@ test('project picker localizes actions and can represent no active project', () 
   const html = renderProjectPicker({ id: 'sidebar-project-picker', projects, selectedProjectId: null, language: 'vi' });
   assert.match(html, /Dự án mới/);
   assert.match(html, /Không làm việc trong dự án/);
+});
+
+test('empty project picker directs people to add a local folder from this workspace', () => {
+  const english = renderProjectPicker({ id: 'empty-project-picker', projects: [], language: 'en', open: true });
+  const vietnamese = renderProjectPicker({ id: 'empty-project-picker-vi', projects: [], language: 'vi', open: true });
+
+  assert.match(english, /No projects yet\. Add a local folder to give Nolane a workspace\./);
+  assert.match(vietnamese, /Chưa có dự án\. Hãy thêm thư mục cục bộ để Nolane có không gian làm việc\./);
+  assert.doesNotMatch(`${english}\n${vietnamese}`, /desktop launcher/i);
+});
+
+test('project registry owns its Add project action without a duplicate legacy global listener', async () => {
+  const source = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
+  assert.match(source, /action==='add'/);
+  assert.match(source, /action==='add'[\s\S]{0,260}nolane:project-create-requested/);
+  assert.doesNotMatch(source, /\['new',\s*'add',\s*'none'\]/);
 });

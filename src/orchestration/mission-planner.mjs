@@ -1,4 +1,5 @@
 const ROLES = new Set(['coordinator', 'scout', 'builder', 'reviewer', 'integrator']);
+const SYSTEM_DENIED_PATHS = Object.freeze(['.env', '.env.*', '**/*.pem', '**/*.key']);
 
 function extractJson(text) {
   const source = String(text ?? '').trim();
@@ -11,6 +12,10 @@ function extractJson(text) {
 function strings(value, label) {
   if (!Array.isArray(value) || value.some((item) => typeof item !== 'string')) throw new Error(`${label} must be an array of strings`);
   return [...value];
+}
+
+function deniedPaths(value, label) {
+  return [...new Set([...SYSTEM_DENIED_PATHS, ...strings(value ?? [], label)])];
 }
 
 function validate(value) {
@@ -30,8 +35,8 @@ function validate(value) {
     return {
       id, title, objective, role,
       dependencies: strings(task.dependencies ?? [], `${id}.dependencies`),
-      allowedPaths: strings(task.allowedPaths ?? ['**'], `${id}.allowedPaths`),
-      deniedPaths: strings(task.deniedPaths ?? ['.env', '.env.*', '**/*.pem', '**/*.key'], `${id}.deniedPaths`),
+      allowedPaths: strings(task.allowedPaths ?? [], `${id}.allowedPaths`),
+      deniedPaths: deniedPaths(task.deniedPaths, `${id}.deniedPaths`),
       metadata: task.metadata && typeof task.metadata === 'object' ? structuredClone(task.metadata) : {},
     };
   });
@@ -62,6 +67,17 @@ export class PlanningInputRequiredError extends Error {
   }
 }
 
+function planningProviderSelectionError(error, providerId) {
+  const detail = String(error?.message ?? '');
+  if (!/^(?:No eligible provider\b|Unknown provider:)/i.test(detail)) return null;
+  const explicitSelection = String(providerId ?? '').trim() && String(providerId).trim() !== 'auto';
+  const message = explicitSelection ? 'The selected provider is not ready' : 'No provider is ready for planning';
+  return Object.assign(new Error(message, { cause: error }), {
+    name: 'ProviderSelectionUnavailableError',
+    code: explicitSelection ? 'SELECTED_MODEL_NOT_READY' : 'PROVIDER_SETUP_REQUIRED',
+  });
+}
+
 export class MissionPlanner {
   constructor({ router, maxAttempts = 2, evidenceGovernance = null } = {}) {
     if (!router?.select) throw new TypeError('MissionPlanner provider router is required');
@@ -72,10 +88,15 @@ export class MissionPlanner {
     if (!Number.isInteger(this.maxAttempts) || this.maxAttempts < 1 || this.maxAttempts > 3) throw new TypeError('maxAttempts must be between 1 and 3');
   }
 
-  async plan({ projectId, objective, providerId = 'auto', modelId = null, signal = null, changedPaths = [] } = {}) {
+  async plan({ projectId, objective, providerId = 'auto', modelId = null, effort = null, signal = null, changedPaths = [] } = {}) {
     const preflight = this.evidenceGovernance ? await this.evidenceGovernance.preflight({ projectId, objective, changedPaths }) : null;
     if (preflight?.status === 'needs-input') throw new PlanningInputRequiredError({ inputRequest: preflight.inputRequest, preflightReceiptSha256: preflight.receiptSha256 });
-    const provider = this.router.select({ providerId, requiredCapabilities: ['coding', 'structured-output', 'governed-actions'] });
+    let provider;
+    try { provider = this.router.select({ providerId, requiredCapabilities: ['coding', 'structured-output', 'governed-actions'] }); }
+    catch (error) {
+      const normalized = planningProviderSelectionError(error, providerId);
+      throw normalized ?? error;
+    }
     let lastError;
     let prior = '';
     for (let attempt = 1; attempt <= this.maxAttempts; attempt += 1) {
@@ -87,6 +108,7 @@ export class MissionPlanner {
         ],
         tools: [],
         ...(modelId ? { model: String(modelId) } : {}),
+        ...(effort ? { effort: String(effort) } : {}),
         signal,
       });
       prior = String(completion.text ?? '');
@@ -96,7 +118,7 @@ export class MissionPlanner {
         return Object.freeze({
           ...plan,
           ...(planningEvidence ? { tasks: planningEvidence.tasks, planningEvidence } : {}),
-          metadata: Object.freeze({ projectId: String(projectId ?? ''), providerId: provider.id, modelId: modelId ? String(modelId) : (completion.model ?? null), attempts: attempt, ...(planningEvidence ? { planningEvidenceReceiptSha256: planningEvidence.receiptSha256 } : {}) }),
+          metadata: Object.freeze({ projectId: String(projectId ?? ''), providerId: provider.id, modelId: modelId ? String(modelId) : (completion.model ?? null), ...(effort ? { effort: String(effort) } : {}), attempts: attempt, ...(planningEvidence ? { planningEvidenceReceiptSha256: planningEvidence.receiptSha256 } : {}) }),
         });
       } catch (error) { lastError = error; }
     }

@@ -42,13 +42,14 @@ async function safeDirectory(root, relative, label) {
 }
 async function safeFile(root, relative, label) {
   const normalized = relativePath(relative, label);
-  const candidate = path.resolve(root, normalized);
-  const rel = path.relative(root, candidate);
+  const rootReal = await realpath(root);
+  const candidate = path.resolve(rootReal, normalized);
+  const rel = path.relative(rootReal, candidate);
   if (rel.startsWith('..') || path.isAbsolute(rel)) throw new Error(`${label} is outside project root: ${normalized}`);
   const stat = await lstat(candidate);
   if (stat.isSymbolicLink() || !stat.isFile()) throw new Error(`${label} must be a real file: ${normalized}`);
   const real = await realpath(candidate);
-  const realRel = path.relative(root, real);
+  const realRel = path.relative(rootReal, real);
   if (realRel.startsWith('..') || path.isAbsolute(realRel)) throw new Error(`${label} is outside project root: ${normalized}`);
   return { absolutePath: real, relativePath: normalized };
 }

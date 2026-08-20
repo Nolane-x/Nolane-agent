@@ -93,6 +93,16 @@ test('hidden regression vault keeps expected answer encrypted and executor-blind
   assert.equal(result.expectedExposedToExecutor, false);
 
   const restarted = new IndependentVerificationRuntime({ vaultRoot: root, vaultKey: key });
-  const failed = await restarted.evaluateHiddenCase('case-1', async () => ({ output: 'wrong' }));
+  const envelopePath = path.join(root, 'case-1.hidden');
+  const truncated = JSON.parse(await readFile(envelopePath, 'utf8'));
+  truncated.authTag = Buffer.from(truncated.authTag, 'base64').subarray(0, 15).toString('base64');
+  await writeFile(envelopePath, `${JSON.stringify(truncated)}\n`);
+  await assert.rejects(restarted.evaluateHiddenCase('case-1', async () => ({ output: 'wrong' })), /authentication tag must be exactly 16 bytes/i);
+
+  const restored = new IndependentVerificationRuntime({ vaultRoot: root, vaultKey: key });
+  await restored.registerHiddenCase({
+    caseId: 'case-2', taskKind: 'rename', executorInput: { source: 'const oldName = 1;' }, expected: { output: 'const newName = 1;' }, tags: ['rename', 'held-out'],
+  });
+  const failed = await restored.evaluateHiddenCase('case-2', async () => ({ output: 'wrong' }));
   assert.equal(failed.status, 'fail');
 });

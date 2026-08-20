@@ -1,0 +1,229 @@
+name: UI runtime visual evidence
+
+on:
+  pull_request:
+    paths:
+      - 'ui-v3/**'
+      - 'ui-dist/**'
+      - 'src/**'
+      - 'scripts/build-ui-v3.mjs'
+      - 'scripts/capture-ui-runtime-visual.mjs'
+      - 'scripts/capture-ui-responsive-evidence.mjs'
+      - 'scripts/capture-ui-v3-states.mjs'
+      - 'scripts/bind-product-perfection-runtime-evidence.mjs'
+      - 'tests/ui-runtime-visual-workflow.test.mjs'
+      - 'tests/ui-runtime-product-perfection-matrix.test.mjs'
+      - 'tests/ui-responsive-evidence-workflow.test.mjs'
+      - 'tests/ui-v3-skills-contrast.test.mjs'
+      - 'tests/ui-v3-settings-contrast.test.mjs'
+      - 'tests/ui-v3-control-plane-scroll-region.test.mjs'
+      - 'tests/nui-proofline-mission-cockpit.test.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/ui-runtime-visual.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-runtime-visual-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  chromium-source-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      NOLANE_AGENT_HOST: 127.0.0.1
+      NOLANE_AGENT_PORT: 4173
+      NOLANE_AGENT_TOKEN: nolane-ui-runtime-evidence-token
+      NOLANE_UI_RUNTIME_URL: http://127.0.0.1:4173
+      NOLANE_UI_EVIDENCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install locked source dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build and verify the committed UI distribution
+        run: |
+          npm run build:ui-v3
+          git diff --exit-code -- ui-dist
+
+      - name: Verify runtime matrix contracts before Chromium
+        run: |
+          node --test tests/ui-runtime-visual-workflow.test.mjs tests/ui-runtime-product-perfection-matrix.test.mjs tests/ui-responsive-evidence-workflow.test.mjs
+          node scripts/capture-ui-v3-states.mjs
+          git diff --exit-code -- docs/ui-v3/visual-state-manifest.json || true
+
+      - name: Install Chromium for the runtime visual gate
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.58.2 @axe-core/playwright@4.12.1
+          npx playwright install --with-deps chromium
+
+      - name: Start an authenticated source runtime
+        shell: bash
+        env:
+          NOLANE_AGENT_DATA_DIR: ${{ runner.temp }}/nolane-ui-runtime-data
+        run: |
+          node src/app.mjs > "$RUNNER_TEMP/nolane-ui-runtime.log" 2>&1 &
+          echo "NOLANE_UI_RUNTIME_PID=$!" >> "$GITHUB_ENV"
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent --show-error "$NOLANE_UI_RUNTIME_URL/health" > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/nolane-ui-runtime.log"
+          exit 1
+
+      - name: Capture risk-driven canonical runtime matrix
+        shell: bash
+        env:
+          NOLANE_UI_VISUAL_OUTPUT: ${{ runner.temp }}/nolane-ui-runtime-visual
+        run: |
+          # Legacy aggregate contract remains a subset of this expanded matrix:
+          # NOLANE_UI_VISUAL_STATES=home,home-experience-menu,home-compact,projects,skills,skills-catalog-picker,skills-forge-preview,settings,settings-option-picker,settings-language-roundtrip,settings-model-catalog,workroom,control-plane,mission-proofline,mission-proofline-compact,browser
+          # Nocturne states self-apply the equivalent preference patch: {"appearance":{"theme":"nocturne"}}
+          NOLANE_UI_VISUAL_STATES=onboarding node scripts/capture-ui-runtime-visual.mjs
+          NOLANE_UI_VISUAL_STATES=mission-proofline,mission-proofline-compact,mission-proofline-focus,mission-proofline-nocturne,review-runtime,review-runtime-compact node scripts/capture-ui-runtime-visual.mjs
+          NOLANE_UI_VISUAL_STATES=home,home-experience-menu,home-compact,home-keyboard-focus,home-reduced-motion,home-forced-colors,projects,projects-nocturne,skills,skills-catalog-picker,skills-forge-preview,skills-nocturne,settings,settings-option-picker,settings-language-roundtrip,settings-model-catalog,settings-model-catalog-vi,settings-vi-compact,settings-nocturne,workroom,workroom-nocturne,control-plane,control-plane-nocturne,browser,browser-blocked,browser-nocturne node scripts/capture-ui-runtime-visual.mjs
+          NOLANE_UI_VISUAL_STATES=home-nocturne node scripts/capture-ui-runtime-visual.mjs
+          node scripts/capture-ui-responsive-evidence.mjs
+          curl --fail --silent --show-error --header "authorization: Bearer $NOLANE_AGENT_TOKEN" "$NOLANE_UI_RUNTIME_URL/api/settings/effective" > /dev/null
+
+      - name: Bind exact-run product-perfection observations into the artifact
+        shell: bash
+        env:
+          NOLANE_UI_VISUAL_RECEIPT: ${{ runner.temp }}/nolane-ui-runtime-visual/receipt.json
+          NOLANE_UI_RESPONSIVE_RECEIPT: ${{ runner.temp }}/nolane-ui-runtime-visual/responsive/receipt.json
+          NOLANE_PRODUCT_PERFECTION_OBSERVATIONS_OUTPUT: ${{ runner.temp }}/nolane-ui-runtime-visual/product-perfection-runtime-observations.json
+          NOLANE_UI_EVIDENCE_ARTIFACT: ui-runtime-visual
+        run: node scripts/bind-product-perfection-runtime-evidence.mjs
+
+      - name: Upload runtime visual receipt
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: ui-runtime-visual
+          path: ${{ runner.temp }}/nolane-ui-runtime-visual
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Stop source runtime
+        if: always()
+        shell: bash
+        run: |
+          if [ -n "${NOLANE_UI_RUNTIME_PID:-}" ]; then
+            kill "$NOLANE_UI_RUNTIME_PID" || true
+          fi
+
+  windows-ui-runtime-evidence:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    env:
+      NOLANE_AGENT_HOST: 127.0.0.1
+      NOLANE_AGENT_PORT: 4173
+      NOLANE_AGENT_TOKEN: nolane-ui-runtime-evidence-token
+      NOLANE_UI_RUNTIME_URL: http://127.0.0.1:4173
+      NOLANE_UI_EVIDENCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install locked source dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build and verify the committed UI distribution
+        run: |
+          npm run build:ui-v3
+          git diff --exit-code -- ui-dist
+
+      - name: Install Chromium for the Windows UI evidence gate
+        shell: pwsh
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.58.2 @axe-core/playwright@4.12.1
+          npx playwright install chromium
+
+      - name: Capture Windows UI evidence and runner baseline
+        shell: pwsh
+        run: |
+          $output = Join-Path $env:RUNNER_TEMP 'nolane-windows-ui-runtime-visual'
+          $env:NOLANE_AGENT_DATA_DIR = Join-Path $env:RUNNER_TEMP 'nolane-windows-ui-runtime-data'
+          $env:NOLANE_UI_VISUAL_OUTPUT = $output
+          # Compatibility inventory retained from the pre-Task-10 gate:
+          # NOLANE_UI_VISUAL_STATES = 'onboarding,home,home-compact,settings,settings-model-catalog,skills,workroom,mission-proofline,mission-proofline-compact,browser'
+          $stdout = Join-Path $env:RUNNER_TEMP 'nolane-windows-ui-runtime.stdout.log'
+          $stderr = Join-Path $env:RUNNER_TEMP 'nolane-windows-ui-runtime.stderr.log'
+          $runtime = Start-Process -FilePath node -ArgumentList 'src/app.mjs' -RedirectStandardOutput $stdout -RedirectStandardError $stderr -PassThru -WindowStyle Hidden
+          $completed = $false
+          try {
+            $healthy = $false
+            for ($attempt = 1; $attempt -le 60; $attempt += 1) {
+              try {
+                Invoke-WebRequest -Uri "$env:NOLANE_UI_RUNTIME_URL/health" -UseBasicParsing -ErrorAction Stop | Out-Null
+                $healthy = $true
+                break
+              } catch {
+                Start-Sleep -Seconds 1
+              }
+            }
+            if (!$healthy) { throw 'Windows source runtime did not become healthy within 60 seconds' }
+            $env:NOLANE_UI_VISUAL_STATES = 'onboarding'
+            node scripts/capture-ui-runtime-visual.mjs
+            if ($LASTEXITCODE -ne 0) { throw "Windows onboarding capture failed with exit code $LASTEXITCODE" }
+            $env:NOLANE_UI_VISUAL_STATES = 'mission-proofline,mission-proofline-compact,mission-proofline-focus,review-runtime-compact'
+            node scripts/capture-ui-runtime-visual.mjs
+            if ($LASTEXITCODE -ne 0) { throw "Windows Proofline/Review capture failed with exit code $LASTEXITCODE" }
+            $env:NOLANE_UI_VISUAL_STATES = 'home,home-compact,home-keyboard-focus,home-reduced-motion,home-forced-colors,settings,settings-model-catalog,settings-model-catalog-vi,settings-vi-compact,skills,workroom,workroom-nocturne,browser,browser-blocked'
+            node scripts/capture-ui-runtime-visual.mjs
+            if ($LASTEXITCODE -ne 0) { throw "Windows workspace capture failed with exit code $LASTEXITCODE" }
+            node scripts/capture-ui-responsive-evidence.mjs
+            if ($LASTEXITCODE -ne 0) { throw "Windows responsive UI evidence capture failed with exit code $LASTEXITCODE" }
+            $computer = Get-CimInstance Win32_ComputerSystem
+            $operatingSystem = Get-CimInstance Win32_OperatingSystem
+            $liveRuntime = Get-Process -Id $runtime.Id -ErrorAction Stop
+            [ordered]@{
+              schema = 'nolane.ui.windows-runner-baseline.v2'
+              runnerOs = $env:RUNNER_OS
+              capturedAt = [DateTime]::UtcNow.ToString('o')
+              exactRevision = $env:NOLANE_UI_EVIDENCE_REVISION
+              totalPhysicalMemoryBytes = [int64]$computer.TotalPhysicalMemory
+              availablePhysicalMemoryBytes = [int64]$operatingSystem.FreePhysicalMemory * 1KB
+              runtimeWorkingSetBytes = [int64]$liveRuntime.WorkingSet64
+              runtimePrivateMemoryBytes = [int64]$liveRuntime.PrivateMemorySize64
+              visualStateIds = @('onboarding', 'home', 'home-compact', 'home-keyboard-focus', 'home-reduced-motion', 'home-forced-colors', 'settings', 'settings-model-catalog', 'settings-model-catalog-vi', 'settings-vi-compact', 'skills', 'workroom', 'workroom-nocturne', 'mission-proofline', 'mission-proofline-compact', 'mission-proofline-focus', 'review-runtime-compact', 'browser', 'browser-blocked')
+            } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $output 'windows-runner-baseline.json') -Encoding utf8
+            $completed = $true
+          } finally {
+            if (!$runtime.HasExited) { Stop-Process -Id $runtime.Id -Force -ErrorAction SilentlyContinue }
+            if (!$completed) {
+              Get-Content -LiteralPath $stdout -ErrorAction SilentlyContinue
+              Get-Content -LiteralPath $stderr -ErrorAction SilentlyContinue
+            }
+          }
+
+      - name: Upload Windows UI runtime receipt
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: windows-ui-runtime-visual
+          path: ${{ runner.temp }}/nolane-windows-ui-runtime-visual
+          if-no-files-found: error
+          retention-days: 14

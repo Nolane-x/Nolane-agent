@@ -51,6 +51,9 @@ test('live Control Plane domains expose bounded, redacted backend state', async 
   assert.match(html, /Backend đang báo cáo gì lúc này/);
   assert.match(html, /Repository search/);
   assert.match(html, /data-control-action="refresh"/);
+  assert.match(html, /data-option-picker="control-plane-skill-catalog"/);
+  assert.match(html, /data-option-picker-option="v2"/);
+  assert.doesNotMatch(html, /<select data-skill-catalog-filter/);
   assert.ok(api.calls.includes('/api/provider-connections'));
 });
 
@@ -82,5 +85,7 @@ test('application route loads and refreshes live Control Plane workspaces', asyn
   assert.match(source, /live-domain-workspace\.mjs/);
   assert.match(source, /loadLiveDomainWorkspace\(\{api,domain:active\.domain,projectId,missionId,language:cachedPreferences\.language,skillQuery,skillCatalog\}\)/);
   assert.match(source, /data-control-action="refresh"/);
+  assert.match(source, /data-option-picker-toggle/);
+  assert.match(source, /data-option-picker-option/);
   assert.match(source, /cache: 'path'/);
 });

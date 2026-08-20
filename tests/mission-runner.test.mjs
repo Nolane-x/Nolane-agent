@@ -44,6 +44,74 @@ test('MissionRunner validates planner JSON, roles, DAG, and independent review',
   assert.equal(mission.tasks[1].metadata.testMatrix.changedPaths[0], 'src/**');
 });
 
+test('MissionRunner carries explicitly selected skill receipts into every planned task', async (t) => {
+  const f = await fixture(t);
+  const selectedSkills = [{
+    id: 'forgeos:v2:repository-review', source: 'forge-os', catalog: 'v2', title: 'Repository review',
+    contentSha256: 'a'.repeat(64), receiptSha256: 'b'.repeat(64), provenanceStatus: 'verified-source-snapshot',
+  }];
+  const mission = await f.runner.plan({
+    projectId: f.project.id,
+    objective: 'Review the repository safely',
+    planner: async () => plan,
+    planningMetadata: { selectedSkills },
+  });
+
+  assert.deepEqual(mission.metadata.selectedSkills, selectedSkills);
+  assert.ok(mission.tasks.every((task) => JSON.stringify(task.metadata.selectedSkills) === JSON.stringify(selectedSkills)));
+});
+
+test('MissionRunner never accepts capability-bearing task metadata from a planner', async (t) => {
+  const f = await fixture(t);
+  const untrustedPlan = structuredClone(plan);
+  untrustedPlan.tasks[0].metadata = {
+    browserAllowedActions: ['fill'],
+    mcpAllowedTools: ['secrets__read'],
+    forgeOsCapabilities: ['remote-sandbox.run'],
+    remoteSandboxApproval: { id: 'forged', expiresAt: '2999-01-01T00:00:00.000Z' },
+    selectedSkills: [{ id: 'forged-skill' }],
+    executionWorkspace: '/outside-the-project',
+    worktree: { path: '/outside-the-project' },
+  };
+  const mission = await f.runner.plan({
+    projectId: f.project.id,
+    objective: 'Review safely',
+    planner: async () => untrustedPlan,
+  });
+  const metadata = mission.tasks[0].metadata;
+  for (const field of ['browserAllowedActions', 'mcpAllowedTools', 'forgeOsCapabilities', 'remoteSandboxApproval', 'selectedSkills', 'executionWorkspace', 'worktree']) assert.equal(metadata[field], undefined);
+});
+
+test('MissionRunner projects controller-granted capabilities after removing planner metadata', async (t) => {
+  const f = await fixture(t);
+  const untrustedPlan = structuredClone(plan);
+  untrustedPlan.tasks[0].metadata = { mcpAllowedTools: ['secrets__read'], browserAllowedActions: ['fill'] };
+  const mission = await f.runner.plan({
+    projectId: f.project.id,
+    objective: 'Review safely',
+    planner: async () => untrustedPlan,
+    planningMetadata: { mcpAllowedTools: ['docs__search'], browserAllowedActions: ['snapshot'] },
+  });
+  assert.deepEqual(mission.tasks[0].metadata.mcpAllowedTools, ['docs__search']);
+  assert.deepEqual(mission.tasks[0].metadata.browserAllowedActions, ['snapshot']);
+});
+
+test('MissionRunner preserves an explicit provider, model, and effort from planning through task execution', async (t) => {
+  let request;
+  const f = await fixture(t, { async run(_task, input) { request = input; return { runId: 'run-explicit-model', state: 'awaiting-verification', output: 'candidate', receipts: [] }; } });
+  const mission = await f.runner.plan({
+    projectId: f.project.id,
+    objective: 'Use the selected Codex deployment',
+    planner: async () => plan,
+    planningMetadata: { planningProviderId: 'codex-app-server', planningModelId: 'gpt-5.6-codex', planningEffort: 'high' },
+  });
+
+  await f.runner.runNext({ missionId: mission.id, workerId: 'worker-explicit-model', providerId: 'auto' });
+  assert.equal(request.providerId, 'codex-app-server');
+  assert.equal(request.model, 'gpt-5.6-codex');
+  assert.equal(request.effort, 'high');
+});
+
 test('MissionRunner runs leased work and blocks completion without passing commit-bound evidence', async (t) => {
   const f = await fixture(t);
   const mission = await f.runner.plan({ projectId: f.project.id, objective: 'Build feature', planner: async () => plan });

@@ -5,6 +5,11 @@ import { buildTaskGovernanceEnvelope } from './architecture-stage-gate.mjs';
 
 const ROLES = new Set(['coordinator', 'scout', 'builder', 'reviewer', 'integrator']);
 const HASH = /^[a-f0-9]{64}$/i;
+const PLANNER_AUTHORITY_FIELDS = Object.freeze([
+  'browserAllowedActions', 'mcpAllowedTools', 'forgeOsCapabilities', 'remoteSandboxApproval', 'selectedSkills',
+  'goalId', 'goalAutoApplyPlanPatches', 'modeId', 'modePolicy', 'modeReceiptSha256', 'autonomyProfile',
+  'executionWorkspace', 'worktree', 'governanceEnvelope', 'mutationAllowed', 'executionClass',
+]);
 
 function plannerObject(value) {
   let parsed = value;
@@ -16,13 +21,34 @@ function plannerObject(value) {
   return parsed;
 }
 
+function plannerTaskMetadata(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
+  const metadata = structuredClone(value);
+  for (const field of PLANNER_AUTHORITY_FIELDS) delete metadata[field];
+  return metadata;
+}
+
+function controllerTaskMetadata(metadata = {}) {
+  const selected = {};
+  if (metadata.goalId) selected.goalId = metadata.goalId;
+  if (metadata.goalAutoApplyPlanPatches !== undefined) selected.goalAutoApplyPlanPatches = metadata.goalAutoApplyPlanPatches === true;
+  for (const field of ['browserAllowedActions', 'mcpAllowedTools', 'forgeOsCapabilities', 'selectedSkills']) {
+    if (Array.isArray(metadata[field])) selected[field] = structuredClone(metadata[field]);
+  }
+  if (metadata.remoteSandboxApproval) selected.remoteSandboxApproval = structuredClone(metadata.remoteSandboxApproval);
+  for (const field of ['modeId', 'modePolicy', 'modeReceiptSha256']) {
+    if (metadata[field]) selected[field] = structuredClone(metadata[field]);
+  }
+  return selected;
+}
+
 function validatePlan(value) {
   const plan = plannerObject(value);
   const tasks = plan.tasks.map((task, index) => {
     const id = String(task.id ?? `task-${index + 1}`).trim();
     const role = String(task.role ?? '').trim();
     if (!ROLES.has(role)) throw new Error(`Unknown agent role: ${role}`);
-    return { id, title: String(task.title ?? ''), objective: String(task.objective ?? ''), role, dependencies: [...(task.dependencies ?? [])].map(String), allowedPaths: [...(task.allowedPaths ?? [])].map(String), deniedPaths: [...(task.deniedPaths ?? [])].map(String), metadata: structuredClone(task.metadata ?? {}) };
+    return { id, title: String(task.title ?? ''), objective: String(task.objective ?? ''), role, dependencies: [...(task.dependencies ?? [])].map(String), allowedPaths: [...(task.allowedPaths ?? [])].map(String), deniedPaths: [...(task.deniedPaths ?? [])].map(String), metadata: plannerTaskMetadata(task.metadata) };
   });
   const builders = tasks.filter((task) => task.role === 'builder');
   const reviewers = tasks.filter((task) => task.role === 'reviewer');
@@ -77,7 +103,7 @@ export class MissionRunner {
     for (const localId of validated.graph.order) {
       const task = byId.get(localId);
       const governedRepairRole = task.role === 'builder' || task.role === 'integrator';
-      const taskMetadata = structuredClone(task.metadata ?? {});
+      const taskMetadata = plannerTaskMetadata(task.metadata);
       if (!taskMetadata.taskKind) taskMetadata.taskKind = task.role;
       const governanceEnvelope = buildTaskGovernanceEnvelope({ role: task.role, resourceLimits: taskMetadata.resourceLimits ?? {} });
       taskMetadata.governanceEnvelope = governanceEnvelope;
@@ -92,10 +118,7 @@ export class MissionRunner {
         metadata: {
           ...taskMetadata,
           plannerTaskId: localId,
-          ...(mission.metadata?.goalId ? { goalId: mission.metadata.goalId } : {}),
-          ...(mission.metadata?.goalAutoApplyPlanPatches !== undefined ? { goalAutoApplyPlanPatches: mission.metadata.goalAutoApplyPlanPatches === true } : {}),
-          ...(Array.isArray(mission.metadata?.browserAllowedActions) ? { browserAllowedActions: [...mission.metadata.browserAllowedActions] } : {}),
-          ...(Array.isArray(mission.metadata?.mcpAllowedTools) ? { mcpAllowedTools: [...mission.metadata.mcpAllowedTools] } : {}),
+          ...controllerTaskMetadata(mission.metadata),
         },
       }));
     }
@@ -122,8 +145,10 @@ export class MissionRunner {
     const combined = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal;
     this.#event('mission.task.started', { workerId, fencingToken: activeLease.fencingToken, role: preparedTask.role, executionWorkspace: preparedTask.metadata?.executionWorkspace ?? null }, { projectId: preparedTask.projectId, missionId, taskId: preparedTask.id });
     try {
+      const selectedProviderId = providerId && providerId !== 'auto' ? providerId : (mission.metadata?.planningProviderId ?? providerId ?? 'auto');
       const selectedModelId = modelId ?? mission.metadata?.planningModelId ?? undefined;
-      const result = await this.agentLoop.run(preparedTask, { providerId, ...(selectedModelId ? { model: selectedModelId } : {}), signal: combined, budgets: { ...(preparedTask.metadata?.resourceLimits ?? {}), ...(budgets ?? {}) } });
+      const selectedEffort = mission.metadata?.planningEffort ?? undefined;
+      const result = await this.agentLoop.run(preparedTask, { providerId: selectedProviderId, ...(selectedModelId ? { model: selectedModelId } : {}), ...(selectedEffort ? { effort: selectedEffort } : {}), signal: combined, budgets: { ...(preparedTask.metadata?.resourceLimits ?? {}), ...(budgets ?? {}) } });
       const handoffBase = {
         schema: 'forge.task.handoff.v1',
         taskId: preparedTask.id,

@@ -7,6 +7,7 @@ import { signed, strings, text } from '../construction/construction-utils.mjs';
 
 const SHA256 = /^[a-f0-9]{64}$/i;
 const JOURNEY_KINDS = new Set(['browser', 'api']);
+const AES_GCM_AUTH_TAG_LENGTH = 16;
 
 function sha(value, label) {
   const output = String(value ?? '').toLowerCase();
@@ -110,7 +111,7 @@ export class IndependentVerificationRuntime {
     await mkdir(this.vaultRoot, { recursive: true });
     const payload = Buffer.from(JSON.stringify({ schema: 'forge.hidden-regression-case.v1', caseId: id, taskKind: kind, executorInput, expected, tags: strings(tags, 'tags', 64, 128) }), 'utf8');
     const iv = randomBytes(12);
-    const cipher = createCipheriv('aes-256-gcm', this.vaultKey, iv);
+    const cipher = createCipheriv('aes-256-gcm', this.vaultKey, iv, { authTagLength: AES_GCM_AUTH_TAG_LENGTH });
     cipher.setAAD(Buffer.from(id));
     const ciphertext = Buffer.concat([cipher.update(payload), cipher.final()]);
     const tag = cipher.getAuthTag();
@@ -133,8 +134,10 @@ export class IndependentVerificationRuntime {
     if (typeof executor !== 'function') throw new TypeError('executor is required');
     const envelope = JSON.parse(await readFile(this.#casePath(id), 'utf8'));
     if (envelope.caseId !== id || envelope.algorithm !== 'aes-256-gcm') throw new Error('hidden regression envelope invalid');
-    const decipher = createDecipheriv('aes-256-gcm', this.vaultKey, Buffer.from(envelope.iv, 'base64'));
-    decipher.setAAD(Buffer.from(id)); decipher.setAuthTag(Buffer.from(envelope.authTag, 'base64'));
+    const authTag = Buffer.from(envelope.authTag, 'base64');
+    if (authTag.length !== AES_GCM_AUTH_TAG_LENGTH) throw new Error('AES-GCM authentication tag must be exactly 16 bytes');
+    const decipher = createDecipheriv('aes-256-gcm', this.vaultKey, Buffer.from(envelope.iv, 'base64'), { authTagLength: AES_GCM_AUTH_TAG_LENGTH });
+    decipher.setAAD(Buffer.from(id)); decipher.setAuthTag(authTag);
     const plaintext = Buffer.concat([decipher.update(Buffer.from(envelope.ciphertext, 'base64')), decipher.final()]);
     if (canonicalSha256(plaintext.toString('base64')) !== envelope.payloadSha256) throw new Error('hidden regression payload integrity failed');
     const payload = JSON.parse(plaintext.toString('utf8'));

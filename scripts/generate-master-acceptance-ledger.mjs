@@ -17,7 +17,7 @@ function canonical(value) {
 export function renderMasterLedgerReport(ledger) {
   const status = ledger.summary.statusCounts;
   const lines = [
-    '# Master Acceptance Ledger',
+    `# ${ledger.product} ${ledger.productVersion} — Master Acceptance Ledger`,
     '',
     `Product version: **${ledger.productVersion}**`,
     '',

@@ -9,6 +9,7 @@ import { ProviderRegistry } from '../src/providers/provider-registry.mjs';
 import { StudioStore } from '../src/storage/studio-store.mjs';
 import { GoalService } from '../src/goals/goal-service.mjs';
 import { AdaptiveReplanner } from '../src/goals/adaptive-replanner.mjs';
+import { BrowserPermissionService } from '../src/security/browser-permission-service.mjs';
 
 function auth(init = {}) { return { ...init, headers: { authorization: 'Bearer goal-token', 'content-type': 'application/json', ...(init.headers ?? {}) } }; }
 
@@ -17,6 +18,8 @@ async function fixture(t) {
   const store = new StudioStore(path.join(root, 'studio.db')); t.after(() => store.close());
   const project = store.createProject({ name: 'P', workspaceRoot: root });
   const goalService = new GoalService({ store });
+  const browserGoal = goalService.create({ projectId: project.id, title: 'Browser', objective: 'Open a public browser session.', metadata: { browserAllowedActions: ['open', 'goto'] } });
+  const browserPermissionService = new BrowserPermissionService({ store, goalService });
   const replanner = new AdaptiveReplanner({ store, goalService });
   const calls = [];
   const goalRunService = {
@@ -35,10 +38,10 @@ async function fixture(t) {
   const settingsService = { async effective(id) { calls.push(['settings-effective', id]); return { value: { agent: { model: 'auto' } }, provenance: {}, warnings: [] }; }, async update(input) { calls.push(['settings-update', input]); return { ...input, effective: { value: input.patch } }; } };
   const missionGraph = { snapshot(input) { calls.push(['graph', input]); return { schema: 'forge.studio.mission-graph.v1', nodes: [], edges: [], goal: input.goalId ? goalService.get(input.goalId) : null }; } };
   const goalScheduler = { async tick() { calls.push(['scheduler']); return { started: [], skipped: [] }; } };
-  const service = await createHttpServer({ config: { host: '127.0.0.1', port: 0, authToken: 'goal-token' }, store, providers: new ProviderRegistry(), missionRunner: {}, goalService, goalRunService, replanner, commandRegistry, browserService, pluginService, settingsService, missionGraph, goalScheduler, browserRuntimeInstaller, uiRoot: path.resolve('ui') });
+  const service = await createHttpServer({ config: { host: '127.0.0.1', port: 0, authToken: 'goal-token' }, store, providers: new ProviderRegistry(), missionRunner: {}, goalService, goalRunService, replanner, commandRegistry, browserService, browserPermissionService, pluginService, settingsService, missionGraph, goalScheduler, browserRuntimeInstaller, uiRoot: path.resolve('ui') });
   t.after(() => service.close());
   t.after(() => rm(root, { recursive: true, force: true }));
-  return { ...service, store, project, goalService, calls };
+  return { ...service, store, project, goalService, browserGoal, calls };
 }
 
 test('Goal OS API creates, starts, updates, observes, replans, and projects durable goals', async (t) => {
@@ -63,7 +66,7 @@ test('Goal OS API exposes commands, browser, plugins, settings, and scheduler th
   const f = await fixture(t);
   assert.equal((await fetch(`${f.url}/api/commands`, auth())).status, 200);
   assert.equal((await fetch(`${f.url}/api/commands`, auth({ method: 'POST', body: JSON.stringify({ command: '/goal list', context: { projectId: f.project.id } }) }))).status, 200);
-  assert.equal((await fetch(`${f.url}/api/browser/open`, auth({ method: 'POST', body: JSON.stringify({ projectId: f.project.id, url: 'https://example.com' }) }))).status, 200);
+  assert.equal((await fetch(`${f.url}/api/browser/open`, auth({ method: 'POST', body: JSON.stringify({ projectId: f.project.id, goalId: f.browserGoal.id, url: 'https://example.com' }) }))).status, 200);
   assert.equal((await fetch(`${f.url}/api/browser/snapshot`, auth({ method: 'POST', body: JSON.stringify({ projectId: f.project.id, depth: 3 }) }))).status, 200);
   assert.equal((await fetch(`${f.url}/api/browser/artifact`, auth({ method: 'POST', body: JSON.stringify({ projectId: f.project.id, filename: 'workspace.png' }) }))).status, 200);
   assert.equal((await fetch(`${f.url}/api/browser/runtime`, auth())).status, 200);

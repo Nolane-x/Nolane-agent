@@ -8,7 +8,32 @@ export function isRetryableCodexError(error) {
   return Number(error?.code) === -32001 || /overloaded|retry later|temporar|timeout|rate limit/i.test(String(error?.message ?? error));
 }
 
+function codexExecutionError(error) {
+  if (error?.code === 'PROVIDER_EXECUTION_FAILED' || error?.code === 'PROVIDER_WORKSPACE_TRUST_REQUIRED') return error;
+  const message = String(error?.message ?? error ?? 'unknown Codex app-server failure');
+  const code = /not inside a trusted directory|skip-git-repo-check/i.test(message)
+    ? 'PROVIDER_WORKSPACE_TRUST_REQUIRED'
+    : 'PROVIDER_EXECUTION_FAILED';
+  const wrapped = Object.assign(new Error('Codex app server execution failed'), { code });
+  wrapped.cause = error;
+  return wrapped;
+}
+
 function versionOf(value) { return String(value ?? '').match(/\b(\d+\.\d+(?:\.\d+)?(?:[-+][\w.-]+)?)\b/)?.[1] ?? null; }
+
+function clientEnvironment(env = {}) {
+  const names = process.platform === 'win32'
+    ? ['PATH', 'Path', 'SYSTEMROOT', 'SystemRoot', 'WINDIR', 'COMSPEC', 'PATHEXT', 'TEMP', 'TMP', 'USERPROFILE', 'APPDATA', 'LOCALAPPDATA', 'CODEX_HOME']
+    : ['PATH', 'HOME', 'TMPDIR', 'TMP', 'TEMP', 'XDG_CONFIG_HOME', 'XDG_DATA_HOME', 'XDG_CACHE_HOME', 'CODEX_HOME'];
+  const base = {};
+  for (const name of names) {
+    const value = process.env[name];
+    if (typeof value !== 'string' || !value) continue;
+    if (name === 'Path' && base.PATH) continue;
+    base[name === 'Path' ? 'PATH' : name] = value;
+  }
+  return { ...base, ...env };
+}
 
 function normalizeThreadSandbox(policy) {
   const value = typeof policy === 'string' ? policy : policy?.type;
@@ -39,12 +64,54 @@ function tokenUsage(params) {
   return Object.freeze({ promptTokens, completionTokens, totalTokens });
 }
 
+function boundedStringList(value, limit = 32) {
+  if (!Array.isArray(value)) return Object.freeze([]);
+  return Object.freeze([...new Set(value.map((item) => String(item ?? '').trim()).filter(Boolean))].slice(0, limit));
+}
+
+function boundedReasoningEfforts(value, limit = 32) {
+  if (!Array.isArray(value)) return Object.freeze([]);
+  return Object.freeze([...new Set(value.map((item) => String(typeof item === 'object' ? item?.reasoningEffort : item).trim()).filter(Boolean))].slice(0, limit));
+}
+
+function catalogEntries(result) {
+  if (Array.isArray(result?.data)) return result.data;
+  if (Array.isArray(result?.models)) return result.models;
+  if (Array.isArray(result)) return result;
+  return [];
+}
+
+function normalizeCatalogModel(model, observedAt) {
+  const id = String(model?.id ?? model?.modelId ?? '').trim();
+  if (!id) return null;
+  return Object.freeze({
+    id,
+    displayName: String(model?.displayName ?? model?.name ?? id).trim() || id,
+    discoveredAt: observedAt,
+    metadata: Object.freeze({
+      source: 'codex-app-server',
+      hidden: model?.hidden === true,
+      defaultReasoningEffort: model?.defaultReasoningEffort == null ? null : String(model.defaultReasoningEffort),
+      supportedReasoningEfforts: boundedReasoningEfforts(model?.supportedReasoningEfforts),
+      additionalSpeedTiers: boundedStringList(model?.additionalSpeedTiers),
+      serviceTiers: boundedStringList(model?.serviceTiers),
+      defaultServiceTier: model?.defaultServiceTier == null ? null : String(model.defaultServiceTier),
+      modelSpecialty: model?.modelSpecialty == null ? null : String(model.modelSpecialty),
+      multiAgentVersion: model?.multiAgentVersion == null ? null : String(model.multiAgentVersion),
+      upgrade: model?.upgrade == null ? null : String(model.upgrade),
+      upgradeInfo: model?.upgradeInfo == null ? null : structuredClone(model.upgradeInfo),
+      availabilityNux: model?.availabilityNux == null ? null : structuredClone(model.availabilityNux),
+    }),
+  });
+}
+
 export class CodexAppServerClient {
-  constructor({ id = 'codex-app-server', label = 'OpenAI Codex App Server', executable = 'codex', args = ['app-server', '--stdio'], cwd = null, env = {}, timeoutMs = 10 * 60_000, approvalHandler = null } = {}) {
-    this.id = id; this.label = label; this.kind = 'codex-app-server'; this.executable = executable; this.args = [...args]; this.cwd = cwd; this.timeoutMs = timeoutMs; this.credentialOwner = 'official-cli';
+  constructor({ id = 'codex-app-server', label = 'OpenAI Codex App Server', executable = 'codex', args = ['app-server', '--stdio'], detectArgs = ['--version'], cwd = null, env = {}, timeoutMs = 10 * 60_000, approvalHandler = null } = {}) {
+    if (!Array.isArray(detectArgs) || detectArgs.some((item) => typeof item !== 'string')) throw new TypeError('detectArgs must be strings');
+    this.id = id; this.label = label; this.kind = 'codex-app-server'; this.executable = executable; this.args = [...args]; this.detectArgs = [...detectArgs]; this.cwd = cwd; this.env = { ...env }; this.timeoutMs = timeoutMs; this.credentialOwner = 'official-cli';
     this.profile = Object.freeze({ capabilities: Object.freeze(['coding', 'structured-events', 'subscription-auth', 'threads', 'interrupts', 'governed-actions']), qualityTier: 4.5, costTier: 0, latencyTier: 2, local: false });
     this.approvalHandler = approvalHandler; this.initialized = null; this.state = 'idle'; this.turnStates = new Map();
-    this.rpc = new JsonlRpcProcess({ executable, args, cwd, env, timeoutMs, includeJsonrpc: false, requestHandler: (method, params) => this.#serverRequest(method, params) });
+    this.rpc = new JsonlRpcProcess({ executable, args, cwd, env: clientEnvironment(this.env), inheritEnvironment: false, timeoutMs, includeJsonrpc: false, requestHandler: (method, params) => this.#serverRequest(method, params) });
     this.rpc.on('notification', (message) => this.#notification(message));
     this.rpc.on('closed', () => { this.state = 'closed'; });
   }
@@ -54,7 +121,7 @@ export class CodexAppServerClient {
   async detect() {
     try {
       const output = await new Promise((resolve, reject) => {
-        const child = spawn(this.executable, ['--version'], { shell: false, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+        const child = spawn(this.executable, this.detectArgs, { env: clientEnvironment(this.env), shell: false, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
         let text = ''; const timer = setTimeout(() => child.kill('SIGKILL'), 5_000); timer.unref?.();
         child.stdout.on('data', (chunk) => { text += chunk; }); child.stderr.on('data', (chunk) => { text += chunk; });
         child.once('error', reject); child.once('close', (code) => { clearTimeout(timer); resolve({ code, text }); });
@@ -71,6 +138,30 @@ export class CodexAppServerClient {
   }
 
   async accountRead({ refreshToken = false } = {}) { await this.connect(); return this.rpc.request('account/read', { refreshToken: Boolean(refreshToken) }); }
+
+  async listModels({ includeHidden = false, limit = 500 } = {}) {
+    await this.connect();
+    const maximum = Math.min(Math.max(Number(limit) || 0, 1), 500);
+    const pageLimit = Math.min(maximum, 100);
+    const observedAt = new Date().toISOString();
+    const models = [];
+    const seen = new Set();
+    let cursor = null;
+    let nextCursor = null;
+    let pages = 0;
+    do {
+      const result = await this.rpc.request('model/list', { cursor, limit: pageLimit, includeHidden: Boolean(includeHidden) });
+      for (const raw of catalogEntries(result)) {
+        const model = normalizeCatalogModel(raw, observedAt);
+        if (!model || (!includeHidden && model.metadata.hidden) || seen.has(model.id) || models.length >= maximum) continue;
+        seen.add(model.id); models.push(model);
+      }
+      nextCursor = result?.nextCursor ?? result?.next_cursor ?? null;
+      cursor = nextCursor;
+      pages += 1;
+    } while (cursor && pages < 5 && models.length < maximum);
+    return Object.freeze({ status: 'fresh', observedAt, models: Object.freeze(models), nextCursor: models.length >= maximum || pages >= 5 ? nextCursor : null });
+  }
 
   async loginStart({ type = 'chatgpt', apiKey = undefined, region = undefined } = {}) {
     await this.connect();
@@ -100,11 +191,11 @@ export class CodexAppServerClient {
     return Object.freeze(result.thread ?? result);
   }
 
-  async startTurn({ threadId, input, cwd = this.cwd, model = undefined, sandboxPolicy = undefined, approvalPolicy = undefined, signal = null } = {}) {
+  async startTurn({ threadId, input, cwd = this.cwd, model = undefined, effort = undefined, sandboxPolicy = undefined, approvalPolicy = undefined, signal = null } = {}) {
     await this.connect();
     if (!String(threadId ?? '').trim()) throw new TypeError('threadId is required');
     const text = typeof input === 'string' ? input : JSON.stringify(input ?? '');
-    const params = { threadId: String(threadId), input: [{ type: 'text', text }], ...(cwd ? { cwd } : {}), ...(model ? { model } : {}), sandboxPolicy: normalizeTurnSandboxPolicy(sandboxPolicy), ...(approvalPolicy ? { approvalPolicy } : {}) };
+    const params = { threadId: String(threadId), input: [{ type: 'text', text }], ...(cwd ? { cwd } : {}), ...(model ? { model } : {}), ...(effort ? { effort: String(effort) } : {}), sandboxPolicy: normalizeTurnSandboxPolicy(sandboxPolicy), ...(approvalPolicy ? { approvalPolicy } : {}) };
     const started = await this.rpc.request('turn/start', params, { signal, timeoutMs: this.timeoutMs });
     const turn = started.turn ?? started;
     const state = this.#turnState(threadId, turn.id);
@@ -129,20 +220,28 @@ export class CodexAppServerClient {
     return Object.freeze({ id: thread.id, threadId: thread.id, cwd: scope.cwd ?? this.cwd, openedFor: Object.freeze({ projectId: scope.projectId ?? null, missionId: scope.missionId ?? null, repositoryId: scope.repositoryId ?? null }), signalBound: Boolean(signal) });
   }
 
-  async completeInSession(session, { messages = [], tools = [], signal = null, model = undefined, cwd = undefined } = {}) {
+  async completeInSession(session, { messages = [], tools = [], signal = null, model = undefined, effort = undefined, cwd = undefined } = {}) {
     const threadId = String(session?.threadId ?? session?.id ?? '').trim();
     if (!threadId) throw new TypeError('session threadId is required');
     const prompt = buildForgeActionPrompt(messages, tools);
-    const result = await this.startTurn({ threadId, input: prompt, cwd: cwd ?? session?.cwd ?? this.cwd, model, signal });
-    const envelope = parseForgeActionEnvelope(result.text, tools);
-    return Object.freeze({ providerId: this.id, model: model ?? 'codex-subscription', text: envelope ? envelope.text : result.text, toolCalls: envelope?.toolCalls ?? Object.freeze([]), finishReason: result.status === 'completed' ? 'stop' : result.status, usage: result.usage, raw: Object.freeze({ ...result, prompt }) });
+    try {
+      const result = await this.startTurn({ threadId, input: prompt, cwd: cwd ?? session?.cwd ?? this.cwd, model, effort, signal });
+      const envelope = parseForgeActionEnvelope(result.text, tools);
+      return Object.freeze({ providerId: this.id, model: model ?? 'codex-subscription', text: envelope ? envelope.text : result.text, toolCalls: envelope?.toolCalls ?? Object.freeze([]), finishReason: result.status === 'completed' ? 'stop' : result.status, usage: result.usage, raw: Object.freeze({ ...result, prompt }) });
+    } catch (error) {
+      throw codexExecutionError(error);
+    }
   }
 
   async closeSession(_session, _options = {}) { return Object.freeze({ closed: true, processRetained: this.state === 'ready' }); }
 
-  async complete({ messages = [], tools = [], signal = null, model = undefined } = {}) {
-    const thread = await this.startThread({ cwd: this.cwd, ephemeral: true, sandboxPolicy: { type: 'read-only' }, approvalPolicy: 'untrusted' });
-    return this.completeInSession({ id: thread.id, threadId: thread.id, cwd: this.cwd }, { messages, tools, signal, model });
+  async complete({ messages = [], tools = [], signal = null, model = undefined, effort = undefined, cwd = this.cwd } = {}) {
+    try {
+      const thread = await this.startThread({ cwd, ephemeral: true, sandboxPolicy: { type: 'read-only' }, approvalPolicy: 'untrusted' });
+      return await this.completeInSession({ id: thread.id, threadId: thread.id, cwd }, { messages, tools, signal, model, effort, cwd });
+    } catch (error) {
+      throw codexExecutionError(error);
+    }
   }
 
   async close() { await this.rpc.close(); this.state = 'closed'; }

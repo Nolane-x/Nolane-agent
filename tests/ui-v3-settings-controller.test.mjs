@@ -43,6 +43,7 @@ test('English settings render every language card in the active interface locale
     status: 'ready',
     draft: { general: { language: 'en' }, experience: { level: 'everyday' } },
     visibleCategories: catalog.categories.filter((category) => category.id === 'general'),
+    activeCategory: 'general',
     experience: 'everyday',
     layer: 'user',
     provenance: {},
@@ -53,6 +54,45 @@ test('English settings render every language card in the active interface locale
   assert.match(html, />Vietnamese</);
   assert.match(html, /Vietnamese interface/);
   assert.doesNotMatch(html, /Tiếng Việt|Giao diện tiếng Việt/);
+});
+
+test('permissions settings render actionable approval choices including bounded full access', () => {
+  const catalog = createSettingsCatalog();
+  const permissions = catalog.categories.find((category) => category.id === 'permissions');
+  const html = renderSettingsView({
+    status: 'ready',
+    draft: { general: { language: 'en' }, experience: { level: 'everyday' }, permissions: { defaultMode: 'full' } },
+    visibleCategories: [permissions], activeCategory: 'permissions', experience: 'everyday', layer: 'user', provenance: {}, models: { models: [] }, providers: [],
+  });
+
+  assert.match(html, /Ask for approval/);
+  assert.match(html, /Approve for me/);
+  assert.match(html, /Full access/);
+  assert.match(html, /data-setting-path="permissions\.defaultMode" data-setting-value="full"/);
+  assert.match(html, /does not bypass sandbox, operating-system, account, or provider limits/i);
+});
+
+test('settings search keeps the provider workspace visible when a provider name matches', async () => {
+  const api = {
+    get: async (path) => {
+      if (path.includes('catalog')) return { categories: [{ id: 'models', title: 'Models', level: 'standard', fields: [] }] };
+      if (path.includes('effective')) return { value: { general: { language: 'en' }, experience: { level: 'everyday' } }, provenance: {}, warnings: [] };
+      if (path.includes('model-profiles')) return { models: [] };
+      if (path.includes('provider-connections')) return [{ id: 'openai-api', label: 'OpenAI API', kind: 'openai-responses', configured: false }];
+      return {};
+    },
+    put: async () => ({}),
+    post: async () => ({}),
+  };
+  const controller = createSettingsController({ api });
+  await controller.load();
+  controller.search('OpenAI API');
+
+  const state = controller.snapshot();
+  assert.deepEqual(state.visibleCategories.map((category) => category.id), ['models']);
+  const html = renderSettingsView(state);
+  assert.match(html, /OpenAI API/);
+  assert.doesNotMatch(html, /No settings match your search\./);
 });
 
 test('Vietnamese settings localize provider account login status and device receipt', async () => {
@@ -74,4 +114,72 @@ test('Vietnamese settings localize provider account login status and device rece
   assert.match(html, /Mã thiết bị/);
   assert.match(html, /ABCD-EFGH/);
   assert.doesNotMatch(html, /Continue sign-in for codex-app-server/);
+});
+
+test('settings progressively render only the active category while preserving every navigation target', () => {
+  const categories = [
+    { id: 'general', title: 'General', description: 'Core behavior', level: 'standard', fields: [] },
+    { id: 'models', title: 'Models', description: 'Provider and model routing', level: 'standard', fields: [] },
+  ];
+  const html = renderSettingsView({
+    status: 'ready',
+    draft: { general: { language: 'en' }, experience: { level: 'everyday' } },
+    visibleCategories: categories,
+    activeCategory: 'general',
+    query: '',
+    experience: 'everyday',
+    layer: 'user',
+    provenance: {},
+    models: { models: [] },
+    providers: [],
+  });
+
+  assert.match(html, /data-settings-category-link="general"/);
+  assert.match(html, /data-settings-category-link="models"/);
+  assert.match(html, /data-settings-category="general"/);
+  assert.doesNotMatch(html, /data-settings-category="models"/);
+});
+
+test('settings render the selected deep-link category without mounting inactive category content', () => {
+  const categories = [
+    { id: 'general', title: 'General', description: 'Core behavior', level: 'standard', fields: [] },
+    { id: 'models', title: 'Models', description: 'Provider and model routing', level: 'standard', fields: [] },
+  ];
+  const html = renderSettingsView({
+    status: 'ready',
+    draft: { general: { language: 'en' }, experience: { level: 'everyday' } },
+    visibleCategories: categories,
+    activeCategory: 'models',
+    query: '',
+    experience: 'everyday',
+    layer: 'user',
+    provenance: {},
+    models: { models: [] },
+    providers: [],
+  });
+
+  assert.doesNotMatch(html, /data-settings-category="general"/);
+  assert.match(html, /data-settings-category="models"/);
+});
+
+test('settings search renders every matching category so result reachability is preserved', () => {
+  const categories = [
+    { id: 'general', title: 'General', description: 'API defaults', level: 'standard', fields: [] },
+    { id: 'models', title: 'Models', description: 'API provider routing', level: 'standard', fields: [] },
+  ];
+  const html = renderSettingsView({
+    status: 'ready',
+    draft: { general: { language: 'en' }, experience: { level: 'everyday' } },
+    visibleCategories: categories,
+    activeCategory: 'general',
+    query: 'API',
+    experience: 'everyday',
+    layer: 'user',
+    provenance: {},
+    models: { models: [] },
+    providers: [],
+  });
+
+  assert.match(html, /data-settings-category="general"/);
+  assert.match(html, /data-settings-category="models"/);
 });

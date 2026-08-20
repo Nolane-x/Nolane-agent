@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { renderProjectsView } from '../ui-v3/views/projects/project-view.mjs';
 import { renderSettingsView } from '../ui-v3/views/settings/settings-view.mjs';
 
 test('settings center has landmarks labels live status and keyboard-friendly controls', () => {
@@ -11,4 +13,105 @@ test('settings center has landmarks labels live status and keyboard-friendly con
   assert.match(html,/for="setting-general\.language"/);
   assert.match(html,/data-experience="research"/);
   assert.match(html,/data-settings-layer/);
+});
+
+test('settings switches expose an explicit accessible name', () => {
+  const state={status:'ready',experience:'standard',query:'',draft:{general:{notifications:true}},provenance:{},warnings:[],errors:[],visibleCategories:[{id:'general',title:'General',description:'Core',fields:[{path:'general.notifications',title:'Notifications',type:'boolean',scope:['user'],level:'standard'}]}],models:{models:[]},providers:[]};
+  const html=renderSettingsView(state);
+
+  assert.match(html,/<button[^>]*role="switch"[^>]*aria-label="Notifications"/);
+});
+
+test('runtime-critical labels use the legible secondary text token', async () => {
+  const [shell, experience, onboarding, home, surfaces, settings, workroom, controlPlane, browser] = await Promise.all([
+    readFile('ui-v3/styles/layout/app-shell.css', 'utf8'),
+    readFile('ui-v3/styles/components/experience-switcher.css', 'utf8'),
+    readFile('ui-v3/styles/pages/onboarding.css', 'utf8'),
+    readFile('ui-v3/styles/pages/home.css', 'utf8'),
+    readFile('ui-v3/styles/pages/surfaces.css', 'utf8'),
+    readFile('ui-v3/styles/pages/settings.css', 'utf8'),
+    readFile('ui-v3/styles/pages/workroom.css', 'utf8'),
+    readFile('ui-v3/styles/pages/control-plane.css', 'utf8'),
+    readFile('ui-v3/styles/pages/browser.css', 'utf8'),
+  ]);
+  assert.match(shell, /\.app-topbar__title\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(experience, /\.app-topbar__actions>\.experience-switcher>\.experience-pill\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(onboarding, /\.onboarding-choice small\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(onboarding, /\.onboarding-actions button\.primary,\.onboarding-complete button\.primary\{[^}]*color:var\(--nolane-ink\)/);
+  assert.match(home, /\.home-intro__copy>\.eyebrow,\.home-section>header .eyebrow\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(home, /\.home-subtitle\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(home, /\.home-section>header>a\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(home, /\.capability-card small\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(home, /\.empty-state p\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(surfaces, /\.surface-page__header \.eyebrow\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(surfaces, /\.surface-page__header p:last-child\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(surfaces, /\.surface-primary\{[^}]*color:var\(--nolane-ink\)/);
+  assert.match(settings, /\.settings-nav \.settings-brand small\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(settings, /\.settings-center \.experience-switch--four small\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(settings, /\.settings-center \.settings-nav footer button\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(settings, /\.settings-center \.setting-copy small\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(settings, /\.settings-center \.settings-section__eyebrow\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(settings, /\.settings-center \.theme-gallery small\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(settings, /\.settings-center \.accent-picker>span\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(settings, /\.settings-center \.language-cards small\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-header a\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-header p\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-header button:last-child\{[^}]*color:var\(--text-primary\)/);
+  assert.match(workroom, /\.workroom-tabs button\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-files>header,\.workroom-agent>header,\.workroom-editor>header\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-empty span\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-empty p\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-agent>header button\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-agent__body p\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-statusbar span\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(workroom, /\.workroom-statusbar span:first-child\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(controlPlane, /\.control-plane-shell>header>span\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(controlPlane, /\.control-plane-shell>nav a\[aria-current="false"\]\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(controlPlane, /\.control-plane-shell>nav a\[aria-current="page"\]\[data-control-plane-domain\]\{[^}]*color:var\(--text-primary\)/);
+  assert.match(controlPlane, /\.cp-adapter-card code,\.cp-route-panel code\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(controlPlane, /\.cp-adapter-count span\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(controlPlane, /\.cp-adapter-metrics dt\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(controlPlane, /\.cp-empty\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(controlPlane, /\.cp-adapter-rows small\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(browser, /\.browser-eyebrow\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(browser, /\.browser-empty,\.browser-loading\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(browser, /\.browser-facts dt\{[^}]*color:var\(--text-secondary\)/);
+  assert.match(browser, /\.browser-navigation-field small\{[^}]*color:var\(--text-secondary\)/);
+});
+
+test('project view toggle buttons have localized accessible names', () => {
+  const english = renderProjectsView({status:'ready',language:'en',projects:[]});
+  const vietnamese = renderProjectsView({status:'ready',language:'vi',projects:[]});
+  assert.match(english, /class="surface-view-toggle"><button[^>]*aria-label="Project grid view"/);
+  assert.match(english, /class="surface-view-toggle"><button[^>]*Project grid view[^>]*>[\s\S]*?<\/button><button[^>]*aria-label="Project activity view"/);
+  assert.match(vietnamese, /aria-label="Chế độ lưới dự án"/);
+  assert.match(vietnamese, /aria-label="Chế độ hoạt động dự án"/);
+});
+
+test('option pickers inherit the active theme and replace native popup controls', async () => {
+  const [pickerContexts, settings, skills, semantic] = await Promise.all([
+    readFile('ui-v3/styles/components/option-picker-contexts.css', 'utf8'),
+    readFile('ui-v3/styles/pages/settings.css', 'utf8'),
+    readFile('ui-v3/styles/pages/skills.css', 'utf8'),
+    readFile('ui-v3/styles/tokens/semantic.css', 'utf8'),
+  ]);
+  assert.match(semantic, /:root\{\s*color-scheme:dark/);
+  assert.match(semantic, /\[data-theme=\"snow\"\],\[data-theme=\"light\"\]\{color-scheme:light/);
+  assert.match(settings, /\.settings-content\{[^}]*color-scheme:inherit/);
+  assert.match(pickerContexts, /\.settings-content \.option-picker__trigger\{[^}]*width:min\(280px,34vw\)/);
+  assert.match(skills, /\.skills-library\{[^}]*color-scheme:inherit/);
+  assert.match(skills, /\.skills-library__filter \.option-picker__trigger\{[^}]*min-height:42px/);
+});
+
+test('settings field and layer selectors use accessible option pickers', () => {
+  const state={status:'ready',experience:'standard',query:'',draft:{general:{language:'system'}},provenance:{},warnings:[],errors:[],visibleCategories:[{id:'general',title:'General',description:'Core',fields:[{path:'general.language',title:'Language',type:'select',options:['system','en'],scope:['user'],level:'standard'}]}],models:{models:[]},providers:[]};
+  const html=renderSettingsView(state);
+  assert.match(html,/data-option-picker="setting-general\.language"/);
+  assert.match(html,/data-option-picker="settings-layer"/);
+  assert.doesNotMatch(html,/<select/);
+});
+
+test('provider catalog destinations clear the sticky settings toolbar', async () => {
+  const settings = await readFile('ui-v3/styles/pages/settings.css', 'utf8');
+  assert.match(settings, /\.provider-model-group\{[^}]*scroll-margin-top:88px/);
 });

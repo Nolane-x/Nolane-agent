@@ -12,10 +12,10 @@
         "scripts/generate-nolane-program.mjs"
       ],
       "productionEntrypointSha256": [
-        "d21e8e379ed87ceefcdb6be1c377dd02c4cfe77fad644a7aba509f86980a1188"
+        "2651f9158d2a7f17037501aa8a4987c7d2269e6203f2bdcf6d1276201ee1cc6d"
       ],
       "testFile": "tests/nolane-program-registry.test.mjs",
-      "testFileSha256": "d4bb8d4558469d82971fa29f80f5d606b8bc8f73dfc5116f8d5a4b3bc2b984ef",
+      "testFileSha256": "e593de9aab4cd2177abf33c0eca09303797b6e7896c5b701f737f01e088e6d2e",
       "namedTests": [
         "program generator creates a real requirement registry and a Nolane runtime purity receipt and immutable historical transformation evidence",
         "program generation is byte-stable when source evidence is unchanged"
@@ -24,8 +24,12 @@
         "assert.equal(result.product, 'Nolane Agent')",
         "assert.equal(result.requirements.total, 198)",
         "assert.equal(result.requirements.notImplemented, 0)",
+        "assert.equal(result.retirement.externalExecutablePaths, 0)",
+        "assert.equal(result.retirement.pathFindings, 0)",
+        "assert.equal(result.retirement.contentFindings, 0)",
+        "assert.equal(result.retirement.archiveFindings, 0)",
         "assert.ok(result.retirement.historicalLedgerEntries >= 7000)",
-        "assert.equal(result.retirement.replacementCoverage.accepted, result.retirement.replacementCoverage.replaced)",
+        "assert.deepEqual(await readFile('docs/feature-audit-5.0.0-beta.6.json'), featureAuditBefore)",
         "assert.equal(registry.statusCounts.verified_source_test, 193)",
         "assert.equal(registry.statusCounts.external_gate, 5)",
         "assert.equal(registry.statusCounts.not_implemented ?? 0, 0)",
@@ -53,11 +57,11 @@
         "named-test-pass:program generation is byte-stable when source evidence is unchanged"
       ],
       "negativeAssertions": [
-        "assert.equal(result.retirement.nolane_nativeBundled, false)",
+        "assert.equal(result.retirement.externalRuntimeBundled, false)",
         "assert.equal(registry.requirements.some((item) => /requirement \\d+$/.test(item.title)), false)",
         "assert.ok(registry.requirements.every((item) => item.acceptance.sourceCountIsProof === false))"
       ],
-      "receiptSha256": "7f43fc6e9858ebbb93606aa5177b8694a973b24d96d28bbd1ee3e89455317e3c",
+      "receiptSha256": "8b319a7d5e4e3ae79eae5fe1a22e8a99b1fb8b01a200f2b589f20771cba49fff",
       "environment": "node>=22.12",
       "external": false
     },
@@ -68,10 +72,10 @@
         "src/security/content-ingress-pipeline.mjs"
       ],
       "productionEntrypointSha256": [
-        "91325b38f2aba9bca0c1ccf026144b9396939a966a003ab8119423c9cc954693"
+        "62942f33f0de85c496c726534b83227cb7c6a7b0ccbd6b223e6161a33a1c2e05"
       ],
       "testFile": "tests/content-ingress-agent-loop.test.mjs",
-      "testFileSha256": "8f6062b52a5475b738cdacdba5fde7ad84af272c7c4c1a095394685ea63e5839",
+      "testFileSha256": "30cd6ba18df45af7d200ab474c1652502c4f9f2db63806abb38dc395a6b96144",
       "namedTests": [
         "AgentLoop quarantines malicious instructions and tool output before final provider messages",
         "ContentIngressPipeline preserves benign text with provenance",
@@ -100,7 +104,7 @@
         "assert.equal(result.contentIncluded, false)",
         "named-test-negative:ContentIngressPipeline rejects malicious instructions instead of forwarding raw attack text"
       ],
-      "receiptSha256": "cd57c503a4b53345de779eae3b02ccac2b55bd623333b647236ae84029524482",
+      "receiptSha256": "00551f20f14d60af2dd6362ed49eee98f44db5c2152dc9a15bd426293b7a3e95",
       "environment": "node>=22.12",
       "external": false
     },
@@ -111,29 +115,33 @@
         "scripts/certify-published-source.mjs"
       ],
       "productionEntrypointSha256": [
-        "dae32727cbfb9b149a1bffa6e68fd465cb2d985066c076f339ed0d7df3c65b97"
+        "7df122c146801b85480759126a7d2fff63f85f5c59c944b4f954f9b605e4ae80"
       ],
       "testFile": "tests/clean-room-certification.test.mjs",
-      "testFileSha256": "476c294f0ee0402a8752b3032486d0c7bd4d38b3c6190e47830461260a2385e1",
+      "testFileSha256": "e79c789cedfe1d9121839277cef6485237d67747d8210b0aa653b6b99f13c084",
       "namedTests": [
-        "clean-room certification verifies a NolaneNative-free source archive and its manifest",
-        "clean-room certification rejects any bundled NolaneNative runtime path",
+        "clean-room certification verifies a Nolane-owned source archive and its manifest",
+        "clean-room certification rejects forbidden external runtime branding inside source archives",
         "clean-room certification resumes an interrupted exact-archive node-test cache"
       ],
       "positiveAssertions": [
         "assert.equal(report.status,'pass')",
+        "assert.equal(report.runtimeOwnership.product,'Nolane Agent')",
+        "assert.equal(report.runtimeOwnership.runtime,'nolane-native')",
+        "assert.equal(report.runtimeOwnership.externalExecutablePaths,0)",
+        "assert.match(report.runtimePurityReceiptSha256,/^[a-f0-9]{64}$/)",
         "assert.match(report.receiptSha256,/^[a-f0-9]{64}$/)",
         "assert.equal(resumed,true)",
-        "named-test-pass:clean-room certification verifies a NolaneNative-free source archive and its manifest",
+        "named-test-pass:clean-room certification verifies a Nolane-owned source archive and its manifest",
         "named-test-pass:clean-room certification resumes an interrupted exact-archive node-test cache"
       ],
       "negativeAssertions": [
-        "assert.equal(report.thirdPartyRuntime.nolane_nativeBundled,false)",
-        "assert.rejects(()=>certifyPublishedSourceArchive({ archivePath:f.archive, expectedVersion:f.version, probes:[] }),/NolaneNative.*forbidden|forbidden.*NolaneNative/i)",
+        "assert.equal(report.runtimeOwnership.externalRuntimeBundled,false)",
+        "assert.rejects(()=>certifyPublishedSourceArchive({ archivePath:f.archive, expectedVersion:f.version, probes:[] }),/runtime purity|forbidden-brand/i)",
         "assert.rejects(()=>certifyPublishedSourceArchive({",
-        "named-test-negative:clean-room certification rejects any bundled NolaneNative runtime path"
+        "named-test-negative:clean-room certification rejects forbidden external runtime branding inside source archives"
       ],
-      "receiptSha256": "d7388d30a0f828379e7798004f610d19309d0c24b7585ca47ac5e44f13bb57ce",
+      "receiptSha256": "fe8d1db84a16694e2fd11b3ab5d76d95471a0916824657f8a4b8b71c5d9f3152",
       "environment": "node>=22.12",
       "external": false
     },
@@ -144,10 +152,10 @@
         "src/eval/eval-lane-policy.mjs"
       ],
       "productionEntrypointSha256": [
-        "3240c4c7de60462f75bbf88d78e653bcf1b9e39f387f63ac80627eb75ba6a89d"
+        "d8c9d3431771baa59e59495e228562a227ce0181fa5069db92ccb34fa861c5cf"
       ],
       "testFile": "tests/eval-lane-policy.test.mjs",
-      "testFileSha256": "155efdfbd590de140f8431a4308b0efae8bda396712063fff35406c9b47580f0",
+      "testFileSha256": "4b554ae95f014c2c4c5ce515e7daf3003ed0c9a75e7b9b0a048baf249ce370df",
       "namedTests": [
         "plumbing smoke may use fixtures but can never authorize capability or comparative claims",
         "coding benchmark rejects fixture/mock execution, exposed hidden tests, and trivial verifiers",
@@ -185,10 +193,10 @@
         "src/repository/repository-file-enumerator.mjs"
       ],
       "productionEntrypointSha256": [
-        "bb41b64d4c9348d09c85c8aabe781d13feb5898a2dedce09f4bcd9f4100f3d6e"
+        "b3d615a10ff2604c32ce7857c031dd4341f3d80fed7055feb06588795f27a775"
       ],
       "testFile": "tests/repository-gitless-discovery.test.mjs",
-      "testFileSha256": "aa337b34de2bfc28207dc31ff08ad39a0d470c7686c2c84a68ca2d2ab13332e7",
+      "testFileSha256": "00368927753308cf2e0eec8236481c18a93598b2a03691c8b94f0adc7944f5b3",
       "namedTests": [
         "Gitless repository enumeration is bounded, explicit, and never follows symlinks"
       ],
@@ -209,7 +217,7 @@
       "negativeAssertions": [
         "assert.equal(enumeration.claims.symlinksFollowed, false)"
       ],
-      "receiptSha256": "06b684bc636fe6b9597cb86118a49453dfb781d69599bd5548d839516d121c0a",
+      "receiptSha256": "9f2e1f3a88c3df39f81020cb75af19f72a29abc48310f37632e8285f50cfcc05",
       "environment": "node>=22.12",
       "external": false
     },
@@ -220,10 +228,10 @@
         "src/server/http-server.mjs"
       ],
       "productionEntrypointSha256": [
-        "ca0ae6730cbdf0bf1271cb4e0fc0b7cba18aade6e77c4e0c7882df7c4ad966c7"
+        "34456ff195c426ff9f8041dd79699fbab6a5e5394e12e44a5679942a3b902183"
       ],
       "testFile": "tests/http-boundary-errors.test.mjs",
-      "testFileSha256": "f907a028b35a2a8fa661ff268aadf805d964bf7a17ef093124fd308ec42f6861",
+      "testFileSha256": "351dbcf0d62e666c9c4e64834ccb8aeb6f916d7581822d7868e8db30bdcc2335",
       "namedTests": [
         "HTTP error classification maps invalid input and workspace boundaries without leaking internal details",
         "workroom API returns 403 for path escape and sanitized 500 for unexpected failures"
@@ -234,6 +242,14 @@
         "assert.equal(internal.status, 500)",
         "assert.deepEqual(internal.body, { error: 'internal-error' })",
         "assert.doesNotMatch(JSON.stringify(internal), /super-secret|password|detail|stack/i)",
+        "assert.equal(providerTrust.status, 409)",
+        "assert.deepEqual(providerTrust.body, { error: 'provider-workspace-trust-required', code: 'PROVIDER_WORKSPACE_TRUST_REQUIRED' })",
+        "assert.equal(providerFailure.status, 502)",
+        "assert.deepEqual(providerFailure.body, { error: 'provider-error', code: 'PROVIDER_EXECUTION_FAILED' })",
+        "assert.equal(runtimeAdmission.status, 503)",
+        "assert.deepEqual(runtimeAdmission.body, { error: 'Runtime is temporarily conserving resources. Try again shortly.', code: 'RUNTIME_ADMISSION_BLOCKED', retryable: true })",
+        "assert.equal(optionalModuleEmergency.status, 503)",
+        "assert.deepEqual(optionalModuleEmergency.body, { error: 'Runtime is temporarily conserving resources. Try again shortly.', code: 'RUNTIME_ADMISSION_BLOCKED', retryable: true })",
         "assert.equal(forbidden.status, 403)",
         "assert.deepEqual(forbidden.body, { error: 'forbidden', code: 'PATH_SYMLINK_ESCAPE' })",
         "assert.doesNotMatch(JSON.stringify(forbidden.body), /private|target|detail/i)",
@@ -245,7 +261,7 @@
         "assert.deepEqual(missing.body, { error: 'bad-request', code: 'INVALID_INPUT' })",
         "named-test-negative:HTTP error classification maps invalid input and workspace boundaries without leaking internal details"
       ],
-      "receiptSha256": "206639e590bc7c9823eb2325637a177f5783d266c44fd3b0f789b0ad191cd8d1",
+      "receiptSha256": "ef448bdf60da39a7e6e08fd37fe1f7ae8e1382ae9d7d0095626c467eb1329244",
       "environment": "node>=22.12",
       "external": false
     },
@@ -256,10 +272,10 @@
         "scripts/verify-nolane-evidence-freshness.mjs"
       ],
       "productionEntrypointSha256": [
-        "29a156c9fcccfb77b6e9c5359573902cc4ccf034077271a5f7b407c1b6b34d18"
+        "a5eccd330e360c3998956e228028cad7292b2e1523f7c5ee9141600a223f77b7"
       ],
       "testFile": "tests/nolane-evidence-freshness.test.mjs",
-      "testFileSha256": "5e6a8153ae329c4a3a0a5b36dee9495147d1b653b669a4868b74d2c040ad2814",
+      "testFileSha256": "5526cf9b092c1cfcd6ef02db312f8a9dcc934cb4389ce49d6cb0d96192552eb4",
       "namedTests": [
         "evidence freshness verifier accepts current registry and detects stale source or tests"
       ],
@@ -275,7 +291,7 @@
         "assert.equal(stale.failures.some((item) => item.code === 'ENTRYPOINT_SHA_MISMATCH'), true)",
         "named-test-negative:evidence freshness verifier accepts current registry and detects stale source or tests"
       ],
-      "receiptSha256": "5672f15e497397278e10b01846df7f81dfd948ed397c0e6ffdd73858fa94ef5d",
+      "receiptSha256": "5fdd20f2ef8c522b3d52e41b7bf0a4e8f13ce3d7a0fdc387b7ca565db1bfc3fc",
       "environment": "node>=22.12",
       "external": false
     },
@@ -286,10 +302,10 @@
         "src/security/route-security-telemetry.mjs"
       ],
       "productionEntrypointSha256": [
-        "8951929ff62e7e5e07a403ed544e2302df2d66fab02c8c4a0288fc049e5d8c0c"
+        "75d4845d77bed7be1abc1d4939989fda4c233f95d347909b2c15c5e5a076ff5a"
       ],
       "testFile": "tests/route-security-telemetry.test.mjs",
-      "testFileSha256": "9a9b2be00a8cb5bf7a182512b18ee4e951ae4b6101420ec6f6fad5e24e30be59",
+      "testFileSha256": "3e7518649268bc0b50526c2417a70607878597b8d2ec2b0c1be570cfa4644d2a",
       "namedTests": [
         "route security telemetry records auth, authorization, and handler stages without request secrets",
         "application wires route security telemetry into the production HTTP server"
@@ -309,7 +325,7 @@
       "negativeAssertions": [
         "named-test-negative:route security telemetry records auth, authorization, and handler stages without request secrets"
       ],
-      "receiptSha256": "19ea3c8534a59bf5dfe627adb6f35bf177b53213eec9242d8b4256f4fbd0e505",
+      "receiptSha256": "edfa75818b31c3f8ea1055a924c88ed7fa89208fdcd22ada336632107168b6b3",
       "environment": "node>=22.12",
       "external": false
     },
@@ -320,10 +336,10 @@
         "scripts/generate-nolane-program.mjs"
       ],
       "productionEntrypointSha256": [
-        "d21e8e379ed87ceefcdb6be1c377dd02c4cfe77fad644a7aba509f86980a1188"
+        "2651f9158d2a7f17037501aa8a4987c7d2269e6203f2bdcf6d1276201ee1cc6d"
       ],
       "testFile": "tests/nolane-program-registry.test.mjs",
-      "testFileSha256": "d4bb8d4558469d82971fa29f80f5d606b8bc8f73dfc5116f8d5a4b3bc2b984ef",
+      "testFileSha256": "e593de9aab4cd2177abf33c0eca09303797b6e7896c5b701f737f01e088e6d2e",
       "namedTests": [
         "program generator creates a real requirement registry and a Nolane runtime purity receipt and immutable historical transformation evidence",
         "program generation is byte-stable when source evidence is unchanged"
@@ -332,8 +348,12 @@
         "assert.equal(result.product, 'Nolane Agent')",
         "assert.equal(result.requirements.total, 198)",
         "assert.equal(result.requirements.notImplemented, 0)",
+        "assert.equal(result.retirement.externalExecutablePaths, 0)",
+        "assert.equal(result.retirement.pathFindings, 0)",
+        "assert.equal(result.retirement.contentFindings, 0)",
+        "assert.equal(result.retirement.archiveFindings, 0)",
         "assert.ok(result.retirement.historicalLedgerEntries >= 7000)",
-        "assert.equal(result.retirement.replacementCoverage.accepted, result.retirement.replacementCoverage.replaced)",
+        "assert.deepEqual(await readFile('docs/feature-audit-5.0.0-beta.6.json'), featureAuditBefore)",
         "assert.equal(registry.statusCounts.verified_source_test, 193)",
         "assert.equal(registry.statusCounts.external_gate, 5)",
         "assert.equal(registry.statusCounts.not_implemented ?? 0, 0)",
@@ -361,11 +381,11 @@
         "named-test-pass:program generation is byte-stable when source evidence is unchanged"
       ],
       "negativeAssertions": [
-        "assert.equal(result.retirement.nolane_nativeBundled, false)",
+        "assert.equal(result.retirement.externalRuntimeBundled, false)",
         "assert.equal(registry.requirements.some((item) => /requirement \\d+$/.test(item.title)), false)",
         "assert.ok(registry.requirements.every((item) => item.acceptance.sourceCountIsProof === false))"
       ],
-      "receiptSha256": "82fb2ad642291564049694a9c28cfaa1cd12bbed6c847c609f10aa009adef744",
+      "receiptSha256": "8b239cf9c875f8da3d5a2d3aa870b935181d59a0724e3e824d356b8e15a86b3a",
       "environment": "node>=22.12",
       "external": false
     },
@@ -376,10 +396,10 @@
         "src/eval/eval-runner.mjs"
       ],
       "productionEntrypointSha256": [
-        "aef4f3443c73ff6d2d547ec5dbcef81b7150cc27672433643804b93686a10253"
+        "d47ef73bf963a125fa5803fb844e64d7843d0a5338b6f512b248fa8df2e7748c"
       ],
       "testFile": "tests/eval-lane-policy.test.mjs",
-      "testFileSha256": "155efdfbd590de140f8431a4308b0efae8bda396712063fff35406c9b47580f0",
+      "testFileSha256": "4b554ae95f014c2c4c5ce515e7daf3003ed0c9a75e7b9b0a048baf249ce370df",
       "namedTests": [
         "plumbing smoke may use fixtures but can never authorize capability or comparative claims",
         "coding benchmark rejects fixture/mock execution, exposed hidden tests, and trivial verifiers",
@@ -417,10 +437,10 @@
         "src/eval/eval-lane-policy.mjs"
       ],
       "productionEntrypointSha256": [
-        "3240c4c7de60462f75bbf88d78e653bcf1b9e39f387f63ac80627eb75ba6a89d"
+        "d8c9d3431771baa59e59495e228562a227ce0181fa5069db92ccb34fa861c5cf"
       ],
       "testFile": "tests/eval-lane-policy.test.mjs",
-      "testFileSha256": "155efdfbd590de140f8431a4308b0efae8bda396712063fff35406c9b47580f0",
+      "testFileSha256": "4b554ae95f014c2c4c5ce515e7daf3003ed0c9a75e7b9b0a048baf249ce370df",
       "namedTests": [
         "plumbing smoke may use fixtures but can never authorize capability or comparative claims",
         "coding benchmark rejects fixture/mock execution, exposed hidden tests, and trivial verifiers",
@@ -458,10 +478,10 @@
         "src/superiority/deep/provider-dogfood-replay-lab.mjs"
       ],
       "productionEntrypointSha256": [
-        "0085060a62dffb76edd9f95842b0439be5402cf6157823521c43dfce6a6b1e98"
+        "0fe908f8254e29321e630e22ab69c6cc5ee8ca739630777de52abbc7788582dc"
       ],
       "testFile": "tests/deep-superiority-ui-dogfood.test.mjs",
-      "testFileSha256": "72f3fbb86fe0094ed9dc2446edbb4685cf3dcb3fa5a6e94c0a0c62ae8c244b7a",
+      "testFileSha256": "4717bc38728553cb4e8d70fef48260152eeae313adff799d8d25ef47b662260d",
       "namedTests": [
         "local UI certification verifies accessibility, responsiveness and budgets but retains Windows external gates",
         "dogfood replay lab rejects mocks and validates signed provider-real Windows protocol receipts"
@@ -495,10 +515,10 @@
         "src/release/dependency-preflight-service.mjs"
       ],
       "productionEntrypointSha256": [
-        "09018c3dc00794279ca35935b2087d9ccef201329506cf600c7fa802ca2c36a9"
+        "a0298ad3059983b469601c5ed6aa35d3a6f7ba542bf8481bfd40b5b5794dd6b6"
       ],
       "testFile": "tests/nolane-native-operational-boundaries.test.mjs",
-      "testFileSha256": "fb041e7b8fb11e64ad65b56df9ce7e25d202c7516d4a571729b3603c769fe7ed",
+      "testFileSha256": "401217ecb374e16fa337294b2877af9f8dfa3b91f6244d34d26edf5a5c999c47",
       "namedTests": [
         "NolaneOperationalBoundaryService publishes canonical configuration and migration rules",
         "NolaneOperationalBoundaryService stores credential references without secret values",
@@ -514,7 +534,7 @@
         "assert.equal(contract.defaults.runtime, 'nolane-native')",
         "assert.equal(contract.migration.dataDirectory, '.forge-studio -> .nolane-agent')",
         "assert.equal(record.provider, 'openai')",
-        "assert.equal(await service.resolveWorkspacePath({ workspaceRoot: root, relativePath: 'src/a.txt' }), path.join(root, 'src', 'a.txt'))",
+        "assert.equal(await service.resolveWorkspacePath({ workspaceRoot: root, relativePath: 'src/a.txt' }), await realpath(path.join(root, 'src', 'a.txt')))",
         "assert.equal(service.authorizeAction({ kind: 'read', reversible: true }).allowed, true)",
         "assert.equal(approved.allowed, true)",
         "assert.equal(approved.approvalRequired, true)",
@@ -545,7 +565,7 @@
         "named-test-negative:DependencyPreflightService reports missing dependencies with deterministic remediation and locks",
         "named-test-negative:Nolane operational boundary source does not import NolaneNative runtime code"
       ],
-      "receiptSha256": "5e39aec1bb045a77f140d9d8941b0fae90e17bfb06de9032b264455fe44e4e71",
+      "receiptSha256": "964a789ddf87e3df6d3fe7381ee1a5463a73d1727decf03cad288eb9bb02aba6",
       "environment": "node>=22.12",
       "external": false
     },
@@ -556,10 +576,10 @@
         "scripts/verify-nolane-evidence-quality.mjs"
       ],
       "productionEntrypointSha256": [
-        "165105bf30d13218b2375c0b308e7b9106dace1b9997c294d3f18f5792ff63ff"
+        "26f51e5f0ae7c2fee3c0e39e1cff74cd88ab83f7adc2082b8961b1c799af3bd0"
       ],
       "testFile": "tests/nolane-evidence-quality.test.mjs",
-      "testFileSha256": "cc66dcb7215e522a15390e7d3c0d507251de8f7dd54bfda075111858431b0d7e",
+      "testFileSha256": "ba483374e00bca03842394eeb39883b15b5d46871357159968c6b9e21d5eb7dd",
       "namedTests": [
         "evidence quality passes current registry and rejects over-concentrated proof paths"
       ],
@@ -586,10 +606,10 @@
         "src/audit/capability-status-policy.mjs"
       ],
       "productionEntrypointSha256": [
-        "4107b3d95eeacacdf9dbcf5bc9200ac041dddb4bf6a3d39fe5c7e743f4e4d785"
+        "5a19220d7a580fc0463bd413808b245329ecc7e39095af7adf98f311d4a3b257"
       ],
       "testFile": "tests/capability-status-policy.test.mjs",
-      "testFileSha256": "006f2a0fed85e67c5cf1ff334a3aad9a7282f3ce272695abf9dbe100bf8e34e6",
+      "testFileSha256": "e24f67953b18f2d6a89db661350e4e5503bdf738fe1866bdc9b8b0e9d7de12ac",
       "namedTests": [
         "capability status policy keeps implemented-not-wired separate from verified production behavior"
       ],
@@ -613,10 +633,10 @@
         "src/release/non-claim-manifest.mjs"
       ],
       "productionEntrypointSha256": [
-        "475015a29fcb46abc2528ba8221ddad2a4f29f1cef1a3c920e8b4ff1a2fdcbdd"
+        "8653a53a113b69528388dbf7ffc809bf386f1dd9ac81f60c18cc3425548c61c0"
       ],
       "testFile": "tests/release-non-claim-manifest.test.mjs",
-      "testFileSha256": "e515bb933ee82d98ba65db3a57980fdf852aa4eee70dfabfa2d7165681352433",
+      "testFileSha256": "5f4578a29bfe7dea8bb550bae89eb9d554ea7046cdc715fa059b4e8e7858d416",
       "namedTests": [
         "release non-claim manifest publishes protected false claims, external gates and failure evidence",
         "release non-claim manifest rejects unlocked protected claims and missing failure evidence"
@@ -632,7 +652,7 @@
         "named-test-negative:release non-claim manifest publishes protected false claims, external gates and failure evidence",
         "named-test-negative:release non-claim manifest rejects unlocked protected claims and missing failure evidence"
       ],
-      "receiptSha256": "fe0ba53625d529191b6333fb7f79507bd1c1ae5fa547483274ccb11ff1363094",
+      "receiptSha256": "55c79ed16b3e9b4b1c6f2caa3771f3827930b28cd02b1e6b65561af87b4a3438",
       "environment": "node>=22.12",
       "external": false
     },
@@ -643,10 +663,10 @@
         "src/ui/capability-registry.mjs"
       ],
       "productionEntrypointSha256": [
-        "5dd1e76ff1b1145d68fe68f3fe67447620917d7fb5d74910d9bea13588142c32"
+        "b4ffe007fc36f562443d5b9732b778e578a3f3ad75dfa6f1ae57c01c430ee5b9"
       ],
       "testFile": "tests/ui-capability-registry.test.mjs",
-      "testFileSha256": "d1190c09e884826cd82f53a097a5475bcc08650b72ec5715d843f372c55af073",
+      "testFileSha256": "c0a7667740f9a56b2a2b5b6a060e62337b8ef95cfba3be1d0d5f46fe39d70963",
       "namedTests": [
         "UI capability contracts require route, exposure, APIs, permissions and complete states",
         "capability inventory accounts for all 17 legacy centers and required level-one surfaces",
@@ -680,10 +700,10 @@
         "src/superiority/deep/local-ui-certification-lab.mjs"
       ],
       "productionEntrypointSha256": [
-        "f157bf8c2c408f059380746f4161803eb708de21929cd52bbb6f11a130c03f96"
+        "b02a7dd7b37d899a5ed202a5b98ff3a11f0c294dfa2100169597454c0856c18f"
       ],
       "testFile": "tests/deep-superiority-ui-dogfood.test.mjs",
-      "testFileSha256": "72f3fbb86fe0094ed9dc2446edbb4685cf3dcb3fa5a6e94c0a0c62ae8c244b7a",
+      "testFileSha256": "4717bc38728553cb4e8d70fef48260152eeae313adff799d8d25ef47b662260d",
       "namedTests": [
         "local UI certification verifies accessibility, responsiveness and budgets but retains Windows external gates",
         "dogfood replay lab rejects mocks and validates signed provider-real Windows protocol receipts"
@@ -717,10 +737,10 @@
         "scripts/build-ui-v3.mjs"
       ],
       "productionEntrypointSha256": [
-        "b684f0f23ae954bf7cd8d40b731595d25346b872a556f95655e70a3938d4c3dd"
+        "185246ec46e9defcb2d54f67f4032e14a541c8e8fe09daf8ef100a6dcfe5255c"
       ],
       "testFile": "tests/ui-v3-module-build.test.mjs",
-      "testFileSha256": "be28c3fcbd70b96625136abd9bfe56734c3c91aa12fb5300cf72fb3b7af2250d",
+      "testFileSha256": "61bb0bc934882c9713f18d3a17fc4b2c27fed7c3dd28226d26f9c61bb04bff54",
       "namedTests": [
         "UI v3 build emits deterministic hashed local assets and a verified module map"
       ],
@@ -738,7 +758,7 @@
         "assert.equal(/^https?:\\/\\//.test(item.path), false)",
         "assert.equal(outputs.some((name) => /\\.map$/.test(name)), false)"
       ],
-      "receiptSha256": "3753183e84320dbecbe0b370527fc93ea942d241a2536a4503ecec8b45317a81",
+      "receiptSha256": "ef25b7ba98a151e601a147e31b5eeac44e76545b5c8ee589b09987507083a853",
       "environment": "node>=22.12",
       "external": false
     },
@@ -749,10 +769,10 @@
         "scripts/validate-ui-tokens.mjs"
       ],
       "productionEntrypointSha256": [
-        "e0531ead59cce1227251de29a3ec60bb2c810d3ec17491ff284e720cba222108"
+        "d7f38f43e0e76146e9eaec205d02d01e10c0d2844b9343616a8a381a6874ac79"
       ],
       "testFile": "tests/ui-v3-tokens.test.mjs",
-      "testFileSha256": "61505ac824f01855fe5cd556cfebcf48947702fc1c909bf89326f05c64cd138c",
+      "testFileSha256": "49cfd1732bfea28022a967aa5e07f83db5f6c8771d84355cf42dd1c23130ce5b",
       "namedTests": [
         "Quiet Authority token graph has no undefined variables, cycles or raw colors outside primitives",
         "primary text, secondary text and focus fixtures meet WCAG AA contrast"
@@ -783,14 +803,16 @@
         "ui-v3/shell/app-shell.mjs"
       ],
       "productionEntrypointSha256": [
-        "b138049b448a8465797116e64f2e0bab12909c82fe7789a8002080c0625f0375"
+        "70c8a89ab1b70fa8eb0070d33320239ee54fee3b728d99ca83e130dfce784e11"
       ],
       "testFile": "tests/ui-v3-router.test.mjs",
-      "testFileSha256": "3308ffcec802f88ca38617bcc66a3edcda7dc7a17746baa1c0f1ae5bd49d5a9c",
+      "testFileSha256": "20e89346aae04c5b583447439c16fa74812ece9d1d3b79856b8b60f28299faad",
       "namedTests": [
         "router lazy-loads each route once and supports history navigation",
         "router uses an explicit not-found route without executing unknown loaders",
-        "router can opt into path-scoped view caching for dynamic surfaces"
+        "router can opt into path-scoped view caching for dynamic surfaces",
+        "router invalidation reloads a cached route view",
+        "router invalidation can preserve the current route while expiring other cached views"
       ],
       "positiveAssertions": [
         "assert.equal((await router.navigate('/')).route.id, 'home')",
@@ -801,14 +823,19 @@
         "assert.equal((await router.navigate('/control/overview')).view.path, '/control/overview')",
         "assert.equal((await router.navigate('/control/runtime')).view.path, '/control/runtime')",
         "assert.deepEqual(loaded, ['/control/overview', '/control/runtime'])",
+        "assert.equal((await router.navigate('/')).view.revision, 1)",
+        "assert.equal((await router.navigate('/')).view.revision, 2)",
+        "assert.equal((await router.navigate('/settings')).view.revision, 1)",
         "named-test-pass:router lazy-loads each route once and supports history navigation",
-        "named-test-pass:router can opt into path-scoped view caching for dynamic surfaces"
+        "named-test-pass:router can opt into path-scoped view caching for dynamic surfaces",
+        "named-test-pass:router invalidation reloads a cached route view",
+        "named-test-pass:router invalidation can preserve the current route while expiring other cached views"
       ],
       "negativeAssertions": [
         "assert.equal(state.path, '/missing')",
         "named-test-negative:router uses an explicit not-found route without executing unknown loaders"
       ],
-      "receiptSha256": "00a7dc150d22597f060c220e5f47bef5b289f4850e1c237cf40db87736ab5771",
+      "receiptSha256": "9a6e62b68809b6c80f6ba192a22ad8fa2a0289bee89af46466b25481b82b75ce",
       "environment": "node>=22.12",
       "external": false
     },
@@ -819,10 +846,10 @@
         "ui-v3/shell/session-sidebar.mjs"
       ],
       "productionEntrypointSha256": [
-        "d9ca6a7f19cc038a7e477c5bce241a1cbf8303580d3f5d08b41d24c5d5a4fefb"
+        "76c1310b2199768401c246f7a18dae8683f97b7470d93894128dbb46185712ff"
       ],
       "testFile": "tests/ui-v3-session-sidebar.test.mjs",
-      "testFileSha256": "deb4ae34497fb9e10657c7af0173b74d9a2bf618a753ad3223446fc039da9542",
+      "testFileSha256": "b1aff901970f3abf79e57d879bc01d3e63503b06baa18f8712e7d50a7ec081d0",
       "namedTests": [
         "session groups prioritize Needs You, Running, Ready to Review, then Recent",
         "sidebar patches keyed rows and virtualizes recent sessions after 100 items",
@@ -845,7 +872,7 @@
         "assert.equal(model.patch('missing', { title: 'Nope' }), false)",
         "named-test-negative:session sidebar excludes archived missions and rejects patching unknown rows"
       ],
-      "receiptSha256": "dbe6125cb82a01a4437632404cc66965230cc1de0d459800fe63e1aa83dc7fc0",
+      "receiptSha256": "b715cb0d0c930a112e7dc2a6a8a8530bfcea5e8eb6f05d6d6765abd04887567a",
       "environment": "node>=22.12",
       "external": false
     },
@@ -856,14 +883,35 @@
         "ui-v3/views/home/home-view.mjs"
       ],
       "productionEntrypointSha256": [
-        "8a4331eed63b39f65f121d73b326c9ce9f81ad50b99f9e0d678c7023f07a7742"
+        "98091a2ca7f03dd3858585b651ebac1b07f86c52703151a4b99a339933fb0722"
       ],
       "testFile": "tests/ui-v3-home.test.mjs",
-      "testFileSha256": "2f7003c890eb5f8cdd8480efcd6d0c3fceb7cabe5b596b975b05940b1939cd74",
+      "testFileSha256": "21bf4bb841b532e17b0ea4dcbeb46fe8587cefd01ebdf6eb9024e39d9f3133c1",
       "namedTests": [
         "four intent presets map to enforceable backend boundaries",
         "mission request validates objective, project and provider availability",
-        "repository suggestions render only when backed by evidence"
+        "repository suggestions render only when backed by evidence",
+        "home composer preserves a distinct deployment key for every provider model",
+        "home composer keeps every ready discovered model selectable",
+        "home composer offers only ready provider deployments and disables send until a provider is usable",
+        "home composer preserves an unavailable saved model instead of silently routing it automatically",
+        "home composer explains when a preserved model is unavailable",
+        "home uses a compact task-first composition instead of an oversized generic hero",
+        "home composer sends provider and model separately for the selected deployment",
+        "home composer exposes and submits only catalog-advertised Codex reasoning effort",
+        "home composer uses the persisted routing default until the user chooses another model",
+        "home composer turns an explicit Skill selection into a removable mission context receipt request",
+        "home composer rejects an unavailable selected model before making a mission request",
+        "Vietnamese home renders composer labels without leftover English copy",
+        "English home keeps composer menus free of Vietnamese copy",
+        "Vietnamese composer command menu translates local commands and empty state",
+        "home counts only authenticated healthy providers as ready",
+        "composer context menu exposes ForgeOS skills and keeps provenance visible",
+        "composer finds skills and commands beyond the compact unfiltered menu",
+        "composer context search recognizes skills and plugins by their type",
+        "composer project creation supports a local-folder fallback outside Electron",
+        "composer surfaces planning-input failures instead of a generic internal error",
+        "composer explains a temporary runtime admission block"
       ],
       "positiveAssertions": [
         "assert.deepEqual(Object.keys(INTENT_PRESETS), ['ask', 'plan', 'build', 'verify'])",
@@ -873,9 +921,86 @@
         "assert.equal(request.boundaries.writeFiles, true)",
         "assert.deepEqual(hidden.suggestions, [])",
         "assert.deepEqual(visible.suggestions.map((item) => item.title), ['Fix 3 tests'])",
+        "assert.ok(values.includes('auto'))",
+        "assert.deepEqual(values.slice(1), models.map(modelDeploymentKey))",
+        "assert.equal(new Set(values).size, values.length)",
+        "assert.match(html, /<strong>Codex selected<\\/strong><small>codex · cli-selected<\\/small>/)",
+        "assert.match(html, /<strong>GPT-5\\.6 Sol<\\/strong><small>codex-app-server · gpt-5\\.6-sol<\\/small>/)",
+        "assert.doesNotMatch(html, /<select\\b/)",
+        "assert.match(modelMenu, /data-picker-value=\"codex\\/model-51\"/)",
+        "assert.match(modelMenu, /data-composer-picker-search/)",
+        "assert.match(modelMenu, /placeholder=\"Search models…\"/)",
+        "assert.match(modelMenu, /data-picker-value=\"ready\\/safe-model\"/)",
+        "assert.match(blocked, /class=\"composer-submit\" type=\"submit\" disabled/)",
+        "assert.match(html, /<input type=\"hidden\" name=\"modelChoice\" value=\"login-required\\/blocked-model\"/)",
+        "assert.match(modelMenu, /data-picker-value=\"login-required\\/blocked-model\"[^>]*aria-selected=\"true\"[^>]*disabled/)",
+        "assert.match(html, /class=\"composer-submit\" type=\"submit\" disabled/)",
+        "assert.match(english, /composer-runtime\" data-state=\"limited\"/)",
+        "assert.match(vietnamese, /Model đã chọn chưa sẵn sàng\\. Hãy chọn model khác hoặc đăng nhập provider đó\\./)",
+        "assert.match(vietnamese, /composer-runtime\" data-state=\"limited\"/)",
+        "assert.match(html, /class=\"home-intro\"/)",
+        "assert.doesNotMatch(html, /home-ambient|home-hero/)",
+        "assert.match(styles, /\\.home-intro\\{display:grid/)",
+        "assert.match(styles, /font-size:clamp\\(32px,3\\.6vw,52px\\)/)",
+        "assert.doesNotMatch(styles, /font-size:clamp\\(38px,5\\.2vw,72px\\)/)",
+        "assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Plan this', planningProviderId: 'codex-app-server', planningModelId: 'gpt-5.6-sol', deploymentKey: 'codex-app-server/gpt-5.6-sol', mcpAllowedTools: [] }]])",
+        "assert.match(html, /data-composer-picker=\"planningEffort\"/)",
+        "assert.match(html, /data-picker-value=\"high\"/)",
+        "assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Use careful reasoning', planningProviderId: 'codex-app-server', planningModelId: 'gpt-5.6-codex', deploymentKey: 'codex-app-server/gpt-5.6-codex', planningEffort: 'high', mcpAllowedTools: [] }]])",
+        "assert.equal(controller.snapshot().selectedModel, 'codex/gpt-5.6-codex')",
+        "assert.match(renderHomeView(controller.snapshot()), /<input type=\"hidden\" name=\"modelChoice\" value=\"codex\\/gpt-5\\.6-codex\"/)",
+        "assert.equal(controller.snapshot().selectedModel, 'auto')",
+        "assert.match(html, /Browser audit/)",
+        "assert.match(html, /data-selected-skill-remove=\"browser-audit\"/)",
+        "assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Review this flow', planningProviderId: 'auto', mcpAllowedTools: [], skillIds: ['browser-audit'] }]])",
+        "assert.deepEqual(calls, [])",
+        "assert.equal(controller.snapshot().error, 'Model đã chọn chưa sẵn sàng. Hãy đăng nhập hoặc kiểm tra provider trước khi gửi.')",
+        "assert.match(html, /aria-label=\"Dự án\"/)",
+        "assert.match(html, /Không có dự án khả dụng/)",
+        "assert.match(html, /1 provider sẵn sàng/)",
+        "assert.match(html, /Mục tiêu nhiệm vụ/)",
+        "assert.match(html, /data-picker-label=\"Hỏi\"/)",
+        "assert.match(html, /aria-label=\"Commands\"/)",
+        "assert.match(html, /Run a command/)",
+        "assert.doesNotMatch(html, /Thêm ngữ cảnh|Chạy một lệnh|Không có mục phù hợp|Hỏi mà không đổi tệp/)",
+        "assert.match(menu, /aria-label=\"Lệnh\"/)",
+        "assert.match(menu, /Chạy một lệnh/)",
+        "assert.match(menu, /Không có mục phù hợp/)",
+        "assert.match(commands, /Hỏi mà không đổi tệp/)",
+        "assert.match(html, /2 providers ready/)",
+        "assert.match(html, /Browser control/)",
+        "assert.match(html, /ForgeOS v2 · candidate/)",
+        "assert.match(html, /data-menu-kind=\"skill\"/)",
+        "assert.match(context, /Needle skill/)",
+        "assert.match(command, /Needle command/)",
+        "assert.match(skillMenu, /Repository reference/)",
+        "assert.match(pluginMenu, /Semantic index/)",
+        "assert.match(source, /addEventListener\\('nolane:project-create-requested',\\s*requestProjectCreation\\)/)",
+        "assert.match(source, /openProjectCreateDialog/)",
+        "assert.doesNotMatch(source, /Creating a project requires the Electron desktop launcher/)",
+        "assert.equal(controller.snapshot().error, 'Mục tiêu cần rõ kết quả mong muốn, hành vi bị ảnh hưởng và điều kiện thành công.')",
+        "assert.equal(controller.snapshot().error, 'Runtime đang giảm tải để bảo vệ bộ nhớ. Hãy chờ một lát rồi thử lại.')",
         "named-test-pass:four intent presets map to enforceable backend boundaries",
         "named-test-pass:mission request validates objective, project and provider availability",
-        "named-test-pass:repository suggestions render only when backed by evidence"
+        "named-test-pass:repository suggestions render only when backed by evidence",
+        "named-test-pass:home composer preserves a distinct deployment key for every provider model",
+        "named-test-pass:home composer keeps every ready discovered model selectable",
+        "named-test-pass:home composer offers only ready provider deployments and disables send until a provider is usable",
+        "named-test-pass:home composer preserves an unavailable saved model instead of silently routing it automatically",
+        "named-test-pass:home composer explains when a preserved model is unavailable",
+        "named-test-pass:home uses a compact task-first composition instead of an oversized generic hero",
+        "named-test-pass:home composer sends provider and model separately for the selected deployment",
+        "named-test-pass:home composer exposes and submits only catalog-advertised Codex reasoning effort",
+        "named-test-pass:home composer uses the persisted routing default until the user chooses another model",
+        "named-test-pass:home composer turns an explicit Skill selection into a removable mission context receipt request",
+        "named-test-pass:English home keeps composer menus free of Vietnamese copy",
+        "named-test-pass:Vietnamese composer command menu translates local commands and empty state",
+        "named-test-pass:home counts only authenticated healthy providers as ready",
+        "named-test-pass:composer context menu exposes ForgeOS skills and keeps provenance visible",
+        "named-test-pass:composer finds skills and commands beyond the compact unfiltered menu",
+        "named-test-pass:composer context search recognizes skills and plugins by their type",
+        "named-test-pass:composer project creation supports a local-folder fallback outside Electron",
+        "named-test-pass:composer surfaces planning-input failures instead of a generic internal error"
       ],
       "negativeAssertions": [
         "assert.equal(INTENT_PRESETS.ask.writeFiles, false)",
@@ -883,9 +1008,22 @@
         "assert.equal(INTENT_PRESETS.verify.expandScope, false)",
         "assert.throws(() => createMissionRequest({ objective: '', projectId: 'p1' }), /objective/i)",
         "assert.throws(() => createMissionRequest({ objective: 'Fix tests', projectId: '' }), /project/i)",
-        "assert.throws(() => createMissionRequest({ objective: 'Fix tests', projectId: 'p1', providerState: 'unavailable' }), /provider/i)"
+        "assert.throws(() => createMissionRequest({ objective: 'Fix tests', projectId: 'p1', providerState: 'unavailable' }), /provider/i)",
+        "assert.doesNotMatch(modelMenu, /login-required\\/blocked-model|plan-required\\/unsafe-model/)",
+        "assert.match(html, /data-picker-label=\"Blocked model — Not ready\"/)",
+        "assert.match(modelMenu, /<small>login-required · blocked-model · Not ready<\\/small>/)",
+        "assert.match(english, /Selected model is not ready\\. Choose another model or sign in to its provider\\./)",
+        "assert.rejects(() => controller.submit({ objective: 'Lập kế hoạch', projectId: 'p1', modelChoice: 'cline/claude-sonnet' }), /chưa sẵn sàng/)",
+        "assert.doesNotMatch(html, /No project available|1 provider ready|Mission objective|>Ask<\\/option>/)",
+        "assert.match(html, /Ask without changing files/)",
+        "assert.doesNotMatch(commands, /Ask without changing files|Run a command|No matching items/)",
+        "assert.rejects(() => controller.submit({ objective: 'xin chào', projectId: 'p1' }), /Planning requires additional user input/)",
+        "assert.rejects(() => controller.submit({ objective: 'Plan this safely', projectId: 'p1' }), /Runtime is temporarily conserving resources/)",
+        "named-test-negative:home composer rejects an unavailable selected model before making a mission request",
+        "named-test-negative:Vietnamese home renders composer labels without leftover English copy",
+        "named-test-negative:composer explains a temporary runtime admission block"
       ],
-      "receiptSha256": "ac9ddda4760f0ebf7c21e29e64e0bdb86598f2d8fd115a25f6ed81ad3d6637e7",
+      "receiptSha256": "940a57b3488358e455987dffa290447c1678f89c998aac7b1f24877c00629ef3",
       "environment": "node>=22.12",
       "external": false
     },
@@ -896,10 +1034,10 @@
         "ui-v3/views/mission/mission-view.mjs"
       ],
       "productionEntrypointSha256": [
-        "f30ac98037e6883e8e0031f814257a7233f22150d26e03bc9848f73b7e083ba7"
+        "970b1d9b2655f7974395af26083b5f7148a6e04058c0e2b7d34b492996d8571d"
       ],
       "testFile": "tests/ui-v3-mission-incremental.test.mjs",
-      "testFileSha256": "b4455512a5eb3159803cad4db7487ccea1de2dc08ca9f758617886b711abeeab",
+      "testFileSha256": "7e32c63b67d80b211aa9315e09ed1097db9c8de5f11ca2fe0ceeac2f729f1f15",
       "namedTests": [
         "heartbeat and header patches do not replace keyed message or activity identities",
         "activity upserts, grouping and manual follow mode preserve scroll intent",
@@ -926,7 +1064,7 @@
         "named-test-negative:heartbeat and header patches do not replace keyed message or activity identities",
         "named-test-negative:5,000 activities are windowed without dropping total count"
       ],
-      "receiptSha256": "39729d1ae74329ab9b65cf475c20282113a644a85e7fd1ec649eca359ab8ef16",
+      "receiptSha256": "aeed6f0164d44f65d17cf3cdc07849e9730fd66bd0610bfd0e294b0d1caa466b",
       "environment": "node>=22.12",
       "external": false
     },
@@ -937,10 +1075,10 @@
         "ui-v3/views/mission/attention-card.mjs"
       ],
       "productionEntrypointSha256": [
-        "35f2e3aa922e7955b85446005fab06dc4a65011e72520b02bbe5c103b9e374cb"
+        "56de800fcd9f961933804d216b4ebc6bdffed15b314c7ccbf661b8db7a30a922"
       ],
       "testFile": "tests/ui-v3-attention-cards.test.mjs",
-      "testFileSha256": "e74ed54dea4452a9f15228e7a5747bf0f3eeb4ec1c8400e634ee4eddd59ce2d8",
+      "testFileSha256": "b7124bffa77c56c72e851b7a2071cf5ac09ddead0ab9df18b71858249e5203d5",
       "namedTests": [
         "permission card exposes action, reason, impact, scope and reversibility without raw backend jargon",
         "irreversible actions cannot omit impact or a safe denial option"
@@ -970,14 +1108,15 @@
         "ui-v3/views/mission/artifact-dock.mjs"
       ],
       "productionEntrypointSha256": [
-        "c13d70b73fcf0320e1d7f43c9c14a3f5f34cf4420141f41dc032559daa02d7f8"
+        "84f0f09068e3719a47e53ef04318b73d0a80987597f155567df201f2cb8434d0"
       ],
       "testFile": "tests/ui-v3-artifact-dock.test.mjs",
-      "testFileSha256": "baf597a61c764a7c0be33311d8099730e88d54a83a5882c567219099cc588fc6",
+      "testFileSha256": "697e319d0b39fee7f68523a2d7bf641942725ae3d77027e3d5ea8736dfd04d4a",
       "namedTests": [
         "Artifact Dock exposes only context-backed tabs in product priority order",
         "Artifact Dock preserves keyed artifacts and clamps user width",
-        "preview artifact records bounded before-after snapshots and annotations"
+        "preview artifact records bounded before-after snapshots and annotations",
+        "Artifact Dock localizes tab labels and accessible chrome"
       ],
       "positiveAssertions": [
         "assert.deepEqual(tabs.map((item) => item.id), ['preview', 'changes', 'tests'])",
@@ -988,14 +1127,18 @@
         "assert.equal(value.status, 'ready')",
         "assert.equal(value.snapshots.length, 2)",
         "assert.equal(value.annotations[0].selector, '#save')",
+        "assert.match(html, /Xem trước/)",
+        "assert.match(html, /Artifact của nhiệm vụ/)",
+        "assert.doesNotMatch(html, /Mission artifacts/)",
         "named-test-pass:Artifact Dock exposes only context-backed tabs in product priority order",
         "named-test-pass:Artifact Dock preserves keyed artifacts and clamps user width",
-        "named-test-pass:preview artifact records bounded before-after snapshots and annotations"
+        "named-test-pass:preview artifact records bounded before-after snapshots and annotations",
+        "named-test-pass:Artifact Dock localizes tab labels and accessible chrome"
       ],
       "negativeAssertions": [
         "assert.throws(() => preview.recordSnapshot({ phase: 'after', sha256: 'bad' }), /sha256/i)"
       ],
-      "receiptSha256": "e28aba8260ae25fe83944c7dc5b55975eb3eae840cbd898b817138a7112e06d2",
+      "receiptSha256": "3ce571ecd938e471b2a5e6f040881c67717e80d3a0077379088e7973693cd610",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1006,14 +1149,15 @@
         "ui-v3/views/review/review-view.mjs"
       ],
       "productionEntrypointSha256": [
-        "aa72e8bff5dd197d135a6aa399379494160a23b4742e66ffc026fb53fddd4b18"
+        "4450c41c2144461c6aff410342bb41de482ed9be2714b453f6d796bd0ed9dca7"
       ],
       "testFile": "tests/ui-v3-review.test.mjs",
-      "testFileSha256": "e624fd32feec28e5ebfc590d92300d2e0e6905393c3dddd4d4626d0bd9307c8e",
+      "testFileSha256": "9b783c95121bdb804ad09446196ee40d0f88fb6dab6cc08c8c0b4cb367acfce8",
       "namedTests": [
         "review model virtualizes large hunk sets and preserves hunk decisions",
         "review summary reports verification gaps and out-of-scope risk",
-        "ship action and rollback are fail-closed"
+        "ship action and rollback are fail-closed",
+        "review surface localizes changed-file chrome"
       ],
       "positiveAssertions": [
         "assert.equal(snapshot.totalHunks, 10000)",
@@ -1026,8 +1170,12 @@
         "assert.equal(selectShipAction({ projectState: 'clean', canPush: true }), 'push')",
         "assert.equal(plan.preserveConversation, true)",
         "assert.equal(plan.preserveTerminalHistory, true)",
+        "assert.match(html, /Tệp đã thay đổi/)",
+        "assert.match(html, /Đoạn thay đổi h1/)",
+        "assert.doesNotMatch(html, /Changed files/)",
         "named-test-pass:review model virtualizes large hunk sets and preserves hunk decisions",
-        "named-test-pass:review summary reports verification gaps and out-of-scope risk"
+        "named-test-pass:review summary reports verification gaps and out-of-scope risk",
+        "named-test-pass:review surface localizes changed-file chrome"
       ],
       "negativeAssertions": [
         "assert.equal(summary.testsComplete, false)",
@@ -1036,7 +1184,7 @@
         "assert.throws(() => createRollbackPlan({ checkpointId: 'cp1', files: [] }), /checkpointSha256/i)",
         "named-test-negative:ship action and rollback are fail-closed"
       ],
-      "receiptSha256": "0a9947c3a88176e8428460172ed94813d6d77aa38c0895060ce57d21d3ce4516",
+      "receiptSha256": "4a2c63ca715c9a954a7273b24662ca0d48489ff389487c2e691bd93b636d1bd1",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1047,14 +1195,15 @@
         "ui-v3/views/review/review-view.mjs"
       ],
       "productionEntrypointSha256": [
-        "aa72e8bff5dd197d135a6aa399379494160a23b4742e66ffc026fb53fddd4b18"
+        "4450c41c2144461c6aff410342bb41de482ed9be2714b453f6d796bd0ed9dca7"
       ],
       "testFile": "tests/ui-v3-review.test.mjs",
-      "testFileSha256": "e624fd32feec28e5ebfc590d92300d2e0e6905393c3dddd4d4626d0bd9307c8e",
+      "testFileSha256": "9b783c95121bdb804ad09446196ee40d0f88fb6dab6cc08c8c0b4cb367acfce8",
       "namedTests": [
         "review model virtualizes large hunk sets and preserves hunk decisions",
         "review summary reports verification gaps and out-of-scope risk",
-        "ship action and rollback are fail-closed"
+        "ship action and rollback are fail-closed",
+        "review surface localizes changed-file chrome"
       ],
       "positiveAssertions": [
         "assert.equal(snapshot.totalHunks, 10000)",
@@ -1067,8 +1216,12 @@
         "assert.equal(selectShipAction({ projectState: 'clean', canPush: true }), 'push')",
         "assert.equal(plan.preserveConversation, true)",
         "assert.equal(plan.preserveTerminalHistory, true)",
+        "assert.match(html, /Tệp đã thay đổi/)",
+        "assert.match(html, /Đoạn thay đổi h1/)",
+        "assert.doesNotMatch(html, /Changed files/)",
         "named-test-pass:review model virtualizes large hunk sets and preserves hunk decisions",
-        "named-test-pass:review summary reports verification gaps and out-of-scope risk"
+        "named-test-pass:review summary reports verification gaps and out-of-scope risk",
+        "named-test-pass:review surface localizes changed-file chrome"
       ],
       "negativeAssertions": [
         "assert.equal(summary.testsComplete, false)",
@@ -1077,7 +1230,7 @@
         "assert.throws(() => createRollbackPlan({ checkpointId: 'cp1', files: [] }), /checkpointSha256/i)",
         "named-test-negative:ship action and rollback are fail-closed"
       ],
-      "receiptSha256": "7a48650a23a74a68411ea25a9b06ee6ddf262b69f1d4ef145150876102e589cc",
+      "receiptSha256": "7b2d73f20b1ad385e5e1169efcdaa16f0a0ef9b2dbb4eaa034df4d7aa2548d2b",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1088,14 +1241,15 @@
         "ui-v3/views/review/ship-actions.mjs"
       ],
       "productionEntrypointSha256": [
-        "bbb8ee85d4b2a0604d8f1875e3f425ad098ae92b0184bc2361cbfe0f6ebdd32c"
+        "c1e91c03d94ec1281eb3818a629af1cd347dd917b914133557fe6c187f4c0a5f"
       ],
       "testFile": "tests/ui-v3-review.test.mjs",
-      "testFileSha256": "e624fd32feec28e5ebfc590d92300d2e0e6905393c3dddd4d4626d0bd9307c8e",
+      "testFileSha256": "9b783c95121bdb804ad09446196ee40d0f88fb6dab6cc08c8c0b4cb367acfce8",
       "namedTests": [
         "review model virtualizes large hunk sets and preserves hunk decisions",
         "review summary reports verification gaps and out-of-scope risk",
-        "ship action and rollback are fail-closed"
+        "ship action and rollback are fail-closed",
+        "review surface localizes changed-file chrome"
       ],
       "positiveAssertions": [
         "assert.equal(snapshot.totalHunks, 10000)",
@@ -1108,8 +1262,12 @@
         "assert.equal(selectShipAction({ projectState: 'clean', canPush: true }), 'push')",
         "assert.equal(plan.preserveConversation, true)",
         "assert.equal(plan.preserveTerminalHistory, true)",
+        "assert.match(html, /Tệp đã thay đổi/)",
+        "assert.match(html, /Đoạn thay đổi h1/)",
+        "assert.doesNotMatch(html, /Changed files/)",
         "named-test-pass:review model virtualizes large hunk sets and preserves hunk decisions",
-        "named-test-pass:review summary reports verification gaps and out-of-scope risk"
+        "named-test-pass:review summary reports verification gaps and out-of-scope risk",
+        "named-test-pass:review surface localizes changed-file chrome"
       ],
       "negativeAssertions": [
         "assert.equal(summary.testsComplete, false)",
@@ -1118,7 +1276,7 @@
         "assert.throws(() => createRollbackPlan({ checkpointId: 'cp1', files: [] }), /checkpointSha256/i)",
         "named-test-negative:ship action and rollback are fail-closed"
       ],
-      "receiptSha256": "cf446da5fd8a49c0b229c745025972f308c66f10ff7b339065dc1fbe47cd59c7",
+      "receiptSha256": "aa82cea28ae4f6d1c6cbf848444dffdd000c2ea370de6c6576cacbcbfce40465",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1129,12 +1287,19 @@
         "ui-v3/views/workroom/workroom-view.mjs"
       ],
       "productionEntrypointSha256": [
-        "420ae61615c2db22dbff1efe04389400b88c03272212e914f62d3f78415d3a06"
+        "c42e8c2f5ac3d7ed7de24425001b62b3530b6b908fb4d9641e3da8d1ee41334c"
       ],
       "testFile": "tests/ui-v3-workroom.test.mjs",
-      "testFileSha256": "7d86c67da4f4497d22e6ae3508512058ee63dab5433f8a6521105540d8710b2f",
+      "testFileSha256": "139efbf3e06696f07fc1f28d6fec27253769c95ef5f9f003e6ef49352cacfb75",
       "namedTests": [
         "Workroom preserves mission route continuity and panel state",
+        "Workroom renders a real project tree and editable file surface in both locales",
+        "Workroom diff and preview tabs are bounded and use the selected draft",
+        "Workroom renders a bounded, interactive terminal surface after a local session opens",
+        "Workroom status bar reports live Git and session state instead of fixed diagnostics",
+        "Workroom disables terminal creation when no project owns the session",
+        "Workroom opens the governed terminal socket only from an explicit terminal action",
+        "Workroom terminal inherits the configured application color tokens",
         "file tree windows large repositories and preserves keyed nodes",
         "editor and terminal hosts load lazily and enforce local resource bounds"
       ],
@@ -1142,6 +1307,34 @@
         "assert.equal(value.returnPath, '/missions/m1')",
         "assert.equal(value.panels.agent.size, 420)",
         "assert.equal(value.activeFile, 'src/a.mjs')",
+        "assert.match(english, /data-workroom-directory=\"src\"/)",
+        "assert.match(english, /data-workroom-file=\"src\\/main\\.mjs\"/)",
+        "assert.match(english, /data-workroom-editor/)",
+        "assert.match(english, />Save<\\/button>/)",
+        "assert.match(vietnamese, />Tệp<\\/strong>/)",
+        "assert.match(vietnamese, />Lưu<\\/button>/)",
+        "assert.match(diff, /Original/)",
+        "assert.match(diff, /Draft/)",
+        "assert.match(diff, /new/)",
+        "assert.match(renderWorkroomView(model.snapshot()), /<div class=\"workroom-preview\">[\\s\\S]*new/)",
+        "assert.match(html, /data-workroom-agent-tab=\"terminal\"/)",
+        "assert.match(html, /data-workroom-terminal-output/)",
+        "assert.match(html, /PS C:\\\\work&gt",
+        "assert.match(html, /data-workroom-terminal-form/)",
+        "assert.match(html, /data-workroom-git-status=\"changed\">2 files changed/)",
+        "assert.match(html, /data-workroom-file-state=\"dirty\">Unsaved changes/)",
+        "assert.match(html, /data-workroom-terminal-state=\"connected\">Terminal connected/)",
+        "assert.doesNotMatch(html, />main<|>0 errors<|>0 warnings</)",
+        "assert.match(html, /data-workroom-action=\"terminal\" disabled>Open terminal<\\/button>/)",
+        "assert.match(source, /createTerminalClient/)",
+        "assert.match(source, /request\\('create', \\{ projectId: project\\.id, shell, cwd: '\\.'[,}]?/)",
+        "assert.match(source, /request\\('input', \\{ sessionId: current\\.id, data:/)",
+        "assert.match(source, /request\\('terminate', \\{ sessionId: current\\.id \\}\\)/)",
+        "assert.match(source, /\\/api\\/git\\/status\\?projectId=/)",
+        "assert.match(source, /model\\.setFile\\(await api\\.get\\(`\\/api\\/workroom\\/file[\\s\\S]{0,320}await loadGitStatus\\(\\)",
+        "assert.match(css, /\\.workroom-terminal pre\\{[^}]*background:var\\(--surface-canvas\\)",
+        "assert.match(css, /\\.workroom-agent__body>button\\{[^}]*background:var\\(--surface-raised\\)",
+        "assert.doesNotMatch(css, /#[0-9a-f]{3,8}\\b/i)",
         "assert.equal(second.total, 5000)",
         "assert.equal(second.nodes.length, 10)",
         "assert.equal(second.nodeKeys.get('n4999'), key)",
@@ -1150,13 +1343,21 @@
         "assert.deepEqual(snapshot.visible, ['t2', 't3'])",
         "assert.equal(snapshot.sessions.find((item) => item.id === 't1').suspended, true)",
         "named-test-pass:Workroom preserves mission route continuity and panel state",
+        "named-test-pass:Workroom renders a real project tree and editable file surface in both locales",
+        "named-test-pass:Workroom diff and preview tabs are bounded and use the selected draft",
+        "named-test-pass:Workroom renders a bounded, interactive terminal surface after a local session opens",
+        "named-test-pass:Workroom status bar reports live Git and session state instead of fixed diagnostics",
+        "named-test-pass:Workroom opens the governed terminal socket only from an explicit terminal action",
+        "named-test-pass:Workroom terminal inherits the configured application color tokens",
         "named-test-pass:file tree windows large repositories and preserves keyed nodes",
         "named-test-pass:editor and terminal hosts load lazily and enforce local resource bounds"
       ],
       "negativeAssertions": [
-        "assert.equal(value.panels.files.open, false)"
+        "assert.equal(value.panels.files.open, false)",
+        "assert.doesNotMatch(vietnamese, /Back to mission|Filter files|No file open|Save<\\/button>/)",
+        "named-test-negative:Workroom disables terminal creation when no project owns the session"
       ],
-      "receiptSha256": "9ddc883f61b2b8adfc0e43992bb2c9b54bb49b5102b0a02014694fda4ef2910e",
+      "receiptSha256": "73e8f336b667c108600ab33d1d96ba4e515d1ac30c193dfe3bfab7a3ed5dceee",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1167,12 +1368,19 @@
         "ui-v3/views/workroom/editor-host.mjs"
       ],
       "productionEntrypointSha256": [
-        "f348350e9a44e811c2750a1c72b75a6ff57109f322c21fc56b1340d28f596c80"
+        "12034965be47389407f49d84fde326d6358bf5e65d01bff4584e872b4c0090e3"
       ],
       "testFile": "tests/ui-v3-workroom.test.mjs",
-      "testFileSha256": "7d86c67da4f4497d22e6ae3508512058ee63dab5433f8a6521105540d8710b2f",
+      "testFileSha256": "139efbf3e06696f07fc1f28d6fec27253769c95ef5f9f003e6ef49352cacfb75",
       "namedTests": [
         "Workroom preserves mission route continuity and panel state",
+        "Workroom renders a real project tree and editable file surface in both locales",
+        "Workroom diff and preview tabs are bounded and use the selected draft",
+        "Workroom renders a bounded, interactive terminal surface after a local session opens",
+        "Workroom status bar reports live Git and session state instead of fixed diagnostics",
+        "Workroom disables terminal creation when no project owns the session",
+        "Workroom opens the governed terminal socket only from an explicit terminal action",
+        "Workroom terminal inherits the configured application color tokens",
         "file tree windows large repositories and preserves keyed nodes",
         "editor and terminal hosts load lazily and enforce local resource bounds"
       ],
@@ -1180,6 +1388,34 @@
         "assert.equal(value.returnPath, '/missions/m1')",
         "assert.equal(value.panels.agent.size, 420)",
         "assert.equal(value.activeFile, 'src/a.mjs')",
+        "assert.match(english, /data-workroom-directory=\"src\"/)",
+        "assert.match(english, /data-workroom-file=\"src\\/main\\.mjs\"/)",
+        "assert.match(english, /data-workroom-editor/)",
+        "assert.match(english, />Save<\\/button>/)",
+        "assert.match(vietnamese, />Tệp<\\/strong>/)",
+        "assert.match(vietnamese, />Lưu<\\/button>/)",
+        "assert.match(diff, /Original/)",
+        "assert.match(diff, /Draft/)",
+        "assert.match(diff, /new/)",
+        "assert.match(renderWorkroomView(model.snapshot()), /<div class=\"workroom-preview\">[\\s\\S]*new/)",
+        "assert.match(html, /data-workroom-agent-tab=\"terminal\"/)",
+        "assert.match(html, /data-workroom-terminal-output/)",
+        "assert.match(html, /PS C:\\\\work&gt",
+        "assert.match(html, /data-workroom-terminal-form/)",
+        "assert.match(html, /data-workroom-git-status=\"changed\">2 files changed/)",
+        "assert.match(html, /data-workroom-file-state=\"dirty\">Unsaved changes/)",
+        "assert.match(html, /data-workroom-terminal-state=\"connected\">Terminal connected/)",
+        "assert.doesNotMatch(html, />main<|>0 errors<|>0 warnings</)",
+        "assert.match(html, /data-workroom-action=\"terminal\" disabled>Open terminal<\\/button>/)",
+        "assert.match(source, /createTerminalClient/)",
+        "assert.match(source, /request\\('create', \\{ projectId: project\\.id, shell, cwd: '\\.'[,}]?/)",
+        "assert.match(source, /request\\('input', \\{ sessionId: current\\.id, data:/)",
+        "assert.match(source, /request\\('terminate', \\{ sessionId: current\\.id \\}\\)/)",
+        "assert.match(source, /\\/api\\/git\\/status\\?projectId=/)",
+        "assert.match(source, /model\\.setFile\\(await api\\.get\\(`\\/api\\/workroom\\/file[\\s\\S]{0,320}await loadGitStatus\\(\\)",
+        "assert.match(css, /\\.workroom-terminal pre\\{[^}]*background:var\\(--surface-canvas\\)",
+        "assert.match(css, /\\.workroom-agent__body>button\\{[^}]*background:var\\(--surface-raised\\)",
+        "assert.doesNotMatch(css, /#[0-9a-f]{3,8}\\b/i)",
         "assert.equal(second.total, 5000)",
         "assert.equal(second.nodes.length, 10)",
         "assert.equal(second.nodeKeys.get('n4999'), key)",
@@ -1188,13 +1424,21 @@
         "assert.deepEqual(snapshot.visible, ['t2', 't3'])",
         "assert.equal(snapshot.sessions.find((item) => item.id === 't1').suspended, true)",
         "named-test-pass:Workroom preserves mission route continuity and panel state",
+        "named-test-pass:Workroom renders a real project tree and editable file surface in both locales",
+        "named-test-pass:Workroom diff and preview tabs are bounded and use the selected draft",
+        "named-test-pass:Workroom renders a bounded, interactive terminal surface after a local session opens",
+        "named-test-pass:Workroom status bar reports live Git and session state instead of fixed diagnostics",
+        "named-test-pass:Workroom opens the governed terminal socket only from an explicit terminal action",
+        "named-test-pass:Workroom terminal inherits the configured application color tokens",
         "named-test-pass:file tree windows large repositories and preserves keyed nodes",
         "named-test-pass:editor and terminal hosts load lazily and enforce local resource bounds"
       ],
       "negativeAssertions": [
-        "assert.equal(value.panels.files.open, false)"
+        "assert.equal(value.panels.files.open, false)",
+        "assert.doesNotMatch(vietnamese, /Back to mission|Filter files|No file open|Save<\\/button>/)",
+        "named-test-negative:Workroom disables terminal creation when no project owns the session"
       ],
-      "receiptSha256": "f23e592b9f41c8640c53bd627bc6e2326de9b5c1e090b5bee82b80fea598ce7c",
+      "receiptSha256": "21d21074b69a47688b1bba174713c0dc5913af7573409832857596e59c79a632",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1205,12 +1449,19 @@
         "ui-v3/views/workroom/terminal-host.mjs"
       ],
       "productionEntrypointSha256": [
-        "0ac0faa96f6daca13547e9738710a7674bcc6650292a27ebffb4fbc163c98988"
+        "ee87fdf3af648f60efbfbb1df97b574e52d19f1484987065fb09011ed72b6879"
       ],
       "testFile": "tests/ui-v3-workroom.test.mjs",
-      "testFileSha256": "7d86c67da4f4497d22e6ae3508512058ee63dab5433f8a6521105540d8710b2f",
+      "testFileSha256": "139efbf3e06696f07fc1f28d6fec27253769c95ef5f9f003e6ef49352cacfb75",
       "namedTests": [
         "Workroom preserves mission route continuity and panel state",
+        "Workroom renders a real project tree and editable file surface in both locales",
+        "Workroom diff and preview tabs are bounded and use the selected draft",
+        "Workroom renders a bounded, interactive terminal surface after a local session opens",
+        "Workroom status bar reports live Git and session state instead of fixed diagnostics",
+        "Workroom disables terminal creation when no project owns the session",
+        "Workroom opens the governed terminal socket only from an explicit terminal action",
+        "Workroom terminal inherits the configured application color tokens",
         "file tree windows large repositories and preserves keyed nodes",
         "editor and terminal hosts load lazily and enforce local resource bounds"
       ],
@@ -1218,6 +1469,34 @@
         "assert.equal(value.returnPath, '/missions/m1')",
         "assert.equal(value.panels.agent.size, 420)",
         "assert.equal(value.activeFile, 'src/a.mjs')",
+        "assert.match(english, /data-workroom-directory=\"src\"/)",
+        "assert.match(english, /data-workroom-file=\"src\\/main\\.mjs\"/)",
+        "assert.match(english, /data-workroom-editor/)",
+        "assert.match(english, />Save<\\/button>/)",
+        "assert.match(vietnamese, />Tệp<\\/strong>/)",
+        "assert.match(vietnamese, />Lưu<\\/button>/)",
+        "assert.match(diff, /Original/)",
+        "assert.match(diff, /Draft/)",
+        "assert.match(diff, /new/)",
+        "assert.match(renderWorkroomView(model.snapshot()), /<div class=\"workroom-preview\">[\\s\\S]*new/)",
+        "assert.match(html, /data-workroom-agent-tab=\"terminal\"/)",
+        "assert.match(html, /data-workroom-terminal-output/)",
+        "assert.match(html, /PS C:\\\\work&gt",
+        "assert.match(html, /data-workroom-terminal-form/)",
+        "assert.match(html, /data-workroom-git-status=\"changed\">2 files changed/)",
+        "assert.match(html, /data-workroom-file-state=\"dirty\">Unsaved changes/)",
+        "assert.match(html, /data-workroom-terminal-state=\"connected\">Terminal connected/)",
+        "assert.doesNotMatch(html, />main<|>0 errors<|>0 warnings</)",
+        "assert.match(html, /data-workroom-action=\"terminal\" disabled>Open terminal<\\/button>/)",
+        "assert.match(source, /createTerminalClient/)",
+        "assert.match(source, /request\\('create', \\{ projectId: project\\.id, shell, cwd: '\\.'[,}]?/)",
+        "assert.match(source, /request\\('input', \\{ sessionId: current\\.id, data:/)",
+        "assert.match(source, /request\\('terminate', \\{ sessionId: current\\.id \\}\\)/)",
+        "assert.match(source, /\\/api\\/git\\/status\\?projectId=/)",
+        "assert.match(source, /model\\.setFile\\(await api\\.get\\(`\\/api\\/workroom\\/file[\\s\\S]{0,320}await loadGitStatus\\(\\)",
+        "assert.match(css, /\\.workroom-terminal pre\\{[^}]*background:var\\(--surface-canvas\\)",
+        "assert.match(css, /\\.workroom-agent__body>button\\{[^}]*background:var\\(--surface-raised\\)",
+        "assert.doesNotMatch(css, /#[0-9a-f]{3,8}\\b/i)",
         "assert.equal(second.total, 5000)",
         "assert.equal(second.nodes.length, 10)",
         "assert.equal(second.nodeKeys.get('n4999'), key)",
@@ -1226,13 +1505,21 @@
         "assert.deepEqual(snapshot.visible, ['t2', 't3'])",
         "assert.equal(snapshot.sessions.find((item) => item.id === 't1').suspended, true)",
         "named-test-pass:Workroom preserves mission route continuity and panel state",
+        "named-test-pass:Workroom renders a real project tree and editable file surface in both locales",
+        "named-test-pass:Workroom diff and preview tabs are bounded and use the selected draft",
+        "named-test-pass:Workroom renders a bounded, interactive terminal surface after a local session opens",
+        "named-test-pass:Workroom status bar reports live Git and session state instead of fixed diagnostics",
+        "named-test-pass:Workroom opens the governed terminal socket only from an explicit terminal action",
+        "named-test-pass:Workroom terminal inherits the configured application color tokens",
         "named-test-pass:file tree windows large repositories and preserves keyed nodes",
         "named-test-pass:editor and terminal hosts load lazily and enforce local resource bounds"
       ],
       "negativeAssertions": [
-        "assert.equal(value.panels.files.open, false)"
+        "assert.equal(value.panels.files.open, false)",
+        "assert.doesNotMatch(vietnamese, /Back to mission|Filter files|No file open|Save<\\/button>/)",
+        "named-test-negative:Workroom disables terminal creation when no project owns the session"
       ],
-      "receiptSha256": "c39b670b91990132cee7be45284065695d2bceb14eba2c9fcb10ca201f816e9d",
+      "receiptSha256": "56a7a2a52ad136a0832683022e940b7f328d905c075a9867d9d00e64ad2f5d25",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1243,14 +1530,15 @@
         "ui-v3/views/mission/artifact-dock.mjs"
       ],
       "productionEntrypointSha256": [
-        "c13d70b73fcf0320e1d7f43c9c14a3f5f34cf4420141f41dc032559daa02d7f8"
+        "84f0f09068e3719a47e53ef04318b73d0a80987597f155567df201f2cb8434d0"
       ],
       "testFile": "tests/ui-v3-artifact-dock.test.mjs",
-      "testFileSha256": "baf597a61c764a7c0be33311d8099730e88d54a83a5882c567219099cc588fc6",
+      "testFileSha256": "697e319d0b39fee7f68523a2d7bf641942725ae3d77027e3d5ea8736dfd04d4a",
       "namedTests": [
         "Artifact Dock exposes only context-backed tabs in product priority order",
         "Artifact Dock preserves keyed artifacts and clamps user width",
-        "preview artifact records bounded before-after snapshots and annotations"
+        "preview artifact records bounded before-after snapshots and annotations",
+        "Artifact Dock localizes tab labels and accessible chrome"
       ],
       "positiveAssertions": [
         "assert.deepEqual(tabs.map((item) => item.id), ['preview', 'changes', 'tests'])",
@@ -1261,14 +1549,18 @@
         "assert.equal(value.status, 'ready')",
         "assert.equal(value.snapshots.length, 2)",
         "assert.equal(value.annotations[0].selector, '#save')",
+        "assert.match(html, /Xem trước/)",
+        "assert.match(html, /Artifact của nhiệm vụ/)",
+        "assert.doesNotMatch(html, /Mission artifacts/)",
         "named-test-pass:Artifact Dock exposes only context-backed tabs in product priority order",
         "named-test-pass:Artifact Dock preserves keyed artifacts and clamps user width",
-        "named-test-pass:preview artifact records bounded before-after snapshots and annotations"
+        "named-test-pass:preview artifact records bounded before-after snapshots and annotations",
+        "named-test-pass:Artifact Dock localizes tab labels and accessible chrome"
       ],
       "negativeAssertions": [
         "assert.throws(() => preview.recordSnapshot({ phase: 'after', sha256: 'bad' }), /sha256/i)"
       ],
-      "receiptSha256": "2ea5bf34d27965b31664de1f7b3c9f05f753a3a0fed14c8f9b82c1b7cf0e7734",
+      "receiptSha256": "81e11e16ea68a7c9670f42e069c393781b7f5475c9ab92f28036b415f811949a",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1279,10 +1571,10 @@
         "ui-v3/views/review-queue/review-queue.mjs"
       ],
       "productionEntrypointSha256": [
-        "94bde49a7174eab638db42df3f30b594981e93da04ccdf4eabc3299623b3b2d4"
+        "95b9dc3a70ea1fa96217c4252451efe04cfb55a394df72523248cf7decd416e6"
       ],
       "testFile": "tests/ui-v3-secondary-views.test.mjs",
-      "testFileSha256": "1068f7b52fa14efa57a0dab86e72db3ec24fb9e6b86b22a83123440a034646d6",
+      "testFileSha256": "22e4b0eb439fd933e46be790b1aaea432f77a514e6cf1a034a5b1f5568552721",
       "namedTests": [
         "Review Queue is an action inbox ordered by urgency and wait time",
         "Projects view exposes trust and mission summaries without loading intelligence graph",
@@ -1304,7 +1596,7 @@
         "assert.equal('providerFallbackChain' in model.snapshot(), false)",
         "named-test-negative:Projects view exposes trust and mission summaries without loading intelligence graph"
       ],
-      "receiptSha256": "c3543548136b720928758e2023d0c39db8f2edd2bdfcd102626a0c58fb57a1e2",
+      "receiptSha256": "866e49aa7c1951f749eb13294684b0d3600611f5c54043a8fcc11d41ebc545fc",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1315,10 +1607,10 @@
         "ui-v3/views/projects/project-view.mjs"
       ],
       "productionEntrypointSha256": [
-        "8b11c0bd70a845d12efef9b73ceb556242a1d5322cba8433f5e07d8cc7a9b406"
+        "b4724942c5cf0815d596b4630c2fc1fe750cbde50883d3841b3ed2d908f07d1f"
       ],
       "testFile": "tests/ui-v3-secondary-views.test.mjs",
-      "testFileSha256": "1068f7b52fa14efa57a0dab86e72db3ec24fb9e6b86b22a83123440a034646d6",
+      "testFileSha256": "22e4b0eb439fd933e46be790b1aaea432f77a514e6cf1a034a5b1f5568552721",
       "namedTests": [
         "Review Queue is an action inbox ordered by urgency and wait time",
         "Projects view exposes trust and mission summaries without loading intelligence graph",
@@ -1340,7 +1632,7 @@
         "assert.equal('providerFallbackChain' in model.snapshot(), false)",
         "named-test-negative:Projects view exposes trust and mission summaries without loading intelligence graph"
       ],
-      "receiptSha256": "8dee0f32ef4d7756e093ba54e1b7b32985161312a5154f1d46c1b7e777e88f30",
+      "receiptSha256": "67e0d78103af0d032a76de0d7bd245407db00402241f3c246713e97ad833650e",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1351,10 +1643,10 @@
         "ui-v3/views/settings/settings-view.mjs"
       ],
       "productionEntrypointSha256": [
-        "1394fdcd1316d9e0eab9434f630db916429655f965c9f320dec18957c0cb5183"
+        "c31142ef00c8da85f29fe0e84db9f7d3bc8251a33c25295c199eb1d2ad5d9225"
       ],
       "testFile": "tests/ui-v3-secondary-views.test.mjs",
-      "testFileSha256": "1068f7b52fa14efa57a0dab86e72db3ec24fb9e6b86b22a83123440a034646d6",
+      "testFileSha256": "22e4b0eb439fd933e46be790b1aaea432f77a514e6cf1a034a5b1f5568552721",
       "namedTests": [
         "Review Queue is an action inbox ordered by urgency and wait time",
         "Projects view exposes trust and mission summaries without loading intelligence graph",
@@ -1376,7 +1668,7 @@
         "assert.equal('providerFallbackChain' in model.snapshot(), false)",
         "named-test-negative:Projects view exposes trust and mission summaries without loading intelligence graph"
       ],
-      "receiptSha256": "8812d03b7e8fe515ec67a9e9662e86908e2db4d93dd963958ea372a064df5ab0",
+      "receiptSha256": "7256052befbfaae7626a3b09bebb3392de5de417ad8bbda24aa724b3e404cfb8",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1387,13 +1679,15 @@
         "ui-v3/control-plane/control-plane-shell.mjs"
       ],
       "productionEntrypointSha256": [
-        "deb2fedd5fabccbd3911686fd3186c9ddaea1bd69a23ecbef0914a8cbeb92934"
+        "6a8ce53e5b2e252380051f22e3a2b7ac5d4c3d11f3183cc9504503ec29a45636"
       ],
       "testFile": "tests/ui-v3-control-plane.test.mjs",
-      "testFileSha256": "b03c728c65146842f8d8af1343be9f403945113f39db1f659435920f9ed96e32",
+      "testFileSha256": "83b103ce4b620617efd9209d84407f71e7c261b4cd262b3e32101d38921bf860",
       "namedTests": [
         "Control Plane uses textual domain navigation and preserves mission deep-link context",
-        "Control Plane rejects unknown domains instead of silently loading a drawer"
+        "Control Plane rejects unknown domains instead of silently loading a drawer",
+        "browser shortcut resolves to the governed runtime browser workspace",
+        "Control Plane localizes expert navigation and capability atlas without leaking its English chrome"
       ],
       "positiveAssertions": [
         "assert.equal(loads.get('runtime'), 1)",
@@ -1403,13 +1697,23 @@
         "assert.equal(CONTROL_PLANE_DOMAINS.length >= 10, true)",
         "assert.match(html, /Back to Mission/)",
         "assert.doesNotMatch(html, /aria-label=\"icon-only\"/)",
-        "named-test-pass:Control Plane uses textual domain navigation and preserves mission deep-link context"
+        "assert.equal(normalizeControlPlanePath('/browser'), '/control-plane/runtime/browser')",
+        "assert.equal(normalizeControlPlanePath('/control-plane/runtime/browser'), '/control-plane/runtime/browser')",
+        "assert.match(shell, /Tổng quan/)",
+        "assert.match(shell, /Bản đồ khả năng/)",
+        "assert.doesNotMatch(shell, />Overview</)",
+        "assert.match(atlas, /Bản đồ sự thật backend/)",
+        "assert.match(atlas, /Lọc route/)",
+        "assert.doesNotMatch(atlas, />Backend truth map</)",
+        "named-test-pass:Control Plane uses textual domain navigation and preserves mission deep-link context",
+        "named-test-pass:browser shortcut resolves to the governed runtime browser workspace"
       ],
       "negativeAssertions": [
         "assert.rejects(() => model.navigate('/control-plane/not-real'), /unknown control plane domain/i)",
-        "named-test-negative:Control Plane rejects unknown domains instead of silently loading a drawer"
+        "named-test-negative:Control Plane rejects unknown domains instead of silently loading a drawer",
+        "named-test-negative:Control Plane localizes expert navigation and capability atlas without leaking its English chrome"
       ],
-      "receiptSha256": "cc746484a82d58d5d84a136d33f6efa05e20527d7bc71b769ee3fdd5445fc7d5",
+      "receiptSha256": "f69fa588c03934785b8d4f2ab8e105805be5b24a64506fa72dca9edafb555555",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1420,10 +1724,10 @@
         "ui-v3/control-plane/domains/operations.mjs"
       ],
       "productionEntrypointSha256": [
-        "650e1f10987b8198b9017606d7a3a1fbc9600ad0f785ba17399687e339501365"
+        "729b2048f0cfeac8d46f57705051f493573adab3d317a63586176a2367c0dd33"
       ],
       "testFile": "tests/ui-v3-control-plane-domains.test.mjs",
-      "testFileSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f",
+      "testFileSha256": "cae0766590bc9a41cd9e6d872bddfc290eed0307b38aba00470b02b3b0b2db74",
       "namedTests": [
         "Control Plane route registry lazy-loads every approved domain once",
         "Operations exposes mission, agent, queue and recovery summaries with safe actions",
@@ -1491,7 +1795,7 @@
         "named-test-negative:Intelligence exposes typed repository facts without background graph animation",
         "named-test-negative:Governance resolves precedence without treating valid overrides as conflicts"
       ],
-      "receiptSha256": "c6ec3422871f0565323360d837e1379c290d29d2cef3f39033e4f826cb624590",
+      "receiptSha256": "f9fd4118c1e40d057930ef1eabcc21fd2754c24d4ac5ae57e5474968c86c33cc",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1502,10 +1806,10 @@
         "ui-v3/control-plane/domains/runtime.mjs"
       ],
       "productionEntrypointSha256": [
-        "724c347ebd0272844fc54e08cfa4fc210ed1f6ff9d0a31afd127c3b4d1e4cc86"
+        "d320f704675dd7996a8255a19c864fc6c8008d134f1cfa8df013e6970a085cc9"
       ],
       "testFile": "tests/ui-v3-control-plane-domains.test.mjs",
-      "testFileSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f",
+      "testFileSha256": "cae0766590bc9a41cd9e6d872bddfc290eed0307b38aba00470b02b3b0b2db74",
       "namedTests": [
         "Control Plane route registry lazy-loads every approved domain once",
         "Operations exposes mission, agent, queue and recovery summaries with safe actions",
@@ -1573,7 +1877,7 @@
         "named-test-negative:Intelligence exposes typed repository facts without background graph animation",
         "named-test-negative:Governance resolves precedence without treating valid overrides as conflicts"
       ],
-      "receiptSha256": "111f2a8403633750a03273cb2c246a71ed61a620ca50a5c6da00370033ff7498",
+      "receiptSha256": "9b293f070d1a7d25942e550e48ba4382958ca1d2371e0262ff092073c0262b5e",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1584,10 +1888,10 @@
         "ui-v3/control-plane/domains/context-memory.mjs"
       ],
       "productionEntrypointSha256": [
-        "fa097a73a42cef149875960a45bfbb7943cddc8e35749b128ab02e82d06e9c6b"
+        "ed343739af583e19cd5208d3d60edcb40c0aa47ee97e0409a6868501eab1f7f2"
       ],
       "testFile": "tests/ui-v3-control-plane-domains.test.mjs",
-      "testFileSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f",
+      "testFileSha256": "cae0766590bc9a41cd9e6d872bddfc290eed0307b38aba00470b02b3b0b2db74",
       "namedTests": [
         "Control Plane route registry lazy-loads every approved domain once",
         "Operations exposes mission, agent, queue and recovery summaries with safe actions",
@@ -1655,7 +1959,7 @@
         "named-test-negative:Intelligence exposes typed repository facts without background graph animation",
         "named-test-negative:Governance resolves precedence without treating valid overrides as conflicts"
       ],
-      "receiptSha256": "eb8bcea03a6e1d142be50a16f57889eafb9fa56236e6b5846db3544770065c64",
+      "receiptSha256": "85c73f28f67667c3754d1ff5fb1f5b17cf137338fda4430d0732b77400ee946c",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1666,10 +1970,10 @@
         "ui-v3/control-plane/domains/evidence.mjs"
       ],
       "productionEntrypointSha256": [
-        "a0c1122e3f500a808fa34d27d3b3e98e6bbffd08a41011fbe5166729adde6882"
+        "41eec41e99606602f48d0c2a6422e097045f5f11a1fce0121bec79864c9252a6"
       ],
       "testFile": "tests/ui-v3-control-plane-domains.test.mjs",
-      "testFileSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f",
+      "testFileSha256": "cae0766590bc9a41cd9e6d872bddfc290eed0307b38aba00470b02b3b0b2db74",
       "namedTests": [
         "Control Plane route registry lazy-loads every approved domain once",
         "Operations exposes mission, agent, queue and recovery summaries with safe actions",
@@ -1737,7 +2041,7 @@
         "named-test-negative:Intelligence exposes typed repository facts without background graph animation",
         "named-test-negative:Governance resolves precedence without treating valid overrides as conflicts"
       ],
-      "receiptSha256": "f3309b2b13db9ccf43bad35502308031c17b6ee388a32046064d76b0d7ce01cb",
+      "receiptSha256": "7345233b4eb96a97107eade3562e54bb13fdacd267ed06f228733de71825751e",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1748,10 +2052,10 @@
         "ui-v3/control-plane/domains/intelligence.mjs"
       ],
       "productionEntrypointSha256": [
-        "182d97537ce635cca1c38eb0f3eadaed9e38420c9ceab2e7970f2b68f79bd12f"
+        "7651a7e6ebc93bced40cedd34901357bbf56d2ba8fc639ad3cfe6ca4a65c5719"
       ],
       "testFile": "tests/ui-v3-control-plane-domains.test.mjs",
-      "testFileSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f",
+      "testFileSha256": "cae0766590bc9a41cd9e6d872bddfc290eed0307b38aba00470b02b3b0b2db74",
       "namedTests": [
         "Control Plane route registry lazy-loads every approved domain once",
         "Operations exposes mission, agent, queue and recovery summaries with safe actions",
@@ -1819,7 +2123,7 @@
         "named-test-negative:Intelligence exposes typed repository facts without background graph animation",
         "named-test-negative:Governance resolves precedence without treating valid overrides as conflicts"
       ],
-      "receiptSha256": "5d1de6da8f3cce74ff881c7f4c8fe45d70dd3e4864b042278785df5855a17893",
+      "receiptSha256": "ed8faaa94c3679c234d44ab87a66d14537fa0fb0b1d44a8526de74ce5aed099e",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1830,10 +2134,10 @@
         "ui-v3/control-plane/domains/trust-security.mjs"
       ],
       "productionEntrypointSha256": [
-        "7181c27a0c874f986943da3c90fcae796cbfdaf5c8b2969321a50901158eb123"
+        "b15eea884ce8f310a135256a729e0acec293e192cb6017fcb2a3f57106cd2a0b"
       ],
       "testFile": "tests/ui-v3-control-plane-domains.test.mjs",
-      "testFileSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f",
+      "testFileSha256": "cae0766590bc9a41cd9e6d872bddfc290eed0307b38aba00470b02b3b0b2db74",
       "namedTests": [
         "Control Plane route registry lazy-loads every approved domain once",
         "Operations exposes mission, agent, queue and recovery summaries with safe actions",
@@ -1901,7 +2205,7 @@
         "named-test-negative:Intelligence exposes typed repository facts without background graph animation",
         "named-test-negative:Governance resolves precedence without treating valid overrides as conflicts"
       ],
-      "receiptSha256": "bb61ebfa22c1ee64d12f6816ea7fe48441025f6438669af1b7402e5bd342f24e",
+      "receiptSha256": "b915678bc469512c5814f94f6cf100a8d129ada7cebc7f5063f98c8c8e015870",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1912,10 +2216,10 @@
         "ui-v3/control-plane/domains/governance.mjs"
       ],
       "productionEntrypointSha256": [
-        "e4e3a96627c69c4b17a86527b341ebb9f1f2e45989b562b2de1531c076069684"
+        "6a476889dbae33ea89a7d01a4aabd7d3faaf642e91bf6dec6172f066fdc1ceed"
       ],
       "testFile": "tests/ui-v3-control-plane-domains.test.mjs",
-      "testFileSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f",
+      "testFileSha256": "cae0766590bc9a41cd9e6d872bddfc290eed0307b38aba00470b02b3b0b2db74",
       "namedTests": [
         "Control Plane route registry lazy-loads every approved domain once",
         "Operations exposes mission, agent, queue and recovery summaries with safe actions",
@@ -1983,7 +2287,7 @@
         "named-test-negative:Intelligence exposes typed repository facts without background graph animation",
         "named-test-negative:Governance resolves precedence without treating valid overrides as conflicts"
       ],
-      "receiptSha256": "7ef963c55bd03f489ff083b0ee75abe9b81477746d519106ee5255628d5651d8",
+      "receiptSha256": "a32785474cef2dad7b4f97346f0031d3fb0391fb3e3873fc04c5aff7b5fcfd03",
       "environment": "node>=22.12",
       "external": false
     },
@@ -1994,10 +2298,10 @@
         "ui-v3/control-plane/domains/platform.mjs"
       ],
       "productionEntrypointSha256": [
-        "7a30129d4354e9b5451ab74cf1ceebcc75bb99790283c3a03beeccb9a1b9bfa3"
+        "c019105a9f99113470400a9b00b481285ff2dc8509633085d8803f924bc673c4"
       ],
       "testFile": "tests/ui-v3-control-plane-domains.test.mjs",
-      "testFileSha256": "61a1986b911ad55e062cef34514ee3fafbc2113dd113315008656e403bd3dd9f",
+      "testFileSha256": "cae0766590bc9a41cd9e6d872bddfc290eed0307b38aba00470b02b3b0b2db74",
       "namedTests": [
         "Control Plane route registry lazy-loads every approved domain once",
         "Operations exposes mission, agent, queue and recovery summaries with safe actions",
@@ -2065,7 +2369,7 @@
         "named-test-negative:Intelligence exposes typed repository facts without background graph animation",
         "named-test-negative:Governance resolves precedence without treating valid overrides as conflicts"
       ],
-      "receiptSha256": "94865d16e27ba59bfcdf5f50fae01487f6e5ad593e98f485885694b4c533e098",
+      "receiptSha256": "f6852bfba40e791977e15f6f1acbb636f73cfdf50d039446a65114bc3490fb3a",
       "environment": "node>=22.12",
       "external": false
     },
@@ -2076,10 +2380,10 @@
         "src/superiority/deep/local-ui-certification-lab.mjs"
       ],
       "productionEntrypointSha256": [
-        "f157bf8c2c408f059380746f4161803eb708de21929cd52bbb6f11a130c03f96"
+        "b02a7dd7b37d899a5ed202a5b98ff3a11f0c294dfa2100169597454c0856c18f"
       ],
       "testFile": "tests/deep-superiority-ui-dogfood.test.mjs",
-      "testFileSha256": "72f3fbb86fe0094ed9dc2446edbb4685cf3dcb3fa5a6e94c0a0c62ae8c244b7a",
+      "testFileSha256": "4717bc38728553cb4e8d70fef48260152eeae313adff799d8d25ef47b662260d",
       "namedTests": [
         "local UI certification verifies accessibility, responsiveness and budgets but retains Windows external gates",
         "dogfood replay lab rejects mocks and validates signed provider-real Windows protocol receipts"
@@ -2113,10 +2417,10 @@
         "src/superiority/deep/local-ui-certification-lab.mjs"
       ],
       "productionEntrypointSha256": [
-        "f157bf8c2c408f059380746f4161803eb708de21929cd52bbb6f11a130c03f96"
+        "b02a7dd7b37d899a5ed202a5b98ff3a11f0c294dfa2100169597454c0856c18f"
       ],
       "testFile": "tests/deep-superiority-ui-dogfood.test.mjs",
-      "testFileSha256": "72f3fbb86fe0094ed9dc2446edbb4685cf3dcb3fa5a6e94c0a0c62ae8c244b7a",
+      "testFileSha256": "4717bc38728553cb4e8d70fef48260152eeae313adff799d8d25ef47b662260d",
       "namedTests": [
         "local UI certification verifies accessibility, responsiveness and budgets but retains Windows external gates",
         "dogfood replay lab rejects mocks and validates signed provider-real Windows protocol receipts"
@@ -2150,10 +2454,10 @@
         "src/superiority/deep/local-ui-certification-lab.mjs"
       ],
       "productionEntrypointSha256": [
-        "f157bf8c2c408f059380746f4161803eb708de21929cd52bbb6f11a130c03f96"
+        "b02a7dd7b37d899a5ed202a5b98ff3a11f0c294dfa2100169597454c0856c18f"
       ],
       "testFile": "tests/deep-superiority-ui-dogfood.test.mjs",
-      "testFileSha256": "72f3fbb86fe0094ed9dc2446edbb4685cf3dcb3fa5a6e94c0a0c62ae8c244b7a",
+      "testFileSha256": "4717bc38728553cb4e8d70fef48260152eeae313adff799d8d25ef47b662260d",
       "namedTests": [
         "local UI certification verifies accessibility, responsiveness and budgets but retains Windows external gates",
         "dogfood replay lab rejects mocks and validates signed provider-real Windows protocol receipts"
@@ -2201,5 +2505,5 @@
     "overBroadEvidence": [],
     "certifiable": true
   },
-  "receiptSha256": "63de32d310add1bf4bf9ccc528c31c67eaf1f26af36136104581a4f48a4734b9"
+  "receiptSha256": "9b2f77c938cb612f84ad395a869a59e3e134ea6a3f3732e69d8c07f9ace7b229"
 }

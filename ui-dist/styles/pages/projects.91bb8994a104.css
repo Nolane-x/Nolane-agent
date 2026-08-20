@@ -1,0 +1,19 @@
+.project-card__options{display:grid;place-items:center;width:28px;height:28px;border:1px solid transparent;border-radius:8px;color:var(--text-muted)}
+.project-card__options:hover{border-color:var(--border-faint);background:var(--surface-hover);color:var(--text-primary)}
+.project-activity-list{display:grid;gap:8px}
+.project-activity{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:11px;padding:11px 13px;border:1px solid var(--border-faint);border-radius:13px;background:color-mix(in srgb,var(--surface-panel) 78%,transparent);box-shadow:var(--shadow-xs)}
+.project-activity:hover{border-color:var(--border-default);background:var(--surface-hover)}
+.project-activity__mark{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--surface-raised);color:var(--text-muted)}
+.project-activity[data-tone="active"] .project-activity__mark{background:var(--accent-soft);color:var(--accent-strong)}
+.project-activity[data-tone="success"] .project-activity__mark{background:color-mix(in srgb,var(--nolane-success) 10%,var(--surface-raised));color:var(--nolane-success)}
+.project-activity[data-tone="danger"] .project-activity__mark{background:color-mix(in srgb,var(--nolane-danger) 10%,var(--surface-raised));color:var(--nolane-danger-soft)}
+.project-activity>div{display:grid;min-width:0;gap:3px}
+.project-activity strong,.project-activity small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.project-activity strong{font-size:11px}
+.project-activity small{color:var(--text-muted);font-size:9px;text-transform:capitalize}
+.project-activity>a{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;color:var(--text-muted)}
+.project-activity>a:hover{background:var(--accent-soft);color:var(--accent-strong)}
+
+.projects-error{gap:10px}.projects-error button,.page-empty--search button,.projects-page>.page-empty button{justify-self:center;padding:6px 10px;border:1px solid var(--border-subtle);border-radius:8px;background:var(--surface-raised);color:var(--text-secondary)}
+.projects-error button:hover,.page-empty--search button:hover,.projects-page>.page-empty button:hover{border-color:var(--border-default);color:var(--text-primary)}
+.page-empty--search>span{color:var(--text-secondary)}

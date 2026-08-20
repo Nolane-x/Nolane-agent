@@ -13,6 +13,7 @@ test('application wires Tree-sitter and native isolation capabilities without ex
   assert.match(app, /WindowsJobObjectDriver/);
   assert.match(app, /MacOsSandboxDriver/);
   assert.match(app, /const treeSitterRuntime = new TreeSitterRuntimeService/);
+  assert.match(app, /configPath:\s*nolaneEnvironment\.get\('TREE_SITTER_CONFIG_PATH'\)/);
   assert.match(app, /new LocalResourceSandboxService\(\{[\s\S]*podmanDriver, windowsJobObjectDriver, macOsSandboxDriver,/);
   assert.match(app, /createHttpServer\(\{[\s\S]*treeSitterRuntime/);
   assert.match(http, /treeSitterRuntime = null/);

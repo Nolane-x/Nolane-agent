@@ -7,6 +7,7 @@ const { browserWindowOptions, isAllowedRuntimeUrl, isSafeExternalUrl } = require
 const { RuntimeSupervisor } = require('./runtime-supervisor.cjs');
 const { ElectronUpdateController } = require('./update-controller.cjs');
 const { DesktopUpdateCoordinator } = require('./update-coordinator.cjs');
+const { loadPackagedGitHubReleaseUpdater } = require('./github-release-updater.cjs');
 const { legacySelectDirectoryChannel, readLegacyEnvironment } = require('./legacy-migration.cjs');
 const { WindowStateStore, resolveWindowBounds } = require('./window-state-store.cjs');
 
@@ -64,6 +65,25 @@ function safeSender(event) {
   return Boolean(runtimeOrigin && isAllowedRuntimeUrl(url, runtimeOrigin));
 }
 
+function matchesRuntimeRequest(candidate) {
+  try {
+    const request = new URL(candidate);
+    const runtime = new URL(runtimeOrigin);
+    const protocol = request.protocol === 'ws:' ? 'http:' : request.protocol === 'wss:' ? 'https:' : request.protocol;
+    return protocol === runtime.protocol && request.hostname === runtime.hostname && request.port === runtime.port;
+  } catch { return false; }
+}
+
+function installRuntimeAuthentication() {
+  const webRequest = session.defaultSession.webRequest;
+  webRequest.onBeforeSendHeaders(null);
+  if (!runtimeOrigin || !runtimeToken) return;
+  webRequest.onBeforeSendHeaders({ urls: ['<all_urls>'] }, (details, callback) => {
+    if (!matchesRuntimeRequest(details.url)) return callback({ requestHeaders: details.requestHeaders });
+    callback({ requestHeaders: { ...details.requestHeaders, Authorization: `Bearer ${runtimeToken}` } });
+  });
+}
+
 function installIpc() {
   const selectDirectory = async (event) => {
     if (!safeSender(event)) throw new Error('Untrusted IPC sender');
@@ -103,9 +123,9 @@ function installIpc() {
   ipcMain.handle('nolane:core-status', async (event) => {
     if (!safeSender(event)) throw new Error('Untrusted IPC sender');
     if (!runtimeOrigin || !runtimeToken) return Object.freeze({ ready: false, reason: 'runtime-unavailable' });
-    const response = await fetch(`${runtimeOrigin}/api/nolane/native-core/status?token=${encodeURIComponent(runtimeToken)}`, {
+    const response = await fetch(`${runtimeOrigin}/api/nolane/native-core/status`, {
       method: 'GET',
-      headers: { accept: 'application/json' },
+      headers: { accept: 'application/json', Authorization: `Bearer ${runtimeToken}` },
       redirect: 'error',
     });
     if (!response.ok) throw new Error(`Native core status failed with HTTP ${response.status}`);
@@ -221,8 +241,9 @@ async function startRuntimeAndLoad({ recovering = false } = {}) {
   const runtime = await supervisor.start();
   runtimeOrigin = new URL(runtime.url).origin;
   runtimeToken = runtime.token;
+  installRuntimeAuthentication();
   if (!mainWindow || mainWindow.isDestroyed()) mainWindow = createWindow();
-  const target = `${runtimeOrigin}/?token=${encodeURIComponent(runtime.token)}&desktop=electron`;
+  const target = new URL('/', runtimeOrigin).toString();
   await mainWindow.loadURL(target);
   const recovery = await updateController?.markHealthy().catch((error) => ({ state: 'recovery-error', message: error.message }));
   await updateCoordinator?.start();
@@ -241,9 +262,13 @@ app.whenReady().then(async () => {
   hardenSession();
   windowStateStore = new WindowStateStore({ userDataDir: app.getPath('userData') });
   updateController = new ElectronUpdateController({ userDataDir: app.getPath('userData'), currentVersion: app.getVersion(), quit: () => { quitting = true; supervisor?.stop().finally(() => app.quit()); } });
+  const releaseUpdater = ['darwin', 'linux'].includes(process.platform)
+    ? loadPackagedGitHubReleaseUpdater({ app, currentVersion: app.getVersion(), platform: process.platform, userDataDir: app.getPath('userData') })
+    : null;
   updateCoordinator = new DesktopUpdateCoordinator({
     updateController,
     userDataDir: app.getPath('userData'),
+    releaseUpdater,
     getRuntimeConnection: () => ({ origin: runtimeOrigin, token: runtimeToken }),
     emit: (state) => { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('nolane:update-state', state); },
   });
@@ -265,6 +290,7 @@ app.on('before-quit', async (event) => {
   event.preventDefault();
   quitting = true;
   updateCoordinator?.stop();
+  session.defaultSession.webRequest.onBeforeSendHeaders(null);
   await supervisor?.stop().catch(() => {});
   app.quit();
 });

@@ -2,15 +2,25 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { renderOutputSummary, createOutputSummaryController } from '../ui-v3/views/summary/output-summary.mjs';
 
-test('output summary renders outputs background processes and sources with empty states', async () => {
-  const api = { get: async () => ({ outputs:[{id:'workspace',path:'/repo',kind:'workspace'}], processes:[{id:'npm-test',label:'npm test',state:'running'}], sources:[{id:'context7',label:'Context7',state:'ready'}] }) };
+test('output summary renders outputs, processes, terminal sessions, and sources with real actions', async () => {
+  const api = { get: async () => ({ outputs:[{id:'workspace',path:'/repo',kind:'workspace'}], processes:[{id:'npm-test',label:'npm test',state:'running'}], terminals:[{id:'term-1',label:'pwsh',state:'running',stoppable:true}], sources:[{id:'context7',label:'Context7',state:'ready'}] }) };
   const controller = createOutputSummaryController({ api, setIntervalImpl: () => 1, clearIntervalImpl: () => {} });
   await controller.refresh();
   const html = renderOutputSummary(controller.snapshot());
   assert.match(html, /Outputs/);
   assert.match(html, /Background processes/);
+  assert.match(html, /Terminal sessions/);
   assert.match(html, /Sources/);
   assert.match(html, /npm test/);
+  assert.match(html, /data-terminal-id="term-1"/);
+  assert.match(html, /data-stop-process="term-1"/);
+});
+
+test('output summary scopes refreshes to the selected project', async () => {
+  const paths = [];
+  const controller = createOutputSummaryController({ api: { get: async (path) => { paths.push(path); return { outputs: [], processes: [], terminals: [], sources: [], availability: {} }; } }, getProjectId: () => 'project-1', setIntervalImpl: () => 1, clearIntervalImpl: () => {} });
+  await controller.refresh();
+  assert.deepEqual(paths, ['/api/ui/summary?projectId=project-1']);
 });
 
 test('output summary localizes its chrome when Vietnamese is active', () => {

@@ -17,7 +17,7 @@ test('buildPortable stages a dependency-free app, Nolane Agent Core data, UI, ru
   await writeFile(fakePty, 'pty'); await writeFile(fakeCredential, 'credential'); await chmod(fakePty, 0o755); await chmod(fakeCredential, 0o755);
   const destination = path.join(root, 'portable');
   const manifest = await buildPortable({ sourceRoot: path.resolve('.'), destination, nodeExecutable: fakeNode, launcherExecutable: fakeLauncher, ptyExecutable: fakePty, credentialExecutable: fakeCredential, platform: 'linux' });
-  for (const relative of ['app/src/app.mjs', 'app/desktop/main.cjs', 'app/ui/index.html', 'app/vendor/forge-os/src/core/orchestrator.mjs', 'app/third_party/typescript/lib/typescript.js', 'app/third_party/typescript/LICENSE.txt', 'app/config/model-families.json', 'app/vendor/forge-os/capabilities-v2/graph.json', 'runtime/node', 'NolaneAgent', 'app/native/NolanePty', 'app/native/NolaneCredential', 'config/update.example.json', 'PORTABLE-MANIFEST.json']) {
+  for (const relative of ['app/src/app.mjs', 'app/src/release/evidence-file-hash.mjs', 'app/desktop/main.cjs', 'app/ui/index.html', 'app/vendor/forge-os/src/core/orchestrator.mjs', 'app/third_party/typescript/lib/typescript.js', 'app/third_party/typescript/LICENSE.txt', 'app/config/model-families.json', 'app/vendor/forge-os/capabilities-v2/graph.json', 'runtime/node', 'NolaneAgent', 'app/native/NolanePty', 'app/native/NolaneCredential', 'config/update.example.json', 'PORTABLE-MANIFEST.json']) {
     assert.ok((await stat(path.join(destination, relative))).isFile(), relative);
   }
   await assert.rejects(() => stat(path.join(destination, 'app/tests')), /ENOENT/);

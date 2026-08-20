@@ -12,11 +12,21 @@ function safeControl(control, maxDraftChars) {
   return { key, value, checked: typeof control.checked === 'boolean' ? control.checked : null, selection: control.selectionStart == null ? null : [control.selectionStart, control.selectionEnd] };
 }
 
+function scrollRegions(root) {
+  const seen = new Set();
+  return [...(root?.querySelectorAll?.('[data-scroll-key]') ?? [])].flatMap((element) => {
+    const key = String(element?.dataset?.scrollKey ?? '');
+    if (!key || key.length > 160 || seen.has(key)) return [];
+    seen.add(key);
+    return [{ key, top: Number(element.scrollTop) || 0, left: Number(element.scrollLeft) || 0 }];
+  });
+}
+
 function minimumExperience(pathValue) {
   const path = String(pathValue || '/');
   if (path.startsWith('/control-plane')) return 'expert';
   if (path.startsWith('/workroom') || path.startsWith('/studio')) return 'studio';
-  if (path.startsWith('/missions') || path.startsWith('/review') || path.startsWith('/projects')) return 'workspace';
+  if (path.startsWith('/missions') || path.startsWith('/review') || path.startsWith('/projects') || path.startsWith('/skills')) return 'workspace';
   return 'everyday';
 }
 
@@ -43,6 +53,7 @@ export function createViewStateBridge({ maxDraftChars = 100_000 } = {}) {
         focusKey: keyFor(active),
         workspaceScrollTop: root?.querySelector?.('#workspace')?.scrollTop ?? 0,
         sidebarScrollTop: root?.querySelector?.('#session-groups')?.scrollTop ?? 0,
+        scrollRegions: scrollRegions(root),
         summaryOpen: root?.querySelector?.('#output-summary-root')?.dataset?.open === 'true'
       };
       states.set(level, state);
@@ -68,6 +79,13 @@ export function createViewStateBridge({ maxDraftChars = 100_000 } = {}) {
       }
       const workspace = root.querySelector?.('#workspace'); if (workspace) workspace.scrollTop = state.workspaceScrollTop;
       const sidebar = root.querySelector?.('#session-groups'); if (sidebar) sidebar.scrollTop = state.sidebarScrollTop;
+      const regions = [...(root.querySelectorAll?.('[data-scroll-key]') ?? [])];
+      for (const saved of state.scrollRegions ?? []) {
+        const region = regions.find((candidate) => candidate?.dataset?.scrollKey === saved.key);
+        if (!region) continue;
+        region.scrollTop = Number(saved.top) || 0;
+        region.scrollLeft = Number(saved.left) || 0;
+      }
       if (state.focusKey) {
         const escaped = globalThis.CSS?.escape ? CSS.escape(state.focusKey) : state.focusKey.replace(/["\\]/g, '\\$&');
         root.querySelector?.(`[data-preserve-key="${escaped}"], [data-setting-path="${escaped}"], [name="${escaped}"], #${escaped}`)?.focus?.({ preventScroll: true });

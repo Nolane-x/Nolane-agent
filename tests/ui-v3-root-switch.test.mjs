@@ -51,3 +51,10 @@ test('production root serves a receipt-bound home module that submits registered
   assert.match(html, /data-picker-value="codex\/cli-selected"/);
   assert.doesNotMatch(html, /<select\b/);
 });
+
+test('startup only creates a CLI-selected fallback when a provider has no exact model profile', async () => {
+  const app = await readFile(path.join(projectRoot, 'src', 'app.mjs'), 'utf8');
+
+  assert.match(app, /const hasExactModel = providerProfiles\.some\(\(profile\) => profile\.providerId === connection\.id\);/);
+  assert.match(app, /!hasExactModel && \(connection\.kind === 'cli' \|\| connection\.kind === 'codex-app-server'\) \? 'cli-selected' : null/);
+});

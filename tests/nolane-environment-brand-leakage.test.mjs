@@ -25,9 +25,21 @@ test('product-facing source contains no unapproved Forge Studio names or forge c
   assert.deepEqual(report.violations, []);
 });
 
+test('the approved Forge OS skill catalog is not confused with the deprecated Forge Studio product', async () => {
+  const report = await scanProductSurfaceLeakage({ projectRoot: process.cwd() });
+  assert.equal(report.violations.some((violation) => violation.file === 'ui-v3/views/skills/skills-view.mjs' && violation.match === 'Forge OS'), false);
+});
+
 test('application bootstrap reads canonical environment through the migration resolver', async () => {
   const { readFile } = await import('node:fs/promises');
   const source = await readFile('src/app.mjs', 'utf8');
   assert.match(source, /createNolaneEnvironment/);
   assert.doesNotMatch(source, /process\.env\.FORGE_STUDIO_[A-Z0-9_]+/);
+});
+
+test('application bootstrap uses the same explicit grant for remote config and HTTP binding', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const source = await readFile('src/app.mjs', 'utf8');
+  assert.match(source, /authToken: nolaneEnvironment\.get\('TOKEN'\),\s*allowRemote: nolaneEnvironment\.get\('ALLOW_REMOTE_BINDING'\) === 'true',/);
+  assert.match(source, /allowRemoteBinding: nolaneEnvironment\.get\('ALLOW_REMOTE_BINDING'\) === 'true'/);
 });

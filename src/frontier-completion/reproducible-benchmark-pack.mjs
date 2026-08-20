@@ -1,6 +1,7 @@
 import { createCipheriv, createDecipheriv, createHash } from 'node:crypto';
 
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
+const AES_GCM_AUTH_TAG_LENGTH = 16;
 function canonical(value) {
   if (value === null || typeof value !== 'object') return JSON.stringify(value);
   if (Buffer.isBuffer(value)) return JSON.stringify(value.toString('base64'));
@@ -62,7 +63,7 @@ export class ReproducibleBenchmarkPack {
     const publicSuite = suiteBase({ id, version, tasks }, false);
     for (const task of publicSuite.tasks) this.admitRepository(task.repository);
     const plaintext = Buffer.from(canonical(secret));
-    const cipher = createCipheriv('aes-256-gcm', assertKey(key), assertIv(iv));
+    const cipher = createCipheriv('aes-256-gcm', assertKey(key), assertIv(iv), { authTagLength: AES_GCM_AUTH_TAG_LENGTH });
     const ciphertext = Buffer.concat([cipher.update(plaintext), cipher.final()]);
     const base = {
       schema: 'forge.frontier-private-benchmark-envelope.v1', cipher: 'aes-256-gcm', id: publicSuite.id, version: publicSuite.version,
@@ -76,8 +77,10 @@ export class ReproducibleBenchmarkPack {
   }
   openPrivateSuite(sealed = {}, { key, role } = {}) {
     if (role !== 'verifier') throw new Error('private held-out oracle is available only to verifier role');
-    const decipher = createDecipheriv('aes-256-gcm', assertKey(key), Buffer.from(String(sealed.iv), 'base64'));
-    decipher.setAuthTag(Buffer.from(String(sealed.authTag), 'base64'));
+    const authTag = Buffer.from(String(sealed.authTag), 'base64');
+    if (authTag.length !== AES_GCM_AUTH_TAG_LENGTH) throw new Error('AES-GCM authentication tag must be exactly 16 bytes');
+    const decipher = createDecipheriv('aes-256-gcm', assertKey(key), Buffer.from(String(sealed.iv), 'base64'), { authTagLength: AES_GCM_AUTH_TAG_LENGTH });
+    decipher.setAuthTag(authTag);
     const plaintext = Buffer.concat([decipher.update(Buffer.from(String(sealed.ciphertext), 'base64')), decipher.final()]);
     if (sha256(plaintext) !== sealed.plaintextSha256) throw new Error('private benchmark plaintext integrity mismatch');
     return freeze(JSON.parse(plaintext.toString('utf8')));

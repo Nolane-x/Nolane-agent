@@ -1,2 +1,0 @@
-export function buildOverviewView({ health = 'unknown', activeMissions = 0, pendingApprovals = 0, evidenceGaps = 0, indexFreshness = 'unknown' } = {}) { return Object.freeze({ health, activeMissions, pendingApprovals, evidenceGaps, indexFreshness }); }
-export function renderOverviewView(value) { return `<section><h1>System Overview</h1><p>${value.health} · ${value.activeMissions} active missions · ${value.pendingApprovals} approvals</p></section>`; }

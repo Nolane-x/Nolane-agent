@@ -27,9 +27,25 @@ test('HTTP error classification maps invalid input and workspace boundaries with
   assert.equal(providerFailure.status, 502);
   assert.deepEqual(providerFailure.body, { error: 'provider-error', code: 'PROVIDER_EXECUTION_FAILED' });
 
+  const typedProviderFailure = classifyHttpError(Object.assign(new Error('Codex app server execution failed'), { code: 'PROVIDER_EXECUTION_FAILED' }));
+  assert.equal(typedProviderFailure.status, 502);
+  assert.deepEqual(typedProviderFailure.body, { error: 'provider-error', code: 'PROVIDER_EXECUTION_FAILED' });
+
+  const providerSetup = classifyHttpError(Object.assign(new Error('Provider credential is unavailable'), { code: 'PROVIDER_SETUP_REQUIRED' }));
+  assert.equal(providerSetup.status, 409);
+  assert.deepEqual(providerSetup.body, { error: 'provider-setup-required', code: 'PROVIDER_SETUP_REQUIRED' });
+
+  const selectedModel = classifyHttpError(Object.assign(new Error('The selected provider is not ready'), { code: 'SELECTED_MODEL_NOT_READY' }));
+  assert.equal(selectedModel.status, 409);
+  assert.deepEqual(selectedModel.body, { error: 'selected-model-not-ready', code: 'SELECTED_MODEL_NOT_READY' });
+
   const runtimeAdmission = classifyHttpError(Object.assign(new Error('provider admission blocked in brownout state'), { code: 'RUNTIME_LEASE_ADMISSION_BLOCKED' }));
   assert.equal(runtimeAdmission.status, 503);
   assert.deepEqual(runtimeAdmission.body, { error: 'Runtime is temporarily conserving resources. Try again shortly.', code: 'RUNTIME_ADMISSION_BLOCKED', retryable: true });
+
+  const optionalModuleEmergency = classifyHttpError(new Error('Module enterprise-cloud activation is denied during emergency'));
+  assert.equal(optionalModuleEmergency.status, 503);
+  assert.deepEqual(optionalModuleEmergency.body, { error: 'Runtime is temporarily conserving resources. Try again shortly.', code: 'RUNTIME_ADMISSION_BLOCKED', retryable: true });
 });
 
 test('workroom API returns 403 for path escape and sanitized 500 for unexpected failures', async (t) => {

@@ -9,8 +9,14 @@ import { CausalInterventionLab } from './causal-intervention-lab.mjs';
 import { RecoveryLease, evaluateCommitGate, evaluateStopGate } from './cognitive-policy-gates.mjs';
 import { boundedClone, signed, text } from './cognition-utils.mjs';
 
+function receiptHash(value, label) {
+  const hash = text(value, label, 64);
+  if (!/^[a-f0-9]{64}$/.test(hash)) throw new TypeError(`${label} must be a SHA-256 receipt hash`);
+  return hash;
+}
+
 export class CognitiveKernel {
-  constructor({ clock = () => Date.now(), context = {}, hypotheses = {}, selector = {}, errorRouter = {}, commitLimits = {}, limits = {} } = {}) {
+  constructor({ clock = () => Date.now(), context = {}, hypotheses = {}, selector = {}, errorRouter = {}, commitLimits = {}, limits = {}, rollbackExecutor = null, rollbackVerifier = null } = {}) {
     this.clock = typeof clock === 'function' ? clock : () => Date.now();
     this.maxTasks = Math.max(1, Math.min(10_000, Math.floor(Number(limits.maxTasks) || 1_000)));
     this.maxReceipts = Math.max(1, Math.min(50_000, Math.floor(Number(limits.maxReceipts) || 5_000)));
@@ -27,6 +33,8 @@ export class CognitiveKernel {
       maxProbes: limits.maxEffectProbes ?? 256,
       maxProbePaths: limits.maxEffectProbePaths ?? 512,
     });
+    this.rollbackExecutor = typeof rollbackExecutor === 'function' ? rollbackExecutor : null;
+    this.rollbackVerifier = typeof rollbackVerifier === 'function' ? rollbackVerifier : null;
     this.tasks = new Map();
     this.receipts = [];
     this.sequence = 0;
@@ -47,7 +55,7 @@ export class CognitiveKernel {
       clock: this.clock,
     });
     this.tasks.set(taskId, {
-      taskId, goal, recoveryLease, observations: [], proposals: new Map(), verified: new Map(),
+      taskId, goal, recoveryLease, observations: [], proposals: new Map(), verified: new Map(), committed: new Map(),
       recentErrorRoutes: [], episodeIds: [], rollbackReceipts: [], startedAtMs: Number(this.clock()),
     });
     return this.#record(signed({
@@ -77,14 +85,37 @@ export class CognitiveKernel {
       effects.errorRoute = route.receiptSha256;
     }
     if (type === 'strategy-failure') effects.recoveryGate = task.recoveryLease.recordFailure(event.strategyFingerprint, event.failureReceiptId ?? eventId).receiptSha256;
-    if (type === 'agency') effects.agency = this.agency.record(event.agency ?? {}).receiptSha256;
+    if (type === 'agency') {
+      const agency = event.agency ?? {};
+      const claim = this.#record(signed({
+        schema: 'forge.cognitive-agency-claim.v1', taskId: task.taskId, eventId,
+        actionId: text(agency.actionId, 'agency.actionId', 256), intent: text(agency.intent, 'agency.intent'),
+        commandKind: text(agency.commandKind, 'agency.commandKind', 128), commandFingerprint: text(agency.commandFingerprint, 'agency.commandFingerprint', 256),
+        expectedEffect: text(agency.expectedEffect, 'agency.expectedEffect'), claimedEffect: text(agency.claimedEffect ?? agency.actualEffect, 'agency.claimedEffect'),
+        observedAtMs: Number(this.clock()),
+        claims: { rawCommandStored: false, effectVerificationReceiptRequired: true, learningEligible: false },
+      }));
+      effects.agencyClaim = claim.receiptSha256;
+    }
     return this.#record(signed({ schema: 'forge.cognitive-observation.v1', taskId: task.taskId, eventId, type, effects }));
   }
 
   propose(taskId, input = {}) {
     this.#assertOpen();
     const task = this.#task(taskId);
-    const selection = this.selector.select(input);
+    const contextPosterior = this.contexts.snapshot(task.taskId);
+    const selection = this.selector.select({ ...input, uncertaintyFloor: contextPosterior.normalizedEntropy });
+    if (!selection.selected) {
+      return this.#record(signed({
+        schema: 'forge.cognitive-abstention.v1', taskId: task.taskId, decision: 'abstain',
+        selectionReceiptSha256: selection.receiptSha256, uncertainty: selection.uncertainty,
+        claimedUncertainty: selection.claimedUncertainty, contextUncertaintyFloor: selection.uncertaintyFloor,
+        contextPosteriorReceiptSha256: contextPosterior.receiptSha256,
+        rejectedActionIds: selection.ranked.filter((item) => !item.eligible).map((item) => item.id),
+        reasonCodes: [...new Set(selection.ranked.map((item) => item.rejectedReason).filter(Boolean))],
+        createdAtMs: Number(this.clock()),
+      }));
+    }
     const proposalId = `proposal-${++this.sequence}`;
     const proposal = signed({
       schema: 'forge.cognitive-proposal.v1', proposalId, taskId: task.taskId,
@@ -92,6 +123,9 @@ export class CognitiveKernel {
       selectedActionKind: selection.selected?.kind ?? null,
       selectionReceiptSha256: selection.receiptSha256,
       uncertainty: selection.uncertainty,
+      claimedUncertainty: selection.claimedUncertainty,
+      contextUncertaintyFloor: selection.uncertaintyFloor,
+      contextPosteriorReceiptSha256: contextPosterior.receiptSha256,
       createdAtMs: Number(this.clock()),
     });
     task.proposals.set(proposalId, proposal);
@@ -136,6 +170,8 @@ export class CognitiveKernel {
     const task = this.#task(taskId);
     const verified = task.verified.get(text(verifiedProposalId, 'verifiedProposalId', 256));
     if (!verified) throw new RangeError(`unknown verified proposal: ${verifiedProposalId}`);
+    const previous = task.committed.get(verified.verifiedProposalId);
+    if (previous) return previous;
     if (verified.effectVerification.status === 'false_success' || verified.effectVerification.status === 'inconclusive') {
       return this.#record(signed({
         schema: 'forge.cognitive-commit-result.v1', taskId: task.taskId, verifiedProposalId: verified.verifiedProposalId,
@@ -146,10 +182,11 @@ export class CognitiveKernel {
         episodeId: null,
       }));
     }
-    const contextGate = this.contexts.canWriteDurableMemory(task.taskId);
+    const actionGate = this.contexts.canCommitAction(task.taskId);
+    const durableMemoryGate = this.contexts.canWriteDurableMemory(task.taskId);
     const dominantHypothesis = this.hypotheses.dominant(task.taskId);
     const gate = evaluateCommitGate({
-      contextGate,
+      actionGate,
       dominantHypothesis,
       scope: verified.scope,
       limits: this.commitLimits,
@@ -158,7 +195,8 @@ export class CognitiveKernel {
     });
     if (!gate.allowed) return this.#record(signed({
       schema: 'forge.cognitive-commit-result.v1', taskId: task.taskId, verifiedProposalId: verified.verifiedProposalId,
-      allowed: false, reasons: [...gate.reasons], gateReceiptSha256: gate.receiptSha256, episodeId: null,
+      allowed: false, reasons: [...gate.reasons], gateReceiptSha256: gate.receiptSha256,
+      actionGateReceiptSha256: actionGate.receiptSha256, durableMemoryGateReceiptSha256: durableMemoryGate.receiptSha256, episodeId: null,
     }));
     const hypothesisSnapshot = this.hypotheses.snapshot(task.taskId);
     const episodeId = `episode-${++this.sequence}`;
@@ -173,20 +211,65 @@ export class CognitiveKernel {
       verification: verified.verification, lessonStatus: 'unconsolidated',
     });
     task.episodeIds.push(episodeId);
-    if (verified.agency) this.agency.record(verified.agency);
-    return this.#record(signed({
+    if (verified.agency && verified.effectVerification.status === 'verified') {
+      this.agency.record({
+        ...verified.agency,
+        taskId: task.taskId,
+        claimedEffect: verified.agency.claimedEffect ?? verified.agency.actualEffect,
+        verifiedEffect: verified.agency.verifiedEffect ?? verified.agency.actualEffect,
+        effectVerificationReceiptSha256: verified.effectVerification.receiptSha256,
+        observationAtMs: verified.verifiedAtMs,
+        causalAttributionStatus: verified.agency.causalAttributionStatus ?? 'inconclusive',
+      });
+    }
+    const result = signed({
       schema: 'forge.cognitive-commit-result.v1', taskId: task.taskId, verifiedProposalId: verified.verifiedProposalId,
       allowed: true, reasons: [], gateReceiptSha256: gate.receiptSha256, episodeId,
+      actionGateReceiptSha256: actionGate.receiptSha256, durableMemoryGateReceiptSha256: durableMemoryGate.receiptSha256,
       episodeReceiptSha256: episode.receiptSha256, effectVerificationReceiptSha256: verified.effectVerification.receiptSha256,
-    }));
+    });
+    task.committed.set(verified.verifiedProposalId, result);
+    return this.#record(result);
   }
 
-  rollback(taskId, receiptId) {
+  rollback(taskId, input) {
     this.#assertOpen();
     const task = this.#task(taskId);
-    const receipt = signed({ schema: 'forge.cognitive-rollback.v1', taskId: task.taskId, targetReceiptId: text(receiptId, 'receiptId', 512), rolledBackAtMs: Number(this.clock()) });
-    task.rollbackReceipts.push(receipt.receiptSha256);
-    return this.#record(receipt);
+    const request = typeof input === 'string' ? { targetReceiptId: input } : input ?? {};
+    const targetReceiptId = text(request.targetReceiptId, 'targetReceiptId', 512);
+    const rollbackPoint = request.rollbackPoint == null ? null : text(request.rollbackPoint, 'rollbackPoint', 512);
+    const requested = this.#record(signed({
+      schema: 'forge.cognitive-rollback-request.v1', taskId: task.taskId, targetReceiptId, rollbackPoint,
+      status: 'requested', requestedAtMs: Number(this.clock()),
+    }));
+    task.rollbackReceipts.push(requested.receiptSha256);
+    if (!this.rollbackExecutor) return requested;
+    const execution = this.rollbackExecutor({ taskId: task.taskId, targetReceiptId, rollbackPoint, requestReceiptSha256: requested.receiptSha256 });
+    const executed = this.#record(signed({
+      schema: 'forge.cognitive-rollback-execution.v1', taskId: task.taskId, targetReceiptId, rollbackPoint,
+      requestReceiptSha256: requested.receiptSha256, status: 'executed',
+      restoredStateReceiptSha256: receiptHash(execution?.restoredStateReceiptSha256, 'restoredStateReceiptSha256'),
+      effectVerificationReceiptSha256: receiptHash(execution?.effectVerificationReceiptSha256, 'effectVerificationReceiptSha256'),
+      executedAtMs: Number(this.clock()),
+    }));
+    task.rollbackReceipts.push(executed.receiptSha256);
+    if (!this.rollbackVerifier) return executed;
+    const verification = this.rollbackVerifier({
+      taskId: task.taskId, targetReceiptId, rollbackPoint, requestReceiptSha256: requested.receiptSha256,
+      executionReceiptSha256: executed.receiptSha256, restoredStateReceiptSha256: executed.restoredStateReceiptSha256,
+      effectVerificationReceiptSha256: executed.effectVerificationReceiptSha256,
+    });
+    const verificationReceiptSha256 = receiptHash(verification?.verificationReceiptSha256, 'verificationReceiptSha256');
+    const result = this.#record(signed({
+      schema: 'forge.cognitive-rollback-result.v1', taskId: task.taskId, targetReceiptId, rollbackPoint,
+      requestReceiptSha256: requested.receiptSha256, executionReceiptSha256: executed.receiptSha256,
+      verificationReceiptSha256, status: verification?.verified === true ? 'verified' : 'unverified',
+      restoredStateReceiptSha256: executed.restoredStateReceiptSha256,
+      effectVerificationReceiptSha256: executed.effectVerificationReceiptSha256,
+      resolvedAtMs: Number(this.clock()),
+    }));
+    task.rollbackReceipts.push(result.receiptSha256);
+    return result;
   }
 
   evaluateStop(taskId, input = {}) { this.#task(taskId); return evaluateStopGate(input); }
@@ -209,8 +292,9 @@ export class CognitiveKernel {
       schema: 'forge.cognitive-task-snapshot.v1', taskId: task.taskId, goal: task.goal,
       contextPosterior: context, hypothesisPopulation: hypotheses,
       memoryWriteGate: this.contexts.canWriteDurableMemory(task.taskId),
+      actionCommitGate: this.contexts.canCommitAction(task.taskId),
       recentErrorRoutes: task.recentErrorRoutes.map((route) => ({ primarySubsystem: route.primarySubsystem, ownerMask: [...route.ownerMask], receiptSha256: route.receiptSha256 })),
-      proposalCount: task.proposals.size, verifiedProposalCount: task.verified.size, episodeCount: task.episodeIds.length,
+      proposalCount: task.proposals.size, verifiedProposalCount: task.verified.size, committedProposalCount: task.committed.size, episodeCount: task.episodeIds.length,
       recoveryLeaseId: task.recoveryLease.leaseId,
       claims: { chainOfThoughtStored: false, rawPromptsStored: false, directFileMutation: false, durableMemoryWritesGated: true, causalInterventionLoaded: this._causalInterventionLab !== null },
     });

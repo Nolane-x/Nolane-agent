@@ -29,7 +29,7 @@ const fields = catalog.categories.reduce((count, category) => count + category.f
 const findings = [];
 if (missing.length) findings.push({ code: 'missing-files', missing });
 if (EXPERIENCE_LEVELS.map((item) => item.id).join(',') !== 'everyday,workspace,studio,expert') findings.push({ code: 'experience-contract' });
-if (GLOBAL_DESTINATIONS.map((item) => item.id).join(',') !== 'home,missions,projects,review,workroom,control-plane,search,settings') findings.push({ code: 'navigation-contract' });
+if (GLOBAL_DESTINATIONS.map((item) => item.id).join(',') !== 'home,missions,projects,review,workroom,browser,control-plane,search,settings') findings.push({ code: 'navigation-contract' });
 if (catalog.categories.length !== 18 || fields < 84) findings.push({ code: 'settings-retention', categories: catalog.categories.length, fields });
 if (CONTROL_PLANE_DOMAINS.length !== 14 || Object.keys(CONTROL_PLANE_ROUTES).length !== 13 || typeof CONTROL_PLANE_ROUTES.capabilities !== 'function') findings.push({ code: 'control-plane-contract' });
 if (BACKEND_ATLAS.total < 398 || BACKEND_ATLAS.domains.length < 90) findings.push({ code: 'backend-atlas-retention', routes: BACKEND_ATLAS.total, domains: BACKEND_ATLAS.domains.length });

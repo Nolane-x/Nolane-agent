@@ -57,3 +57,24 @@ test('router invalidation can preserve the current route while expiring other ca
   assert.equal((await router.navigate('/settings')).view.revision, 1);
   assert.equal((await router.navigate('/')).view.revision, 2);
 });
+
+test('router keeps the newest completed navigation current when an earlier lazy route resolves late', async () => {
+  let releaseHome;
+  const homeStarted = new Promise((resolve) => { releaseHome = resolve; });
+  const router = createRouter({ initialPath: '/' });
+  router.register({ id: 'home', pattern: '/', load: async () => {
+    await homeStarted;
+    return { id: 'home-view' };
+  } });
+  router.register({ id: 'settings', pattern: '/settings', load: async () => ({ id: 'settings-view' }) });
+
+  const homeNavigation = router.navigate('/');
+  await new Promise((resolve) => setImmediate(resolve));
+  const settings = await router.navigate('/settings');
+  assert.equal(settings.path, '/settings');
+  assert.equal(router.current().path, '/settings');
+
+  releaseHome();
+  await homeNavigation;
+  assert.equal(router.current().path, '/settings');
+});

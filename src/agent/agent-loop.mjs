@@ -203,7 +203,7 @@ const sleep = (ms, signal) => new Promise((resolve, reject) => {
 });
 
 export class AgentLoop {
-  constructor({ forge, providers, router = null, repositoryIndex = null, instructionDiscovery = null, instructionPolicy = null, memoryService = null, evidenceContextRuntime = null, pluginService = null, contentIngress = null, mcpGateway = null, browserGateway = null, goalGateway = null, forgeGateway = null, operatingPlaneGateway = null, adaptiveIntelligenceGateway = null, dynamicToolCatalog = null, hookEngineFactory = null, verificationClaimGuard = new VerificationClaimGuard(), harnessComposer = null, harnessFailureStore = null, harnessFailureClassifier = null, contextEscalationController = null, decisionPlane = null, modelObservationSink = null, broker, store, contextBuilder } = {}) {
+  constructor({ forge, providers, router = null, repositoryIndex = null, instructionDiscovery = null, instructionPolicy = null, memoryService = null, evidenceContextRuntime = null, pluginService = null, contentIngress = null, skillContextResolver = null, mcpGateway = null, browserGateway = null, goalGateway = null, forgeGateway = null, operatingPlaneGateway = null, adaptiveIntelligenceGateway = null, dynamicToolCatalog = null, hookEngineFactory = null, verificationClaimGuard = new VerificationClaimGuard(), harnessComposer = null, harnessFailureStore = null, harnessFailureClassifier = null, contextEscalationController = null, decisionPlane = null, modelObservationSink = null, broker, store, contextBuilder } = {}) {
     if (!forge || !providers || !broker || !store || !contextBuilder) throw new TypeError('AgentLoop dependencies are required');
     this.forge = forge;
     this.providers = providers;
@@ -216,6 +216,8 @@ export class AgentLoop {
     this.pluginService = pluginService;
     if (contentIngress !== null && typeof contentIngress?.screen !== 'function') throw new TypeError('contentIngress must expose screen()');
     this.contentIngress = contentIngress;
+    if (skillContextResolver !== null && typeof skillContextResolver !== 'function') throw new TypeError('skillContextResolver must be a function');
+    this.skillContextResolver = skillContextResolver;
     this.mcpGateway = mcpGateway;
     this.browserGateway = browserGateway;
     this.goalGateway = goalGateway;
@@ -244,7 +246,7 @@ export class AgentLoop {
 
   #event(type, payload, refs) { return this.store.appendEvent(createEvent(type, payload, refs)); }
 
-  async run(task, { providerId, signal = null, budgets = {}, retryDelaysMs = [250, 1_000], tools = CORE_TOOL_SCHEMAS, model = undefined } = {}) {
+  async run(task, { providerId, signal = null, budgets = {}, retryDelaysMs = [250, 1_000], tools = CORE_TOOL_SCHEMAS, model = undefined, effort = undefined } = {}) {
     const budget = new RunBudget({ ...budgets, signal });
     budget.assertActive();
     const providerOptions = {
@@ -528,6 +530,28 @@ ${item.text}`,
         pluginOmissions = pluginContext.omissions ?? [];
         if (pluginReferences.length) this.#event('agent.plugins.selected', { plugins: [...new Set(pluginReferences.map((item) => item.metadata.pluginId))], selected: pluginReferences.map((item) => ({ id: item.id, sourcePath: item.metadata.sourcePath, contentSha256: item.metadata.contentSha256 })), omissions: pluginOmissions }, refs);
       }
+      const selectedSkillReferences = [];
+      const selectedSkillRecords = Array.isArray(task.metadata?.selectedSkills) ? task.metadata.selectedSkills.slice(0, 8) : [];
+      if (selectedSkillRecords.length) {
+        if (!this.skillContextResolver) throw new Error('selected skill context resolver is unavailable');
+        for (const selected of selectedSkillRecords) {
+          const id = String(selected?.id ?? '').trim();
+          if (!id) throw new Error('selected skill id is required');
+          const loaded = await this.skillContextResolver(id);
+          if (String(loaded?.id ?? '') !== id || typeof loaded?.content !== 'string' || !String(loaded?.contentSha256 ?? '')) throw new Error(`selected skill could not be loaded: ${id}`);
+          const expectedHash = String(selected?.contentSha256 ?? '').trim();
+          if (expectedHash && expectedHash !== loaded.contentSha256) throw new Error(`selected skill content changed since mission planning: ${id}`);
+          const content = loaded.content.slice(0, 20_000);
+          selectedSkillReferences.push(screenItem({
+            id: `selected-skill:${id}`,
+            text: `[user-selected-skill id=${id} source=${String(loaded.source ?? 'unknown')} catalog=${String(loaded.catalog ?? 'unknown')} provenance=${String(loaded.provenanceStatus ?? 'unknown')}]\n${content}`,
+            sha256: loaded.contentSha256,
+            priority: 930,
+            metadata: { skillId: id, source: loaded.source ?? null, catalog: loaded.catalog ?? null, provenanceStatus: loaded.provenanceStatus ?? null, contentSha256: loaded.contentSha256, receiptSha256: loaded.receiptSha256 ?? null, trust: 'user-selected-skill-untrusted', truncated: loaded.content.length > content.length },
+          }, 'selected-skill', `selected-skill:${id}`));
+        }
+        this.#event('agent.skills.selected', { selected: selectedSkillReferences.map((item) => ({ id: item.metadata.skillId, contentSha256: item.metadata.contentSha256, receiptSha256: item.metadata.receiptSha256, provenanceStatus: item.metadata.provenanceStatus })), count: selectedSkillReferences.length }, refs);
+      }
       const dependencyReferences = task.dependencies
         .map((dependencyId) => this.store.getTask(dependencyId))
         .filter((dependency) => dependency?.metadata?.handoff)
@@ -578,7 +602,7 @@ ${JSON.stringify(dependency.metadata.handoff).slice(0, 12_000)}`,
         model: contextModel,
         code: [...screenItems(task.metadata?.code, 'repository', 'task-code'), ...repositoryCode],
         memory: [...screenItems(task.metadata?.memory, 'memory', 'task-memory'), ...activeMemory],
-        references: [...screenItems(task.metadata?.references, 'reference', 'task-reference'), ...hookReferences, ...instructionReferences, ...instructionPolicyReferences, ...pluginReferences, ...dependencyReferences, ...evidenceReferences],
+        references: [...screenItems(task.metadata?.references, 'reference', 'task-reference'), ...hookReferences, ...instructionReferences, ...instructionPolicyReferences, ...selectedSkillReferences, ...pluginReferences, ...dependencyReferences, ...evidenceReferences],
       });
       const built = this.contextBuilder.build(contextPack, { task, extraOmissions: [...repositoryContext.omissions, ...instructionOmissions, ...pluginOmissions] });
       messages = [...built.messages];
@@ -597,11 +621,11 @@ ${JSON.stringify(dependency.metadata.handoff).slice(0, 12_000)}`,
             ? this.harnessComposer.compose({ provider, messages, tools: activeTools, task, failure: lastHarnessFailure })
             : Object.freeze({ messages, tools: activeTools, profileId: null, profileRevision: null, profileSha256: null, harnessFamily: provider.harnessFamily ?? null, receiptSha256: null });
           activeHarness = composed;
-          if (attempt === 0) this.#event('agent.model.requested', { turn, providerId: provider.id, harnessFamily: composed.harnessFamily, harnessProfileId: composed.profileId, harnessRevision: composed.profileRevision, harnessProfileSha256: composed.profileSha256, harnessReceiptSha256: composed.receiptSha256 }, refs);
+          if (attempt === 0) this.#event('agent.model.requested', { turn, providerId: provider.id, ...(model ? { model } : {}), ...(effort ? { effort } : {}), harnessFamily: composed.harnessFamily, harnessProfileId: composed.profileId, harnessRevision: composed.profileRevision, harnessProfileSha256: composed.profileSha256, harnessReceiptSha256: composed.receiptSha256 }, refs);
           await runHook('BeforeModel', { turn, providerId: provider.id, messageCount: composed.messages.length, harnessProfileId: composed.profileId, harnessRevision: composed.profileRevision });
           const requestStartedAt = performance.now();
           try {
-            response = await provider.complete({ messages: composed.messages, tools: composed.tools, ...(model ? { model } : {}), signal, leaseContext: { missionId: task.missionId, taskId: task.id, role: task.role ?? 'executor', harnessProfileId: composed.profileId, harnessRevision: composed.profileRevision } });
+            response = await provider.complete({ messages: composed.messages, tools: composed.tools, cwd: projectRoot, ...(model ? { model } : {}), ...(effort ? { effort } : {}), signal, leaseContext: { missionId: task.missionId, taskId: task.id, role: task.role ?? 'executor', harnessProfileId: composed.profileId, harnessRevision: composed.profileRevision } });
             this.router?.recordSuccess(provider.id);
             try {
               const usage = response?.usage ?? {};

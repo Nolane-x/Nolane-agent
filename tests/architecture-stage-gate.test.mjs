@@ -52,3 +52,11 @@ test('task governance separates reasoning from execution and always supplies res
   for (const key of ['maxTurns', 'maxToolCalls', 'maxEstimatedTokens', 'maxElapsedMs']) assert.ok(builder.resourceLimits[key] > 0);
   assert.match(builder.receiptSha256, /^[a-f0-9]{64}$/);
 });
+
+test('task governance clamps planner resource requests to hard system ceilings', () => {
+  const governed = buildTaskGovernanceEnvelope({
+    role: 'builder',
+    resourceLimits: { maxTurns: 1_000_000, maxToolCalls: 1_000_000, maxEstimatedTokens: 1_000_000_000, maxElapsedMs: 1_000_000_000 },
+  });
+  assert.deepEqual(governed.resourceLimits, { maxTurns: 96, maxToolCalls: 256, maxEstimatedTokens: 960_000, maxElapsedMs: 120 * 60_000 });
+});

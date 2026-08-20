@@ -30,6 +30,13 @@ test('loadConfig refuses non-loopback bind addresses by default', () => {
   assert.throws(() => loadConfig({ host: '0.0.0.0' }), /loopback/i);
 });
 
+test('loadConfig permits a remote bind only with an explicit boolean grant', () => {
+  const config = loadConfig({ host: '0.0.0.0', allowRemote: true });
+  assert.equal(config.host, '0.0.0.0');
+  assert.equal(config.allowRemote, true);
+  assert.throws(() => loadConfig({ host: '0.0.0.0', allowRemote: 'true' }), /loopback/i);
+});
+
 test('createEvent returns a deeply immutable stable envelope', () => {
   const event = createEvent('task.created', { title: 'Build' }, { projectId: 'project_1', taskId: 'task_1' });
   assert.match(event.id, /^evt_/);

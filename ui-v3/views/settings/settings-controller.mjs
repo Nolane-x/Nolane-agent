@@ -1,12 +1,21 @@
 import { normalizeExperience } from '../../core/experience-policy.mjs';
 function at(root, path) { return String(path).split('.').reduce((value, key) => value?.[key], root); }
 function setAt(root, path, value) { const next = structuredClone(root ?? {}); const parts = String(path).split('.'); let node = next; for (const part of parts.slice(0,-1)) node = node[part] ??= {}; node[parts.at(-1)] = value; return next; }
-function visible(catalog, experience, query) {
+function modelWorkspaceMatches(providers, models, needle) {
+  if (!needle) return false;
+  const terms = [
+    ...(Array.isArray(providers) ? providers : []).map((provider) => [provider?.id, provider?.label, provider?.kind, provider?.selectedModelId]),
+    ...(Array.isArray(models) ? models : []).map((model) => [model?.key, model?.providerId, model?.modelId, model?.displayName]),
+  ].flat().filter(Boolean).join(' ').toLowerCase();
+  return terms.includes(needle);
+}
+function visible(catalog, experience, query, { providers = [], models = [] } = {}) {
   const needle = String(query ?? '').trim().toLowerCase();
+  const modelsMatch = modelWorkspaceMatches(providers, models, needle);
   return (catalog?.categories ?? [])
     .filter((category) => ['research','expert'].includes(experience) || category.level !== 'research')
     .map((category) => ({ ...category, fields: (category.fields ?? []).filter((field) => (['research','expert'].includes(experience) || field.level !== 'research') && (!needle || `${category.title} ${category.description ?? ''} ${field.title} ${field.description ?? ''} ${field.path} ${(field.aliases ?? []).join(' ')}`.toLowerCase().includes(needle))) }))
-    .filter((category) => !needle || category.fields.length || `${category.title} ${category.description ?? ''}`.toLowerCase().includes(needle));
+    .filter((category) => !needle || category.fields.length || `${category.title} ${category.description ?? ''}`.toLowerCase().includes(needle) || (category.id === 'models' && modelsMatch));
 }
 function normalizeProviders(payload) { return Array.isArray(payload) ? payload : Array.isArray(payload?.providers) ? payload.providers : []; }
 function normalizeModels(payload) { return payload && typeof payload === 'object' && Array.isArray(payload.models) ? payload : { models: [] }; }
@@ -34,7 +43,7 @@ export function createSettingsController({ api, projectId = null } = {}) {
     activeCategory: 'general', experience: 'everyday', saving: false, dirty: false, layer: 'user', models: { models: [] },
     providers: [], providerLogin: null, action: null, statusMessage: 'Settings are ready.', modelComparison: { selected: [], result: null }, modelDossiers: {},
   };
-  const snapshot = () => Object.freeze({ ...structuredClone(state), visibleCategories: visible(state.catalog, state.experience, state.query) });
+  const snapshot = () => Object.freeze({ ...structuredClone(state), visibleCategories: visible(state.catalog, state.experience, state.query, { providers: state.providers, models: state.models?.models }) });
   const mergeProfiles = (payload) => {
     const next = payload?.profiles ?? payload;
     if (next?.models) state.models = normalizeModels(next);
@@ -66,6 +75,7 @@ export function createSettingsController({ api, projectId = null } = {}) {
     setLayer(layer) { if (!['user','project','local'].includes(layer)) throw new Error('Unknown settings layer'); if (layer !== 'user' && !projectId) throw new Error('Project and local settings require a project'); state.layer = layer; return snapshot(); },
     setExperience(level) { const compatibleLevel = level === 'research' ? 'expert' : level === 'standard' ? 'workspace' : level; const normalized = normalizeExperience(compatibleLevel); state.experience = normalized; state.draft = setAt(state.draft, 'experience.level', normalized); state.dirty = true; state.statusMessage = `${normalized[0].toUpperCase()+normalized.slice(1)} experience selected.`; return snapshot(); },
     set(path, value) { state.draft = setAt(state.draft, path, value); state.dirty = true; state.errors = []; state.statusMessage = 'Unsaved changes.'; return snapshot(); },
+    setRoutingDefault(modelKey) { const key = String(modelKey ?? '').trim(); if (!key) throw new Error('Model key is required'); state.draft = setAt(state.draft, 'agent.model', key); state.dirty = true; state.errors = []; state.statusMessage = `Routing default set to ${key}.`; return snapshot(); },
     get(path) { return at(state.draft, path); },
     async save({ layer = state.layer } = {}) {
       state.saving = true; state.action = 'save'; state.statusMessage = 'Saving settings…';
@@ -163,6 +173,32 @@ export function createSettingsController({ api, projectId = null } = {}) {
         state = { ...state, action: null, providers: normalizeProviders(providers), models: normalizeModels(models), errors: [], statusMessage: `Provider ${providerId} configured.` };
       } catch (error) {
         state = { ...state, action: null, errors: [errorEntry(error)], statusMessage: `Provider ${providerId} was not configured.` };
+      }
+      return snapshot();
+    },
+    async verifyProvider(providerId) {
+      const id = String(providerId ?? '').trim();
+      state.action = `provider-verify:${id}`; state.statusMessage = `Verifying ${id} through its governed CLI path…`;
+      try {
+        await api.post(`/api/provider-connections/${encodeURIComponent(id)}/test`, {});
+        const providers = await api.get('/api/provider-connections').catch(() => state.providers);
+        state = { ...state, action: null, providers: normalizeProviders(providers), errors: [], statusMessage: `Provider ${id} is ready.` };
+      } catch (error) { state = { ...state, action: null, errors: [errorEntry(error)], statusMessage: `Provider verification failed for ${id}.` }; }
+      return snapshot();
+    },
+    async selectProviderModel(providerId, modelId, { testConnection = true } = {}) {
+      const cleanProvider = String(providerId ?? '').trim();
+      const cleanModel = String(modelId ?? '').trim();
+      state.action = `select-model:${cleanProvider}/${cleanModel}`; state.statusMessage = `Selecting ${cleanModel} for ${cleanProvider}…`;
+      try {
+        await api.post('/api/provider-connections/select-model', { providerId: cleanProvider, modelId: cleanModel, testConnection });
+        const [providers, models] = await Promise.all([
+          api.get('/api/provider-connections').catch(() => state.providers),
+          api.get('/api/model-profiles').catch(() => state.models),
+        ]);
+        state = { ...state, action: null, providers: normalizeProviders(providers), models: normalizeModels(models), errors: [], statusMessage: `Selected ${cleanModel} for ${cleanProvider}.` };
+      } catch (error) {
+        state = { ...state, action: null, errors: [errorEntry(error)], statusMessage: `Model ${cleanModel || 'selection'} was not applied.` };
       }
       return snapshot();
     },

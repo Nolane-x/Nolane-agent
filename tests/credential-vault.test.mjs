@@ -41,8 +41,11 @@ test('OpenAI-compatible provider resolves secretRef server-side and redacts secr
   });
   assert.equal(JSON.stringify(provider.publicView()).includes(secret), false);
   await assert.rejects(() => provider.complete({ messages: [{ role: 'user', content: 'hello' }] }), (error) => {
+    assert.equal(error.code, 'PROVIDER_EXECUTION_FAILED');
+    assert.equal(error.message, 'Provider request failed');
     assert.equal(error.message.includes(secret), false);
-    assert.match(error.message, /\[REDACTED\]/);
+    assert.equal(String(error.cause?.message ?? '').includes(secret), false);
+    assert.match(String(error.cause?.message ?? ''), /\[REDACTED\]/);
     return true;
   });
   assert.equal(observedAuthorization, `Bearer ${secret}`);

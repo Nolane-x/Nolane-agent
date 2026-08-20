@@ -1,4 +1,5 @@
 import { PromptTierAssembler } from '../native-core/prompt-tier-assembler.mjs';
+import { formatNuiEnvelopeForPrompt } from '../ui-intelligence/nui-host-sidecar.mjs';
 
 const STABLE = ['system', 'skills'];
 const WORKSPACE = ['code', 'artifacts', 'memory', 'references'];
@@ -15,10 +16,11 @@ export class ContextBuilder {
     this.assembler = assembler;
   }
 
-  build(contextPack, { task, toolInstructions = true, extraOmissions = [], secretValues = [], maxCharacters } = {}) {
+  build(contextPack, { task, toolInstructions = true, extraOmissions = [], secretValues = [], maxCharacters, nuiEnvelope = null } = {}) {
     if (!contextPack?.compiled?.context) throw new TypeError('compiled ContextPack is required');
     const context = contextPack.compiled.context;
     const stable = itemsFor(context, STABLE);
+    if (nuiEnvelope) stable.push({ id: 'nui-host-envelope', text: formatNuiEnvelopeForPrompt(nuiEnvelope) });
     if (toolInstructions) stable.push({ id: 'execution-contract', text: '[execution-contract]\nPropose tools only through structured tool calls. A model statement is never proof of completion. Completion remains awaiting independent ForgeOS verification.' });
     const workspace = itemsFor(context, WORKSPACE);
     const turn = itemsFor(context, TURN);

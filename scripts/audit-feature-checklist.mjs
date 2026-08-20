@@ -289,7 +289,8 @@ export async function generateFeatureAudit({ sourceFile, outputDirectory } = {})
   });
   const all = sections.flatMap((section) => section.items);
   const report = {
-    schema: 'forge.studio.feature-audit.v1',
+    schema: 'nolane.agent.feature-audit.v1',
+    product: 'Nolane Agent',
     productVersion: PRODUCT_VERSION,
     forgeOsSnapshot: { packageVersion: '0.6.1', source: 'user-supplied forge-os-main archive', commitHint: 'a813e4864ef4a56e36f9f90112e8ef17bdd3adcc' },
     checklistSha256: createHash('sha256').update(source).digest('hex'),
@@ -308,7 +309,7 @@ export async function generateFeatureAudit({ sourceFile, outputDirectory } = {})
   await writeFile(path.join(directory, `feature-audit-${PRODUCT_VERSION}.json`), `${JSON.stringify(report, null, 2)}\n`);
   const table = sections.map((section) => `| ${section.number} | ${section.title} | ${section.items.length} | ${section.summary.verified_source_test} | ${section.summary.partial} | ${section.summary.external_gate} | ${section.summary.not_implemented} |`).join('\n');
   const limits = all.filter((item) => item.status !== 'verified_source_test').slice(0, 80).map((item) => `- **${item.id} — ${item.text}:** ${item.status} — ${item.note}`).join('\n');
-  const markdown = `# Forge Studio ${PRODUCT_VERSION} — Kiểm toán checklist tính năng\n\n- Checklist SHA-256: \`${report.checklistSha256}\`\n- Tổng mục: **${report.totalItems}**\n- Có source + test: **${report.summary.verified_source_test}**\n- Một phần: **${report.summary.partial}**\n- Cổng bên ngoài: **${report.summary.external_gate}**\n- Chưa triển khai: **${report.summary.not_implemented}**\n\n> “Có source + test” không đồng nghĩa đã vận hành production trên mọi OS, cloud hoặc tenant. JSON đi kèm chứa trạng thái và evidence cho toàn bộ ${report.totalItems} mục.\n\n| # | Nhóm | Tổng | Source + test | Một phần | Cổng ngoài | Chưa có |\n|---:|---|---:|---:|---:|---:|---:|\n${table}\n\n## Các giới hạn chưa đóng (trích yếu)\n\n${limits || '- Không có.'}\n`;
+  const markdown = `# Nolane Agent ${PRODUCT_VERSION} — Kiểm toán checklist tính năng\n\n- Checklist SHA-256: \`${report.checklistSha256}\`\n- Tổng mục: **${report.totalItems}**\n- Có source + test: **${report.summary.verified_source_test}**\n- Một phần: **${report.summary.partial}**\n- Cổng bên ngoài: **${report.summary.external_gate}**\n- Chưa triển khai: **${report.summary.not_implemented}**\n\n> “Có source + test” không đồng nghĩa đã vận hành production trên mọi OS, cloud hoặc tenant. JSON đi kèm chứa trạng thái và evidence cho toàn bộ ${report.totalItems} mục.\n\n| # | Nhóm | Tổng | Source + test | Một phần | Cổng ngoài | Chưa có |\n|---:|---|---:|---:|---:|---:|---:|\n${table}\n\n## Các giới hạn chưa đóng (trích yếu)\n\n${limits || '- Không có.'}\n`;
   await writeFile(path.join(directory, `FEATURE-COMPLETENESS-AUDIT-${PRODUCT_VERSION}.md`), markdown);
   return report;
 }

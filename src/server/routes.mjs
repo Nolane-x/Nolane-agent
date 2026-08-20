@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { stat } from 'node:fs/promises';
 import { AUTONOMY_PROFILES } from '../security/autonomy-policy.mjs';
 import { BROWSER_WRITE_ACTIONS } from '../security/browser-permission-service.mjs';
 
@@ -19,6 +20,17 @@ async function readJson(req, maxBytes = 1_000_000) {
   catch { throw Object.assign(new Error('Invalid JSON body'), { statusCode: 400 }); }
 }
 
+async function projectWorkspaceRoot(value) {
+  const workspaceRoot = String(value ?? '').trim();
+  if (!workspaceRoot) throw Object.assign(new Error('A project folder is required'), { statusCode: 400, code: 'PROJECT_WORKSPACE_REQUIRED' });
+  const resolved = path.resolve(workspaceRoot);
+  let details;
+  try { details = await stat(resolved); }
+  catch { throw Object.assign(new Error('The selected project folder is unavailable'), { statusCode: 400, code: 'PROJECT_WORKSPACE_UNAVAILABLE' }); }
+  if (!details.isDirectory()) throw Object.assign(new Error('The selected project path is not a folder'), { statusCode: 400, code: 'PROJECT_WORKSPACE_NOT_DIRECTORY' });
+  return resolved;
+}
+
 function defaultPlanner({ objective }) {
   return {
     summary: 'Inspect, implement, and independently verify the requested change.',
@@ -28,6 +40,14 @@ function defaultPlanner({ objective }) {
       { id: 'reviewer', title: 'Independent verification', objective: `Independently review and verify: ${objective}`, role: 'reviewer', dependencies: ['builder'], allowedPaths: ['**'], deniedPaths: ['.env', '.env.*', '**/*.pem', '**/*.key'] },
     ],
   };
+}
+
+const DEFAULT_PERMISSION_MODE_IDS = Object.freeze({ ask: 'edit-approved', workspace: 'auto-edit', full: 'deep' });
+
+async function defaultAgentModeId(settingsService, projectId) {
+  if (!settingsService?.effective) return undefined;
+  const effective = await settingsService.effective(projectId);
+  return DEFAULT_PERMISSION_MODE_IDS[String(effective?.value?.permissions?.defaultMode ?? '').trim()] ?? undefined;
 }
 
 export function createRoutes({ store, providers, missionRunner, runCoordinator = null, projectService = null, webIntelligence = null, repositoryIndex = null, router = null, mcpRegistry = null, evalRunner = null, verificationRunner = null, plannerService = null, memoryService = null, gitInspector = null, autopilot = null, fileService = null, credentialVault = null, providerConnections = null, uiAssets = null, updateService = null, updatePreparation = null, instructionDiscovery = null, instructionPolicy = null, runtimeStatus = null, goalService = null, goalRunService = null, replanner = null, commandRegistry = null, browserService = null, browserRuntimeInstaller = null, browserPermissionService = null, pluginService = null, settingsService = null, personalizationProfile = null, onboardingService = null, sessionRestore = null, missionGraph = null, goalScheduler = null, forgeBridge = null, enterpriseCloudRoutes = null, operatingPlane = null, capabilityLedger = null, adaptiveIntelligence = null, environmentControl = null, nativeRuntime = null, nativeAgent = null, nativeOrchestration = null, sessionStore = null, smallModelFoundation = null, nativeCapabilities = null, operationalBoundary = null, dependencyPreflight = null, workspaceTrust = null, diffReview = null, operationsCenter = null, contextMemoryCenter = null, contextOrchestration = null, traceEvidenceCenter = null, repositoryDiscovery = null, codebaseKnowledge = null, semanticDependency = null, codeRelationships = null, localResourceSandbox = null, localTaskHandoff = null, gitGovernance = null, treeSitterRuntime = null, agentModes = null, missionStateProgress = null, localOperations = null, architectureStageGate = null, missionCompletion = null, localContainerPreflight = null, evidenceContextRuntime = null, missionResourceFabric = null, modelProfiles = null, modelManager = null, executionStory = null, timeTravel = null, sovereignKernel = null, uiSummary = null }) {
@@ -971,6 +991,16 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
       if (!nativeOrchestration) throw Object.assign(new Error('Nolane skill hub is not configured'), { statusCode: 503 });
       return json(res, 200, await nativeOrchestration.loadSkill(decodeURIComponent(skillHubLoad[1]), await readJson(req)));
     }
+    const skillHubInstall = pathname.match(/^\/api\/skills\/catalog\/([^/]+)\/install$/);
+    if (skillHubInstall && method === 'POST') {
+      if (!nativeOrchestration) throw Object.assign(new Error('Nolane skill hub is not configured'), { statusCode: 503 });
+      const id = decodeURIComponent(skillHubInstall[1]);
+      const body = await readJson(req);
+      if (body?.confirmed !== true) throw Object.assign(new Error('Skill installation requires explicit confirmation'), { statusCode: 400, code: 'SKILL_INSTALL_CONFIRMATION_REQUIRED' });
+      if (!id.startsWith('forgeos:')) throw Object.assign(new Error('Only ForgeOS catalog Skills can be installed'), { statusCode: 400, code: 'SKILL_INSTALL_SOURCE_UNSUPPORTED' });
+      if (typeof nativeOrchestration.installForgeOsSkill !== 'function') throw Object.assign(new Error('Nolane Skill installation is not configured'), { statusCode: 503, code: 'SKILL_INSTALL_UNAVAILABLE' });
+      return json(res, 201, await nativeOrchestration.installForgeOsSkill(id));
+    }
     if (pathname === '/api/nolane/orchestration/status') {
       if (!nativeOrchestration) throw Object.assign(new Error('Nolane native orchestration service is not configured'), { statusCode: 503 });
       if (method === 'GET') return json(res, 200, nativeOrchestration.status());
@@ -1553,7 +1583,7 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
     }
     if (method === 'POST' && pathname === '/api/onboarding/skip') {
       if (!onboardingService?.skip) throw Object.assign(new Error('Onboarding service is not configured'), { statusCode: 503 });
-      return json(res, 200, await onboardingService.skip());
+      return json(res, 200, await onboardingService.skip(await readJson(req, 64_000)));
     }
     if (method === 'GET' && pathname === '/api/session/restore') {
       if (!sessionRestore?.restore) throw Object.assign(new Error('Session restore service is not configured'), { statusCode: 503 });
@@ -1736,6 +1766,11 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
         account: body.account, headers: body.headers, testConnection: body.testConnection !== false,
       }));
     }
+    if (method === 'POST' && pathname === '/api/provider-connections/select-model') {
+      if (!providerConnections?.selectApiModel) throw Object.assign(new Error('API model selection is not configured'), { statusCode: 503 });
+      const body = await readJson(req, 128 * 1024);
+      return json(res, 200, await providerConnections.selectApiModel(body.providerId, { modelId: body.modelId, testConnection: body.testConnection !== false }));
+    }
     const providerDelete = pathname.match(/^\/api\/provider-connections\/([^/]+)$/);
     if (method === 'DELETE' && providerDelete) {
       if (!providerConnections) throw Object.assign(new Error('Provider connection service is not configured'), { statusCode: 503 });
@@ -1886,7 +1921,8 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
     }
     if (method === 'POST' && pathname === '/api/projects') {
       const body = await readJson(req);
-      return json(res, 201, await (projectService?.create?.({ name: body.name, workspaceRoot: body.workspaceRoot, metadata: body.metadata ?? {} }) ?? store.createProject({ name: body.name, workspaceRoot: body.workspaceRoot, metadata: body.metadata ?? {} })));
+      const workspaceRoot = await projectWorkspaceRoot(body.workspaceRoot);
+      return json(res, 201, await (projectService?.create?.({ name: body.name, workspaceRoot, metadata: body.metadata ?? {} }) ?? store.createProject({ name: body.name, workspaceRoot, metadata: body.metadata ?? {} })));
     }
     if (method === 'GET' && pathname === '/api/agent/runs') {
       if (!runCoordinator) throw Object.assign(new Error('Agent run coordinator is not configured'), { statusCode: 503 });
@@ -1900,11 +1936,13 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
       if (!runCoordinator) throw Object.assign(new Error('Agent run coordinator is not configured'), { statusCode: 503 });
       const body = await readJson(req);
       if (workspaceTrust) await workspaceTrust.requireTrusted(body.projectId, 'background');
+      const requestedModeId = String(body.modeId ?? '').trim() || undefined;
+      const modeId = requestedModeId ?? await defaultAgentModeId(settingsService, body.projectId);
       return json(res, 201, runCoordinator.createRun({
         projectId: body.projectId,
         objective: body.objective,
         autonomyProfile: body.autonomyProfile,
-        modeId: body.modeId,
+        modeId,
         modeOverrides: body.modeOverrides,
         providerId: body.providerId ?? 'auto',
         budgets: body.budgets,
@@ -2138,32 +2176,46 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
       if (!projectId) throw Object.assign(new TypeError('Choose a project before sending a mission.'), { statusCode: 400, code: 'PROJECT_REQUIRED' });
       if (typeof store?.getProject === 'function' && !store.getProject(projectId)) throw Object.assign(new Error('The selected project is no longer available. Choose another project.'), { statusCode: 404, code: 'PROJECT_NOT_FOUND' });
       if (!objective) throw Object.assign(new TypeError('Enter a mission objective before sending.'), { statusCode: 400, code: 'OBJECTIVE_REQUIRED' });
+      if (body.skillIds != null && !Array.isArray(body.skillIds)) throw Object.assign(new TypeError('Selected skills must be an array.'), { statusCode: 400, code: 'SKILL_SELECTION_INVALID' });
+      const requestedSkillIds = [...new Set((body.skillIds ?? []).map((item) => String(item ?? '').trim()))];
+      if (requestedSkillIds.length > 8 || requestedSkillIds.some((id) => !id || id.length > 180 || /\s/.test(id))) throw Object.assign(new TypeError('Select up to eight valid skills.'), { statusCode: 400, code: 'SKILL_SELECTION_INVALID' });
+      const selectedSkills = [];
+      if (requestedSkillIds.length) {
+        if (typeof nativeOrchestration?.loadSkill !== 'function') throw Object.assign(new Error('The skill context runtime is not configured.'), { statusCode: 503, code: 'SKILL_CONTEXT_UNAVAILABLE' });
+        for (const id of requestedSkillIds) {
+          let skill;
+          try { skill = await nativeOrchestration.loadSkill(id, { grantedCapabilities: [] }); }
+          catch { throw Object.assign(new Error(`Selected skill is unavailable or requires an explicit capability: ${id}`), { statusCode: 400, code: 'SKILL_ATTACH_UNAVAILABLE' }); }
+          if (String(skill?.id ?? '') !== id || typeof skill?.content !== 'string' || !/^[a-f0-9]{64}$/i.test(String(skill?.contentSha256 ?? ''))) throw Object.assign(new Error(`Selected skill has no verified content receipt: ${id}`), { statusCode: 400, code: 'SKILL_ATTACH_UNAVAILABLE' });
+          selectedSkills.push(Object.freeze({
+            id,
+            source: skill.source ?? null,
+            catalog: skill.catalog ?? null,
+            title: String(skill.title ?? id),
+            contentSha256: skill.contentSha256,
+            manifestSha256: skill.manifestSha256 ?? null,
+            provenanceStatus: skill.provenanceStatus ?? null,
+            receiptSha256: skill.receiptSha256 ?? null,
+          }));
+        }
+      }
       const requestedMcpTools = Array.isArray(body.mcpAllowedTools)
         ? [...new Set(body.mcpAllowedTools.map((item) => String(item).trim()).filter(Boolean))].slice(0, 128)
         : [];
       const planningProviderId = String(body.planningProviderId ?? 'auto').trim() || 'auto';
       const planningModelId = String(body.planningModelId ?? body.deployment?.modelId ?? '').trim() || null;
+      const requestedPlanningEffort = String(body.planningEffort ?? '').trim().toLowerCase() || null;
+      if (requestedPlanningEffort && !new Set(['none', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max', 'ultra']).has(requestedPlanningEffort)) throw Object.assign(new TypeError('planningEffort is invalid'), { statusCode: 400, code: 'PLANNING_EFFORT_INVALID' });
       const basePlanner = body.plan
         ? async () => body.plan
         : plannerService
-          ? async (input) => plannerService.plan({ ...input, providerId: planningProviderId, ...(planningModelId ? { modelId: planningModelId } : {}) })
+          ? async (input) => plannerService.plan({ ...input, providerId: planningProviderId, ...(planningModelId ? { modelId: planningModelId } : {}), ...(requestedPlanningEffort ? { effort: requestedPlanningEffort } : {}) })
           : async (input) => defaultPlanner(input);
-      const planner = async (input) => {
-        const plan = await basePlanner(input);
-        if (!requestedMcpTools.length) return plan;
-        return {
-          ...plan,
-          tasks: plan.tasks.map((task) => ({
-            ...task,
-            metadata: { ...(task.metadata ?? {}), mcpAllowedTools: requestedMcpTools },
-          })),
-        };
-      };
       const result = await missionRunner.plan({
         projectId,
         objective,
-        planner,
-        planningMetadata: { planningProviderId, ...(planningModelId ? { planningModelId } : {}) },
+        planner: basePlanner,
+        planningMetadata: { planningProviderId, ...(planningModelId ? { planningModelId } : {}), ...(requestedPlanningEffort ? { planningEffort: requestedPlanningEffort } : {}), ...(requestedMcpTools.length ? { mcpAllowedTools: requestedMcpTools } : {}), ...(selectedSkills.length ? { selectedSkills } : {}) },
       });
       return json(res, 201, result);
     }
