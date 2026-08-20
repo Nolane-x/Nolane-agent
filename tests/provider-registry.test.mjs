@@ -46,6 +46,25 @@ test('CliProvider detects versions and invokes through argv/stdin without a shel
   assert.deepEqual(completion.toolCalls, []);
 });
 
+test('CliProvider forwards an advertised reasoning effort through its documented argv flag', async (t) => {
+  const fake = await fakeCli(t);
+  const provider = new CliProvider({
+    id: 'effort-cli',
+    label: 'Effort CLI',
+    executable: fake.executable,
+    baseArgs: [fake.script, '-'],
+    promptMode: 'stdin',
+    effortFlag: '--effort',
+    effortLevels: ['low', 'high', 'max'],
+  });
+
+  const result = await provider.invoke({ prompt: 'Think carefully', effort: 'max' });
+  const payload = JSON.parse(result.stdout);
+
+  assert.deepEqual(payload.args.slice(-3), ['--effort', 'max', '-']);
+  assert.deepEqual(provider.publicView().effort, { supported: true, mode: 'forwarded', levels: ['low', 'high', 'max'] });
+});
+
 test('CliProvider keeps a completed Codex agent message when a later tool event reports an error', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-codex-events-'));
   t.after(() => rm(root, { recursive: true, force: true }));

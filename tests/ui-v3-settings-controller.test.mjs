@@ -56,6 +56,22 @@ test('English settings render every language card in the active interface locale
   assert.doesNotMatch(html, /Tiếng Việt|Giao diện tiếng Việt/);
 });
 
+test('permissions settings render actionable approval choices including bounded full access', () => {
+  const catalog = createSettingsCatalog();
+  const permissions = catalog.categories.find((category) => category.id === 'permissions');
+  const html = renderSettingsView({
+    status: 'ready',
+    draft: { general: { language: 'en' }, experience: { level: 'everyday' }, permissions: { defaultMode: 'full' } },
+    visibleCategories: [permissions], activeCategory: 'permissions', experience: 'everyday', layer: 'user', provenance: {}, models: { models: [] }, providers: [],
+  });
+
+  assert.match(html, /Ask for approval/);
+  assert.match(html, /Approve for me/);
+  assert.match(html, /Full access/);
+  assert.match(html, /data-setting-path="permissions\.defaultMode" data-setting-value="full"/);
+  assert.match(html, /does not bypass sandbox, operating-system, account, or provider limits/i);
+});
+
 test('settings search keeps the provider workspace visible when a provider name matches', async () => {
   const api = {
     get: async (path) => {

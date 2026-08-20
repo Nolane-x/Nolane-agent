@@ -1,5 +1,12 @@
 import { functionTool, normalizeMessages, parseArguments, postJson, required, resolveCredential, secureBaseUrl } from './http-provider-utils.mjs';
 
+function reasoningEffort(value) {
+  const effort = String(value ?? '').trim().toLowerCase();
+  if (!effort) return null;
+  if (effort.length > 64 || !/^[a-z0-9][a-z0-9._-]*$/.test(effort)) throw new TypeError('reasoning effort is invalid');
+  return effort;
+}
+
 export class OpenAIResponsesProvider {
   constructor({ id, model, baseUrl = 'https://api.openai.com/v1', apiKey = null, credentialRef = null, credentialResolver = null, timeoutMs = 120_000, fetchImpl = fetch, profile = {} } = {}) {
     this.id = required(id, 'provider id'); this.kind = 'openai-responses'; this.model = required(model, 'model');
@@ -10,11 +17,12 @@ export class OpenAIResponsesProvider {
   }
   publicView() { return Object.freeze({ id: this.id, kind: this.kind, label: 'OpenAI API', model: this.model, baseUrl: this.baseUrl, ...this.profile }); }
   async detect() { try { await resolveCredential(this); return Object.freeze({ ...this.publicView(), available: true, authenticated: true, healthy: true }); } catch (error) { return Object.freeze({ ...this.publicView(), available: true, authenticated: false, healthy: false, error: String(error.message ?? error) }); } }
-  async complete({ messages = [], tools = [], signal = null, model = this.model } = {}) {
+  async complete({ messages = [], tools = [], signal = null, model = this.model, effort = null } = {}) {
     const key = await resolveCredential(this); const clean = normalizeMessages(messages);
+    const selectedEffort = reasoningEffort(effort);
     const instructions = clean.filter((item) => item.role === 'system' || item.role === 'developer').map((item) => item.content).join('\n\n');
     const input = clean.filter((item) => item.role !== 'system' && item.role !== 'developer').map((item) => ({ role: item.role === 'tool' ? 'user' : item.role, content: item.content }));
-    const payload = await postJson({ url: this.url, headers: { authorization: `Bearer ${key}` }, body: { model, ...(instructions ? { instructions } : {}), input, ...(tools.length ? { tools: tools.map((tool) => ({ type: 'function', ...functionTool(tool), strict: false })) } : {}), store: false }, timeoutMs: this.timeoutMs, signal, fetchImpl: this.fetchImpl, secretValues: [key] });
+    const payload = await postJson({ url: this.url, headers: { authorization: `Bearer ${key}` }, body: { model, ...(instructions ? { instructions } : {}), input, ...(selectedEffort ? { reasoning: { effort: selectedEffort } } : {}), ...(tools.length ? { tools: tools.map((tool) => ({ type: 'function', ...functionTool(tool), strict: false })) } : {}), store: false }, timeoutMs: this.timeoutMs, signal, fetchImpl: this.fetchImpl, secretValues: [key] });
     const output = Array.isArray(payload.output) ? payload.output : [];
     const text = payload.output_text ?? output.flatMap((item) => item.type === 'message' ? (item.content ?? []).filter((part) => part.type === 'output_text' || part.type === 'text').map((part) => part.text ?? '') : []).join('');
     const toolCalls = output.filter((item) => item.type === 'function_call').map((item, index) => Object.freeze({ id: String(item.call_id ?? item.id ?? `call_${index + 1}`), name: required(item.name, 'tool call name'), arguments: parseArguments(item.arguments ?? '{}'), rawArguments: typeof item.arguments === 'string' ? item.arguments : JSON.stringify(item.arguments ?? {}) }));

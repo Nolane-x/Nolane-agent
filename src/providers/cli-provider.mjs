@@ -32,6 +32,29 @@ function normalizeModelId(value) {
   return candidate;
 }
 
+function normalizeEffort(value) {
+  const candidate = String(value ?? '').trim().toLowerCase();
+  if (!candidate) return null;
+  if (candidate.length > 64 || !/^[a-z0-9][a-z0-9._-]*$/.test(candidate)) throw new TypeError('effort must be a bounded provider variant');
+  return candidate;
+}
+
+function effortList(value, label) {
+  if (!Array.isArray(value)) throw new TypeError(`${label} must be an array of strings`);
+  return Object.freeze([...new Set(value.map(normalizeEffort).filter(Boolean))]);
+}
+
+function effortByModel(value) {
+  if (value == null) return Object.freeze({});
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new TypeError('effortByModel must be an object');
+  const entries = Object.entries(value).map(([modelId, levels]) => {
+    const normalizedModel = normalizeModelId(modelId);
+    if (!normalizedModel) throw new TypeError('effortByModel has an invalid model id');
+    return [normalizedModel, effortList(levels, `effortByModel.${modelId}`)];
+  });
+  return Object.freeze(Object.fromEntries(entries));
+}
+
 function modelCandidates(output) {
   const values = [];
   for (const line of String(output ?? '').split(/\r?\n/)) {
@@ -50,8 +73,9 @@ function modelCandidates(output) {
   return [...new Set(values)];
 }
 
-function discoveryModel(providerId, modelId, source, observedAt) {
-  return Object.freeze({ id: modelId, modelId, displayName: modelId, providerId, discoveredAt: observedAt, source: Object.freeze({ ...source, observedAt }) });
+function discoveryModel(providerId, modelId, source, observedAt, reasoningEfforts = []) {
+  const metadata = reasoningEfforts.length ? Object.freeze({ supportedReasoningEfforts: reasoningEfforts }) : Object.freeze({});
+  return Object.freeze({ id: modelId, modelId, displayName: modelId, providerId, discoveredAt: observedAt, source: Object.freeze({ ...source, observedAt }), metadata });
 }
 
 function diagnostic(output) {
@@ -122,7 +146,7 @@ async function resolveNpmWindowsWrapper(candidate) {
 export class CliProvider {
   #resolvedExecutable = null;
 
-  constructor({ id, label, executable, versionArgs = ['--version'], baseArgs = [], promptMode = 'stdin', promptFlag = null, modelFlag = '--model', modelSelection = null, executionSafety = 'verified', modelDiscoveryArgs = null, modelCatalog = [], timeoutMs = 10 * 60_000, env = {}, secretEnvKeys = [], cwd = null, credentialOwner = 'official-cli', harnessFamily = 'generic-local', profile = {} } = {}) {
+  constructor({ id, label, executable, versionArgs = ['--version'], baseArgs = [], promptMode = 'stdin', promptFlag = null, modelFlag = '--model', modelSelection = null, effortFlag = null, effortLevels = [], effortByModel: configuredEffortByModel = null, executionSafety = 'verified', modelDiscoveryArgs = null, modelCatalog = [], timeoutMs = 10 * 60_000, env = {}, secretEnvKeys = [], cwd = null, credentialOwner = 'official-cli', harnessFamily = 'generic-local', profile = {} } = {}) {
     this.id = text(id, 'provider id');
     this.label = text(label ?? id, 'provider label');
     this.kind = 'cli';
@@ -135,6 +159,10 @@ export class CliProvider {
     this.modelFlag = modelFlag == null ? null : String(modelFlag).trim() || null;
     this.modelSelection = modelSelection ?? (this.modelFlag ? 'forwarded' : 'cli-config');
     if (!['forwarded', 'cli-config'].includes(this.modelSelection)) throw new TypeError('modelSelection is invalid');
+    this.effortFlag = effortFlag == null ? null : String(effortFlag).trim() || null;
+    this.effortLevels = effortList(effortLevels, 'effortLevels');
+    this.effortByModel = effortByModel(configuredEffortByModel);
+    if (!this.effortFlag && (this.effortLevels.length || Object.keys(this.effortByModel).length)) throw new TypeError('effortFlag is required when a CLI advertises reasoning effort');
     if (!['verified', 'external-plan-config-required'].includes(executionSafety)) throw new TypeError('executionSafety is invalid');
     this.executionSafety = executionSafety;
     this.modelDiscoveryArgs = modelDiscoveryArgs == null ? null : argv(modelDiscoveryArgs, 'modelDiscoveryArgs');
@@ -166,15 +194,20 @@ export class CliProvider {
         live: Boolean(this.modelDiscoveryArgs?.length),
       }),
       modelSelection: Object.freeze({ mode: this.modelSelection, forwarded: this.modelSelection === 'forwarded' }),
+      effort: Object.freeze({ supported: Boolean(this.effortFlag), mode: this.effortFlag ? 'forwarded' : 'unsupported', levels: this.effortLevels }),
       ...this.profile,
     });
+  }
+
+  #effortLevelsForModel(modelId) {
+    return this.effortByModel[normalizeModelId(modelId) ?? ''] ?? this.effortLevels;
   }
 
   async discoverModels({ timeoutMs = Math.min(this.timeoutMs, 15_000) } = {}) {
     const observedAt = new Date().toISOString();
     if (this.modelCatalog.length) {
       const source = Object.freeze({ type: 'cli-compatibility-catalog', live: false });
-      const models = this.modelCatalog.map((modelId) => discoveryModel(this.id, modelId, source, observedAt));
+      const models = this.modelCatalog.map((modelId) => discoveryModel(this.id, modelId, source, observedAt, this.#effortLevelsForModel(modelId)));
       return Object.freeze({ schema: 'nolane.cli-model-discovery.v1', providerId: this.id, status: 'compatibility', source, models: Object.freeze(models), errors: Object.freeze([]), observedAt });
     }
     if (!this.modelDiscoveryArgs?.length) {
@@ -187,7 +220,7 @@ export class CliProvider {
       if (result.aborted) throw new Error('model discovery cancelled');
       if (result.exitCode !== 0) throw new Error(`model discovery exited with ${result.exitCode}`);
       const source = Object.freeze({ type: 'cli-command', live: true });
-      const models = modelCandidates(`${result.stdout}\n${result.stderr}`).map((modelId) => discoveryModel(this.id, modelId, source, observedAt));
+      const models = modelCandidates(`${result.stdout}\n${result.stderr}`).map((modelId) => discoveryModel(this.id, modelId, source, observedAt, this.#effortLevelsForModel(modelId)));
       return Object.freeze({ schema: 'nolane.cli-model-discovery.v1', providerId: this.id, status: 'discovered', source, models: Object.freeze(models), errors: Object.freeze([]), observedAt });
     } catch (error) {
       return Object.freeze({ schema: 'nolane.cli-model-discovery.v1', providerId: this.id, status: 'error', source: Object.freeze({ type: 'cli-command', live: true }), models: Object.freeze([]), errors: Object.freeze([String(error?.message ?? error).slice(0, 300)]), observedAt });
@@ -207,10 +240,10 @@ export class CliProvider {
     }
   }
 
-  async complete({ messages = [], tools = [], model = null, signal = null, timeoutMs = this.timeoutMs, cwd = this.cwd } = {}) {
+  async complete({ messages = [], tools = [], model = null, effort = null, signal = null, timeoutMs = this.timeoutMs, cwd = this.cwd } = {}) {
     try {
       const prompt = buildForgeActionPrompt(messages, tools);
-      const result = await this.invoke({ prompt, model, signal, timeoutMs, cwd });
+      const result = await this.invoke({ prompt, model, effort, signal, timeoutMs, cwd });
       if (result.timedOut) throw new Error(`${this.label} timed out`);
       if (result.aborted) throw new Error(`${this.label} cancelled`);
       if (result.exitCode !== 0) throw new Error(`${this.label} exited with ${result.exitCode}: ${result.stderr.slice(0, 1000)}`);
@@ -236,7 +269,7 @@ export class CliProvider {
     }
   }
 
-  async invoke({ prompt = '', model = null, args = [], cwd = this.cwd, env = {}, timeoutMs = this.timeoutMs, signal = null } = {}) {
+  async invoke({ prompt = '', model = null, effort = null, args = [], cwd = this.cwd, env = {}, timeoutMs = this.timeoutMs, signal = null } = {}) {
     const extraArgs = argv(args, 'args');
     const finalArgs = [...this.baseArgs];
     const selectedModel = String(model ?? '').trim();
@@ -244,6 +277,12 @@ export class CliProvider {
       const sentinel = finalArgs.indexOf('-');
       const insertion = sentinel >= 0 ? sentinel : finalArgs.length;
       finalArgs.splice(insertion, 0, this.modelFlag, selectedModel);
+    }
+    const selectedEffort = normalizeEffort(effort);
+    if (this.effortFlag && selectedEffort) {
+      const sentinel = finalArgs.indexOf('-');
+      const insertion = sentinel >= 0 ? sentinel : finalArgs.length;
+      finalArgs.splice(insertion, 0, this.effortFlag, selectedEffort);
     }
     let input = '';
     if (this.promptMode === 'stdin') input = String(prompt);
