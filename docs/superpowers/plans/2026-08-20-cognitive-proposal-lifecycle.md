@@ -149,7 +149,7 @@ Run `node --test tests/cognitive-proposal-lifecycle.test.mjs tests/cognitive-dec
 
 Expected: PASS; wrapper return shapes and existing cognition claims remain valid.
 
-- [ ] **Step 5: Commit wiring**
+- [x] **Step 5: Commit wiring**
 
 Run `git add src/decision/decision-plane.mjs tests/cognitive-decision-plane-integration.test.mjs` followed by `git commit -m "feat(decision): project cognitive proposal lifecycle"`.
 
@@ -159,13 +159,13 @@ Run `git add src/decision/decision-plane.mjs tests/cognitive-decision-plane-inte
 
 - Modify generated files only when their generators change them: `docs/MASTER-ACCEPTANCE-LEDGER.md`, `requirements/master-acceptance-ledger.json`, and `docs/ui-v3/ui-v3-source-release.json`.
 
-- [ ] **Step 1: Generate evidence from final source**
+- [x] **Step 1: Generate evidence from final source**
 
 Run `npm run build:ui-v3`, `npm run program:nolane`, and `npm run audit:evidence-freshness` in that order.
 
 Expected: distribution receipt matches, program status is `pass`, and freshness checks all 198 requirements with no failures.
 
-- [ ] **Step 2: Inspect exactly what will be committed**
+- [x] **Step 2: Inspect exactly what will be committed**
 
 Run `git diff --check`, `git diff --stat`, and `git status --short`.
 
