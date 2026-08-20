@@ -170,7 +170,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
   certification-candidate:
-    if: ${{ needs.runner-evidence.result == 'success' }}
+    if: ${{ (github.event_name == 'pull_request' || github.event_name == 'push') && needs.runner-evidence.result == 'success' }}
     needs: runner-evidence
     name: Bounded external certification candidate
     runs-on: ubuntu-latest

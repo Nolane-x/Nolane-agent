@@ -17,7 +17,7 @@ function nativeGate(id, capability) {
   return { id, text: id, classification: 'native_runtime', observation: 'observed', capability };
 }
 
-function makeReceipt(platform) {
+function makeReceipt(platform, { event = 'pull_request' } = {}) {
   const label = platform === 'win32' ? 'Windows' : platform === 'darwin' ? 'macOS' : 'Linux';
   const tree = { schema: 'forge.tree-sitter-runtime-capabilities.v1', available: true, command: 'tree-sitter', version: '0.25.10', versionMatches: true, externalRuntime: true, reason: null };
   const podman = platform === 'linux' ? { schema: 'forge.podman-capabilities.v1', available: true, version: '5.8.4', externalRuntime: true, rootlessRequired: true, networkDefault: 'deny' } : { available: false };
@@ -32,9 +32,9 @@ function makeReceipt(platform) {
     classSummary: { runner_os: 2, github_lifecycle: 8, managed_cloud: 35, native_runtime: 8, os_keychain: 1, provider_credentials: 2 },
     environment: {
       platform, arch: platform === 'darwin' ? 'arm64' : 'x64', node: 'v24.19.0', githubActions: true,
-      githubEventName: 'pull_request', githubRepository: 'Nolane-x/Nolane-agent', githubRef: 'refs/pull/7/merge',
-      githubSha: TESTED_SHA, githubHeadSha: SOURCE_SHA, githubRunId: RUN_ID, githubWorkflow: 'External gate evidence',
-      githubWorkflowRef: 'Nolane-x/Nolane-agent/.github/workflows/external-gates.yml@refs/pull/7/merge', githubIssueLinked: false, runnerOs: label,
+      githubEventName: event, githubRepository: 'Nolane-x/Nolane-agent', githubRef: event === 'push' ? 'refs/heads/codex/external-gate-evidence' : 'refs/pull/7/merge',
+      githubSha: event === 'push' ? SOURCE_SHA : TESTED_SHA, githubHeadSha: SOURCE_SHA, githubRunId: RUN_ID, githubWorkflow: 'External gate evidence',
+      githubWorkflowRef: `Nolane-x/Nolane-agent/.github/workflows/external-gates.yml@${event === 'push' ? 'refs/heads/codex/external-gate-evidence' : 'refs/pull/7/merge'}`, githubIssueLinked: false, runnerOs: label,
     },
     probes: { treeSitter: tree, podman, windowsJobObjects: windows, macOsSandbox: mac, docker: { available: false }, wsl: { available: false }, osKeychain: { available: false } },
     gates,
@@ -74,6 +74,20 @@ test('builder derives a freshness-bound four-gate certification candidate from o
   assert.ok(set.gateEvidence['21.6'].files.some((entry) => entry.path === 'src/sandbox/windows-job-object-driver.mjs'));
   const verified = await verifyExternalGateCertificationFreshness(set, { rootDirectory: root, expectedSourceSha: SOURCE_SHA });
   assert.equal(verified.status, 'pass');
+});
+
+test('builder accepts a three-OS certification candidate from the trusted release-branch push', async (t) => {
+  const root = await prepareRoot(t);
+  const receipts = { linux: makeReceipt('linux', { event: 'push' }), windows: makeReceipt('win32', { event: 'push' }), macos: makeReceipt('darwin', { event: 'push' }) };
+  const artifacts = [
+    { id: 211, name: 'external-gates-linux', digest: `sha256:${'1'.repeat(64)}`, workflow_run: { id: Number(RUN_ID), head_sha: SOURCE_SHA } },
+    { id: 212, name: 'external-gates-windows', digest: `sha256:${'2'.repeat(64)}`, workflow_run: { id: Number(RUN_ID), head_sha: SOURCE_SHA } },
+    { id: 213, name: 'external-gates-macos', digest: `sha256:${'3'.repeat(64)}`, workflow_run: { id: Number(RUN_ID), head_sha: SOURCE_SHA } },
+  ];
+  const set = await buildExternalGateCertificationSet({ rootDirectory: root, receipts, artifacts, workflowConclusion: 'success', gitTreeResolver: async () => ({ sourceTreeSha: SOURCE_TREE_SHA, testedTreeSha: SOURCE_TREE_SHA }) });
+  assert.equal(set.workflow.event, 'push');
+  assert.equal(set.workflow.testedSha, SOURCE_SHA);
+  assert.equal((await verifyExternalGateCertificationFreshness(set, { rootDirectory: root, expectedSourceSha: SOURCE_SHA })).status, 'pass');
 });
 
 test('builder refuses to combine receipts from different workflow runs', async (t) => {
