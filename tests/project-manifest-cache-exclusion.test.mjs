@@ -21,3 +21,17 @@ test('project manifest excludes Python bytecode caches created by SDK tests', as
   assert.ok(files.includes('sdk/python/nolane_agent/client.py'));
   assert.equal(files.some((file) => /(?:^|\/)__pycache__\/|\.py[co]$/i.test(file)), false);
 });
+
+test('project manifest excludes local agent state and transient static-analysis output', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-manifest-local-state-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await mkdir(path.join(root, '.serena'), { recursive: true });
+  await writeFile(path.join(root, 'package.json'), '{"name":"nolane-agent","version":"0.0.0"}\n');
+  await writeFile(path.join(root, 'README.md'), '# Nolane Agent\n');
+  await writeFile(path.join(root, '.serena', 'session.json'), '{"local":true}\n');
+  await writeFile(path.join(root, 'semgrep-current.json'), '{"results":[]}\n');
+  await execFileAsync(process.execPath, [path.resolve('scripts/generate-manifest.mjs'), root, 'project-manifest.json']);
+  const manifest = JSON.parse(await readFile(path.join(root, 'project-manifest.json'), 'utf8'));
+  const files = manifest.files.map((entry) => entry.relativePath);
+  assert.deepEqual(files, ['README.md', 'package.json']);
+});
