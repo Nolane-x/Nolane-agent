@@ -20,7 +20,7 @@ test('CI workflow runs product validation without publishing or release secrets'
 });
 
 test('release workflow builds native Windows, macOS, and Linux artifacts, signs the Windows update manifest, attests artifacts, and publishes one GitHub Release', async () => {
-  const source = await read('.github/workflows/release.yml');
+  const [source, packageJson, builderConfig] = await Promise.all([read('.github/workflows/release.yml'), read('package.json'), read('electron-builder.config.cjs')]);
   assert.match(source, /tags:\s*\n\s*- ['"]v\*['"]/);
   assert.match(source, /runs-on: windows-latest/);
   assert.match(source, /macos-release:/);
@@ -37,6 +37,10 @@ test('release workflow builds native Windows, macOS, and Linux artifacts, signs 
   assert.match(source, /NolaneAgent-\*\.dmg/);
   assert.match(source, /NolaneAgent-\*\.AppImage/);
   assert.match(source, /NolaneAgent-\*\.deb/);
+  assert.match(source, /latest-mac\.yml/);
+  assert.match(source, /latest-linux\.yml/);
+  assert.match(source, /Require macOS signing credentials/);
+  assert.match(source, /MAC_CSC_LINK is required/);
   assert.match(source, /actions\/download-artifact@v4/);
   assert.match(source, /NOLANE_UPDATE_PRIVATE_KEY_B64/);
   assert.match(source, /nolane\.agent\.update\.v2/);
@@ -50,6 +54,8 @@ test('release workflow builds native Windows, macOS, and Linux artifacts, signs 
   assert.match(source, /release\/matrix-\$\{\{ steps\.update_trust\.outputs\.version \}\}\/full-release-matrix\.json/);
   assert.match(source, /matrixMd|full-release-matrix\.md/);
   assert.doesNotMatch(source, /nolane_native-agent|NolaneNative/);
+  assert.match(packageJson, /"electron-updater"\s*:\s*"6\.8\.9"/);
+  assert.match(builderConfig, /provider: 'github'/);
 });
 
 test('release workflow verifies tag/version coherence and fails closed without the update signing key', async () => {

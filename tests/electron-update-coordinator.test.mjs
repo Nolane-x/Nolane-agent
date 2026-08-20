@@ -10,7 +10,7 @@ const { DesktopUpdateCoordinator } = require('../desktop/update-coordinator.cjs'
 
 function json(value, status = 200) { return new Response(JSON.stringify(value), { status, headers: { 'content-type': 'application/json' } }); }
 
-async function fixture(t, { autoDownload = false, runningMissions = [], platform = 'win32' } = {}) {
+async function fixture(t, { autoDownload = false, runningMissions = [], platform = 'win32', releaseUpdater = null } = {}) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-update-coordinator-'));
   t.after(() => rm(root, { recursive: true, force: true }));
   const requests = []; const states = []; const timers = [];
@@ -36,6 +36,7 @@ async function fixture(t, { autoDownload = false, runningMissions = [], platform
   };
   const coordinator = new DesktopUpdateCoordinator({
     updateController, userDataDir: root, platform,
+    releaseUpdater,
     getRuntimeConnection: () => ({ origin: 'http://127.0.0.1:1234', token: 'runtime-token' }), fetchImpl,
     emit: (state) => states.push(state), random: () => 0.5, now: () => '2026-08-03T19:00:00.000Z',
     setTimeoutImpl: (callback, delay) => { const timer = { callback, delay, unref() {} }; timers.push(timer); return timer; },
@@ -76,15 +77,40 @@ test('manual check retains the verified manifest internally and stages it withou
   assert.deepEqual(stage[2], { manifest });
 });
 
-test('macOS and Linux fail closed instead of staging a Windows NSIS handoff', async (t) => {
+test('macOS and Linux fail closed instead of staging a Windows NSIS handoff when the packaged updater is unavailable', async (t) => {
   for (const platform of ['darwin', 'linux']) {
     const { coordinator, requests } = await fixture(t, { platform });
     await coordinator.checkForUpdates({ manual: true });
     const result = await coordinator.downloadAvailableUpdate();
     assert.equal(result.state, 'handoffUnavailable');
     assert.equal(result.ready, false);
-    assert.equal(result.platformTruth.inAppUpdateHandoff.enabled, false);
-    assert.equal(result.platformTruth.nativeInstallHandoff.enabled, false);
+    assert.equal(result.platformTruth.inAppUpdateHandoff.enabled, true);
+    assert.equal(result.platformTruth.nativeInstallHandoff.enabled, true);
+    assert.equal(requests.some(([pathname]) => pathname === '/api/updates/stage'), false);
+  }
+});
+
+test('macOS and Linux download and install their own GitHub Releases artifact without touching the Windows manifest', async (t) => {
+  for (const [platform, packageKind] of [['darwin', 'dmg'], ['linux', 'appimage']]) {
+    let downloaded = false; let installed = null;
+    const releaseUpdater = {
+      status: async () => ({ ready: false, reason: 'no-downloaded-update' }),
+      check: async () => ({ available: true, version: '5.0.0-beta.7', releaseTag: 'v5.0.0-beta.7', releaseNotesUrl: 'https://github.com/Nolane-x/Nolane-agent/releases/tag/v5.0.0-beta.7' }),
+      download: async () => { downloaded = true; return { ready: true, version: '5.0.0-beta.7', releaseTag: 'v5.0.0-beta.7', releaseNotesUrl: 'https://github.com/Nolane-x/Nolane-agent/releases/tag/v5.0.0-beta.7' }; },
+      installAndRestart: async (preparation) => { installed = preparation; return { launched: true, version: '5.0.0-beta.7' }; },
+    };
+    const { coordinator, requests } = await fixture(t, { platform, releaseUpdater });
+    await coordinator.checkForUpdates({ manual: true });
+    assert.equal(coordinator.state().state, 'available');
+    assert.equal(coordinator.state().packageKind, packageKind);
+    assert.equal(coordinator.state().integrityVerified, false);
+    await coordinator.downloadAvailableUpdate();
+    assert.equal(downloaded, true);
+    assert.equal(coordinator.state().state, 'staged');
+    assert.equal(coordinator.state().integrityVerified, true);
+    await coordinator.installUpdateAndRestart();
+    assert.equal(installed.snapshotId, 'snapshot_1');
+    assert.equal(requests.some(([pathname]) => pathname === '/api/updates/check'), false);
     assert.equal(requests.some(([pathname]) => pathname === '/api/updates/stage'), false);
   }
 });

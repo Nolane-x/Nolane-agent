@@ -124,7 +124,7 @@ function evidenceStatusLabel(status, language) {
 function evidenceModel(state) {
   const platform = platformMeta(state);
   const preservation = state?.preservation ?? {};
-  const signature = state?.signatureVerified ? 'verified' : (state?.state === 'downloading' ? 'active' : 'unknown');
+  const signature = state?.signatureVerified || state?.integrityVerified ? 'verified' : (state?.state === 'downloading' ? 'active' : 'unknown');
   const snapshot = preservation.snapshotPrepared || state?.snapshotReceiptSha256
     ? 'verified'
     : state?.state === 'preparingInstall'

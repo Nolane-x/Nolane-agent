@@ -19,10 +19,10 @@
       "artifactPatterns": ["NolaneAgent-${version}-x64.dmg", "NolaneAgent-${version}-x64.zip"],
       "signing": { "status": "conditional", "mechanism": "electron-builder CSC", "evidenceRequired": "release signing receipt" },
       "notarization": { "status": "unknown", "mechanism": null },
-      "updateTrust": { "enabled": false, "mechanism": null },
-      "inAppUpdateHandoff": { "enabled": false, "mechanism": null, "reason": "Native macOS update handoff is not yet verified." },
-      "nativeInstallHandoff": { "enabled": false, "mechanism": null, "reason": "Native macOS update handoff is not yet verified." },
-      "recovery": { "preUpdateSnapshot": true, "migrationJournal": true, "postUpdateHealth": true, "realUpdateReplay": "unknown" }
+      "updateTrust": { "enabled": true, "mechanism": "electron-updater GitHub Releases metadata plus macOS code-signing verification" },
+      "inAppUpdateHandoff": { "enabled": true, "mechanism": "electron-updater-github", "reason": null },
+      "nativeInstallHandoff": { "enabled": true, "mechanism": "electron-updater-github", "reason": null },
+      "recovery": { "preUpdateSnapshot": true, "migrationJournal": true, "postUpdateHealth": true, "realUpdateReplay": "external-gate" }
     },
     "linux": {
       "label": "Linux",
@@ -30,10 +30,10 @@
       "artifactPatterns": ["NolaneAgent-${version}-x64.AppImage", "NolaneAgent-${version}-x64.deb"],
       "signing": { "status": "unknown", "mechanism": null, "evidenceRequired": "platform-specific package signing receipt" },
       "notarization": { "status": "not-applicable", "mechanism": null },
-      "updateTrust": { "enabled": false, "mechanism": null },
-      "inAppUpdateHandoff": { "enabled": false, "mechanism": null, "reason": "Native Linux update handoff is not yet verified." },
-      "nativeInstallHandoff": { "enabled": false, "mechanism": null, "reason": "Native Linux update handoff is not yet verified." },
-      "recovery": { "preUpdateSnapshot": true, "migrationJournal": true, "postUpdateHealth": true, "realUpdateReplay": "unknown" }
+      "updateTrust": { "enabled": true, "mechanism": "electron-updater GitHub Releases metadata" },
+      "inAppUpdateHandoff": { "enabled": true, "mechanism": "electron-updater-github", "reason": null },
+      "nativeInstallHandoff": { "enabled": true, "mechanism": "electron-updater-github", "reason": null },
+      "recovery": { "preUpdateSnapshot": true, "migrationJournal": true, "postUpdateHealth": true, "realUpdateReplay": "external-gate" }
     }
   }
 }
