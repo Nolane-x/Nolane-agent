@@ -40,5 +40,7 @@ test('external gate workflow uses least privilege and real Windows Linux macOS r
   assert.match(workflow, /if: github\.event_name == 'pull_request'/);
   assert.match(workflow, /Get-Content -Raw -LiteralPath \$env:GITHUB_EVENT_PATH \| ConvertFrom-Json/);
   assert.match(workflow, /-match '\(\?im\)\^\\s\*closes\\s\+#\\d\+\\b'/);
+  assert.match(workflow, /certification-candidate:\s*\n\s*if:\s*\$\{\{\s*needs\.runner-evidence\.result == 'success'\s*\}\}/);
+  assert.match(workflow, /name:\s*Upload bounded external certification candidate/);
   assert.doesNotMatch(workflow, /electron-builder|build:electron|smoke:packaged|release:matrix/);
 });
