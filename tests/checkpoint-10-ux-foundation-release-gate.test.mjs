@@ -2,10 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { verifyCheckpoint10UxFoundation } from '../src/release/checkpoint-10-ux-foundation-verifier.mjs';
 import { readFile } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+
+const execFileAsync = promisify(execFile);
 
 test('checkpoint 10 UX foundation verifier binds backend UI model profiles summary resizing and non-claims', async () => {
-  const report = await verifyCheckpoint10UxFoundation({ rootDirectory: process.cwd(), version: '5.0.0-beta.6' });
+  const report = await verifyCheckpoint10UxFoundation({ rootDirectory: process.cwd() });
   assert.equal(report.status, 'pass');
+  assert.equal(report.version, '0.0.0');
   assert.equal(report.failures.length, 0);
   assert.equal(report.coverage.settingsBackend, true);
   assert.equal(report.coverage.settingsUi, true);
@@ -16,6 +21,13 @@ test('checkpoint 10 UX foundation verifier binds backend UI model profiles summa
   assert.equal(report.claims.providerRealCertified, false);
   assert.equal(report.claims.windowsExternalCertified, false);
   assert.match(report.receiptSha256, /^[a-f0-9]{64}$/);
+});
+
+test('checkpoint 10 verification script uses the current release identity', async () => {
+  const { stdout } = await execFileAsync(process.execPath, ['scripts/verify-checkpoint-10-ux-foundation.mjs']);
+  const report = JSON.parse(stdout);
+  assert.equal(report.status, 'pass');
+  assert.equal(report.version, '0.0.0');
 });
 
 

@@ -21,8 +21,8 @@ test('program generator creates a real requirement registry and a Nolane runtime
   assert.equal(registry.statusCounts.verified_source_test, 193);
   assert.equal(registry.statusCounts.external_gate, 5);
   assert.equal(registry.statusCounts.not_implemented ?? 0, 0);
-  assert.equal(registry.version, '5.0.0-beta.6');
-  assert.equal(registry.productVersion, '5.0.0-beta.6');
+  assert.equal(registry.version, '0.0.0');
+  assert.equal(registry.productVersion, '0.0.0');
   const cleanRoom = registry.requirements.find((item) => item.id === 'NOL-AUDIT-003');
   assert.equal(cleanRoom.status, 'verified_source_test');
   assert.equal(cleanRoom.acceptance.entrypoint, 'scripts/certify-published-source.mjs');

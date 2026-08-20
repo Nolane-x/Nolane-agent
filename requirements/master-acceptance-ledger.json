@@ -17,8 +17,8 @@
     }
   },
   "product": "Nolane Agent",
-  "productVersion": "5.0.0-beta.6",
-  "receiptSha256": "3e0f992a1c0ebcf6ccc4f3ef78e6c00b64c19d08ea90faf2c3aa972a7ac775a9",
+  "productVersion": "0.0.0",
+  "receiptSha256": "011333747b4a0b36bb842dbc76e3a793cab11d776641bb25c0769407b4ca5ae3",
   "requirements": [
     {
       "acceptance": {
@@ -3297,7 +3297,7 @@
           }
         ],
         "evidenceHashes": {
-          "extensions/vscode/extension/package.json": "673a1f65ea39dfe38437e0cad56b70b8171010e108b57235b3c4df84a22db0ef",
+          "extensions/vscode/extension/package.json": "0f6e5be9a17850f394b874be983a66c60b1934677dfcc6ee712979d3f11b6ed8",
           "extensions/vscode/src/client.ts": "6cabf8ee70da40e8d1bb843ed5ca32b6f8262b0690f976ec09c63db048bc135c",
           "extensions/vscode/src/extension.ts": "462965b88dc843f7a5fa3d2b3db0b7bdade522fad0e04ca56d3d6abcb00b95ad",
           "extensions/vscode/src/local-worktree.ts": "6c02985816a4e9301c2f43a5a030416b04111afd8588c5358ad153729a1e7de2",
@@ -7566,7 +7566,7 @@
       "acceptance": {
         "evidenceHashes": {
           "src/release/release-naming.mjs": "1bf2d898d1576e7edbfd6fc693fb5ac83433000d360ffb86cba0ef0fd6b8169e",
-          "tests/nolane-release-naming.test.mjs": "b8d6484b3202e9a77a701f1bccc903d000d4677fe9b5e303c82e66105de5eaac"
+          "tests/nolane-release-naming.test.mjs": "6e34537b49f3b3cfa9ca72201a552aebd84dc84de335a8365ebdf3940bff36f6"
         },
         "externalConditions": [],
         "fileExistenceIsProof": false,
@@ -7579,7 +7579,7 @@
         "suppliedHashes": {
           "entrypointSha256": "1bf2d898d1576e7edbfd6fc693fb5ac83433000d360ffb86cba0ef0fd6b8169e",
           "environment": "node>=22.12",
-          "exactTestSha256": "b8d6484b3202e9a77a701f1bccc903d000d4677fe9b5e303c82e66105de5eaac"
+          "exactTestSha256": "6e34537b49f3b3cfa9ca72201a552aebd84dc84de335a8365ebdf3940bff36f6"
         },
         "testPaths": [
           "tests/nolane-release-naming.test.mjs"
@@ -24421,8 +24421,8 @@
     {
       "acceptance": {
         "evidenceHashes": {
-          "src/product-identity.mjs": "3ef824505f7fa299aa6df568d62304468b2fe47978681998dd343e0bb0dcfaa6",
-          "tests/nolane-product-identity.test.mjs": "bfa23e6d7042173e70afaee4b69e89c6d133d086991ec876438dd2992be41247"
+          "src/product-identity.mjs": "b9191f2cf24c23b96dd3b5d85f527b4517dd268a1a8fbfc680ac3b4421b61434",
+          "tests/nolane-product-identity.test.mjs": "86580f18f6590976370776387b4c830b5e3ca26ea508325843ea0ea7f74d24db"
         },
         "externalConditions": [],
         "fileExistenceIsProof": false,
@@ -24433,9 +24433,9 @@
         ],
         "productionEntrypoint": "src/product-identity.mjs",
         "suppliedHashes": {
-          "entrypointSha256": "3ef824505f7fa299aa6df568d62304468b2fe47978681998dd343e0bb0dcfaa6",
+          "entrypointSha256": "b9191f2cf24c23b96dd3b5d85f527b4517dd268a1a8fbfc680ac3b4421b61434",
           "environment": "node>=22.12",
-          "exactTestSha256": "bfa23e6d7042173e70afaee4b69e89c6d133d086991ec876438dd2992be41247"
+          "exactTestSha256": "86580f18f6590976370776387b4c830b5e3ca26ea508325843ea0ea7f74d24db"
         },
         "testPaths": [
           "tests/nolane-product-identity.test.mjs"
@@ -28423,7 +28423,7 @@
       "acceptance": {
         "evidenceHashes": {
           "scripts/generate-nolane-program.mjs": "3826ed3b886c83025816979a5037e8a07f95dc543d4a36d978704b4d0d04f886",
-          "tests/nolane-program-registry.test.mjs": "62ef0f9a8fb063c378348962b984c66bc55caf18e7b392fb7a6089dbe793e6da"
+          "tests/nolane-program-registry.test.mjs": "32a301d6596d8aef1e9d42ca014c20f3bb16fef61d3c4349cc830f2acfea1f32"
         },
         "externalConditions": [],
         "fileExistenceIsProof": false,
@@ -28436,7 +28436,7 @@
         "suppliedHashes": {
           "entrypointSha256": "3826ed3b886c83025816979a5037e8a07f95dc543d4a36d978704b4d0d04f886",
           "environment": "node>=22.12",
-          "exactTestSha256": "62ef0f9a8fb063c378348962b984c66bc55caf18e7b392fb7a6089dbe793e6da"
+          "exactTestSha256": "32a301d6596d8aef1e9d42ca014c20f3bb16fef61d3c4349cc830f2acfea1f32"
         },
         "testPaths": [
           "tests/nolane-program-registry.test.mjs"
@@ -30297,7 +30297,7 @@
       "acceptance": {
         "evidenceHashes": {
           "scripts/generate-nolane-program.mjs": "3826ed3b886c83025816979a5037e8a07f95dc543d4a36d978704b4d0d04f886",
-          "tests/nolane-program-registry.test.mjs": "62ef0f9a8fb063c378348962b984c66bc55caf18e7b392fb7a6089dbe793e6da"
+          "tests/nolane-program-registry.test.mjs": "32a301d6596d8aef1e9d42ca014c20f3bb16fef61d3c4349cc830f2acfea1f32"
         },
         "externalConditions": [],
         "fileExistenceIsProof": false,
@@ -30310,7 +30310,7 @@
         "suppliedHashes": {
           "entrypointSha256": "3826ed3b886c83025816979a5037e8a07f95dc543d4a36d978704b4d0d04f886",
           "environment": "node>=22.12",
-          "exactTestSha256": "62ef0f9a8fb063c378348962b984c66bc55caf18e7b392fb7a6089dbe793e6da"
+          "exactTestSha256": "32a301d6596d8aef1e9d42ca014c20f3bb16fef61d3c4349cc830f2acfea1f32"
         },
         "testPaths": [
           "tests/nolane-program-registry.test.mjs"
@@ -47960,7 +47960,7 @@
           }
         ],
         "evidenceHashes": {
-          "extensions/vscode/extension/package.json": "673a1f65ea39dfe38437e0cad56b70b8171010e108b57235b3c4df84a22db0ef",
+          "extensions/vscode/extension/package.json": "0f6e5be9a17850f394b874be983a66c60b1934677dfcc6ee712979d3f11b6ed8",
           "extensions/vscode/src/client.ts": "6cabf8ee70da40e8d1bb843ed5ca32b6f8262b0690f976ec09c63db048bc135c",
           "extensions/vscode/src/extension.ts": "462965b88dc843f7a5fa3d2b3db0b7bdade522fad0e04ca56d3d6abcb00b95ad",
           "extensions/vscode/src/local-worktree.ts": "6c02985816a4e9301c2f43a5a030416b04111afd8588c5358ad153729a1e7de2",
@@ -74668,7 +74668,7 @@
       "acceptance": {
         "evidenceHashes": {
           "scripts/generate-nolane-program.mjs": "3826ed3b886c83025816979a5037e8a07f95dc543d4a36d978704b4d0d04f886",
-          "tests/nolane-program-registry.test.mjs": "62ef0f9a8fb063c378348962b984c66bc55caf18e7b392fb7a6089dbe793e6da"
+          "tests/nolane-program-registry.test.mjs": "32a301d6596d8aef1e9d42ca014c20f3bb16fef61d3c4349cc830f2acfea1f32"
         },
         "externalConditions": [],
         "fileExistenceIsProof": false,
@@ -74681,7 +74681,7 @@
         "suppliedHashes": {
           "entrypointSha256": "3826ed3b886c83025816979a5037e8a07f95dc543d4a36d978704b4d0d04f886",
           "environment": "node>=22.12",
-          "exactTestSha256": "62ef0f9a8fb063c378348962b984c66bc55caf18e7b392fb7a6089dbe793e6da"
+          "exactTestSha256": "32a301d6596d8aef1e9d42ca014c20f3bb16fef61d3c4349cc830f2acfea1f32"
         },
         "testPaths": [
           "tests/nolane-program-registry.test.mjs"
@@ -100504,8 +100504,8 @@
   "schema": "nolane.master.acceptance-ledger.v1",
   "sourceSnapshots": {
     "legacyVersion": "4.0.0",
-    "nativeConformanceReceiptSha256": "f02ebca47bce55f8a74855c874f5b013d0cbda3df91c2344eed7a1e5997b9634",
-    "nolaneV5Version": "5.0.0-beta.6",
+    "nativeConformanceReceiptSha256": "752cdaf5fac89eea1e2c1e02383480a55800c1f2faa2cb223bcd352c3aa42551",
+    "nolaneV5Version": "0.0.0",
     "nolane_nativeInventoryReceiptSha256": "4cd390914dd49cd5f6111136f4a4604df3037c22682aeb744b480944ef6d9eb1",
     "nolane_nativeTreeSha256": "3d3d97032f56e200b5a323398fc8e7b7fbfe644fe119f908c1bd2922624669e2"
   },
