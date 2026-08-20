@@ -234,7 +234,9 @@ export class CliProvider {
       // much longer execution timeout used for actual agent work.
       const result = await this.#spawn(this.versionArgs, { timeoutMs: Math.min(this.timeoutMs, 15_000), input: '' });
       const output = `${result.stdout}\n${result.stderr}`.trim();
-      return Object.freeze({ ...this.publicView(), available: result.exitCode === 0, version: parseVersion(output), versionOutput: diagnostic(output), error: detectError(result) });
+      const error = detectError(result);
+      if (error) return Object.freeze({ ...this.publicView(), available: false, authenticated: false, healthy: false, version: parseVersion(output), error });
+      return Object.freeze({ ...this.publicView(), available: true, version: parseVersion(output), versionOutput: diagnostic(output), error: null });
     } catch (error) {
       return Object.freeze({ ...this.publicView(), available: false, version: null, error: error.code === 'ENOENT' ? 'not-found' : diagnostic(error.message) || 'spawn-error' });
     }

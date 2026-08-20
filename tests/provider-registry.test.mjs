@@ -92,6 +92,24 @@ test('CliProvider classifies a non-zero CLI configuration failure without exposi
   assert.equal(JSON.stringify(detection).includes('refresh-prefix-private'), false);
 });
 
+test('CliProvider rejects a zero-exit configuration diagnostic without exposing a local settings path', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-config-zero-exit-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const script = path.join(root, 'config-cli.mjs');
+  await writeFile(script, "console.log('gemini 0.49.0\\nInvalid configuration in C:\\\\Users\\\\example\\\\.gemini\\\\settings.json\\nExpected array, received boolean'); process.exit(0);\\n");
+  const provider = new CliProvider({ id: 'config-zero-exit', label: 'Config zero-exit CLI', executable: process.execPath, versionArgs: [script, '--version'] });
+
+  const detection = await provider.detect();
+
+  assert.equal(detection.available, false);
+  assert.equal(detection.authenticated, false);
+  assert.equal(detection.healthy, false);
+  assert.equal(detection.version, '0.49.0');
+  assert.equal(detection.error, 'configuration-error');
+  assert.equal('versionOutput' in detection, false);
+  assert.equal(JSON.stringify(detection).includes('C:\\Users\\example'), false);
+});
+
 test('CliProvider allows a slow CLI startup to report its version truthfully', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-slow-version-'));
   t.after(() => rm(root, { recursive: true, force: true }));
