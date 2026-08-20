@@ -40,6 +40,14 @@ function endpoint(baseUrl, suffix) {
   return base.toString();
 }
 
+function knownReasoningControls(providerFamily, providerModelId) {
+  // Only publish levels the receiving API documents for this exact model ID.
+  if (providerFamily === 'openai-api' && providerModelId === 'gpt-5.6') {
+    return { supported: true, controllable: true, levels: ['none', 'low', 'medium', 'high', 'xhigh', 'max'] };
+  }
+  return undefined;
+}
+
 export class ModelDiscoveryService {
   #fetch;
   #clock;
@@ -87,13 +95,17 @@ export class ModelDiscoveryService {
 
   async #openAiCompatible(baseUrl, headers, providerFamily, observedAt) {
     const payload = await this.#json(endpoint(baseUrl, '/v1/models'), { headers });
-    return (payload.data ?? []).filter((model) => model?.id).map((model) => ({
-      id: this.#canonicalizeProviderId(providerFamily, model.id),
-      providerFamily,
-      providerModelId: model.id,
-      identity: { publisher: model.owned_by ?? null },
-      source: { type: 'provider-api', providerId: providerFamily, observedAt },
-    }));
+    return (payload.data ?? []).filter((model) => model?.id).map((model) => {
+      const reasoning = knownReasoningControls(providerFamily, model.id);
+      return {
+        id: this.#canonicalizeProviderId(providerFamily, model.id),
+        providerFamily,
+        providerModelId: model.id,
+        identity: { publisher: model.owned_by ?? null },
+        ...(reasoning ? { reasoning } : {}),
+        source: { type: 'provider-api', providerId: providerFamily, observedAt },
+      };
+    });
   }
 
   async #anthropic(baseUrl, headers, observedAt) {

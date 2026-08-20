@@ -21,6 +21,21 @@ test('discovers OpenAI-compatible models and preserves provider IDs', async () =
   assert.equal(JSON.stringify(result).includes('secret'), false);
 });
 
+test('publishes verified reasoning controls for discovered GPT-5.6 without guessing custom model capabilities', async () => {
+  const service = new ModelDiscoveryService({
+    fetch: async () => response({ data: [{ id: 'gpt-5.6', owned_by: 'openai' }, { id: 'company-private-model' }] }),
+  });
+
+  const result = await service.discover({ providerFamily: 'openai-api', baseUrl: 'https://api.example.test', apiKey: 'secret' });
+
+  assert.deepEqual(result.models[0].reasoning, {
+    supported: true,
+    controllable: true,
+    levels: ['none', 'low', 'medium', 'high', 'xhigh', 'max'],
+  });
+  assert.equal(result.models[1].reasoning, undefined);
+});
+
 test('accepts provider connection metadata without duplicating versioned base paths', async () => {
   const fetch = async (url, options) => {
     assert.equal(url, 'http://127.0.0.1:1234/v1/models');
