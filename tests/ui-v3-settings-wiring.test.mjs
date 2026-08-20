@@ -35,3 +35,12 @@ test('UI v3 settings keeps Vietnamese labels translated after a live language sw
   assert.match(view, /Đã đặt model định tuyến mặc định/);
   assert.match(view, /Mục này chỉ có thao tác và chẩn đoán/);
 });
+
+test('UI v3 settings preserves an unsaved language choice across the preview remount', async () => {
+  const app = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
+
+  assert.match(app, /let pendingSettingsLanguage=null;/);
+  assert.match(app, /await controller\.load\(\);if\(pendingSettingsLanguage!==null\)controller\.set\('general\.language',pendingSettingsLanguage\)/);
+  assert.match(app, /pendingSettingsLanguage=value;await languageSync\.preview\(value,currentRouteState\?\.path\?\?'\/settings'\)/);
+  assert.match(app, /pendingSettingsLanguage=null;await languageSync\.commit\(currentRouteState\?\.path\?\?'\/settings'\)/);
+});
