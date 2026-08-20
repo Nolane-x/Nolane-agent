@@ -31,7 +31,7 @@
 **Interfaces:**
 
 - `CognitiveProposalLifecycle.registerTask({ taskId, missionId?, specificationReceiptSha256, atMs })`
-- `observe(taskId, cognitiveObservationReceipt)`, `propose(taskId, cognitiveProposalReceipt)`, `verify(taskId, verifiedProposalReceipt)`, `settle(taskId, cognitiveCommitGateReceipt)`, and `snapshot(taskId?)`
+- `observe(taskId, cognitiveObservationReceipt, { atMs? })`, `propose(taskId, cognitiveProposalReceipt, { atMs? })`, `verify(taskId, verifiedProposalReceipt, { atMs? })`, `settle(taskId, cognitiveCommitGateReceipt, { atMs? })`, and `snapshot(taskId?)`
 - `propose` accepts only `forge.cognitive-proposal.v1`; an abstention never enters this method.
 
 - [ ] **Step 1: Write failing lifecycle tests**
@@ -137,7 +137,7 @@ startCognitiveTask(input) {
     taskId: receipt.taskId,
     missionId: input.missionId ?? null,
     specificationReceiptSha256: receipt.receiptSha256,
-    atMs: receipt.createdAtMs,
+    atMs: Number(this.clock()),
   });
   return receipt;
 }

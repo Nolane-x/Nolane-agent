@@ -55,7 +55,7 @@ verifyCognitiveProposal(taskId, proposalId, verification)
 commitCognitiveProposal(taskId, verifiedProposalId)
 ```
 
-Each wrapper updates lifecycle state only after the corresponding kernel call succeeds. An abstention is recorded as no proposal, not as a rejection. A lifecycle invariant failure must surface; it must not be hidden by a partial result.
+Each wrapper updates lifecycle state only after the corresponding kernel call succeeds. The plane records its own clock timestamp at that boundary because task-start and observation receipts intentionally do not carry timestamps. An abstention is recorded as no proposal, not as a rejection. A lifecycle invariant failure must surface; it must not be hidden by a partial result.
 
 ## Validation and Bounds
 
