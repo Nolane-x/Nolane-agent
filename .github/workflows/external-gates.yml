@@ -189,7 +189,7 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Download runner-bound external gate receipts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           pattern: external-gates-*
           path: ${{ runner.temp }}/external-gates
