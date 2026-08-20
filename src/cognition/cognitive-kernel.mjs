@@ -9,8 +9,14 @@ import { CausalInterventionLab } from './causal-intervention-lab.mjs';
 import { RecoveryLease, evaluateCommitGate, evaluateStopGate } from './cognitive-policy-gates.mjs';
 import { boundedClone, signed, text } from './cognition-utils.mjs';
 
+function receiptHash(value, label) {
+  const hash = text(value, label, 64);
+  if (!/^[a-f0-9]{64}$/.test(hash)) throw new TypeError(`${label} must be a SHA-256 receipt hash`);
+  return hash;
+}
+
 export class CognitiveKernel {
-  constructor({ clock = () => Date.now(), context = {}, hypotheses = {}, selector = {}, errorRouter = {}, commitLimits = {}, limits = {} } = {}) {
+  constructor({ clock = () => Date.now(), context = {}, hypotheses = {}, selector = {}, errorRouter = {}, commitLimits = {}, limits = {}, rollbackExecutor = null, rollbackVerifier = null } = {}) {
     this.clock = typeof clock === 'function' ? clock : () => Date.now();
     this.maxTasks = Math.max(1, Math.min(10_000, Math.floor(Number(limits.maxTasks) || 1_000)));
     this.maxReceipts = Math.max(1, Math.min(50_000, Math.floor(Number(limits.maxReceipts) || 5_000)));
@@ -27,6 +33,8 @@ export class CognitiveKernel {
       maxProbes: limits.maxEffectProbes ?? 256,
       maxProbePaths: limits.maxEffectProbePaths ?? 512,
     });
+    this.rollbackExecutor = typeof rollbackExecutor === 'function' ? rollbackExecutor : null;
+    this.rollbackVerifier = typeof rollbackVerifier === 'function' ? rollbackVerifier : null;
     this.tasks = new Map();
     this.receipts = [];
     this.sequence = 0;
@@ -218,12 +226,44 @@ export class CognitiveKernel {
     return this.#record(result);
   }
 
-  rollback(taskId, receiptId) {
+  rollback(taskId, input) {
     this.#assertOpen();
     const task = this.#task(taskId);
-    const receipt = signed({ schema: 'forge.cognitive-rollback.v1', taskId: task.taskId, targetReceiptId: text(receiptId, 'receiptId', 512), rolledBackAtMs: Number(this.clock()) });
-    task.rollbackReceipts.push(receipt.receiptSha256);
-    return this.#record(receipt);
+    const request = typeof input === 'string' ? { targetReceiptId: input } : input ?? {};
+    const targetReceiptId = text(request.targetReceiptId, 'targetReceiptId', 512);
+    const rollbackPoint = request.rollbackPoint == null ? null : text(request.rollbackPoint, 'rollbackPoint', 512);
+    const requested = this.#record(signed({
+      schema: 'forge.cognitive-rollback-request.v1', taskId: task.taskId, targetReceiptId, rollbackPoint,
+      status: 'requested', requestedAtMs: Number(this.clock()),
+    }));
+    task.rollbackReceipts.push(requested.receiptSha256);
+    if (!this.rollbackExecutor) return requested;
+    const execution = this.rollbackExecutor({ taskId: task.taskId, targetReceiptId, rollbackPoint, requestReceiptSha256: requested.receiptSha256 });
+    const executed = this.#record(signed({
+      schema: 'forge.cognitive-rollback-execution.v1', taskId: task.taskId, targetReceiptId, rollbackPoint,
+      requestReceiptSha256: requested.receiptSha256, status: 'executed',
+      restoredStateReceiptSha256: receiptHash(execution?.restoredStateReceiptSha256, 'restoredStateReceiptSha256'),
+      effectVerificationReceiptSha256: receiptHash(execution?.effectVerificationReceiptSha256, 'effectVerificationReceiptSha256'),
+      executedAtMs: Number(this.clock()),
+    }));
+    task.rollbackReceipts.push(executed.receiptSha256);
+    if (!this.rollbackVerifier) return executed;
+    const verification = this.rollbackVerifier({
+      taskId: task.taskId, targetReceiptId, rollbackPoint, requestReceiptSha256: requested.receiptSha256,
+      executionReceiptSha256: executed.receiptSha256, restoredStateReceiptSha256: executed.restoredStateReceiptSha256,
+      effectVerificationReceiptSha256: executed.effectVerificationReceiptSha256,
+    });
+    const verificationReceiptSha256 = receiptHash(verification?.verificationReceiptSha256, 'verificationReceiptSha256');
+    const result = this.#record(signed({
+      schema: 'forge.cognitive-rollback-result.v1', taskId: task.taskId, targetReceiptId, rollbackPoint,
+      requestReceiptSha256: requested.receiptSha256, executionReceiptSha256: executed.receiptSha256,
+      verificationReceiptSha256, status: verification?.verified === true ? 'verified' : 'unverified',
+      restoredStateReceiptSha256: executed.restoredStateReceiptSha256,
+      effectVerificationReceiptSha256: executed.effectVerificationReceiptSha256,
+      resolvedAtMs: Number(this.clock()),
+    }));
+    task.rollbackReceipts.push(result.receiptSha256);
+    return result;
   }
 
   evaluateStop(taskId, input = {}) { this.#task(taskId); return evaluateStopGate(input); }

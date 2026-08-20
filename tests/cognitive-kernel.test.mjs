@@ -168,3 +168,83 @@ test('denies commit when a declared tool success has a mismatched observed effec
   assert.equal(committed.allowed, false);
   assert.deepEqual(committed.reasons, ['tool-effect-false-success']);
 });
+
+test('records an unexecuted rollback as a request rather than a completed restore', () => {
+  const kernel = new CognitiveKernel();
+  kernel.startTask({
+    taskId: 'task-rollback-request', goal: 'restore only through a proven executor', recoveryLeaseId: 'lease-rollback-request',
+    contexts: [{ id: 'code', probability: 1 }],
+    hypotheses: [{ id: 'h1', claim: 'a request is not an effect', probability: 1, predictions: ['restore evidence is required'], falsificationCondition: 'an unexecuted request claims success', testCost: 1 }],
+  });
+
+  const requested = kernel.rollback('task-rollback-request', 'checkpoint-before-change');
+
+  assert.equal(requested.schema, 'forge.cognitive-rollback-request.v1');
+  assert.equal(requested.status, 'requested');
+  assert.equal(requested.targetReceiptId, 'checkpoint-before-change');
+  assert.equal('restoredStateReceiptSha256' in requested, false);
+});
+
+test('records an executor rollback as executed until an independent verifier accepts its evidence', () => {
+  const kernel = new CognitiveKernel({
+    rollbackExecutor: ({ taskId, targetReceiptId, rollbackPoint }) => ({
+      taskId,
+      targetReceiptId,
+      rollbackPoint,
+      restoredStateReceiptSha256: 'a'.repeat(64),
+      effectVerificationReceiptSha256: 'b'.repeat(64),
+    }),
+  });
+  kernel.startTask({
+    taskId: 'task-rollback-verified', goal: 'verify a concrete state restoration', recoveryLeaseId: 'lease-rollback-verified',
+    contexts: [{ id: 'code', probability: 1 }],
+    hypotheses: [{ id: 'h1', claim: 'the restore must be read back', probability: 1, predictions: ['two receipts are present'], falsificationCondition: 'a missing receipt is accepted', testCost: 1 }],
+  });
+
+  const executed = kernel.rollback('task-rollback-verified', { targetReceiptId: 'checkpoint-before-change', rollbackPoint: 'worktree-base' });
+
+  assert.equal(executed.schema, 'forge.cognitive-rollback-execution.v1');
+  assert.equal(executed.status, 'executed');
+  assert.match(executed.restoredStateReceiptSha256, /^[a-f0-9]{64}$/);
+  assert.match(executed.effectVerificationReceiptSha256, /^[a-f0-9]{64}$/);
+});
+
+test('records a rollback as verified only after an independent verifier returns a verification receipt', () => {
+  const kernel = new CognitiveKernel({
+    rollbackExecutor: () => ({ restoredStateReceiptSha256: 'a'.repeat(64), effectVerificationReceiptSha256: 'b'.repeat(64) }),
+    rollbackVerifier: ({ restoredStateReceiptSha256, effectVerificationReceiptSha256 }) => ({
+      verified: restoredStateReceiptSha256 === 'a'.repeat(64) && effectVerificationReceiptSha256 === 'b'.repeat(64),
+      verificationReceiptSha256: 'c'.repeat(64),
+    }),
+  });
+  kernel.startTask({
+    taskId: 'task-rollback-independently-verified', goal: 'require independent rollback verification', recoveryLeaseId: 'lease-rollback-independently-verified',
+    contexts: [{ id: 'code', probability: 1 }],
+    hypotheses: [{ id: 'h1', claim: 'execution evidence is independently checked', probability: 1, predictions: ['verification receipt is linked'], falsificationCondition: 'an executor marks itself verified', testCost: 1 }],
+  });
+
+  const verified = kernel.rollback('task-rollback-independently-verified', { targetReceiptId: 'checkpoint-before-change', rollbackPoint: 'worktree-base' });
+
+  assert.equal(verified.schema, 'forge.cognitive-rollback-result.v1');
+  assert.equal(verified.status, 'verified');
+  assert.match(verified.verificationReceiptSha256, /^[a-f0-9]{64}$/);
+});
+
+test('keeps a rejected rollback explicitly unverified', () => {
+  const kernel = new CognitiveKernel({
+    rollbackExecutor: () => ({ restoredStateReceiptSha256: 'a'.repeat(64), effectVerificationReceiptSha256: 'b'.repeat(64) }),
+    rollbackVerifier: () => ({ verified: false, verificationReceiptSha256: 'c'.repeat(64) }),
+  });
+  kernel.startTask({
+    taskId: 'task-rollback-rejected', goal: 'avoid claiming an unverified restore', recoveryLeaseId: 'lease-rollback-rejected',
+    contexts: [{ id: 'code', probability: 1 }],
+    hypotheses: [{ id: 'h1', claim: 'a rejected verification is not success', probability: 1, predictions: ['status remains unverified'], falsificationCondition: 'a rejected rollback is marked verified', testCost: 1 }],
+  });
+
+  const rejected = kernel.rollback('task-rollback-rejected', 'checkpoint-before-change');
+
+  assert.equal(rejected.status, 'unverified');
+  assert.match(rejected.verificationReceiptSha256, /^[a-f0-9]{64}$/);
+  assert.equal('verifiedAtMs' in rejected, false);
+  assert.equal(typeof rejected.resolvedAtMs, 'number');
+});
