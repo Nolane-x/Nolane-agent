@@ -7,7 +7,7 @@ import { canonicalSha256 } from '../../vendor/forge-os/src/core/canonical-json.m
 
 const execFileAsync = promisify(execFile);
 const SOURCE_EXTENSIONS = new Set(['.js', '.mjs', '.cjs', '.jsx', '.ts', '.mts', '.cts', '.tsx', '.json', '.py', '.go', '.rs', '.java', '.c', '.h', '.cc', '.cpp', '.hpp', '.cs', '.rb', '.php', '.swift', '.kt', '.kts']);
-const DEFAULT_PARSE_TIMEOUT_MS = 30_000;
+const DEFAULT_PARSE_TIMEOUT_MS = 60_000;
 
 function coded(code, message, statusCode = 400) { return Object.assign(new Error(message), { code, statusCode }); }
 function required(value, label) { const text = String(value ?? '').trim(); if (!text) throw new TypeError(`${label} is required`); return text; }

@@ -36,7 +36,7 @@ test('TreeSitterRuntimeService detects a pinned CLI and parses only project-boun
   const parseCall = calls.find((call) => call.args[0] === 'parse');
   assert.deepEqual(parseCall.args.slice(0, 4), ['parse', '--json', '--quiet', '--']);
   assert.equal(parseCall.options.cwd, await realpath(root));
-  assert.equal(parseCall.options.timeoutMs, 30_000);
+  assert.equal(parseCall.options.timeoutMs, 60_000);
 });
 
 test('TreeSitterRuntimeService passes a validated host-provided grammar configuration to the CLI', async (t) => {
