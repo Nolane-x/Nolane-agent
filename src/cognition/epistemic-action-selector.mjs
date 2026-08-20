@@ -36,9 +36,11 @@ export class EpistemicActionSelector {
     for (const [key, value] of Object.entries(this.weights)) if (!Number.isFinite(value) || value < 0) throw new TypeError(`weights.${key} must be finite and non-negative`);
   }
 
-  select({ actions, uncertainty = 0, irreversibilityLimit = 1 } = {}) {
+  select({ actions, uncertainty = 0, uncertaintyFloor = 0, irreversibilityLimit = 1 } = {}) {
     if (!Array.isArray(actions) || actions.length === 0 || actions.length > 128) throw new TypeError('actions must contain 1 to 128 items');
-    const uncertaintyValue = unit(uncertainty, 'uncertainty');
+    const claimedUncertainty = unit(uncertainty, 'uncertainty');
+    const evidenceUncertaintyFloor = unit(uncertaintyFloor, 'uncertaintyFloor');
+    const uncertaintyValue = Math.max(claimedUncertainty, evidenceUncertaintyFloor);
     const limit = unit(irreversibilityLimit, 'irreversibilityLimit');
     const ids = new Set();
     const ranked = actions.map((action, index) => {
@@ -62,10 +64,12 @@ export class EpistemicActionSelector {
     return signed({
       schema: 'forge.epistemic-action-selection.v1',
       uncertainty: uncertaintyValue,
+      claimedUncertainty,
+      uncertaintyFloor: evidenceUncertaintyFloor,
       irreversibilityLimit: limit,
       selected,
       ranked,
-      claims: { selectedByInformationGainAndCost: true, irreversibleActionsCanBeRejected: true },
+      claims: { selectedByInformationGainAndCost: true, irreversibleActionsCanBeRejected: true, uncertaintyFloorApplied: evidenceUncertaintyFloor > claimedUncertainty },
     });
   }
 }

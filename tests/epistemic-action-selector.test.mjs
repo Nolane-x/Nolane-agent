@@ -34,3 +34,17 @@ test('enforces the irreversibility limit independently of uncertainty', () => {
     assert.equal(result.ranked.find((item) => item.id === 'over-limit').rejectedReason, 'irreversibility-exceeds-limit');
   }
 });
+
+test('uses an evidence-backed uncertainty floor without discarding the caller claim', () => {
+  const selector = new EpistemicActionSelector();
+
+  const result = selector.select({
+    uncertainty: 0.1,
+    uncertaintyFloor: 0.75,
+    actions: [{ id: 'bounded-probe', taskUtility: 0.4, informationGain: 0.7, tokenCost: 1, ramMbSeconds: 1, timeMs: 1, irreversibility: 0.4 }],
+  });
+
+  assert.equal(result.uncertainty, 0.75);
+  assert.equal(result.claimedUncertainty, 0.1);
+  assert.equal(result.uncertaintyFloor, 0.75);
+});

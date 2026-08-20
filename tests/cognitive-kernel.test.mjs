@@ -77,6 +77,25 @@ test('denies commit when posterior is dispersed and records routed errors', () =
   assert.equal(kernel.snapshot('task-2').recentErrorRoutes[0].primarySubsystem, 'execution');
 });
 
+test('raises proposal uncertainty to the posterior floor and preserves the caller claim', () => {
+  const kernel = new CognitiveKernel();
+  kernel.startTask({
+    taskId: 'task-posterior-uncertainty', goal: 'do not understate unresolved context', recoveryLeaseId: 'lease-posterior-uncertainty',
+    contexts: [{ id: 'code', probability: 0.5 }, { id: 'environment', probability: 0.5 }],
+    hypotheses: [{ id: 'h1', claim: 'the context must drive uncertainty', probability: 1, predictions: ['proposal retains the posterior floor'], falsificationCondition: 'caller can erase posterior uncertainty', testCost: 1 }],
+  });
+
+  const proposal = kernel.propose('task-posterior-uncertainty', {
+    uncertainty: 0,
+    actions: [{ id: 'patch', kind: 'patch', taskUtility: 0.9, informationGain: 0.1, tokenCost: 1, ramMbSeconds: 1, timeMs: 1, irreversibility: 0.5 }],
+  });
+
+  assert.equal(proposal.uncertainty, 1);
+  assert.equal(proposal.claimedUncertainty, 0);
+  assert.equal(proposal.contextUncertaintyFloor, 1);
+  assert.match(proposal.contextPosteriorReceiptSha256, /^[a-f0-9]{64}$/);
+});
+
 test('emits an explicit abstention instead of a null-action proposal', () => {
   const kernel = new CognitiveKernel();
   kernel.startTask({

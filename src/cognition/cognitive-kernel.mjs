@@ -103,11 +103,14 @@ export class CognitiveKernel {
   propose(taskId, input = {}) {
     this.#assertOpen();
     const task = this.#task(taskId);
-    const selection = this.selector.select(input);
+    const contextPosterior = this.contexts.snapshot(task.taskId);
+    const selection = this.selector.select({ ...input, uncertaintyFloor: contextPosterior.normalizedEntropy });
     if (!selection.selected) {
       return this.#record(signed({
         schema: 'forge.cognitive-abstention.v1', taskId: task.taskId, decision: 'abstain',
         selectionReceiptSha256: selection.receiptSha256, uncertainty: selection.uncertainty,
+        claimedUncertainty: selection.claimedUncertainty, contextUncertaintyFloor: selection.uncertaintyFloor,
+        contextPosteriorReceiptSha256: contextPosterior.receiptSha256,
         rejectedActionIds: selection.ranked.filter((item) => !item.eligible).map((item) => item.id),
         reasonCodes: [...new Set(selection.ranked.map((item) => item.rejectedReason).filter(Boolean))],
         createdAtMs: Number(this.clock()),
@@ -120,6 +123,9 @@ export class CognitiveKernel {
       selectedActionKind: selection.selected?.kind ?? null,
       selectionReceiptSha256: selection.receiptSha256,
       uncertainty: selection.uncertainty,
+      claimedUncertainty: selection.claimedUncertainty,
+      contextUncertaintyFloor: selection.uncertaintyFloor,
+      contextPosteriorReceiptSha256: contextPosterior.receiptSha256,
       createdAtMs: Number(this.clock()),
     });
     task.proposals.set(proposalId, proposal);
