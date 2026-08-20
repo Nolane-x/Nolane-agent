@@ -92,7 +92,7 @@ jobs:
           }
       - name: Upload Proofline empty-state evidence
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: proofline-empty-runtime-${{ runner.os }}
           path: ${{ runner.temp }}/nolane-proofline-empty-evidence

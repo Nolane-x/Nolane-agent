@@ -112,7 +112,7 @@ jobs:
 
       - name: Upload runtime visual receipt
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ui-runtime-visual
           path: ${{ runner.temp }}/nolane-ui-runtime-visual
@@ -221,7 +221,7 @@ jobs:
 
       - name: Upload Windows UI runtime receipt
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: windows-ui-runtime-visual
           path: ${{ runner.temp }}/nolane-windows-ui-runtime-visual
