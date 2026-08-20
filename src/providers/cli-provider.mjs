@@ -82,6 +82,20 @@ function diagnostic(output) {
   return String(output ?? '').replace(ANSI_ESCAPE, '').replace(/(?:sk|key|token)-[A-Za-z0-9._-]+/gi, '[REDACTED]').replace(/\b(api[_-]?key|authorization|password|secret|(?:refresh[_-]?)?token|rt_prefix)\b\s*[:=]\s*\S+/gi, '$1=[REDACTED]').trim().slice(0, 500);
 }
 
+function childEnvironment(env = {}, secretEnvKeys = []) {
+  const names = process.platform === 'win32'
+    ? ['PATH', 'Path', 'SYSTEMROOT', 'SystemRoot', 'WINDIR', 'COMSPEC', 'PATHEXT', 'TEMP', 'TMP', 'USERPROFILE', 'APPDATA', 'LOCALAPPDATA']
+    : ['PATH', 'HOME', 'TMPDIR', 'TMP', 'TEMP', 'XDG_CONFIG_HOME', 'XDG_DATA_HOME', 'XDG_CACHE_HOME'];
+  const base = {};
+  for (const name of [...names, ...secretEnvKeys]) {
+    const value = process.env[name];
+    if (typeof value !== 'string' || !value) continue;
+    if (name === 'Path' && base.PATH) continue;
+    base[name === 'Path' ? 'PATH' : name] = value;
+  }
+  return { ...base, ...env };
+}
+
 function detectError(result) {
   const output = `${result.stderr}\n${result.stdout}`.toLowerCase();
   if (/config|configuration|settings|invalid|schema|expected/.test(output)) return 'configuration-error';
@@ -324,7 +338,7 @@ export class CliProvider {
   }
 
   async #spawn(args, { cwd = this.cwd, env = {}, timeoutMs = this.timeoutMs, signal = null, input = '' } = {}) {
-    const safeEnv = { ...process.env, ...this.env, ...Object.fromEntries(Object.entries(env).map(([key, value]) => [String(key), String(value)])) };
+    const safeEnv = childEnvironment({ ...this.env, ...Object.fromEntries(Object.entries(env).map(([key, value]) => [String(key), String(value)])) }, this.secretEnvKeys);
     const resolved = await this.#resolveExecutable();
     const child = spawn(resolved.executable, [...resolved.prefix, ...args], { cwd: cwd ?? undefined, env: safeEnv, shell: false, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'], detached: process.platform !== 'win32' });
     let stdout = ''; let stderr = ''; let timedOut = false; let aborted = false;

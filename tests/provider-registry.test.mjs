@@ -110,6 +110,30 @@ test('CliProvider rejects a zero-exit configuration diagnostic without exposing 
   assert.equal(JSON.stringify(detection).includes('C:\\Users\\example'), false);
 });
 
+test('CliProvider only forwards explicitly allowlisted parent credentials to a child CLI', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-isolated-env-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const script = path.join(root, 'environment-cli.mjs');
+  await writeFile(script, "console.log(JSON.stringify({ parent: process.env.NOLANE_TEST_PARENT_SECRET ?? null, provider: process.env.NOLANE_TEST_PROVIDER_SECRET ?? null, path: Boolean(process.env.PATH), home: Boolean(process.env.HOME || process.env.USERPROFILE) }));\n");
+  const priorParent = process.env.NOLANE_TEST_PARENT_SECRET;
+  const priorProvider = process.env.NOLANE_TEST_PROVIDER_SECRET;
+  process.env.NOLANE_TEST_PARENT_SECRET = 'must-not-cross-provider-boundary';
+  process.env.NOLANE_TEST_PROVIDER_SECRET = 'provider-only-credential';
+  t.after(() => {
+    if (priorParent == null) delete process.env.NOLANE_TEST_PARENT_SECRET; else process.env.NOLANE_TEST_PARENT_SECRET = priorParent;
+    if (priorProvider == null) delete process.env.NOLANE_TEST_PROVIDER_SECRET; else process.env.NOLANE_TEST_PROVIDER_SECRET = priorProvider;
+  });
+  const provider = new CliProvider({ id: 'isolated-env', label: 'Isolated env CLI', executable: process.execPath, baseArgs: [script], promptMode: 'stdin', secretEnvKeys: ['NOLANE_TEST_PROVIDER_SECRET'] });
+
+  const result = await provider.invoke({ prompt: 'inspect environment' });
+  const childEnvironment = JSON.parse(result.stdout);
+
+  assert.equal(childEnvironment.parent, null);
+  assert.equal(childEnvironment.provider, 'provider-only-credential');
+  assert.equal(childEnvironment.path, true);
+  assert.equal(childEnvironment.home, true);
+});
+
 test('CliProvider allows a slow CLI startup to report its version truthfully', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-slow-version-'));
   t.after(() => rm(root, { recursive: true, force: true }));
