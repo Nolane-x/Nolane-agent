@@ -51,7 +51,8 @@ test('release workflow and 0.0.0 release documents require signed native artifac
   assert.match(source, /Require Windows signing credentials/);
   assert.match(source, /WIN_CSC_LINK is required for Windows GitHub Releases auto-update/);
   assert.match(source, /WIN_CSC_KEY_PASSWORD is required for Windows GitHub Releases auto-update/);
-  assert.match(source, /actions\/download-artifact@v4/);
+  assert.match(source, /actions\/download-artifact@v8/);
+  assert.match(source, /digest-mismatch: error/);
   assert.match(source, /NOLANE_UPDATE_PRIVATE_KEY_B64/);
   assert.match(source, /nolane\.agent\.update\.v2/);
   assert.match(source, /--package-kind nsis/);

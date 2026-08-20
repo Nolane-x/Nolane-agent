@@ -343,11 +343,12 @@ jobs:
         run: npm run build:electron:installer
 
       - name: Collect native macOS and Linux release assets
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: nolane-agent-*-release-assets
           path: release/installer
           merge-multiple: true
+          digest-mismatch: error
 
       - name: Prepare release asset paths
         id: release_identity
