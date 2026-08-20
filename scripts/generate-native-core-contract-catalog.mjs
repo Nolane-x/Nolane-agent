@@ -299,12 +299,11 @@ function canonical(value) {
 
 async function main() {
   const inventory = JSON.parse(await readFile('requirements/nolane-native-core-inventory.json', 'utf8'));
-  const productVersion = '5.0.0-beta.7';
   const decomposition = JSON.parse(await readFile('requirements/nolane-native-core-decomposition.json', 'utf8'));
   const decompositionContracts = decomposition.contracts.map(contractFromDecomposition);
   const allContracts = [...NATIVE_CORE_CONTRACTS, ...decompositionContracts];
 
-  const preliminaryCatalog = buildNativeCoreCatalog({ contracts: allContracts, productVersion });
+  const preliminaryCatalog = buildNativeCoreCatalog({ contracts: allContracts });
   const preliminaryReceipt = await verifyCoreContracts({
     rootDirectory: process.cwd(),
     catalog: preliminaryCatalog,
@@ -314,10 +313,7 @@ async function main() {
     .filter((entry) => entry.candidateFiles === 0)
     .map((entry) => entry.id));
 
-  const catalog = buildNativeCoreCatalog({
-    contracts: allContracts.filter((entry) => !emptyContractIds.has(entry.id)),
-    productVersion,
-  });
+  const catalog = buildNativeCoreCatalog({ contracts: allContracts.filter((entry) => !emptyContractIds.has(entry.id)) });
   const receipt = await verifyCoreContracts({ rootDirectory: process.cwd(), catalog, nolane_nativeInventory: inventory });
   await writeFile('requirements/nolane-native-core-contracts.json', `${JSON.stringify(canonical(catalog), null, 2)}\n`);
   await writeFile('requirements/nolane-native-core-conformance.json', `${JSON.stringify(canonical(receipt), null, 2)}\n`);

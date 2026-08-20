@@ -45,6 +45,21 @@ test('model profile panel distinguishes unknown capabilities and exposes discove
   assert.equal(controller.snapshot().errors.length,0);
 });
 
+test('model cards show only their verified reasoning-effort choices', () => {
+  const html = renderModelProfilesPanel({
+    models: [{
+      key: 'openai/gpt-5.6', providerId: 'openai', modelId: 'gpt-5.6', displayName: 'GPT-5.6', lifecycle: 'verified', capabilities: { text: true },
+      reasoning: { supported: true, controllable: true, levels: ['none', 'low', 'medium', 'high', 'xhigh', 'max'] },
+    }],
+    providers: [{ id: 'openai', kind: 'openai-responses', label: 'OpenAI API', configured: true }],
+  });
+  assert.match(html, /data-model-reasoning-effort/);
+  assert.match(html, /Reasoning effort/);
+  assert.match(html, /None · Low · Medium · High · Extra High · Max/);
+  assert.doesNotMatch(html, /Ultra/);
+  assert.match(renderModelProfilesPanel({ models: [{ providerId: 'openai', modelId: 'gpt-5.6', reasoning: { supported: true, controllable: true, levels: ['low', 'max'] } }], providers: [{ id: 'openai', kind: 'openai-responses' }] }, { lang: 'vi' }), /Mức suy luận/);
+});
+
 test('CLI model profiles expose discovery and a manual model entry point with Vietnamese copy', () => {
   const html = renderModelProfilesPanel({ models: [{ key: 'codex/gpt-5.6-codex', providerId: 'codex', modelId: 'gpt-5.6-codex', capabilities: {} }], providers: [{ id: 'codex', kind: 'cli', label: 'Codex CLI', available: true, authenticated: true, healthy: true, modelSelection: { mode: 'forwarded' } }] }, { lang: 'vi' });
   assert.match(html, /Thêm model CLI/);

@@ -43,3 +43,12 @@ test('beta.6 matrix retains beta.5 gates, replaces current docs gate and adds ru
   for (const gate of beta5) if (gate.id !== 'beta5-release-docs') assert.ok(ids.has(gate.id), `retained ${gate.id}`);
   assert.equal(ids.has('beta5-release-docs'), false);
 });
+
+test('the initial 0.0.0 stable release retains the full current evidence gate set', () => {
+  const stable = defaultReleaseGates({ rootDirectory: process.cwd(), version: '0.0.0' });
+  const ids = new Set(stable.map((gate) => gate.id));
+  for (const id of REQUIRED.filter((id) => id !== 'beta6-release-docs')) assert.ok(ids.has(id), id);
+  assert.ok(ids.has('current-release-docs'));
+  assert.equal(ids.has('beta6-release-docs'), false);
+  assert.ok(stable.some((gate) => /4\.0\.0 retention/.test(gate.label)));
+});

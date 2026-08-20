@@ -28,6 +28,23 @@ test('concentrates posterior after discriminating evidence and gates memory writ
   assert.match(snapshot.receiptSha256, /^[a-f0-9]{64}$/);
 });
 
+test('uses an independent, less durable action-commit threshold', () => {
+  const manager = new ContextPosteriorManager({
+    maxNormalizedEntropyForMemory: 0.45,
+    minLeaderProbabilityForMemory: 0.7,
+    maxNormalizedEntropyForActionCommit: 0.99,
+    minLeaderProbabilityForActionCommit: 0.6,
+  });
+  manager.start('task-action-commit', [
+    { id: 'regression', probability: 0.65 },
+    { id: 'environment', probability: 0.35 },
+  ]);
+  assert.equal(manager.canWriteDurableMemory('task-action-commit').allowed, false);
+  const actionGate = manager.canCommitAction('task-action-commit');
+  assert.equal(actionGate.allowed, true);
+  assert.equal(actionGate.schema, 'forge.context-action-commit-gate.v1');
+});
+
 test('rejects unknown context evidence and keeps bounded immutable snapshots', () => {
   const manager = new ContextPosteriorManager({ maxContexts: 2 });
   manager.start('task-2', [

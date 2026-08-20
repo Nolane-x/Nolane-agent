@@ -7,6 +7,7 @@ import { evidenceFileSha256 } from './evidence-file-hash.mjs';
 const REPOSITORY = 'Nolane-x/Nolane-agent';
 const WORKFLOW = 'External gate evidence';
 const WORKFLOW_PATH = '.github/workflows/external-gates.yml';
+const TRUSTED_WORKFLOW_EVENTS = Object.freeze(['pull_request', 'push']);
 const ELIGIBLE_GATE_IDS = Object.freeze(['13.27', '21.4', '21.6', '21.7']);
 export const BOUNDED_EXTERNAL_RUNTIME_GATE_EVIDENCE_PATHS = Object.freeze({
   '13.27': Object.freeze(['src/repository/tree-sitter-runtime-service.mjs', 'tests/tree-sitter-runtime-evidence.test.mjs']),
@@ -29,7 +30,7 @@ function canonicalReceiptHash(value) {
   return canonicalSha256(withoutReceipt);
 }
 
-function verifyRunnerReceipt(receipt, { sourceCommitSha, testedCommitSha, runId, platformLabel }) {
+function verifyRunnerReceipt(receipt, { sourceCommitSha, testedCommitSha, runId, workflowEvent, platformLabel }) {
   assert(receipt?.schema === 'nolane.agent.external-gate-evidence.v1', `invalid ${platformLabel} runner receipt schema`);
   assert(/^[a-f0-9]{64}$/.test(String(receipt.receiptSha256 ?? '')), `${platformLabel} runner receipt hash is missing`);
   assert(receipt.receiptSha256 === canonicalReceiptHash(receipt), `${platformLabel} runner receipt hash mismatch`);
@@ -40,9 +41,9 @@ function verifyRunnerReceipt(receipt, { sourceCommitSha, testedCommitSha, runId,
   assert(environment.runnerOs === expected.runnerOs, `${platformLabel} runner label mismatch`);
   assert(environment.githubActions === true, `${platformLabel} receipt was not produced by GitHub Actions`);
   assert(environment.githubRepository === REPOSITORY, `${platformLabel} receipt repository mismatch`);
-  assert(environment.githubEventName === 'pull_request', `${platformLabel} receipt must come from a pull_request run`);
-  assert(environment.githubHeadSha === sourceCommitSha, `${platformLabel} runner PR head commit mismatch`);
-  assert(environment.githubSha === testedCommitSha, `${platformLabel} runner tested merge commit mismatch`);
+  assert(environment.githubEventName === workflowEvent, `${platformLabel} receipt workflow event mismatch`);
+  assert(environment.githubHeadSha === sourceCommitSha, `${platformLabel} runner source commit mismatch`);
+  assert(environment.githubSha === testedCommitSha, `${platformLabel} runner tested commit mismatch`);
   assert(String(environment.githubRunId ?? '') === String(runId), `${platformLabel} runner workflow run mismatch`);
   assert(environment.githubWorkflow === WORKFLOW, `${platformLabel} runner workflow name mismatch`);
   assert(String(environment.githubWorkflowRef ?? '').includes(`${REPOSITORY}/${WORKFLOW_PATH}@`), `${platformLabel} runner workflow ref mismatch`);
@@ -100,7 +101,7 @@ export function verifyExternalGateCertificationSet(set, { expectedSourceSha = nu
   const workflow = set.workflow ?? {};
   assert(workflow.repository === REPOSITORY, 'certification workflow repository mismatch');
   assert(workflow.name === WORKFLOW && workflow.path === WORKFLOW_PATH, 'certification workflow identity mismatch');
-  assert(workflow.event === 'pull_request' && workflow.conclusion === 'success', 'certification workflow must be a successful pull_request run');
+  assert(TRUSTED_WORKFLOW_EVENTS.includes(workflow.event) && workflow.conclusion === 'success', 'certification workflow must be a successful pull_request or push run');
   assert(String(workflow.runId ?? '').match(/^\d+$/), 'certification workflow run id is invalid');
   assert(workflow.headSha === set.sourceCommitSha, 'certification workflow head/source commit mismatch');
   assert(/^[a-f0-9]{40}$/.test(String(workflow.testedSha ?? '')), 'certification tested merge commit SHA is invalid');
@@ -123,7 +124,7 @@ export function verifyExternalGateCertificationSet(set, { expectedSourceSha = nu
     assert(!receipts[label], `duplicate certification artifact platform: ${label}`);
     assert(Number.isInteger(artifact.artifactId) && artifact.artifactId > 0, `${label} artifact id is invalid`);
     assert(/^sha256:[a-f0-9]{64}$/.test(String(artifact.artifactDigest ?? '')), `${label} artifact digest is invalid`);
-    receipts[label] = verifyRunnerReceipt(artifact.receipt, { sourceCommitSha: set.sourceCommitSha, testedCommitSha: workflow.testedSha, runId: workflow.runId, platformLabel: label });
+    receipts[label] = verifyRunnerReceipt(artifact.receipt, { sourceCommitSha: set.sourceCommitSha, testedCommitSha: workflow.testedSha, runId: workflow.runId, workflowEvent: workflow.event, platformLabel: label });
   }
   for (const label of Object.keys(PLATFORM_CONTRACT)) assert(receipts[label], `certification is missing ${label} operating-system receipt`);
 

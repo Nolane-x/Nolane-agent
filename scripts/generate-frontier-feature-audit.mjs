@@ -194,9 +194,16 @@ function note(status, id, version, originalNote) {
   return originalNote;
 }
 
+function rebrandReleaseContent(value) {
+  if (typeof value === 'string') return value.replaceAll('Forge Studio', 'Nolane Agent');
+  if (Array.isArray(value)) return value.map(rebrandReleaseContent);
+  if (!value || typeof value !== 'object') return value;
+  return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, rebrandReleaseContent(child)]));
+}
+
 const root = path.resolve(process.argv[2] ?? '.');
 const version = String(process.argv[3] ?? '3.0.0');
-const input = JSON.parse(await readFile(path.join(root, 'docs/frontier-requirements-3.0.0.json'), 'utf8'));
+const input = rebrandReleaseContent(JSON.parse(await readFile(path.join(root, 'docs/frontier-requirements-3.0.0.json'), 'utf8')));
 const sections = input.sections.map((section) => {
   const items = section.items.map((original) => {
     if (Number(section.number) < 29) return original;
@@ -229,7 +236,8 @@ if (releaseAtLeastThreeFive(version)) releaseGates.push('adaptive-learning-trust
 if (releaseAtLeastFour(version)) releaseGates.push('local-frontier-completion');
 const audit = {
   ...input,
-  schema: 'forge.studio.feature-audit.frontier.v1',
+  schema: 'nolane.agent.feature-audit.frontier.v1',
+  product: 'Nolane Agent',
   productVersion: version,
   baselineVersion: '2.19.0',
   generatedAt: '2026-07-30T23:15:00+07:00',
@@ -244,7 +252,7 @@ const audit = {
 };
 await writeFile(path.join(root, `docs/feature-audit-${version}.json`), `${JSON.stringify(audit, null, 2)}\n`);
 const table = sections.map((section) => `| ${section.number} | ${section.title} | ${section.items.length} | ${section.summary.verified_source_test} | ${section.summary.partial} | ${section.summary.external_gate} | ${section.summary.not_implemented} |`).join('\n');
-const completeness = `# Forge Studio ${version} — Kiểm toán 1.150 yêu cầu\n\n- Tổng mục: **${audit.totalItems}**\n- Source + test: **${audit.summary.verified_source_test}**\n- Một phần: **${audit.summary.partial}**\n- External gate: **${audit.summary.external_gate}**\n- Chưa triển khai: **${audit.summary.not_implemented}**\n\n> Trạng thái chỉ được nâng khi có source, test trực tiếp và release evidence. Interface hoặc fixture giả không tự đóng claim production.\n\n| # | Nhóm | Tổng | Source + test | Một phần | External | Chưa có |\n|---:|---|---:|---:|---:|---:|---:|\n${table}\n`;
+const completeness = `# Nolane Agent ${version} — Kiểm toán 1.150 yêu cầu\n\n- Tổng mục: **${audit.totalItems}**\n- Source + test: **${audit.summary.verified_source_test}**\n- Một phần: **${audit.summary.partial}**\n- External gate: **${audit.summary.external_gate}**\n- Chưa triển khai: **${audit.summary.not_implemented}**\n\n> Trạng thái chỉ được nâng khi có source, test trực tiếp và release evidence. Interface hoặc fixture giả không tự đóng claim production.\n\n| # | Nhóm | Tổng | Source + test | Một phần | External | Chưa có |\n|---:|---|---:|---:|---:|---:|---:|\n${table}\n`;
 await writeFile(path.join(root, `docs/FEATURE-COMPLETENESS-AUDIT-${version}.md`), completeness);
 const gapsReport = buildRemainingGapsReport(audit);
 await writeFile(path.join(root, `docs/REMAINING-GAPS-${version}.md`), renderRemainingGapsMarkdown(gapsReport));

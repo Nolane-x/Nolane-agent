@@ -13,7 +13,7 @@ test('MissionResourceFabric exposes one lazy privacy-safe Decision Plane facade'
   const fabric = new MissionResourceFabric({ governor, canary, processDriver, projectRootResolver: () => process.cwd(), clock: () => 50 });
   const before = fabric.publicView();
   assert.equal(before.decision.schema, 'forge.decision-plane-snapshot.v1');
-  assert.deepEqual(before.decision.lifecycle, { closed: false, criteriaLoaded: false, tokenizerLoaded: false, escalationLoaded: false, cognitionLoaded: false, constructionLoaded: false, verificationLoaded: false, memorySkillResourceLoaded: false, collaborationExperienceLoaded: false, securityCertificationLoaded: false, worldDevelopmentLoaded: false, frontierGovernanceLoaded: false, verifiedMissionLoaded: false, localFrontierCompletionLoaded: false, superiorityLoaded: false });
+  assert.deepEqual(before.decision.lifecycle, { closed: false, criteriaLoaded: false, tokenizerLoaded: false, escalationLoaded: false, cognitionLoaded: false, cognitiveLifecycleLoaded: false, constructionLoaded: false, verificationLoaded: false, memorySkillResourceLoaded: false, collaborationExperienceLoaded: false, securityCertificationLoaded: false, worldDevelopmentLoaded: false, frontierGovernanceLoaded: false, verifiedMissionLoaded: false, localFrontierCompletionLoaded: false, superiorityLoaded: false });
 
   const sourceHash = digest({ source: 'criterion-v1' });
   fabric.decision.registerTaskCriteria('task-1', [{ criterionId: 'criterion-1', description: 'Targeted behavior is verified', weight: 4, sourceHash }]);

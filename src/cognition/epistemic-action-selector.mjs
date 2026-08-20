@@ -36,9 +36,11 @@ export class EpistemicActionSelector {
     for (const [key, value] of Object.entries(this.weights)) if (!Number.isFinite(value) || value < 0) throw new TypeError(`weights.${key} must be finite and non-negative`);
   }
 
-  select({ actions, uncertainty = 0, irreversibilityLimit = 1 } = {}) {
+  select({ actions, uncertainty = 0, uncertaintyFloor = 0, irreversibilityLimit = 1 } = {}) {
     if (!Array.isArray(actions) || actions.length === 0 || actions.length > 128) throw new TypeError('actions must contain 1 to 128 items');
-    const uncertaintyValue = unit(uncertainty, 'uncertainty');
+    const claimedUncertainty = unit(uncertainty, 'uncertainty');
+    const evidenceUncertaintyFloor = unit(uncertaintyFloor, 'uncertaintyFloor');
+    const uncertaintyValue = Math.max(claimedUncertainty, evidenceUncertaintyFloor);
     const limit = unit(irreversibilityLimit, 'irreversibilityLimit');
     const ids = new Set();
     const ranked = actions.map((action, index) => {
@@ -46,7 +48,7 @@ export class EpistemicActionSelector {
       if (ids.has(id)) throw new TypeError(`duplicate action id: ${id}`);
       ids.add(id);
       const irreversibility = unit(action?.irreversibility, `actions[${index}].irreversibility`);
-      const eligible = !(uncertaintyValue > 0.5 && irreversibility > limit);
+      const eligible = irreversibility <= limit;
       const breakdown = {
         taskUtility: unit(action?.taskUtility, `actions[${index}].taskUtility`) * this.weights.taskUtility,
         informationGain: unit(action?.informationGain, `actions[${index}].informationGain`) * this.weights.informationGain,
@@ -56,16 +58,18 @@ export class EpistemicActionSelector {
         irreversibilityRisk: irreversibility * this.weights.irreversibilityRisk * Math.max(uncertaintyValue, 0.1),
       };
       const score = breakdown.taskUtility + breakdown.informationGain - breakdown.tokenCost - breakdown.ramCost - breakdown.timeCost - breakdown.irreversibilityRisk;
-      return { id, kind: text(action?.kind ?? 'action', `actions[${index}].kind`), eligible, score, breakdown, rejectedReason: eligible ? null : 'uncertainty-exceeds-reversibility-bound' };
+      return { id, kind: text(action?.kind ?? 'action', `actions[${index}].kind`), eligible, score, breakdown, rejectedReason: eligible ? null : 'irreversibility-exceeds-limit' };
     }).sort((a, b) => Number(b.eligible) - Number(a.eligible) || b.score - a.score || a.id.localeCompare(b.id));
     const selected = ranked.find((item) => item.eligible) ?? null;
     return signed({
       schema: 'forge.epistemic-action-selection.v1',
       uncertainty: uncertaintyValue,
+      claimedUncertainty,
+      uncertaintyFloor: evidenceUncertaintyFloor,
       irreversibilityLimit: limit,
       selected,
       ranked,
-      claims: { selectedByInformationGainAndCost: true, irreversibleActionsCanBeRejected: true },
+      claims: { selectedByInformationGainAndCost: true, irreversibleActionsCanBeRejected: true, uncertaintyFloorApplied: evidenceUncertaintyFloor > claimedUncertainty },
     });
   }
 }

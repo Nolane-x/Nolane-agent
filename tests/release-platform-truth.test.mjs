@@ -22,15 +22,17 @@ test('release platform truth is machine-readable and fail-closed per platform', 
 
   const mac = table.platforms.darwin;
   assert.deepEqual(mac.packageKinds, ['dmg', 'zip']);
-  assert.equal(mac.inAppUpdateHandoff.enabled, false);
-  assert.equal(mac.nativeInstallHandoff.enabled, false);
-  assert.match(mac.nativeInstallHandoff.reason, /verified|unsupported|not yet/i);
+  assert.equal(mac.inAppUpdateHandoff.enabled, true);
+  assert.equal(mac.nativeInstallHandoff.enabled, true);
+  assert.equal(mac.nativeInstallHandoff.mechanism, 'electron-updater-github');
+  assert.equal(mac.updateTrust.enabled, true);
 
   const linux = table.platforms.linux;
   assert.deepEqual(linux.packageKinds, ['appimage', 'deb']);
-  assert.equal(linux.inAppUpdateHandoff.enabled, false);
-  assert.equal(linux.nativeInstallHandoff.enabled, false);
-  assert.match(linux.nativeInstallHandoff.reason, /verified|unsupported|not yet/i);
+  assert.equal(linux.inAppUpdateHandoff.enabled, true);
+  assert.equal(linux.nativeInstallHandoff.enabled, true);
+  assert.equal(linux.nativeInstallHandoff.mechanism, 'electron-updater-github');
+  assert.equal(linux.updateTrust.enabled, true);
 
   for (const platform of Object.values(table.platforms)) {
     assert.ok(['verified', 'conditional', 'unknown', 'blocked', 'not-applicable'].includes(platform.signing.status));

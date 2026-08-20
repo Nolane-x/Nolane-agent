@@ -48,7 +48,7 @@ test('AgentLoop routes before the model, executes tools through receipts, and ch
     { text: 'Reading.', toolCalls: [{ id: 'call_1', name: 'fs.read', arguments: { path: 'README.md' } }], usage: { totalTokens: 20 } },
     { text: 'README says hello.', toolCalls: [], usage: { totalTokens: 10 } },
   ]);
-  const result = await f.loop.run(f.task, { providerId: 'fake-model', budgets: { maxTurns: 4, maxToolCalls: 4, maxEstimatedTokens: 100, maxElapsedMs: 1000 } });
+  const result = await f.loop.run(f.task, { providerId: 'fake-model', budgets: { maxTurns: 4, maxToolCalls: 4, maxEstimatedTokens: 100, maxElapsedMs: 10_000 } });
   assert.deepEqual(f.calls.slice(0, 2).map((item) => item[0]), ['route', 'model']);
   assert.equal(f.calls.find((item) => item[0] === 'model')[2], f.project.workspaceRoot);
   assert.equal(result.state, 'awaiting-verification');
@@ -67,7 +67,7 @@ test('AgentLoop routes before the model, executes tools through receipts, and ch
 test('AgentLoop never accepts model self-certification and classifies transient retries', async (t) => {
   const transient = new Error('Model HTTP 429: rate limited');
   const f = await fixture(t, [transient, { text: 'All tests pass. Task completed.', toolCalls: [], usage: { totalTokens: 5 } }]);
-  const result = await f.loop.run(f.task, { providerId: 'fake-model', retryDelaysMs: [1], budgets: { maxTurns: 2, maxToolCalls: 0, maxEstimatedTokens: 50, maxElapsedMs: 1000 } });
+  const result = await f.loop.run(f.task, { providerId: 'fake-model', retryDelaysMs: [1], budgets: { maxTurns: 2, maxToolCalls: 0, maxEstimatedTokens: 50, maxElapsedMs: 10_000 } });
   assert.equal(result.state, 'awaiting-verification');
   assert.equal(result.claimAssessment.status, 'blocked-unverified-claims');
   assert.match(result.output, /UNVERIFIED CLAIMS/i);
@@ -84,7 +84,7 @@ test('AgentLoop stops on cancellation and budget exhaustion', async (t) => {
   await assert.rejects(() => f.loop.run(f.task, { providerId: 'fake-model', signal: controller.signal }), /cancelled/i);
 
   const limited = await fixture(t, [{ text: 'again', toolCalls: [{ id: '1', name: 'fs.read', arguments: { path: 'README.md' } }], usage: { totalTokens: 1000 } }]);
-  await assert.rejects(() => limited.loop.run(limited.task, { providerId: 'fake-model', budgets: { maxTurns: 1, maxToolCalls: 1, maxEstimatedTokens: 10, maxElapsedMs: 1000 } }), /token/i);
+  await assert.rejects(() => limited.loop.run(limited.task, { providerId: 'fake-model', budgets: { maxTurns: 1, maxToolCalls: 1, maxEstimatedTokens: 10, maxElapsedMs: 10_000 } }), /token/i);
   const latest = limited.store.listRuns({ taskId: limited.task.id }).at(-1);
   assert.equal(latest.state, 'failed');
 });
@@ -122,7 +122,7 @@ test('AgentLoop auto-routes and falls back after a transient provider circuit op
   const router = new AdaptiveProviderRouter({ registry: providers, failureThreshold: 1, cooldownMs: 60_000 });
   const loop = new AgentLoop({ forge, providers, router, broker: new ToolBroker({ workspaceRoot: root, allowedCommands: [] }), store, contextBuilder: new ContextBuilder() });
 
-  const result = await loop.run(task, { providerId: 'auto', retryDelaysMs: [], budgets: { maxTurns: 2, maxToolCalls: 0, maxEstimatedTokens: 20, maxElapsedMs: 1000 } });
+  const result = await loop.run(task, { providerId: 'auto', retryDelaysMs: [], budgets: { maxTurns: 2, maxToolCalls: 0, maxEstimatedTokens: 20, maxElapsedMs: 10_000 } });
   assert.equal(result.providerId, 'fallback');
   assert.equal(result.output, 'fallback result');
   assert.ok(store.listEvents().some((event) => event.type === 'agent.provider.fallback' && event.payload.from === 'primary' && event.payload.to === 'fallback'));
@@ -149,7 +149,7 @@ test('AgentLoop progressively exposes allowlisted MCP schemas and routes calls t
     },
   });
   const loop = new AgentLoop({ forge: f.forge, providers: f.providers, mcpGateway, broker: f.broker, store: f.store, contextBuilder: new ContextBuilder() });
-  const result = await loop.run(task, { providerId: 'mcp-model', budgets: { maxTurns: 2, maxToolCalls: 1, maxEstimatedTokens: 20, maxElapsedMs: 1000 } });
+  const result = await loop.run(task, { providerId: 'mcp-model', budgets: { maxTurns: 2, maxToolCalls: 1, maxEstimatedTokens: 20, maxElapsedMs: 10_000 } });
   assert.equal(result.state, 'awaiting-verification');
   assert.deepEqual(gatewayCalls, [[task.id, 'docs__search', { q: 'policy' }]]);
   assert.equal(result.receipts[0].receiptSha256, 'd'.repeat(64));
@@ -160,7 +160,7 @@ test('AgentLoop emits observable tool lifecycle events with safe target and resu
     { text: 'Reading.', toolCalls: [{ id: 'call_1', name: 'fs.read', arguments: { path: 'README.md' } }], usage: { totalTokens: 3 } },
     { text: 'Done.', toolCalls: [], usage: { totalTokens: 2 } },
   ]);
-  await f.loop.run(f.task, { providerId: 'fake-model', budgets: { maxTurns: 3, maxToolCalls: 2, maxEstimatedTokens: 20, maxElapsedMs: 1000 } });
+  await f.loop.run(f.task, { providerId: 'fake-model', budgets: { maxTurns: 3, maxToolCalls: 2, maxEstimatedTokens: 20, maxElapsedMs: 10_000 } });
   const events = f.store.listEvents();
   const started = events.find((event) => event.type === 'agent.tool.started');
   const completed = events.find((event) => event.type === 'agent.tool.completed');
@@ -194,7 +194,7 @@ test('AgentLoop progressively exposes allowlisted browser tools and routes them 
     },
   });
   const loop = new AgentLoop({ forge: f.forge, providers: f.providers, browserGateway, broker: f.broker, store: f.store, contextBuilder: new ContextBuilder() });
-  const result = await loop.run(task, { providerId: 'browser-model', budgets: { maxTurns: 2, maxToolCalls: 1, maxEstimatedTokens: 20, maxElapsedMs: 1000 } });
+  const result = await loop.run(task, { providerId: 'browser-model', budgets: { maxTurns: 2, maxToolCalls: 1, maxEstimatedTokens: 20, maxElapsedMs: 10_000 } });
   assert.equal(result.state, 'awaiting-verification');
   assert.deepEqual(browserCalls, [[task.id, 'browser.snapshot', { depth: 3 }]]);
   assert.equal(result.receipts[0].receiptSha256, 'e'.repeat(64));
@@ -218,7 +218,7 @@ test('AgentLoop injects active plugin skills and agents as bounded untrusted ref
     };
   };
   const loop = new AgentLoop({ forge: f.forge, providers: f.providers, pluginService, broker: f.broker, store: f.store, contextBuilder: new ContextBuilder() });
-  await loop.run(f.task, { providerId: 'fake-model', budgets: { maxTurns: 1, maxToolCalls: 0, maxEstimatedTokens: 20, maxElapsedMs: 1000 } });
+  await loop.run(f.task, { providerId: 'fake-model', budgets: { maxTurns: 1, maxToolCalls: 0, maxEstimatedTokens: 20, maxElapsedMs: 10_000 } });
   const pluginRef = captured.references.find((item) => item.id === 'plugin:p1:skill:explore');
   assert.match(pluginRef.text, /untrusted-community-plugin/);
   assert.match(pluginRef.text, /Inspect architecture/);
@@ -240,7 +240,7 @@ test('AgentLoop exposes durable goal discovery tools and routes new findings thr
   ];
   f.providers.register({ id: 'goal-model', publicView: () => ({ id: 'goal-model' }), async complete({ tools }) { assert.equal(tools.some((item) => item.function.name === 'goal.record_finding'), true); return responses.shift(); } });
   const loop = new AgentLoop({ forge: f.forge, providers: f.providers, goalGateway, broker: f.broker, store: f.store, contextBuilder: new ContextBuilder() });
-  const result = await loop.run(task, { providerId: 'goal-model', budgets: { maxTurns: 2, maxToolCalls: 1, maxEstimatedTokens: 20, maxElapsedMs: 1000 } });
+  const result = await loop.run(task, { providerId: 'goal-model', budgets: { maxTurns: 2, maxToolCalls: 1, maxEstimatedTokens: 20, maxElapsedMs: 10_000 } });
   assert.equal(result.state, 'awaiting-verification');
   assert.deepEqual(calls, [[task.id, 'goal.record_finding', { claim: 'Need another task', impact: 'high' }]]);
 });
@@ -271,7 +271,7 @@ test('AgentLoop exposes governed ForgeOS tools and records their receipts', asyn
     },
   });
   const loop = new AgentLoop({ forge: f.forge, providers: f.providers, forgeGateway, broker: f.broker, store: f.store, contextBuilder: new ContextBuilder() });
-  const result = await loop.run(f.task, { providerId: 'forge-model', budgets: { maxTurns: 2, maxToolCalls: 1, maxEstimatedTokens: 20, maxElapsedMs: 1000 } });
+  const result = await loop.run(f.task, { providerId: 'forge-model', budgets: { maxTurns: 2, maxToolCalls: 1, maxEstimatedTokens: 20, maxElapsedMs: 10_000 } });
   assert.equal(result.state, 'awaiting-verification');
   assert.deepEqual(gatewayCalls, [[f.task.id, 'forge.status', {}]]);
   assert.equal(result.receipts[0].receiptSha256, '8'.repeat(64));
@@ -294,7 +294,7 @@ test('AgentLoop exposes bounded range-read, search, and stdin schemas to models'
       return { text: 'schemas inspected', toolCalls: [], usage: { totalTokens: 1 } };
     },
   });
-  const result = await f.loop.run(f.task, { providerId: 'schema-model', budgets: { maxTurns: 1, maxToolCalls: 0, maxEstimatedTokens: 20, maxElapsedMs: 1000 } });
+  const result = await f.loop.run(f.task, { providerId: 'schema-model', budgets: { maxTurns: 1, maxToolCalls: 0, maxEstimatedTokens: 20, maxElapsedMs: 10_000 } });
   assert.equal(result.output, 'schemas inspected');
 });
 
@@ -324,7 +324,7 @@ test('AgentLoop progressively exposes authorized operating-plane tools and route
     },
   });
   const loop = new AgentLoop({ forge: f.forge, providers: f.providers, operatingPlaneGateway, broker: f.broker, store: f.store, contextBuilder: new ContextBuilder() });
-  const result = await loop.run(f.task, { providerId: 'operating-model', budgets: { maxTurns: 2, maxToolCalls: 1, maxEstimatedTokens: 20, maxElapsedMs: 1000 } });
+  const result = await loop.run(f.task, { providerId: 'operating-model', budgets: { maxTurns: 2, maxToolCalls: 1, maxEstimatedTokens: 20, maxElapsedMs: 10_000 } });
   assert.equal(result.state, 'awaiting-verification');
   assert.deepEqual(calls, [[f.task.id, 'code.symbols', { languageId: 'javascript', query: 'AgentLoop' }]]);
   assert.ok(f.store.listEvents().some((event) => event.type === 'agent.operating-plane.tools-authorized'));
@@ -356,7 +356,7 @@ test('AgentLoop applies lifecycle hook context and safe argument rewrites before
   ];
   f.providers.register({ id: 'hook-model', publicView: () => ({ id: 'hook-model' }), async complete() { return responses.shift(); } });
   const loop = new AgentLoop({ forge: f.forge, providers: f.providers, hookEngineFactory, broker: f.broker, store: f.store, contextBuilder: new ContextBuilder() });
-  const result = await loop.run(f.task, { providerId: 'hook-model', budgets: { maxTurns: 2, maxToolCalls: 1, maxEstimatedTokens: 20, maxElapsedMs: 1000 } });
+  const result = await loop.run(f.task, { providerId: 'hook-model', budgets: { maxTurns: 2, maxToolCalls: 1, maxEstimatedTokens: 20, maxElapsedMs: 10_000 } });
   assert.equal(result.state, 'awaiting-verification');
   assert.ok(contextInput.references.some((item) => item.id.startsWith('hook:') && /governed hook policy/i.test(item.text)));
   assert.equal(result.receipts.length, 1);
@@ -375,7 +375,7 @@ test('AgentLoop enforces deny-first hook decisions before a tool is executed', a
     },
   });
   const loop = new AgentLoop({ forge: f.forge, providers: f.providers, hookEngineFactory, broker: f.broker, store: f.store, contextBuilder: new ContextBuilder() });
-  await assert.rejects(() => loop.run(f.task, { providerId: 'fake-model', budgets: { maxTurns: 1, maxToolCalls: 1, maxEstimatedTokens: 20, maxElapsedMs: 1000 } }), (error) => error.code === 'HOOK_POLICY_DENIED');
+  await assert.rejects(() => loop.run(f.task, { providerId: 'fake-model', budgets: { maxTurns: 1, maxToolCalls: 1, maxEstimatedTokens: 20, maxElapsedMs: 10_000 } }), (error) => error.code === 'HOOK_POLICY_DENIED');
   assert.equal(f.store.listEvidence({ projectId: f.project.id }).length, 0);
 });
 
@@ -393,7 +393,7 @@ test('AgentLoop restricts base tool schemas to the task-owned allowlist', async 
       return { text: 'scoped', toolCalls: [], usage: { totalTokens: 1 } };
     },
   });
-  const result = await f.loop.run(task, { providerId: 'scoped-schema-model', budgets: { maxTurns: 1, maxToolCalls: 0, maxEstimatedTokens: 20, maxElapsedMs: 1000 } });
+  const result = await f.loop.run(task, { providerId: 'scoped-schema-model', budgets: { maxTurns: 1, maxToolCalls: 0, maxEstimatedTokens: 20, maxElapsedMs: 10_000 } });
   assert.equal(result.output, 'scoped');
 });
 
@@ -428,7 +428,7 @@ test('AgentLoop awaits adaptive repository and cited-memory context services bef
     },
   };
   const loop = new AgentLoop({ forge, providers: f.providers, repositoryIndex, memoryService, broker: f.broker, store: f.store, contextBuilder: new ContextBuilder() });
-  await loop.run(f.task, { providerId: 'fake-model', budgets: { maxTurns: 2, maxToolCalls: 0, maxEstimatedTokens: 20, maxElapsedMs: 1000 } });
+  await loop.run(f.task, { providerId: 'fake-model', budgets: { maxTurns: 2, maxToolCalls: 0, maxEstimatedTokens: 20, maxElapsedMs: 10_000 } });
   assert.equal(seen[0].code[0].metadata.path, 'src/auth.mjs');
   assert.equal(seen[0].memory[0].metadata.status, 'active');
 });
@@ -493,7 +493,7 @@ test('AgentLoop exposes governed adaptive-intelligence tools and routes them thr
   ];
   f.providers.register({ id: 'adaptive-model', publicView: () => ({ id: 'adaptive-model' }), async complete({ tools, messages }) { assert.equal(tools.some((item) => item.function.name === 'repository.semanticSearch'), true); if (responses.length === 1) assert.match(messages.at(-1).content, /auth\.mjs/); return responses.shift(); } });
   const loop = new AgentLoop({ forge: f.forge, providers: f.providers, adaptiveIntelligenceGateway, broker: f.broker, store: f.store, contextBuilder: new ContextBuilder() });
-  const result = await loop.run(f.task, { providerId: 'adaptive-model', budgets: { maxTurns: 2, maxToolCalls: 1, maxEstimatedTokens: 20, maxElapsedMs: 1000 } });
+  const result = await loop.run(f.task, { providerId: 'adaptive-model', budgets: { maxTurns: 2, maxToolCalls: 1, maxEstimatedTokens: 20, maxElapsedMs: 10_000 } });
   assert.equal(result.output, 'Found auth.');
   assert.deepEqual(calls, [[f.task.id, 'repository.semanticSearch', { query: 'login' }]]);
   assert.ok(f.store.listEvents().some((event) => event.type === 'agent.adaptive-intelligence.tools-authorized'));

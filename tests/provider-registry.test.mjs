@@ -46,6 +46,25 @@ test('CliProvider detects versions and invokes through argv/stdin without a shel
   assert.deepEqual(completion.toolCalls, []);
 });
 
+test('CliProvider forwards an advertised reasoning effort through its documented argv flag', async (t) => {
+  const fake = await fakeCli(t);
+  const provider = new CliProvider({
+    id: 'effort-cli',
+    label: 'Effort CLI',
+    executable: fake.executable,
+    baseArgs: [fake.script, '-'],
+    promptMode: 'stdin',
+    effortFlag: '--effort',
+    effortLevels: ['low', 'high', 'max'],
+  });
+
+  const result = await provider.invoke({ prompt: 'Think carefully', effort: 'max' });
+  const payload = JSON.parse(result.stdout);
+
+  assert.deepEqual(payload.args.slice(-3), ['--effort', 'max', '-']);
+  assert.deepEqual(provider.publicView().effort, { supported: true, mode: 'forwarded', levels: ['low', 'high', 'max'] });
+});
+
 test('CliProvider keeps a completed Codex agent message when a later tool event reports an error', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-codex-events-'));
   t.after(() => rm(root, { recursive: true, force: true }));
@@ -73,12 +92,57 @@ test('CliProvider classifies a non-zero CLI configuration failure without exposi
   assert.equal(JSON.stringify(detection).includes('refresh-prefix-private'), false);
 });
 
+test('CliProvider rejects a zero-exit configuration diagnostic without exposing a local settings path', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-config-zero-exit-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const script = path.join(root, 'config-cli.mjs');
+  await writeFile(script, "console.log('gemini 0.49.0\\nInvalid configuration in C:\\\\Users\\\\example\\\\.gemini\\\\settings.json\\nExpected array, received boolean'); process.exit(0);\\n");
+  const provider = new CliProvider({ id: 'config-zero-exit', label: 'Config zero-exit CLI', executable: process.execPath, versionArgs: [script, '--version'] });
+
+  const detection = await provider.detect();
+
+  assert.equal(detection.available, false);
+  assert.equal(detection.authenticated, false);
+  assert.equal(detection.healthy, false);
+  assert.equal(detection.version, '0.49.0');
+  assert.equal(detection.error, 'configuration-error');
+  assert.equal('versionOutput' in detection, false);
+  assert.equal(JSON.stringify(detection).includes('C:\\Users\\example'), false);
+});
+
+test('CliProvider only forwards explicitly allowlisted parent credentials to a child CLI', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-isolated-env-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const script = path.join(root, 'environment-cli.mjs');
+  await writeFile(script, "console.log(JSON.stringify({ parent: process.env.NOLANE_TEST_PARENT_SECRET ?? null, provider: process.env.NOLANE_TEST_PROVIDER_SECRET ?? null, path: Boolean(process.env.PATH), home: Boolean(process.env.HOME || process.env.USERPROFILE) }));\n");
+  const priorParent = process.env.NOLANE_TEST_PARENT_SECRET;
+  const priorProvider = process.env.NOLANE_TEST_PROVIDER_SECRET;
+  process.env.NOLANE_TEST_PARENT_SECRET = 'must-not-cross-provider-boundary';
+  process.env.NOLANE_TEST_PROVIDER_SECRET = 'provider-only-credential';
+  t.after(() => {
+    if (priorParent == null) delete process.env.NOLANE_TEST_PARENT_SECRET; else process.env.NOLANE_TEST_PARENT_SECRET = priorParent;
+    if (priorProvider == null) delete process.env.NOLANE_TEST_PROVIDER_SECRET; else process.env.NOLANE_TEST_PROVIDER_SECRET = priorProvider;
+  });
+  const provider = new CliProvider({ id: 'isolated-env', label: 'Isolated env CLI', executable: process.execPath, baseArgs: [script], promptMode: 'stdin', secretEnvKeys: ['NOLANE_TEST_PROVIDER_SECRET'] });
+
+  const result = await provider.invoke({ prompt: 'inspect environment' });
+  const childEnvironment = JSON.parse(result.stdout);
+
+  assert.equal(childEnvironment.parent, null);
+  assert.equal(childEnvironment.provider, 'provider-only-credential');
+  assert.equal(childEnvironment.path, true);
+  assert.equal(childEnvironment.home, true);
+});
+
 test('CliProvider allows a slow CLI startup to report its version truthfully', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-slow-version-'));
   t.after(() => rm(root, { recursive: true, force: true }));
   const script = path.join(root, 'slow-version-cli.mjs');
   await writeFile(script, "setTimeout(() => console.log('slow-cli 1.2.3'), 5500);\n");
-  const provider = new CliProvider({ id: 'slow-version', label: 'Slow version CLI', executable: process.execPath, versionArgs: [script], timeoutMs: 7_000 });
+  // The subprocess budget includes Node's cold-start time on Windows, not only
+  // the fixture's 5.5-second delay. Keep this focused on the intended
+  // slow-start contract rather than making the test host-speed dependent.
+  const provider = new CliProvider({ id: 'slow-version', label: 'Slow version CLI', executable: process.execPath, versionArgs: [script], timeoutMs: 10_000 });
   const detection = await provider.detect();
   assert.equal(detection.available, true);
   assert.equal(detection.version, '1.2.3');
@@ -98,9 +162,8 @@ test('CliProvider discovers model ids through an explicit argv-only command', as
   `);
   const provider = new CliProvider({
     id: 'model-cli', label: 'Model CLI', executable: process.execPath,
-    // This verifies argv-only discovery rather than a cold Node-process startup budget.
-    // Keep it above the explicit slow-start test so a parallel suite cannot make it flaky.
-    modelDiscoveryArgs: [script, '--models'], timeoutMs: 5_000,
+    // This verifies argv-only discovery; its budget includes a cold Node-process startup.
+    modelDiscoveryArgs: [script, '--models'], timeoutMs: 10_000,
   });
 
   const result = await provider.discoverModels();

@@ -14,7 +14,7 @@ class DesktopUpdateCoordinator {
     emit = () => {}, random = Math.random, now = () => new Date().toISOString(),
     setTimeoutImpl = setTimeout, clearTimeoutImpl = clearTimeout,
     initialDelayMinMs = 45_000, initialDelayMaxMs = 120_000, intervalMs = DEFAULT_INTERVAL_MS,
-    preferenceStore = null, platform = process.platform, platformTruth = null
+    preferenceStore = null, platform = process.platform, platformTruth = null, releaseUpdater = null
   } = {}) {
     if (!updateController?.status || !updateController?.installAndRestart) throw new TypeError('DesktopUpdateCoordinator requires ElectronUpdateController');
     if (typeof getRuntimeConnection !== 'function') throw new TypeError('DesktopUpdateCoordinator requires runtime connection resolver');
@@ -32,6 +32,8 @@ class DesktopUpdateCoordinator {
     this.intervalMs = Math.max(60_000, Number(intervalMs) || DEFAULT_INTERVAL_MS);
     this.preferences = preferenceStore ?? new UpdatePreferenceStore({ userDataDir, clock: now });
     this.platformTruth = platformTruth ?? resolveDesktopUpdatePlatformTruth(platform);
+    if (releaseUpdater && (typeof releaseUpdater.status !== 'function' || typeof releaseUpdater.check !== 'function' || typeof releaseUpdater.download !== 'function' || typeof releaseUpdater.installAndRestart !== 'function')) throw new TypeError('DesktopUpdateCoordinator releaseUpdater contract is invalid');
+    this.releaseUpdater = releaseUpdater;
     this.timer = null;
     this.inFlight = null;
     this.manifest = null;
@@ -64,7 +66,7 @@ class DesktopUpdateCoordinator {
       state: 'handoffUnavailable',
       ready: false,
       error: null,
-      handoffReason: this.platformTruth.inAppUpdateHandoff?.reason ?? this.platformTruth.nativeInstallHandoff?.reason ?? 'Native update handoff is not verified for this platform.'
+      handoffReason: patch.handoffReason ?? this.platformTruth.inAppUpdateHandoff?.reason ?? this.platformTruth.nativeInstallHandoff?.reason ?? 'Native update handoff is not verified for this platform.'
     });
   }
 
@@ -76,6 +78,17 @@ class DesktopUpdateCoordinator {
       error: null,
       packageKind: packageKind ?? null,
       handoffReason: `Update package kind ${packageKind || 'unknown'} is not supported by the verified ${this.platformTruth.label} handoff.`
+    });
+  }
+
+  #usesGitHubReleaseUpdater() { return this.platformTruth.inAppUpdateHandoff?.mechanism === 'electron-updater-github'; }
+
+  #releasePackageKind() { return this.platformTruth.packageKinds?.[0] ?? null; }
+
+  #releaseUpdaterUnavailable(patch = {}) {
+    return this.#handoffUnavailable({
+      ...patch,
+      handoffReason: 'The packaged GitHub Releases update engine is unavailable for this application run.'
     });
   }
 
@@ -127,21 +140,60 @@ class DesktopUpdateCoordinator {
     }
   }
 
+  async #stageGitHubReleaseUpdate() {
+    if (!this.releaseUpdater) return this.#releaseUpdaterUnavailable({ version: this.current.version, packageKind: this.#releasePackageKind() });
+    const packageKind = this.#releasePackageKind();
+    this.#set({ state: 'downloading', ready: false, version: this.current.version, packageKind, error: null });
+    try {
+      const staged = await this.releaseUpdater.download();
+      if (!staged?.ready) return this.#set({ state: 'upToDate', ready: false, version: staged?.version ?? this.current.version, reason: staged?.reason ?? 'up-to-date', error: null });
+      this.preferences.write({ deferredVersion: null });
+      return this.#set({
+        state: 'staged', ready: true, version: staged.version,
+        releaseTag: staged.releaseTag ?? null, releaseCommit: null, releaseNotesUrl: staged.releaseNotesUrl ?? null,
+        packageName: null, packageKind, packageBytes: null,
+        signatureVerified: false, integrityVerified: true, stagedAt: this.now(), error: null
+      });
+    } catch (error) {
+      return this.#set({ state: 'downloadFailed', ready: false, error: String(error?.message ?? error), errorCode: error?.code ?? 'github_release_download_failed' });
+    }
+  }
+
+  async #checkGitHubReleaseUpdates({ manual }) {
+    if (!this.releaseUpdater) return this.#releaseUpdaterUnavailable();
+    const result = await this.releaseUpdater.check();
+    const checkedAt = this.now();
+    const preferences = this.preferences.write({ lastCheckAt: checkedAt });
+    if (!result?.available) return this.#set({ state: 'upToDate', ready: false, version: result?.version ?? null, reason: 'up-to-date', checkedAt, error: null });
+    const shared = {
+      version: result.version, releaseTag: result.releaseTag ?? null, releaseCommit: null, releaseNotesUrl: result.releaseNotesUrl ?? null,
+      packageName: null, packageKind: this.#releasePackageKind(), packageBytes: null, signatureVerified: false, integrityVerified: false, checkedAt
+    };
+    if (preferences.ignoredVersion === result.version) return this.#set({ state: 'ignored', ready: false, ...shared, error: null });
+    if (preferences.deferredVersion === result.version && !manual) return this.#set({ state: 'deferred', ready: false, ...shared, error: null });
+    this.#set({ state: 'available', ready: false, ...shared, error: null });
+    const settings = await this.#effectiveUpdateSettings();
+    if (settings.autoDownload) return this.#stageGitHubReleaseUpdate();
+    return this.state();
+  }
+
   async start() {
     if (this.started) return this.state();
     this.started = true;
-    const staged = await this.updateController.status().catch((error) => ({ ready: false, reason: 'staged-update-invalid', error: error.message }));
+    const controller = this.#usesGitHubReleaseUpdater() ? this.releaseUpdater : this.updateController;
+    const staged = await controller?.status().catch((error) => ({ ready: false, reason: 'staged-update-invalid', error: error.message }));
     if (staged.ready) {
-      if (!this.platformTruth.nativeInstallHandoff?.enabled) {
+      if (!this.platformTruth.nativeInstallHandoff?.enabled || !controller) {
         this.#handoffUnavailable({
           version: staged.version, releaseTag: staged.releaseTag ?? null, releaseCommit: staged.releaseCommit ?? null,
-          releaseNotesUrl: staged.releaseNotesUrl ?? null, sourceState: 'staged'
+          releaseNotesUrl: staged.releaseNotesUrl ?? null, sourceState: 'staged',
+          handoffReason: controller ? undefined : 'The packaged GitHub Releases update engine is unavailable for this application run.'
         });
       } else {
         this.#set({
           state: 'staged', ready: true, version: staged.version, releaseTag: staged.releaseTag, releaseCommit: staged.releaseCommit,
-          releaseNotesUrl: staged.releaseNotesUrl, packageKind: this.platformTruth.nativeInstallHandoff.mechanism ?? this.platformTruth.packageKinds[0] ?? null,
-          signatureVerified: true, error: null
+          releaseNotesUrl: staged.releaseNotesUrl, packageKind: this.#usesGitHubReleaseUpdater() ? this.#releasePackageKind() : this.platformTruth.nativeInstallHandoff.mechanism ?? this.platformTruth.packageKinds[0] ?? null,
+          signatureVerified: this.#usesGitHubReleaseUpdater() ? false : true, integrityVerified: this.#usesGitHubReleaseUpdater(), error: null
         });
       }
     } else {
@@ -163,6 +215,7 @@ class DesktopUpdateCoordinator {
     this.inFlight = (async () => {
       this.#set({ state: 'checking', ready: false, error: null, manual: Boolean(manual) });
       try {
+        if (this.#usesGitHubReleaseUpdater()) return await this.#checkGitHubReleaseUpdates({ manual });
         const result = await this.#request('/api/updates/check', { method: 'POST', body: {} });
         const checkedAt = this.now();
         const preferences = this.preferences.write({ lastCheckAt: checkedAt });
@@ -199,6 +252,13 @@ class DesktopUpdateCoordinator {
   async downloadAvailableUpdate() {
     if (this.inFlight) return this.inFlight;
     if (!this.platformTruth.inAppUpdateHandoff?.enabled) return this.#handoffUnavailable({ version: this.current.version, packageKind: this.current.packageKind ?? null });
+    if (this.#usesGitHubReleaseUpdater()) {
+      if (!this.releaseUpdater) return this.#releaseUpdaterUnavailable({ version: this.current.version, packageKind: this.#releasePackageKind() });
+      if (this.current.state !== 'available') await this.checkForUpdates({ manual: true });
+      if (this.current.state !== 'available') return this.state();
+      this.inFlight = this.#stageGitHubReleaseUpdate().finally(() => { this.inFlight = null; });
+      return this.inFlight;
+    }
     if (!this.manifest) await this.checkForUpdates({ manual: true });
     if (!this.manifest) return this.state();
     this.inFlight = this.#stageCurrentManifest().finally(() => { this.inFlight = null; });
@@ -244,7 +304,9 @@ class DesktopUpdateCoordinator {
         preservation,
         error: null
       });
-      return await this.updateController.installAndRestart(preparation);
+      const controller = this.#usesGitHubReleaseUpdater() ? this.releaseUpdater : this.updateController;
+      if (!controller) return this.#releaseUpdaterUnavailable({ version: this.current.version, packageKind: this.current.packageKind ?? null });
+      return await controller.installAndRestart(preparation);
     } catch (error) {
       this.#set({ state: 'installFailed', ready: true, error: String(error?.message ?? error), errorCode: error?.code ?? 'update_install_failed' });
       throw error;

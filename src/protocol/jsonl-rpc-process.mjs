@@ -3,11 +3,11 @@ import { EventEmitter } from 'node:events';
 import readline from 'node:readline';
 
 export class JsonlRpcProcess extends EventEmitter {
-  constructor({ executable, args = [], cwd = null, env = {}, inheritEnvironment = true, timeoutMs = 30_000, includeJsonrpc = true, requestHandler = null } = {}) {
+  constructor({ executable, args = [], cwd = null, env = {}, inheritEnvironment = false, timeoutMs = 30_000, includeJsonrpc = true, requestHandler = null } = {}) {
     super();
     if (!String(executable ?? '').trim()) throw new TypeError('executable is required');
     if (!Array.isArray(args) || args.some((item) => typeof item !== 'string')) throw new TypeError('args must be strings');
-    this.executable = String(executable); this.args = [...args]; this.cwd = cwd; this.env = { ...env }; this.inheritEnvironment = inheritEnvironment !== false;
+    this.executable = String(executable); this.args = [...args]; this.cwd = cwd; this.env = { ...env }; this.inheritEnvironment = inheritEnvironment === true;
     this.timeoutMs = Math.max(10, Number(timeoutMs) || 30_000); this.includeJsonrpc = Boolean(includeJsonrpc); this.requestHandler = requestHandler;
     this.child = null; this.state = 'idle'; this.nextId = 1; this.pending = new Map(); this.stderr = '';
   }

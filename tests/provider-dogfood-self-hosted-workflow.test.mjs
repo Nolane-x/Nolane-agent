@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const workflowPath = new URL('../.github/workflows/provider-real-dogfood-self-hosted.yml', import.meta.url);
+const runbookPath = new URL('../docs/provider-real-dogfood-runbook.md', import.meta.url);
 
 function count(text, fragment) {
   return text.split(fragment).length - 1;
@@ -17,7 +18,30 @@ test('provider-real dogfood workflow is manual-only and bound to the dedicated W
   assert.match(source, /persist-credentials:\s*false/);
   assert.equal(source.includes('${{ secrets.'), false);
   assert.equal(source.includes('github.token'), false);
-  assert.match(source, /NOLANE_PROVIDER_DOGFOOD_ALLOW_REAL_RUN:\s*["']?1["']?/);
+});
+
+test('workflow requires a host-owned real-provider opt-in instead of self-authorizing in YAML', async () => {
+  const [workflow, runbook] = await Promise.all([
+    readFile(workflowPath, 'utf8'),
+    readFile(runbookPath, 'utf8'),
+  ]);
+
+  assert.doesNotMatch(workflow, /^\s{6}NOLANE_PROVIDER_DOGFOOD_ALLOW_REAL_RUN:/m);
+  assert.match(workflow, /\$env:NOLANE_PROVIDER_DOGFOOD_ALLOW_REAL_RUN\s+-ne\s+'1'/);
+  assert.match(runbook, /runner service account's environment/i);
+  assert.match(runbook, /Never set this guard in workflow `env`, repository secrets, or workflow inputs\./);
+});
+
+test('workflow bootstraps the supported locked Node environment before executing a provider', async () => {
+  const [workflow, runbook] = await Promise.all([
+    readFile(workflowPath, 'utf8'),
+    readFile(runbookPath, 'utf8'),
+  ]);
+
+  assert.match(workflow, /actions\/setup-node@v7/);
+  assert.match(workflow, /node-version:\s*'24'/);
+  assert.match(workflow, /npm ci --ignore-scripts/);
+  assert.match(runbook, /locked Node 24 environment/i);
 });
 
 test('workflow passes provider input through a PowerShell argument array and never composes an executable shell command', async () => {

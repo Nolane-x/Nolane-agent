@@ -12,6 +12,39 @@ function client(overrides = {}) {
   return new CodexAppServerClient({ executable: process.execPath, args: [fixture], timeoutMs: 5_000, approvalHandler: async (request) => ({ decision: request.command?.[0] === 'git' ? 'accept' : 'decline' }), ...overrides });
 }
 
+test('CodexAppServerClient does not pass undeclared parent variables to its app-server child', async (t) => {
+  const inheritedName = 'NOLANE_TEST_PARENT_SECRET';
+  const grantedName = 'NOLANE_TEST_CODEX_GRANTED';
+  const previous = process.env[inheritedName];
+  process.env[inheritedName] = 'parent-only';
+  t.after(() => {
+    if (previous === undefined) delete process.env[inheritedName];
+    else process.env[inheritedName] = previous;
+  });
+
+  const codex = client({ env: { [grantedName]: 'granted-only' } });
+  t.after(() => codex.close());
+  await codex.connect();
+  const result = await codex.rpc.request('test/environment', { names: [inheritedName, grantedName] });
+
+  assert.deepEqual(result.present, { [inheritedName]: false, [grantedName]: true });
+});
+
+test('CodexAppServerClient detection does not pass undeclared parent variables to its probe child', async (t) => {
+  const inheritedName = 'NOLANE_TEST_PARENT_SECRET';
+  const previous = process.env[inheritedName];
+  process.env[inheritedName] = 'parent-only';
+  t.after(() => {
+    if (previous === undefined) delete process.env[inheritedName];
+    else process.env[inheritedName] = previous;
+  });
+
+  const detected = await client({ detectArgs: [fixture, '--environment-probe'] }).detect();
+
+  assert.equal(detected.available, true);
+  assert.match(detected.versionOutput, /secret-absent/);
+});
+
 test('CodexAppServerClient sends the thread sandbox enum and turn sandboxPolicy object', async (t) => {
   const codex = client();
   t.after(() => codex.close());

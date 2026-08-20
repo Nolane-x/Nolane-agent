@@ -7,6 +7,7 @@ const { browserWindowOptions, isAllowedRuntimeUrl, isSafeExternalUrl } = require
 const { RuntimeSupervisor } = require('./runtime-supervisor.cjs');
 const { ElectronUpdateController } = require('./update-controller.cjs');
 const { DesktopUpdateCoordinator } = require('./update-coordinator.cjs');
+const { loadPackagedGitHubReleaseUpdater } = require('./github-release-updater.cjs');
 const { legacySelectDirectoryChannel, readLegacyEnvironment } = require('./legacy-migration.cjs');
 const { WindowStateStore, resolveWindowBounds } = require('./window-state-store.cjs');
 
@@ -261,9 +262,13 @@ app.whenReady().then(async () => {
   hardenSession();
   windowStateStore = new WindowStateStore({ userDataDir: app.getPath('userData') });
   updateController = new ElectronUpdateController({ userDataDir: app.getPath('userData'), currentVersion: app.getVersion(), quit: () => { quitting = true; supervisor?.stop().finally(() => app.quit()); } });
+  const releaseUpdater = ['darwin', 'linux'].includes(process.platform)
+    ? loadPackagedGitHubReleaseUpdater({ app, currentVersion: app.getVersion(), platform: process.platform, userDataDir: app.getPath('userData') })
+    : null;
   updateCoordinator = new DesktopUpdateCoordinator({
     updateController,
     userDataDir: app.getPath('userData'),
+    releaseUpdater,
     getRuntimeConnection: () => ({ origin: runtimeOrigin, token: runtimeToken }),
     emit: (state) => { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('nolane:update-state', state); },
   });

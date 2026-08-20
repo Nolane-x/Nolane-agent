@@ -21,6 +21,20 @@ function codexExecutionError(error) {
 
 function versionOf(value) { return String(value ?? '').match(/\b(\d+\.\d+(?:\.\d+)?(?:[-+][\w.-]+)?)\b/)?.[1] ?? null; }
 
+function clientEnvironment(env = {}) {
+  const names = process.platform === 'win32'
+    ? ['PATH', 'Path', 'SYSTEMROOT', 'SystemRoot', 'WINDIR', 'COMSPEC', 'PATHEXT', 'TEMP', 'TMP', 'USERPROFILE', 'APPDATA', 'LOCALAPPDATA', 'CODEX_HOME']
+    : ['PATH', 'HOME', 'TMPDIR', 'TMP', 'TEMP', 'XDG_CONFIG_HOME', 'XDG_DATA_HOME', 'XDG_CACHE_HOME', 'CODEX_HOME'];
+  const base = {};
+  for (const name of names) {
+    const value = process.env[name];
+    if (typeof value !== 'string' || !value) continue;
+    if (name === 'Path' && base.PATH) continue;
+    base[name === 'Path' ? 'PATH' : name] = value;
+  }
+  return { ...base, ...env };
+}
+
 function normalizeThreadSandbox(policy) {
   const value = typeof policy === 'string' ? policy : policy?.type;
   if (value === undefined || value === null || value === 'readOnly' || value === 'read-only') return 'read-only';
@@ -92,11 +106,12 @@ function normalizeCatalogModel(model, observedAt) {
 }
 
 export class CodexAppServerClient {
-  constructor({ id = 'codex-app-server', label = 'OpenAI Codex App Server', executable = 'codex', args = ['app-server', '--stdio'], cwd = null, env = {}, timeoutMs = 10 * 60_000, approvalHandler = null } = {}) {
-    this.id = id; this.label = label; this.kind = 'codex-app-server'; this.executable = executable; this.args = [...args]; this.cwd = cwd; this.timeoutMs = timeoutMs; this.credentialOwner = 'official-cli';
+  constructor({ id = 'codex-app-server', label = 'OpenAI Codex App Server', executable = 'codex', args = ['app-server', '--stdio'], detectArgs = ['--version'], cwd = null, env = {}, timeoutMs = 10 * 60_000, approvalHandler = null } = {}) {
+    if (!Array.isArray(detectArgs) || detectArgs.some((item) => typeof item !== 'string')) throw new TypeError('detectArgs must be strings');
+    this.id = id; this.label = label; this.kind = 'codex-app-server'; this.executable = executable; this.args = [...args]; this.detectArgs = [...detectArgs]; this.cwd = cwd; this.env = { ...env }; this.timeoutMs = timeoutMs; this.credentialOwner = 'official-cli';
     this.profile = Object.freeze({ capabilities: Object.freeze(['coding', 'structured-events', 'subscription-auth', 'threads', 'interrupts', 'governed-actions']), qualityTier: 4.5, costTier: 0, latencyTier: 2, local: false });
     this.approvalHandler = approvalHandler; this.initialized = null; this.state = 'idle'; this.turnStates = new Map();
-    this.rpc = new JsonlRpcProcess({ executable, args, cwd, env, timeoutMs, includeJsonrpc: false, requestHandler: (method, params) => this.#serverRequest(method, params) });
+    this.rpc = new JsonlRpcProcess({ executable, args, cwd, env: clientEnvironment(this.env), inheritEnvironment: false, timeoutMs, includeJsonrpc: false, requestHandler: (method, params) => this.#serverRequest(method, params) });
     this.rpc.on('notification', (message) => this.#notification(message));
     this.rpc.on('closed', () => { this.state = 'closed'; });
   }
@@ -106,7 +121,7 @@ export class CodexAppServerClient {
   async detect() {
     try {
       const output = await new Promise((resolve, reject) => {
-        const child = spawn(this.executable, ['--version'], { shell: false, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+        const child = spawn(this.executable, this.detectArgs, { env: clientEnvironment(this.env), shell: false, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
         let text = ''; const timer = setTimeout(() => child.kill('SIGKILL'), 5_000); timer.unref?.();
         child.stdout.on('data', (chunk) => { text += chunk; }); child.stderr.on('data', (chunk) => { text += chunk; });
         child.once('error', reject); child.once('close', (code) => { clearTimeout(timer); resolve({ code, text }); });

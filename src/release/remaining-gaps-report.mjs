@@ -7,6 +7,8 @@ const OPEN_STATUSES = Object.freeze(['partial', 'external_gate', 'not_implemente
 const FEATURE_AUDIT_SCHEMAS = new Set([
   'forge.studio.feature-audit.v1',
   'forge.studio.feature-audit.frontier.v1',
+  'nolane.agent.feature-audit.v1',
+  'nolane.agent.feature-audit.frontier.v1',
   'nolane.agent.requirements.v5',
 ]);
 
@@ -25,10 +27,11 @@ function freeze(value, seen = new WeakSet()) {
 
 export function buildRemainingGapsReport(audit) {
   if (!FEATURE_AUDIT_SCHEMAS.has(audit?.schema)) throw new TypeError('Feature audit schema is invalid');
-  const isNolane = audit.schema === 'nolane.agent.requirements.v5';
+  const usesRequirementLedger = audit.schema === 'nolane.agent.requirements.v5';
+  const isNolane = usesRequirementLedger || audit.schema.startsWith('nolane.agent.');
   const items = [];
   const sectionSummary = [];
-  if (isNolane) {
+  if (usesRequirementLedger) {
     const groups = new Map();
     for (const requirement of audit.requirements ?? []) {
       if (!OPEN_STATUSES.includes(requirement.status)) continue;

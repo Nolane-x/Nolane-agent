@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { INTENT_PRESETS, createMissionRequest } from '../ui-v3/core/intent-presets.mjs';
+import { closeComposerPickers, isComposerPickerInteraction } from '../ui-v3/components/composer-picker.mjs';
 import { buildHomeViewModel, createHomeController, modelDeploymentKey, renderHomeView } from '../ui-v3/views/home/home-view.mjs';
 
 test('four intent presets map to enforceable backend boundaries', () => {
@@ -62,6 +63,20 @@ test('home composer keeps every ready discovered model selectable', () => {
   assert.match(modelMenu, /data-picker-value="codex\/model-51"/);
   assert.match(modelMenu, /data-composer-picker-search/);
   assert.match(modelMenu, /placeholder="Search models…"/);
+});
+
+test('composer picker helpers distinguish inside interactions and close every menu', async () => {
+  const attributes = [];
+  const trigger = { setAttribute(...args) { attributes.push(args); } };
+  const picker = { querySelector(selector) { assert.equal(selector, '[data-composer-picker-toggle]'); return trigger; } };
+  const menu = { hidden: false, closest(selector) { assert.equal(selector, '[data-composer-picker]'); return picker; } };
+  closeComposerPickers({ querySelectorAll(selector) { assert.equal(selector, '[data-composer-picker-menu]'); return [menu]; } });
+  assert.equal(menu.hidden, true);
+  assert.deepEqual(attributes, [['aria-expanded', 'false']]);
+  assert.equal(isComposerPickerInteraction({ closest() { return picker; } }), true);
+  assert.equal(isComposerPickerInteraction({ closest() { return null; } }), false);
+  const source = await readFile(new URL('../ui-v3/app.mjs', import.meta.url), 'utf8');
+  assert.match(source, /if \(!isComposerPickerInteraction\(event\.target\)\) closeComposerPickers\(document\);/);
 });
 
 test('home composer offers only ready provider deployments and disables send until a provider is usable', () => {
@@ -155,27 +170,29 @@ test('home composer sends provider and model separately for the selected deploym
   assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Plan this', planningProviderId: 'codex-app-server', planningModelId: 'gpt-5.6-sol', deploymentKey: 'codex-app-server/gpt-5.6-sol', mcpAllowedTools: [] }]]);
 });
 
-test('home composer exposes and submits only catalog-advertised Codex reasoning effort', async () => {
+test('home composer exposes and submits only catalog-advertised reasoning effort for any provider model', async () => {
   const calls = [];
   const api = {
     async get(path) {
       if (path === '/api/projects') return [{ id: 'p1', name: 'Project' }];
-      if (path === '/api/provider-connections') return [{ id: 'codex-app-server', state: 'ready' }];
-      if (path === '/api/model-profiles') return [{ key: 'codex-app-server/gpt-5.6-codex', providerId: 'codex-app-server', modelId: 'gpt-5.6-codex', displayName: 'GPT-5.6 Codex', metadata: { defaultReasoningEffort: 'medium', supportedReasoningEfforts: ['low', 'medium', 'high'] } }];
+      if (path === '/api/provider-connections') return [{ id: 'opencode', state: 'ready' }];
+      if (path === '/api/model-profiles') return [{ key: 'opencode/openai/gpt-5.6-sol', providerId: 'opencode', modelId: 'openai/gpt-5.6-sol', displayName: 'GPT-5.6 Sol via OpenCode', reasoning: { controllable: true, defaultLevel: 'high', levels: ['low', 'high', 'max', 'ultra'] } }];
       return [];
     },
     async post(path, body) { calls.push([path, body]); return { id: 'mission-effort', objective: body.objective }; },
   };
   const controller = createHomeController({ api });
   await controller.load();
-  controller.setModel('codex-app-server/gpt-5.6-codex');
-  controller.setEffort('high');
+  controller.setModel('opencode/openai/gpt-5.6-sol');
+  controller.setEffort('ultra');
   const html = renderHomeView(controller.snapshot());
 
   assert.match(html, /data-composer-picker="planningEffort"/);
-  assert.match(html, /data-picker-value="high"/);
-  await controller.submit({ objective: 'Use careful reasoning', projectId: 'p1', modelChoice: 'codex-app-server/gpt-5.6-codex', planningEffort: 'high' });
-  assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Use careful reasoning', planningProviderId: 'codex-app-server', planningModelId: 'gpt-5.6-codex', deploymentKey: 'codex-app-server/gpt-5.6-codex', planningEffort: 'high', mcpAllowedTools: [] }]]);
+  assert.match(html, /data-picker-value="max"/);
+  assert.match(html, /data-picker-value="ultra"/);
+  assert.doesNotMatch(html, /Codex reasoning effort/);
+  await controller.submit({ objective: 'Use careful reasoning', projectId: 'p1', modelChoice: 'opencode/openai/gpt-5.6-sol', planningEffort: 'ultra' });
+  assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Use careful reasoning', planningProviderId: 'opencode', planningModelId: 'openai/gpt-5.6-sol', deploymentKey: 'opencode/openai/gpt-5.6-sol', planningEffort: 'ultra', mcpAllowedTools: [] }]]);
 });
 
 test('home composer uses the persisted routing default until the user chooses another model', async () => {

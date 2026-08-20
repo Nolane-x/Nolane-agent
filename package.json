@@ -1,6 +1,6 @@
 {
   "name": "nolane-agent",
-  "version": "5.0.0-beta.6",
+  "version": "0.0.0",
   "description": "Local-first evidence-driven autonomous engineering agent with a progressive Workspace and Control Plane",
   "type": "module",
   "private": true,
@@ -29,7 +29,7 @@
     "release:matrix": "node scripts/full-release-matrix.mjs",
     "verify:version": "node scripts/verify-version-coherence.mjs .",
     "build:ui-v3": "node scripts/build-ui-v3.mjs",
-    "program:nolane": "node scripts/generate-master-acceptance-ledger.mjs && node scripts/generate-nolane-program.mjs",
+    "program:nolane": "node scripts/generate-nolane-program.mjs && node scripts/generate-native-core-conformance.mjs && node scripts/generate-master-acceptance-ledger.mjs",
     "audit:ui-capabilities": "node scripts/audit-ui-capabilities.mjs",
     "validate:ui-tokens": "node scripts/validate-ui-tokens.mjs",
     "audit:evidence-freshness": "node scripts/verify-nolane-evidence-freshness.mjs",
@@ -110,5 +110,8 @@
   "releaseToolchain": {
     "electron-builder": "26.15.3",
     "electron": "43.2.0"
+  },
+  "dependencies": {
+    "electron-updater": "6.8.9"
   }
 }

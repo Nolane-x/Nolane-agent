@@ -31,6 +31,19 @@ test('OpenAI Responses provider resolves a vault key and normalizes text, functi
   assert.equal(provider.publicView().credentialRef, undefined);
 });
 
+test('OpenAI Responses provider forwards a selected reasoning effort without exposing credentials', async () => {
+  let body;
+  const provider = new OpenAIResponsesProvider({
+    id: 'openai-effort', model: 'gpt-5.6', apiKey: 'sk-openai-secret',
+    fetchImpl: async (_url, init) => { body = JSON.parse(init.body); return response({ output_text: 'Done.', model: 'gpt-5.6', status: 'completed' }); },
+  });
+
+  await provider.complete({ messages: [{ role: 'user', content: 'Use maximum effort' }], effort: 'max' });
+
+  assert.deepEqual(body.reasoning, { effort: 'max' });
+  assert.doesNotMatch(JSON.stringify(body), /sk-openai-secret/);
+});
+
 test('Anthropic Messages provider normalizes tool_use and never leaks a rejected key', async () => {
   const provider = new AnthropicMessagesProvider({
     id: 'anthropic-main', model: 'claude-sonnet-4-5', credentialRef: { service: 'forge.provider.anthropic-main', account: 'default' },
@@ -63,6 +76,18 @@ test('Gemini GenerateContent provider normalizes functionCall and usage metadata
   assert.equal(result.usage.totalTokens, 15);
   assert.equal(body.tools[0].functionDeclarations[0].name, 'fs_read');
   assert.match(body.systemInstruction.parts[0].text, /Stay bounded/);
+});
+
+test('Gemini GenerateContent provider forwards a selected thinking level only when requested', async () => {
+  let body;
+  const provider = new GeminiGenerateContentProvider({
+    id: 'gemini-effort', model: 'gemini-3.6-pro', apiKey: 'gemini-private',
+    fetchImpl: async (_url, init) => { body = JSON.parse(init.body); return response({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: 'Done.' }] } }] }); },
+  });
+
+  await provider.complete({ messages: [{ role: 'user', content: 'Think carefully' }], effort: 'high' });
+
+  assert.deepEqual(body.generationConfig, { thinkingConfig: { thinkingLevel: 'HIGH' } });
 });
 
 test('Direct API providers expose stable setup and execution errors without returning credentials', async () => {

@@ -10,13 +10,13 @@ const windowsTruth = Object.freeze({
 });
 const macTruth = Object.freeze({
   schema: 'nolane.desktop-update-platform-truth.v1', platform: 'darwin', label: 'macOS', packageKinds: ['dmg','zip'],
-  inAppUpdateHandoff: { enabled: false, mechanism: null, reason: 'Native macOS update handoff is not yet verified.' },
-  nativeInstallHandoff: { enabled: false, mechanism: null, reason: 'Native macOS update handoff is not yet verified.' },
+  inAppUpdateHandoff: { enabled: true, mechanism: 'electron-updater-github' },
+  nativeInstallHandoff: { enabled: true, mechanism: 'electron-updater-github' },
 });
 const linuxTruth = Object.freeze({
   schema: 'nolane.desktop-update-platform-truth.v1', platform: 'linux', label: 'Linux', packageKinds: ['appimage','deb'],
-  inAppUpdateHandoff: { enabled: false, mechanism: null, reason: 'Native Linux update handoff is not yet verified.' },
-  nativeInstallHandoff: { enabled: false, mechanism: null, reason: 'Native Linux update handoff is not yet verified.' },
+  inAppUpdateHandoff: { enabled: true, mechanism: 'electron-updater-github' },
+  nativeInstallHandoff: { enabled: true, mechanism: 'electron-updater-github' },
 });
 
 test('Everyday Windows staged update uses evidence-bounded preservation copy and update-and-restart action', () => {
@@ -28,13 +28,14 @@ test('Everyday Windows staged update uses evidence-bounded preservation copy and
   assert.doesNotMatch(html, /Release evidence/);
 });
 
-test('macOS and Linux staged/package states never inherit Windows ready-to-install semantics', () => {
+test('macOS and Linux surface the same explicit download and restart actions through GitHub Releases', () => {
   for (const platformTruth of [macTruth, linuxTruth]) {
-    const html = renderUpdateNotice({ state: 'staged', version: '5.0.0-beta.7', ready: false, platformTruth }, { experience: 'workspace', language: 'en' });
-    assert.doesNotMatch(html, /Update and restart/);
-    assert.doesNotMatch(html, /ready to install/i);
+    const available = renderUpdateNotice({ state: 'available', version: '5.0.0-beta.7', ready: false, platformTruth }, { experience: 'workspace', language: 'en' });
+    const html = renderUpdateNotice({ state: 'staged', version: '5.0.0-beta.7', ready: true, integrityVerified: true, platformTruth }, { experience: 'workspace', language: 'en' });
+    assert.match(available, /Download update/);
+    assert.match(html, /Update and restart/);
+    assert.match(html, /data-evidence-status="verified"/);
     assert.match(html, new RegExp(platformTruth.label));
-    assert.match(html, /not yet verified|manual|release package/i);
   }
 });
 
@@ -59,10 +60,11 @@ test('Workspace and Expert progressively disclose release metadata without fabri
   assert.match(availableExpert, /Ignore this version/);
 });
 
-test('unsupported native handoff is an explicit recoverable state rather than a generic install failure', () => {
-  const html = renderUpdateNotice({ state: 'handoffUnavailable', version: '5.0.0-beta.7', platformTruth: macTruth, releaseNotesUrl: 'https://example.test/release' }, { experience: 'everyday', language: 'en' });
+test('an unavailable release updater is an explicit recoverable state rather than a generic install failure', () => {
+  const unavailableTruth = Object.freeze({ ...macTruth, inAppUpdateHandoff: { enabled: false, mechanism: null, reason: 'Packaged GitHub Releases update engine is unavailable.' }, nativeInstallHandoff: { enabled: false, mechanism: null, reason: 'Packaged GitHub Releases update engine is unavailable.' } });
+  const html = renderUpdateNotice({ state: 'handoffUnavailable', version: '5.0.0-beta.7', platformTruth: unavailableTruth, releaseNotesUrl: 'https://example.test/release' }, { experience: 'everyday', language: 'en' });
   assert.match(html, /macOS/);
-  assert.match(html, /not yet verified|manual/i);
+  assert.match(html, /unavailable|manual/i);
   assert.doesNotMatch(html, /Try again/);
   assert.doesNotMatch(html, /Update and restart/);
   assert.match(html, /What’s new/);

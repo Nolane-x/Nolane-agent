@@ -42,6 +42,14 @@ function defaultPlanner({ objective }) {
   };
 }
 
+const DEFAULT_PERMISSION_MODE_IDS = Object.freeze({ ask: 'edit-approved', workspace: 'auto-edit', full: 'deep' });
+
+async function defaultAgentModeId(settingsService, projectId) {
+  if (!settingsService?.effective) return undefined;
+  const effective = await settingsService.effective(projectId);
+  return DEFAULT_PERMISSION_MODE_IDS[String(effective?.value?.permissions?.defaultMode ?? '').trim()] ?? undefined;
+}
+
 export function createRoutes({ store, providers, missionRunner, runCoordinator = null, projectService = null, webIntelligence = null, repositoryIndex = null, router = null, mcpRegistry = null, evalRunner = null, verificationRunner = null, plannerService = null, memoryService = null, gitInspector = null, autopilot = null, fileService = null, credentialVault = null, providerConnections = null, uiAssets = null, updateService = null, updatePreparation = null, instructionDiscovery = null, instructionPolicy = null, runtimeStatus = null, goalService = null, goalRunService = null, replanner = null, commandRegistry = null, browserService = null, browserRuntimeInstaller = null, browserPermissionService = null, pluginService = null, settingsService = null, personalizationProfile = null, onboardingService = null, sessionRestore = null, missionGraph = null, goalScheduler = null, forgeBridge = null, enterpriseCloudRoutes = null, operatingPlane = null, capabilityLedger = null, adaptiveIntelligence = null, environmentControl = null, nativeRuntime = null, nativeAgent = null, nativeOrchestration = null, sessionStore = null, smallModelFoundation = null, nativeCapabilities = null, operationalBoundary = null, dependencyPreflight = null, workspaceTrust = null, diffReview = null, operationsCenter = null, contextMemoryCenter = null, contextOrchestration = null, traceEvidenceCenter = null, repositoryDiscovery = null, codebaseKnowledge = null, semanticDependency = null, codeRelationships = null, localResourceSandbox = null, localTaskHandoff = null, gitGovernance = null, treeSitterRuntime = null, agentModes = null, missionStateProgress = null, localOperations = null, architectureStageGate = null, missionCompletion = null, localContainerPreflight = null, evidenceContextRuntime = null, missionResourceFabric = null, modelProfiles = null, modelManager = null, executionStory = null, timeTravel = null, sovereignKernel = null, uiSummary = null }) {
   return async function route(req, res, url) {
     const method = req.method ?? 'GET'; const pathname = url.pathname;
@@ -1928,11 +1936,13 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
       if (!runCoordinator) throw Object.assign(new Error('Agent run coordinator is not configured'), { statusCode: 503 });
       const body = await readJson(req);
       if (workspaceTrust) await workspaceTrust.requireTrusted(body.projectId, 'background');
+      const requestedModeId = String(body.modeId ?? '').trim() || undefined;
+      const modeId = requestedModeId ?? await defaultAgentModeId(settingsService, body.projectId);
       return json(res, 201, runCoordinator.createRun({
         projectId: body.projectId,
         objective: body.objective,
         autonomyProfile: body.autonomyProfile,
-        modeId: body.modeId,
+        modeId,
         modeOverrides: body.modeOverrides,
         providerId: body.providerId ?? 'auto',
         budgets: body.budgets,
@@ -2195,7 +2205,7 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
       const planningProviderId = String(body.planningProviderId ?? 'auto').trim() || 'auto';
       const planningModelId = String(body.planningModelId ?? body.deployment?.modelId ?? '').trim() || null;
       const requestedPlanningEffort = String(body.planningEffort ?? '').trim().toLowerCase() || null;
-      if (requestedPlanningEffort && !new Set(['none', 'minimal', 'low', 'medium', 'high', 'xhigh']).has(requestedPlanningEffort)) throw Object.assign(new TypeError('planningEffort is invalid'), { statusCode: 400, code: 'PLANNING_EFFORT_INVALID' });
+      if (requestedPlanningEffort && !new Set(['none', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max', 'ultra']).has(requestedPlanningEffort)) throw Object.assign(new TypeError('planningEffort is invalid'), { statusCode: 400, code: 'PLANNING_EFFORT_INVALID' });
       const basePlanner = body.plan
         ? async () => body.plan
         : plannerService

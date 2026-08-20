@@ -10,7 +10,7 @@ import (
 	"regexp"
 )
 
-const helperVersion = "5.0.0-beta.6"
+const helperVersion = "0.0.0"
 
 var idPattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$`)
 

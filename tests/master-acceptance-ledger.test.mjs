@@ -7,6 +7,7 @@ import {
   validateMasterLedger,
   normalizeRequirementTitle,
 } from '../src/requirements/master-ledger.mjs';
+import { renderMasterLedgerReport } from '../scripts/generate-master-acceptance-ledger.mjs';
 
 const legacyFixture = {
   productVersion: '4.0.0',
@@ -45,6 +46,26 @@ const nolane_nativeFixture = {
   summary: { entries: 1, coreEntries: 1, excludedEntries: 0, unmappedCorePaths: 0, contractCandidates: 1 },
   receiptSha256: 'e'.repeat(64),
 };
+
+test('master acceptance report identifies the released Nolane Agent version in its title', () => {
+  const report = renderMasterLedgerReport({
+    product: 'Nolane Agent',
+    productVersion: '0.0.0',
+    receiptSha256: 'a'.repeat(64),
+    summary: {
+      inputItems: 1,
+      canonicalItems: 1,
+      deduplicatedAliases: 0,
+      statusCounts: { verified: 1, external_gate: 0, implemented_not_wired: 0, not_implemented: 0, unmapped: 0 },
+    },
+    sources: {
+      legacy: { inputItems: 0 },
+      nolaneV5: { inputItems: 1 },
+      nolane_nativeCore: { inputItems: 0 },
+    },
+  });
+  assert.match(report, /^# Nolane Agent 0\.0\.0 — Master Acceptance Ledger$/m);
+});
 
 function nativeConformanceFixture({ status = 'verified', candidateCount = 1 } = {}) {
   const sources = Array.from({ length: candidateCount }, (_, index) => ({

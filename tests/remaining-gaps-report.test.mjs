@@ -74,6 +74,12 @@ test('frontier audit generation emits a remaining-gaps document accepted by the 
   const markdownFile = path.join(root, 'docs', 'REMAINING-GAPS-2.20.0.md');
   const jsonFile = path.join(root, 'release', 'remaining-gaps-2.20.0.json');
   const report = await verifyRemainingGapsReport({ auditFile, markdownFile, jsonFile });
+  const audit = JSON.parse(await readFile(auditFile, 'utf8'));
+  const markdown = await readFile(markdownFile, 'utf8');
+  assert.equal(audit.schema, 'nolane.agent.feature-audit.frontier.v1');
+  assert.equal(audit.product, 'Nolane Agent');
+  assert.equal(report.product, 'Nolane Agent');
+  assert.match(markdown, /^# Nolane Agent 2\.20\.0/m);
   assert.equal(report.totalRequirements, 3);
   assert.deepEqual(report.summary, { partial: 1, external_gate: 0, not_implemented: 1 });
 });

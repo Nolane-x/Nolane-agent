@@ -271,6 +271,17 @@ test('mission planning rejects an unsupported effort before invoking a provider'
   assert.equal(f.calls.some((item) => item[0] === 'intelligentPlan'), false);
 });
 
+test('mission planning preserves catalog-supported max and ultra effort values', async (t) => {
+  const f = await fixture(t);
+  const project = await (await fetch(`${f.url}/api/projects`, auth({ method: 'POST', body: JSON.stringify({ name: 'Effort values', workspaceRoot: f.root }) }))).json();
+
+  for (const effort of ['max', 'ultra']) {
+    const response = await fetch(`${f.url}/api/missions/plan`, auth({ method: 'POST', body: JSON.stringify({ projectId: project.id, objective: `Plan with ${effort}`, planningEffort: effort }) }));
+    assert.equal(response.status, 201);
+    assert.equal((await response.json()).metadata.planningEffort, effort);
+  }
+});
+
 
 test('memory endpoints expose quarantined observations and evidence-backed promotion', async (t) => {
   const f = await fixture(t);

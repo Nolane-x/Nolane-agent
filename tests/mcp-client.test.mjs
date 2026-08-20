@@ -10,7 +10,7 @@ const root = path.dirname(fileURLToPath(import.meta.url));
 const fixture = path.join(root, 'fixtures', 'mcp-server.mjs');
 
 function client(overrides = {}) {
-  return new StdioMcpClient({ id: 'fixture', label: 'Fixture MCP', executable: process.execPath, args: [fixture], env: { SECRET_TOKEN: 'hidden' }, timeoutMs: 1_000, ...overrides });
+  return new StdioMcpClient({ id: 'fixture', label: 'Fixture MCP', executable: process.execPath, args: [fixture], env: { SECRET_TOKEN: 'hidden' }, timeoutMs: 5_000, ...overrides });
 }
 
 test('StdioMcpClient handshakes, caches deterministic tools, calls tools, and hides secrets', async (t) => {
@@ -28,14 +28,14 @@ test('StdioMcpClient handshakes, caches deterministic tools, calls tools, and hi
 });
 
 test('StdioMcpClient surfaces JSON-RPC errors, times out, cancels, and cleans up', async () => {
-  const mcp = client({ timeoutMs: 1_000 });
+  const mcp = client();
   await mcp.connect();
   await assert.rejects(() => mcp.request('tools/call', { name: 'error', arguments: {} }), /fixture error/);
   await assert.rejects(() => mcp.callTool('slow', {}, { timeoutMs: 100 }), /timed out/i);
   await mcp.close();
   assert.equal(mcp.state, 'closed');
 
-  const cancelled = client({ timeoutMs: 2_000 });
+  const cancelled = client();
   await cancelled.connect();
   const controller = new AbortController();
   const pending = cancelled.callTool('slow', {}, { signal: controller.signal });

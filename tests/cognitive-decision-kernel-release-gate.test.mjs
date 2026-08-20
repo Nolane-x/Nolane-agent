@@ -50,6 +50,9 @@ test('2.23 release gate proves bounded cognitive decisions without private reaso
   assert.equal(report.measurement.errors.missingBinaryPrimary, 'execution');
   assert.equal(report.measurement.errors.staleMemoryOwners.includes('memory'), true);
   assert.equal(report.measurement.episode.bound, true);
+  assert.equal(report.measurement.agency.unverifiedClaimExcluded, true);
+  assert.equal(report.measurement.agency.expectedVerifiedMismatch, true);
+  assert.equal(report.measurement.agency.verifiedEffectReceiptBound, true);
   assert.equal(report.measurement.agency.rawCommandStored, false);
   assert.equal(report.measurement.recovery.failedStrategyBanned, true);
   assert.equal(report.measurement.commit.deniedBeforeEvidence, true);

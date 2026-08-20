@@ -64,6 +64,10 @@ test('command fails closed without the environment guard or outside workflow_dis
     () => runProviderDogfoodCommand({ argv, env: { NOLANE_PROVIDER_DOGFOOD_ALLOW_REAL_RUN: '1', GITHUB_EVENT_NAME: 'push' }, deps: { runCandidate: async () => ({}) } }),
     (error) => error?.code === 'DOGFOOD_MANUAL_DISPATCH_REQUIRED',
   );
+  await assert.rejects(
+    () => runProviderDogfoodCommand({ argv, env: { NOLANE_PROVIDER_DOGFOOD_ALLOW_REAL_RUN: '1' }, deps: { runCandidate: async () => ({}) } }),
+    (error) => error?.code === 'DOGFOOD_MANUAL_DISPATCH_REQUIRED',
+  );
 });
 
 test('command writes only the finalized candidate and never stores provider plaintext', async (t) => {

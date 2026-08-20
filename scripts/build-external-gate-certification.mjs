@@ -56,23 +56,25 @@ function commonReceiptProvenance(receipts) {
   const sourceCommitSha = String(environment.githubHeadSha ?? '');
   const runId = String(environment.githubRunId ?? '');
   const version = String(first?.version ?? '');
-  assert(/^[a-f0-9]{40}$/.test(sourceCommitSha), 'runner PR head commit SHA is invalid');
-  assert(/^[a-f0-9]{40}$/.test(testedCommitSha), 'runner tested merge commit SHA is invalid');
+  const event = String(environment.githubEventName ?? '');
+  assert(/^[a-f0-9]{40}$/.test(sourceCommitSha), 'runner source commit SHA is invalid');
+  assert(/^[a-f0-9]{40}$/.test(testedCommitSha), 'runner tested commit SHA is invalid');
   assert(/^\d+$/.test(runId), 'runner workflow run id is invalid');
   assert(version, 'runner receipt version is missing');
+  assert(['pull_request', 'push'].includes(event), 'runner event is not eligible for external certification');
 
   for (const [label, receipt] of entries) {
     const current = receipt?.environment ?? {};
-    assert(String(current.githubHeadSha ?? '') === sourceCommitSha, `${label} PR head commit mismatch`);
-    assert(String(current.githubSha ?? '') === testedCommitSha, `${label} tested merge commit mismatch`);
+    assert(String(current.githubHeadSha ?? '') === sourceCommitSha, `${label} source commit mismatch`);
+    assert(String(current.githubSha ?? '') === testedCommitSha, `${label} tested commit mismatch`);
     assert(String(current.githubRunId ?? '') === runId, `${label} workflow run mismatch`);
     assert(current.githubRepository === REPOSITORY, `${label} repository mismatch`);
     assert(current.githubWorkflow === WORKFLOW_NAME, `${label} workflow name mismatch`);
-    assert(current.githubEventName === 'pull_request', `${label} receipt is not from a pull_request run`);
+    assert(current.githubEventName === event, `${label} workflow event mismatch`);
     assert(String(receipt?.version ?? '') === version, `${label} receipt version mismatch`);
   }
 
-  return { sourceCommitSha, testedCommitSha, runId, version };
+  return { sourceCommitSha, testedCommitSha, runId, version, event };
 }
 
 function collectArtifacts(artifacts, runId, receipts) {
@@ -84,7 +86,7 @@ function collectArtifacts(artifacts, runId, receipts) {
     assert(Number.isInteger(artifact.id) && artifact.id > 0, `${artifactName} artifact id is invalid`);
     assert(/^sha256:[a-f0-9]{64}$/.test(String(artifact.digest ?? '')), `${artifactName} artifact digest is invalid`);
     assert(String(artifact.workflow_run?.id ?? '') === runId, `${artifactName} artifact workflow run mismatch`);
-    assert(String(artifact.workflow_run?.head_sha ?? '') === String(receipts[platform]?.environment?.githubHeadSha ?? ''), `${artifactName} artifact PR head commit mismatch`);
+    assert(String(artifact.workflow_run?.head_sha ?? '') === String(receipts[platform]?.environment?.githubHeadSha ?? ''), `${artifactName} artifact source commit mismatch`);
     return {
       platform,
       artifactId: artifact.id,
@@ -130,12 +132,12 @@ export async function buildExternalGateCertificationSet({
   gitTreeResolver = defaultGitTreeResolver,
 } = {}) {
   assert(workflowConclusion === 'success', 'certification builder requires a successful workflow conclusion');
-  const { sourceCommitSha, testedCommitSha, runId, version } = commonReceiptProvenance(receipts);
+  const { sourceCommitSha, testedCommitSha, runId, version, event } = commonReceiptProvenance(receipts);
   const artifactEntries = collectArtifacts(artifacts, runId, receipts);
   const gateEvidence = await buildGateEvidence(rootDirectory);
   const { sourceTreeSha, testedTreeSha } = await gitTreeResolver({ rootDirectory, sourceCommitSha, testedCommitSha });
   assert(/^[a-f0-9]{40}$/.test(String(sourceTreeSha ?? '')) && /^[a-f0-9]{40}$/.test(String(testedTreeSha ?? '')), 'git tree provenance is invalid');
-  assert(sourceTreeSha === testedTreeSha, 'tested pull-request merge tree/source PR head tree mismatch');
+  assert(sourceTreeSha === testedTreeSha, 'tested tree/source tree mismatch');
 
   const base = {
     schema: 'nolane.agent.external-gate-certification-set.v1',
@@ -146,7 +148,7 @@ export async function buildExternalGateCertificationSet({
       name: WORKFLOW_NAME,
       path: WORKFLOW_PATH,
       runId,
-      event: 'pull_request',
+      event,
       conclusion: workflowConclusion,
       headSha: sourceCommitSha,
       testedSha: testedCommitSha,

@@ -107,6 +107,8 @@ export function defaultReleaseGates({ rootDirectory = process.cwd(), version } =
     GOMODCACHE: path.join(root, 'release', '.cache', 'go-mod'),
   });
   const py = process.env.NOLANE_AGENT_PYTHON || process.env.FORGE_PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
+  const versionText = String(version ?? '');
+  const currentReleaseGateSet = versionText === '5.0.0-beta.6' || versionText === '0.0.0';
   const gates = [
     { id: 'source-clean', label: 'Committed source tree is clean', command: 'git', args: ['status', '--porcelain=v1', '--untracked-files=all'], expectStdoutEmpty: true, timeoutMs: 30_000 },
     { id: 'version-coherence', label: 'Release identity and artifact version coherence', command: process.execPath, args: ['scripts/verify-version-coherence.mjs', '.'], timeoutMs: 60_000 },
@@ -118,7 +120,8 @@ export function defaultReleaseGates({ rootDirectory = process.cwd(), version } =
     { id: 'update-trust-bootstrap', label: 'Packaged public update trust with runner-only private key', command: process.execPath, args: ['--test', 'tests/update-trust-bootstrap.test.mjs'], timeoutMs: 3 * 60_000 },
     { id: 'beta1-release-docs', label: 'Beta.1 release, limitations, verification and publishing non-claims', command: process.execPath, args: ['--test', 'tests/nolane-beta1-release-docs.test.mjs'], timeoutMs: 3 * 60_000 },
     ...((() => {
-      const text = String(version ?? '');
+      const text = versionText;
+      if (currentReleaseGateSet) return true;
       const match = text.match(/^(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta|rc)\.(\d+))?$/);
       if (!match) return false;
       const [, majorText, minorText, patchText, phase, sequenceText] = match;
@@ -169,8 +172,10 @@ export function defaultReleaseGates({ rootDirectory = process.cwd(), version } =
               { id: 'native-core-runtime-wave6', label: 'MCP OAuth, browser supervision, async delegation, PTY, gateway recovery and local media runtime conversion', command: process.execPath, args: ['--test', 'tests/native-core-runtime-wave6.test.mjs'], timeoutMs: 5 * 60_000 },
               { id: 'native-core-wave6-production-wiring', label: 'Runtime wave6 lifecycle, orchestration and bounded authenticated HTTP production paths', command: process.execPath, args: ['--test', 'tests/native-core-wave6-production-wiring.test.mjs'], timeoutMs: 5 * 60_000 },
               { id: 'native-core-wave6-parity-mapping', label: 'Exact wave6 upstream behavior mapping with real provider and platform gates retained', command: process.execPath, args: ['--test', 'tests/native-core-wave6-parity-mapping.test.mjs'], timeoutMs: 5 * 60_000 },
-              ...(String(version) === '5.0.0-beta.6' ? [
+              ...(versionText === '5.0.0-beta.6' ? [
                 { id: 'beta6-release-docs', label: 'Beta.6 runtime wave, limitations, parity and non-claim documentation', command: process.execPath, args: ['--test', 'tests/nolane-beta6-release-docs.test.mjs'], timeoutMs: 3 * 60_000 },
+              ] : versionText === '0.0.0' ? [
+                { id: 'current-release-docs', label: '0.0.0 release, limitations, verification, and publication non-claims', command: process.execPath, args: ['--test', 'tests/nolane-release-0-0-0-docs.test.mjs'], timeoutMs: 3 * 60_000 },
               ] : [
                 { id: 'native-core-no-residual-catchall', label: 'No residual contract IDs or broad catch-all path patterns', command: process.execPath, args: ['scripts/verify-native-core-decomposition.mjs', 'no-residual'], timeoutMs: 3 * 60_000 },
                 { id: 'native-core-single-owner-mapping', label: 'Every decomposed upstream path has one canonical owner and one conformance mapping', command: process.execPath, args: ['scripts/verify-native-core-decomposition.mjs', 'single-owner'], timeoutMs: 3 * 60_000 },
@@ -183,7 +188,7 @@ export function defaultReleaseGates({ rootDirectory = process.cwd(), version } =
         ]),
       ]),
     ] : []),
-    ...(String(version) === '5.0.0-beta.6' ? [
+    ...(currentReleaseGateSet ? [
       { id: 'native-core-wave6-decomposition-checkpoint', label: 'Residual decomposition, single-owner mapping, zero-empty contracts and entitlement exclusion policy', command: process.execPath, args: ['--test', 'tests/native-core-residual-decomposition.test.mjs'], timeoutMs: 5 * 60_000 },
       { id: 'native-core-wave7-execution-checkpoint', label: 'Wave 7 execution runtime, production wiring and exact parity mapping', command: process.execPath, args: ['--test', 'tests/native-core-execution-wave7.test.mjs', 'tests/native-core-execution-wave7-production-wiring.test.mjs', 'tests/native-core-execution-wave7-parity-mapping.test.mjs'], timeoutMs: 5 * 60_000 },
       { id: 'native-core-wave8-session-checkpoint', label: 'Wave 8 session runtime, production wiring and exact parity mapping', command: process.execPath, args: ['--test', 'tests/native-core-session-wave8.test.mjs', 'tests/native-core-session-wave8-production-wiring.test.mjs', 'tests/native-core-session-wave8-parity-mapping.test.mjs'], timeoutMs: 5 * 60_000 },
@@ -309,7 +314,7 @@ export function defaultReleaseGates({ rootDirectory = process.cwd(), version } =
     { id: 'archive-integrity', label: 'Release archive and checksum verification', command: process.execPath, args: ['scripts/verify-release-artifacts.mjs', '--version', String(version)], timeoutMs: 10 * 60_000 },
   ];
   const major = Number.parseInt(String(version).split('.')[0], 10);
-  if (Number.isFinite(major) && major >= 5) {
+  if (Number.isFinite(major) && (major >= 5 || currentReleaseGateSet)) {
     const wrapRetention = (gate, gateArgs = ['{root}']) => {
       const verifierScript = gate.args?.[0];
       if (!String(verifierScript ?? '').startsWith('scripts/')) throw new Error(`Legacy retention gate ${gate.id} does not use a verifier script`);

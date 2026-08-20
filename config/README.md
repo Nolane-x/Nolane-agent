@@ -1,4 +1,4 @@
-# Signed GitHub update configuration
+# Nolane Agent 0.0.0 signed GitHub update configuration
 
 Nolane Agent uses a dual trust model. GitHub hosts release assets and the per-channel feed, but the app accepts an update only after validating the Nolane Ed25519 signature, repository, tag, commit, installer name, byte count, SHA-256 digest, and Windows PE header.
 
@@ -15,7 +15,7 @@ node scripts/prepare-update-trust.mjs \
   --private-key ./private-release-keys/nolane-agent-update-private.pem \
   --output ./config \
   --repository owner/repository \
-  --channel beta
+  --channel stable
 ```
 
 The generated `config/update.json` points to the signed channel feed on the `update-feed` branch. The private key is never copied into the application, source package, release assets, or update feed.

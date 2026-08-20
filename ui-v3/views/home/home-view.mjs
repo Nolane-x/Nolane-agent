@@ -57,13 +57,16 @@ function selectedModelProfile(models, selection) {
 }
 
 function reasoningEfforts(profile) {
-  if (String(profile?.providerId ?? profile?.provider ?? '') !== 'codex-app-server') return [];
-  const values = Array.isArray(profile?.metadata?.supportedReasoningEfforts) ? profile.metadata.supportedReasoningEfforts : [];
+  const values = [
+    profile?.reasoning?.levels,
+    profile?.metadata?.supportedReasoningEfforts,
+    profile?.metadata?.reasoning?.levels,
+  ].flatMap((value) => Array.isArray(value) ? value : []);
   return [...new Set(values.map((item) => String(typeof item === 'object' ? item?.reasoningEffort : item).trim().toLowerCase()).filter(Boolean))];
 }
 
 function defaultReasoningEffort(profile, efforts) {
-  const preferred = String(profile?.metadata?.defaultReasoningEffort ?? '').trim().toLowerCase();
+  const preferred = String(profile?.reasoning?.defaultLevel ?? profile?.metadata?.defaultReasoningEffort ?? '').trim().toLowerCase();
   return efforts.includes(preferred) ? preferred : (efforts[0] ?? null);
 }
 
@@ -187,8 +190,10 @@ function reasoningEffortOptions(model) {
     medium: model.language === 'vi' ? 'Trung bình' : 'Medium',
     high: model.language === 'vi' ? 'Cao' : 'High',
     xhigh: model.language === 'vi' ? 'Rất cao' : 'Extra high',
+    max: 'Max',
+    ultra: 'Ultra',
   };
-  return values.map((value) => ({ value, label: labels[value] ?? value, detail: model.language === 'vi' ? 'Mức suy luận của Codex cho lượt này' : 'Codex reasoning effort for this turn' }));
+  return values.map((value) => ({ value, label: labels[value] ?? value, detail: model.language === 'vi' ? 'Mức suy luận do model đã chọn hỗ trợ cho lượt này' : 'Reasoning effort supported by the selected model for this turn' }));
 }
 
 function renderComposerPicker({ name, ariaLabel, iconName, selected, options, className = '', searchable = false, searchLabel = '' }) {

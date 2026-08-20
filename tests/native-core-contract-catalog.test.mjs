@@ -9,6 +9,13 @@ import {
   buildNativeCoreCatalog,
   validateCoreCatalog,
 } from '../src/native-core/core-conformance-verifier.mjs';
+import { PRODUCT_IDENTITY } from '../src/product-identity.mjs';
+
+test('native core catalogs inherit the canonical current product version', () => {
+  const catalog = buildNativeCoreCatalog({ contracts: [] });
+  assert.equal(catalog.product, PRODUCT_IDENTITY.product);
+  assert.equal(catalog.productVersion, PRODUCT_IDENTITY.version);
+});
 import { evidenceFileSha256 } from '../src/release/evidence-file-hash.mjs';
 
 async function fixture(t) {
