@@ -10,7 +10,7 @@ Examples include provider-real sessions with the user’s own credentials, indep
 
 ## Release prerequisites
 
-The release workflow fails closed when mandatory signing or update secrets are absent. macOS artifacts require configured signing credentials. A GitHub Release must exist before packaged applications can download it. A version change alone never creates a release or an update feed.
+The release workflow fails closed when mandatory signing or update secrets are absent. Windows and macOS artifacts require configured signing credentials. A GitHub Release must exist before packaged applications can download it. A version change alone never creates a release or an update feed.
 
 ## Non-claims
 

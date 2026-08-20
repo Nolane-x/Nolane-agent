@@ -276,6 +276,15 @@ jobs:
         run: |
           if (-not $env:NOLANE_UPDATE_PRIVATE_KEY_B64) { throw 'NOLANE_UPDATE_PRIVATE_KEY_B64 is required; release signing fails closed.' }
 
+      - name: Require Windows signing credentials
+        shell: pwsh
+        env:
+          WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
+          WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
+        run: |
+          if (-not $env:WIN_CSC_LINK) { throw 'WIN_CSC_LINK is required for Windows GitHub Releases auto-update.' }
+          if (-not $env:WIN_CSC_KEY_PASSWORD) { throw 'WIN_CSC_KEY_PASSWORD is required for Windows GitHub Releases auto-update.' }
+
       - name: Verify immutable tag and commit
         shell: pwsh
         env:
