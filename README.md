@@ -17,13 +17,13 @@ Nolane Agent is a local-first workspace for directing AI agents across a real pr
 
 GitHub Actions is the only release packaging environment. A tag matching the package version creates native artifacts on GitHub runners:
 
-- Windows: NSIS installer with the signed Nolane update manifest.
+- Windows: signed NSIS installer with the signed Nolane update manifest; the release workflow fails closed without Windows signing credentials.
 - macOS: signed DMG and ZIP; the release workflow fails closed without macOS signing credentials.
 - Linux: AppImage and DEB.
 
 When a packaged installation sees a newer GitHub Release, the application presents an explicit **Download update** action followed by **Update and restart**. Windows uses the Nolane signed update-manifest path. macOS and Linux use GitHub Releases metadata through `electron-updater`. Updates never install automatically, and an active mission blocks restart until it is safe.
 
-No public GitHub Release is created by this repository change. A maintainer must still create the matching tag and provide the required GitHub Actions secrets.
+No public GitHub Release is created by this repository change. A maintainer must still create the matching tag and provide the required GitHub Actions secrets: `NOLANE_UPDATE_PRIVATE_KEY_B64`, `WIN_CSC_LINK`, `WIN_CSC_KEY_PASSWORD`, `MAC_CSC_LINK`, and `MAC_CSC_KEY_PASSWORD`.
 
 ## Architecture
 

@@ -19,8 +19,15 @@ test('CI workflow runs product validation without publishing or release secrets'
   assert.doesNotMatch(source, /NOLANE_UPDATE_PRIVATE_KEY|WIN_CSC|gh release create/);
 });
 
-test('release workflow builds native Windows, macOS, and Linux artifacts, signs the Windows update manifest, attests artifacts, and publishes one GitHub Release', async () => {
-  const [source, packageJson, builderConfig] = await Promise.all([read('.github/workflows/release.yml'), read('package.json'), read('electron-builder.config.cjs')]);
+test('release workflow and 0.0.0 release documents require signed native artifacts on every supported platform', async () => {
+  const [source, packageJson, builderConfig, readme, releaseNotes, limitations] = await Promise.all([
+    read('.github/workflows/release.yml'),
+    read('package.json'),
+    read('electron-builder.config.cjs'),
+    read('README.md'),
+    read('docs/RELEASE-0.0.0.md'),
+    read('docs/LIMITATIONS-0.0.0.md')
+  ]);
   assert.match(source, /tags:\s*\n\s*- ['"]v\*['"]/);
   assert.match(source, /runs-on: windows-latest/);
   assert.match(source, /macos-release:/);
@@ -41,6 +48,9 @@ test('release workflow builds native Windows, macOS, and Linux artifacts, signs 
   assert.match(source, /latest-linux\.yml/);
   assert.match(source, /Require macOS signing credentials/);
   assert.match(source, /MAC_CSC_LINK is required/);
+  assert.match(source, /Require Windows signing credentials/);
+  assert.match(source, /WIN_CSC_LINK is required for Windows GitHub Releases auto-update/);
+  assert.match(source, /WIN_CSC_KEY_PASSWORD is required for Windows GitHub Releases auto-update/);
   assert.match(source, /actions\/download-artifact@v4/);
   assert.match(source, /NOLANE_UPDATE_PRIVATE_KEY_B64/);
   assert.match(source, /nolane\.agent\.update\.v2/);
@@ -56,6 +66,9 @@ test('release workflow builds native Windows, macOS, and Linux artifacts, signs 
   assert.doesNotMatch(source, /nolane_native-agent|NolaneNative/);
   assert.match(packageJson, /"electron-updater"\s*:\s*"6\.8\.9"/);
   assert.match(builderConfig, /provider: 'github'/);
+  assert.match(readme, /Windows.*fail(?:s)? closed.*signing credentials/i);
+  assert.match(releaseNotes, /Windows.*required.*signing credentials/i);
+  assert.match(limitations, /Windows.*signing credentials/i);
 });
 
 test('release workflow verifies tag/version coherence and fails closed without the update signing key', async () => {

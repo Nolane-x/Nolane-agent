@@ -12,7 +12,7 @@ Nolane Agent 0.0.0 establishes the canonical stable release identity for the loc
 
 The tag-triggered GitHub Actions workflow builds the release on native runners only:
 
-- Windows NSIS, including the signed Nolane update-manifest path;
+- signed Windows NSIS, including the signed Nolane update-manifest path and required Windows signing credentials;
 - macOS DMG and ZIP, with required macOS signing credentials;
 - Linux AppImage and DEB.
 
