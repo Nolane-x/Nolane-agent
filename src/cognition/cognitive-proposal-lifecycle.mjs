@@ -48,6 +48,7 @@ function snapshotDecision(decision) {
 function snapshotTask(task) {
   return Object.freeze({
     taskId: task.taskId,
+    missionId: task.missionId,
     goal: task.goal,
     startReceiptSha256: task.startReceiptSha256,
     startedAtMs: task.startedAtMs,
@@ -71,12 +72,13 @@ export class CognitiveProposalLifecycle {
     this.tasks = new Map();
   }
 
-  start(input, { atMs: startedAtMs } = {}) {
+  start(input, { atMs: startedAtMs, missionId = null } = {}) {
     const task = receipt(input, 'forge.cognitive-task-start.v1', { taskId: 256, goal: 16_384 });
     if (this.tasks.has(task.taskId)) throw new RangeError(`duplicate cognitive lifecycle task: ${task.taskId}`);
     if (this.tasks.size >= this.maxTasks) throw new RangeError(`cognitive lifecycle task limit exceeded: ${this.maxTasks}`);
     this.tasks.set(task.taskId, {
       taskId: task.taskId,
+      missionId: missionId == null ? null : text(missionId, 'missionId', 256),
       goal: task.goal,
       startReceiptSha256: task.receiptSha256,
       startedAtMs: atMs(startedAtMs),

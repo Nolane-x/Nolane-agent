@@ -30,58 +30,58 @@
 
 **Interfaces:**
 
-- `CognitiveProposalLifecycle.registerTask({ taskId, missionId?, specificationReceiptSha256, atMs })`
-- `observe(taskId, cognitiveObservationReceipt, { atMs? })`, `propose(taskId, cognitiveProposalReceipt, { atMs? })`, `verify(taskId, verifiedProposalReceipt, { atMs? })`, `settle(taskId, cognitiveCommitGateReceipt, { atMs? })`, and `snapshot(taskId?)`
+- `CognitiveProposalLifecycle.start(cognitiveTaskStartReceipt, { missionId?, atMs })`
+- `observe(cognitiveObservationReceipt, { atMs? })`, `propose(cognitiveProposalReceipt, { atMs? })`, `verify(verifiedProposalReceipt, { atMs? })`, `settle(cognitiveCommitGateReceipt, { atMs? })`, and `snapshot(taskId?)`
 - `propose` accepts only `forge.cognitive-proposal.v1`; an abstention never enters this method.
 
-- [ ] **Step 1: Write failing lifecycle tests**
+- [x] **Step 1: Write failing lifecycle tests**
 
 ```js
 test('links a cognitive proposal to real task evidence without claiming execution', () => {
-  const lifecycle = new CognitiveProposalLifecycle({ clock: () => 100 });
-  lifecycle.registerTask({ taskId: 'task-1', specificationReceiptSha256: sha('a'), atMs: 1 });
-  lifecycle.observe('task-1', { receiptSha256: sha('b'), createdAtMs: 2 });
-  lifecycle.propose('task-1', proposal('proposal-1', sha('c'), 3));
-  lifecycle.verify('task-1', verification('proposal-1', 'verified-1', sha('d'), 4));
-  const result = lifecycle.settle('task-1', commit('verified-1', true, sha('e'), 5));
-  assert.equal(result.decisions[0].state, 'committed');
-  assert.equal(result.decisions[0].claims.executionClaimed, false);
-  assert.deepEqual(result.decisions[0].observationReceiptSha256s, [sha('b')]);
+  const lifecycle = new CognitiveProposalLifecycle();
+  lifecycle.start(taskStart('task-1', sha('a')), { atMs: 1 });
+  lifecycle.observe(observation('task-1', 'ev-1', sha('b')), { atMs: 2 });
+  lifecycle.propose(proposal('task-1', 'proposal-1', sha('c')), { atMs: 3 });
+  lifecycle.verify(verification('task-1', 'proposal-1', 'verified-1', sha('d')), { atMs: 4 });
+  const result = lifecycle.settle(commit('task-1', 'verified-1', true, sha('e')), { atMs: 5 });
+  assert.equal(result.decisions[0].status, 'committed');
+  assert.equal(result.decisions[0].executionClaimed, false);
+  assert.deepEqual(result.decisions[0].observedEventIds, ['ev-1']);
 });
 ```
 
 Add independent tests for mismatched task ids, verification before proposal, duplicate evidence, double settlement, and a denied gate ending at `rejected`.
 
-- [ ] **Step 2: Verify the test is red**
+- [x] **Step 2: Verify the test is red**
 
 Run `node --test tests/cognitive-proposal-lifecycle.test.mjs`.
 
 Expected: FAIL because `CognitiveProposalLifecycle` does not exist.
 
-- [ ] **Step 3: Implement the minimal lifecycle**
+- [x] **Step 3: Implement the minimal lifecycle**
 
 ```js
 export class CognitiveProposalLifecycle {
-  registerTask(input) { /* record validated task-start receipt */ }
-  observe(taskId, receipt) { /* append receipt-only task evidence */ }
-  propose(taskId, receipt) { /* create proposed decision from kernel receipt */ }
-  verify(taskId, receipt) { /* transition matching proposal to verified */ }
-  settle(taskId, receipt) { /* commit when allowed, reject when denied */ }
-  snapshot(taskId = null) { /* signed immutable read projection */ }
+  start(receipt, options) { /* record validated task-start receipt */ }
+  observe(receipt, options) { /* append receipt-only task evidence */ }
+  propose(receipt, options) { /* create proposed decision from kernel receipt */ }
+  verify(receipt, options) { /* transition matching proposal to verified */ }
+  settle(receipt, options) { /* commit when allowed, reject when denied */ }
+  snapshot(taskId = null) { /* immutable read projection */ }
 }
 ```
 
 Use private validators for SHA-256, timestamp, task, and decision records. The first history entry is the task specification; observations are linked evidence, not execution transitions. A committed decision has `executionClaimed: false` and `observedToolEffectClaimed: false`.
 
-- [ ] **Step 4: Verify the lifecycle is green**
+- [x] **Step 4: Verify the lifecycle is green**
 
 Run `node --test tests/cognitive-proposal-lifecycle.test.mjs`.
 
 Expected: PASS for valid and invalid transition cases.
 
-- [ ] **Step 5: Commit the standalone lifecycle**
+- [x] **Step 5: Commit the standalone lifecycle**
 
-Run `git add src/cognition/cognitive-proposal-lifecycle.mjs tests/cognitive-proposal-lifecycle.test.mjs` followed by `git commit -m "feat(cognition): add receipt-bound proposal lifecycle"`.
+Run `git add src/cognition/cognitive-proposal-lifecycle.mjs tests/cognitive-proposal-lifecycle.test.mjs` followed by `git commit -m "feat(cognition): record proposal lifecycle"`.
 
 ### Task 2: Integrate at DecisionPlane while keeping caller contracts
 
@@ -96,7 +96,7 @@ Run `git add src/cognition/cognitive-proposal-lifecycle.mjs tests/cognitive-prop
 - Produces `DecisionPlane.cognitiveLifecycleSnapshot(taskId = null)`.
 - Existing wrapper return objects are preserved unchanged.
 
-- [ ] **Step 1: Write failing integration tests**
+- [x] **Step 1: Write failing integration tests**
 
 ```js
 test('DecisionPlane retains cognitive returns while projecting proposal lifecycle', () => {
@@ -111,19 +111,19 @@ test('DecisionPlane retains cognitive returns while projecting proposal lifecycl
   assert.equal(observed.schema, 'forge.cognitive-observation.v1');
   assert.equal(committed.allowed, true);
   assert.equal(lifecycle.decisions[0].proposalReceiptSha256, proposal.receiptSha256);
-  assert.equal(lifecycle.decisions[0].claims.executionClaimed, false);
+  assert.equal(lifecycle.decisions[0].executionClaimed, false);
 });
 ```
 
 Add an abstention path asserting `lifecycle.decisions.length === 0`, and a denied commit path asserting `rejected` without execution evidence.
 
-- [ ] **Step 2: Verify the integration test is red**
+- [x] **Step 2: Verify the integration test is red**
 
 Run `node --test tests/cognitive-decision-plane-integration.test.mjs`.
 
 Expected: FAIL because `cognitiveLifecycleSnapshot` does not exist.
 
-- [ ] **Step 3: Implement lazy post-success integration**
+- [x] **Step 3: Implement lazy post-success integration**
 
 ```js
 get cognitiveLifecycle() {
@@ -133,10 +133,8 @@ get cognitiveLifecycle() {
 
 startCognitiveTask(input) {
   const receipt = this.cognition.startTask(input);
-  this.cognitiveLifecycle.registerTask({
-    taskId: receipt.taskId,
+  this.cognitiveLifecycle.start(receipt, {
     missionId: input.missionId ?? null,
-    specificationReceiptSha256: receipt.receiptSha256,
     atMs: Number(this.clock()),
   });
   return receipt;
@@ -145,7 +143,7 @@ startCognitiveTask(input) {
 
 Use the same post-success pattern for observation, proposal, verification, and settlement. Do not call `propose` for abstentions. Settle denied gates as rejection. Add a lifecycle-loaded flag and snapshot to `DecisionPlane.snapshot()` without eagerly loading it merely to inspect state.
 
-- [ ] **Step 4: Verify focused integration and cognition gates**
+- [x] **Step 4: Verify focused integration and cognition gates**
 
 Run `node --test tests/cognitive-proposal-lifecycle.test.mjs tests/cognitive-decision-plane-integration.test.mjs tests/cognitive-kernel.test.mjs tests/cognitive-policy-gates.test.mjs tests/cognitive-decision-kernel-release-gate.test.mjs tests/cognitive-decision-kernel-measurement.test.mjs`.
 

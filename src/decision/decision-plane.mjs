@@ -5,6 +5,7 @@ import { DecisionEfficiencyMetrics } from './decision-efficiency-metrics.mjs';
 import { TokenCostAdapter } from '../context/token-cost-adapter.mjs';
 import { ContextEscalationController } from '../context/context-escalation-controller.mjs';
 import { CognitiveKernel } from '../cognition/cognitive-kernel.mjs';
+import { CognitiveProposalLifecycle } from '../cognition/cognitive-proposal-lifecycle.mjs';
 import { ConstructionControlPlane } from '../construction/construction-control-plane.mjs';
 import { VerificationControlPlane } from '../verification/verification-control-plane.mjs';
 import { MemorySkillResourcePlane } from '../runtime/memory-skill-resource-plane.mjs';
@@ -36,6 +37,7 @@ export class DecisionPlane {
     this._tokenCost = null;
     this._escalation = null;
     this._cognition = null;
+    this._cognitiveLifecycle = null;
     this._construction = null;
     this._verification = null;
     this._memorySkillResource = null;
@@ -47,6 +49,7 @@ export class DecisionPlane {
     this._localFrontierCompletion = null;
     this._superiority = null;
     this.cognitionOptions = { clock: this.clock, limits: { maxTasks: limits.maxCognitiveTasks ?? 1_000, maxReceipts: limits.maxCognitiveReceipts ?? 5_000 } };
+    this.cognitiveLifecycleOptions = { limits: { maxTasks: limits.maxCognitiveTasks ?? 1_000, maxObservations: limits.maxCognitiveObservations ?? 512, maxDecisions: limits.maxCognitiveProposals ?? 512 } };
     this.constructionOptions = construction;
     this.verificationOptions = { ...verification, clock: this.clock };
     this.memorySkillResourceOptions = { ...memorySkillResource, clock: this.clock };
@@ -76,6 +79,10 @@ export class DecisionPlane {
   get cognition() {
     this.#assertOpen();
     return this._cognition ??= new CognitiveKernel(this.cognitionOptions);
+  }
+  get cognitiveLifecycle() {
+    this.#assertOpen();
+    return this._cognitiveLifecycle ??= new CognitiveProposalLifecycle(this.cognitiveLifecycleOptions);
   }
   get construction() {
     this.#assertOpen();
@@ -136,12 +143,36 @@ export class DecisionPlane {
   async countTokens(text, harnessProfile, options) { return this.tokenCost.count(text, harnessProfile, options); }
   startEscalation(input) { return this.escalation.start(input); }
   evaluateEscalation(state, input) { return this.escalation.evaluate(state, input); }
-  startCognitiveTask(input) { return this.cognition.startTask(input); }
-  observeCognitiveEvent(taskId, event) { return this.cognition.observe(taskId, event); }
-  proposeCognitiveAction(taskId, input) { return this.cognition.propose(taskId, input); }
-  verifyCognitiveProposal(taskId, proposalId, verification) { return this.cognition.verify(taskId, proposalId, verification); }
-  commitCognitiveProposal(taskId, verifiedProposalId) { return this.cognition.commit(taskId, verifiedProposalId); }
+  startCognitiveTask(input) {
+    const result = this.cognition.startTask(input);
+    this.cognitiveLifecycle.start(result, { missionId: input?.missionId ?? null, atMs: Number(this.clock()) });
+    return result;
+  }
+  observeCognitiveEvent(taskId, event) {
+    const result = this.cognition.observe(taskId, event);
+    this.cognitiveLifecycle.observe(result, { atMs: Number(this.clock()) });
+    return result;
+  }
+  proposeCognitiveAction(taskId, input) {
+    const result = this.cognition.propose(taskId, input);
+    if (result.schema === 'forge.cognitive-proposal.v1') this.cognitiveLifecycle.propose(result, { atMs: Number(this.clock()) });
+    return result;
+  }
+  verifyCognitiveProposal(taskId, proposalId, verification) {
+    const result = this.cognition.verify(taskId, proposalId, verification);
+    this.cognitiveLifecycle.verify(result, { atMs: Number(this.clock()) });
+    return result;
+  }
+  commitCognitiveProposal(taskId, verifiedProposalId) {
+    const result = this.cognition.commit(taskId, verifiedProposalId);
+    const lifecycle = this.cognitiveLifecycle;
+    const decision = lifecycle.snapshot(taskId).decisions.find((item) => item.verifiedProposalId === verifiedProposalId);
+    if (decision?.status === 'verified') lifecycle.settle(result, { atMs: Number(this.clock()) });
+    else if (decision?.commitReceiptSha256 !== result.receiptSha256) throw new RangeError(`cognitive lifecycle settlement conflicts for ${verifiedProposalId}`);
+    return result;
+  }
   cognitiveSnapshot(taskId = null) { return this._cognition ? this._cognition.snapshot(taskId) : null; }
+  cognitiveLifecycleSnapshot(taskId = null) { return this._cognitiveLifecycle ? this._cognitiveLifecycle.snapshot(taskId) : null; }
   compileConstructionSpecification(input) { return this.construction.compileSpecification(input); }
   createExecutablePlan(input) { return this.construction.createPlan(input); }
   transitionExecutablePlan(planId, stepId, event) { return this.construction.transitionPlan(planId, stepId, event); }
@@ -356,11 +387,12 @@ export class DecisionPlane {
     }));
     const base = {
       schema: 'forge.decision-plane-snapshot.v1',
-      lifecycle: { closed: this.closed, criteriaLoaded: this._criteria !== null, tokenizerLoaded: this._tokenCost !== null, escalationLoaded: this._escalation !== null, cognitionLoaded: this._cognition !== null, constructionLoaded: this._construction !== null, verificationLoaded: this._verification !== null, memorySkillResourceLoaded: this._memorySkillResource !== null, collaborationExperienceLoaded: this._collaborationExperience !== null, securityCertificationLoaded: this._securityCertification !== null, worldDevelopmentLoaded: this._worldDevelopment !== null, frontierGovernanceLoaded: this._frontierGovernance !== null, verifiedMissionLoaded: this._verifiedMission !== null, localFrontierCompletionLoaded: this._localFrontierCompletion !== null, superiorityLoaded: this._superiority !== null },
+      lifecycle: { closed: this.closed, criteriaLoaded: this._criteria !== null, tokenizerLoaded: this._tokenCost !== null, escalationLoaded: this._escalation !== null, cognitionLoaded: this._cognition !== null, cognitiveLifecycleLoaded: this._cognitiveLifecycle !== null, constructionLoaded: this._construction !== null, verificationLoaded: this._verification !== null, memorySkillResourceLoaded: this._memorySkillResource !== null, collaborationExperienceLoaded: this._collaborationExperience !== null, securityCertificationLoaded: this._securityCertification !== null, worldDevelopmentLoaded: this._worldDevelopment !== null, frontierGovernanceLoaded: this._frontierGovernance !== null, verifiedMissionLoaded: this._verifiedMission !== null, localFrontierCompletionLoaded: this._localFrontierCompletion !== null, superiorityLoaded: this._superiority !== null },
       criteria: signed(criteriaBase),
       efficiency,
       recentDecisions,
       cognition: this._cognition ? this._cognition.snapshot() : null,
+      cognitiveProposalLifecycle: this._cognitiveLifecycle ? this._cognitiveLifecycle.snapshot() : null,
       construction: this._construction ? this._construction.snapshot() : null,
       verification: this._verification ? this._verification.snapshot() : null,
       memorySkillResource: this._memorySkillResource ? this._memorySkillResource.snapshot() : null,
