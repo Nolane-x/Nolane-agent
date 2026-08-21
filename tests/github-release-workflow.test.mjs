@@ -19,7 +19,7 @@ test('CI workflow runs product validation without publishing or release secrets'
   assert.doesNotMatch(source, /NOLANE_UPDATE_PRIVATE_KEY|WIN_CSC|gh release create/);
 });
 
-test('release workflow and 0.0.0 release documents require signed native artifacts on every supported platform', async () => {
+test('release workflow permits unsigned Windows and macOS artifacts while retaining signed update metadata', async () => {
   const [source, packageJson, builderConfig, readme, releaseNotes, limitations] = await Promise.all([
     read('.github/workflows/release.yml'),
     read('package.json'),
@@ -46,11 +46,12 @@ test('release workflow and 0.0.0 release documents require signed native artifac
   assert.match(source, /NolaneAgent-\*\.deb/);
   assert.match(source, /latest-mac\.yml/);
   assert.match(source, /latest-linux\.yml/);
-  assert.match(source, /Require macOS signing credentials/);
-  assert.match(source, /MAC_CSC_LINK is required/);
-  assert.match(source, /Require Windows signing credentials/);
-  assert.match(source, /WIN_CSC_LINK is required for Windows GitHub Releases auto-update/);
-  assert.match(source, /WIN_CSC_KEY_PASSWORD is required for Windows GitHub Releases auto-update/);
+  assert.doesNotMatch(source, /Require macOS signing credentials/);
+  assert.doesNotMatch(source, /MAC_CSC_LINK is required/);
+  assert.doesNotMatch(source, /Require Windows signing credentials/);
+  assert.doesNotMatch(source, /WIN_CSC_LINK is required/);
+  assert.doesNotMatch(source, /WIN_CSC_KEY_PASSWORD is required/);
+  assert.match(source, /NOLANE_VERIFY_AUTHENTICODE: false/);
   assert.match(source, /actions\/download-artifact@v8/);
   assert.match(source, /digest-mismatch: error/);
   assert.match(source, /NOLANE_UPDATE_PRIVATE_KEY_B64/);
@@ -59,7 +60,6 @@ test('release workflow and 0.0.0 release documents require signed native artifac
   assert.match(source, /actions\/attest@v4/);
   assert.match(source, /gh release create/);
   assert.match(source, /SHA256SUMS/);
-  assert.match(source, /WIN_CSC_LINK/);
   assert.match(source, /npm run release:matrix/);
   assert.match(source, /release\/matrix-\$\{\{ steps\.update_trust\.outputs\.version \}\}\/full-release-matrix\.md/);
   assert.match(source, /release\/matrix-\$\{\{ steps\.update_trust\.outputs\.version \}\}\/full-release-matrix\.json/);
@@ -67,9 +67,9 @@ test('release workflow and 0.0.0 release documents require signed native artifac
   assert.doesNotMatch(source, /nolane_native-agent|NolaneNative/);
   assert.match(packageJson, /"electron-updater"\s*:\s*"6\.8\.9"/);
   assert.match(builderConfig, /provider: 'github'/);
-  assert.match(readme, /Windows.*fail(?:s)? closed.*signing credentials/i);
-  assert.match(releaseNotes, /Windows.*required.*signing credentials/i);
-  assert.match(limitations, /Windows.*signing credentials/i);
+  assert.match(readme, /unsigned.*Windows.*Unknown Publisher/i);
+  assert.match(releaseNotes, /unsigned.*Windows.*Unknown Publisher/i);
+  assert.match(limitations, /mandatory.*update signing key/i);
 });
 
 test('release workflow verifies tag/version coherence and fails closed without the update signing key', async () => {

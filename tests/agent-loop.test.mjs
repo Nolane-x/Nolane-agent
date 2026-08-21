@@ -64,6 +64,38 @@ test('AgentLoop routes before the model, executes tools through receipts, and ch
   assert.equal(f.calls.filter((item) => item[0] === 'evidence').length, 1);
 });
 
+test('AgentLoop gives Codex App Server the persisted full-access task policy', async (t) => {
+  const f = await fixture(t, []);
+  let request = null;
+  f.providers.register({
+    id: 'codex-app-server',
+    kind: 'codex-app-server',
+    publicView: () => ({ id: 'codex-app-server', kind: 'codex-app-server' }),
+    async complete(input) {
+      request = input;
+      return { text: 'done', toolCalls: [], usage: { totalTokens: 1 } };
+    },
+  });
+  const task = f.store.updateTask(f.task.id, {
+    metadata: {
+      ...f.task.metadata,
+      modeId: 'deep',
+      modePolicy: { id: 'deep', writesAllowed: true, commitPolicy: 'allow' },
+    },
+  });
+
+  await f.loop.run(task, {
+    providerId: 'codex-app-server',
+    budgets: { maxTurns: 1, maxToolCalls: 0, maxEstimatedTokens: 20, maxElapsedMs: 10_000 },
+  });
+
+  assert.deepEqual(request.codexAppServerExecutionPolicy, {
+    modeId: 'deep',
+    sandboxPolicy: { type: 'dangerFullAccess' },
+    automaticApproval: true,
+  });
+});
+
 test('AgentLoop never accepts model self-certification and classifies transient retries', async (t) => {
   const transient = new Error('Model HTTP 429: rate limited');
   const f = await fixture(t, [transient, { text: 'All tests pass. Task completed.', toolCalls: [], usage: { totalTokens: 5 } }]);

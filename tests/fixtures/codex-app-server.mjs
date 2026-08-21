@@ -7,6 +7,7 @@ const rl = readline.createInterface({ input: process.stdin });
 const send = (value) => process.stdout.write(`${JSON.stringify(value)}\n`);
 let threadCounter = 0; let turnCounter = 0; let account = { type: 'chatgpt', email: 'user@example.com', planType: 'plus' };
 const pendingApprovals = new Map();
+const calls = [];
 rl.on('line', async (line) => {
   const message = JSON.parse(line);
   if (Object.hasOwn(message, 'id') && (Object.hasOwn(message, 'result') || Object.hasOwn(message, 'error'))) {
@@ -19,6 +20,7 @@ rl.on('line', async (line) => {
     const present = Object.fromEntries((message.params?.names ?? []).map((name) => [name, Object.hasOwn(process.env, name)]));
     return send({ id: message.id, result: { present } });
   }
+  if (message.method === 'test/calls') return send({ id: message.id, result: { calls } });
   if (message.method === 'model/list') return send({ id: message.id, result: { data: [{ id: 'gpt-5.6-codex', displayName: 'GPT-5.6 Codex', defaultReasoningEffort: 'medium', supportedReasoningEfforts: [{ reasoningEffort: 'low' }, { reasoningEffort: 'medium' }, { reasoningEffort: 'high' }], additionalSpeedTiers: ['standard', 'fast'], serviceTiers: ['default', 'flex'], defaultServiceTier: 'default', modelSpecialty: 'coding', hidden: false }], nextCursor: null } });
   if (message.method === 'account/login/start') {
     if (message.params.type === 'chatgpt') return send({ id: message.id, result: { type: 'chatgpt', loginId: 'login_1', authUrl: 'https://chatgpt.com/auth/test' } });
@@ -28,14 +30,16 @@ rl.on('line', async (line) => {
   if (message.method === 'account/login/cancel') return send({ id: message.id, result: {} });
   if (message.method === 'account/logout') { account = null; return send({ id: message.id, result: {} }); }
   if (message.method === 'thread/start') {
-    if (message.params?.sandbox !== 'read-only') return send({ id: message.id, error: { code: -32602, message: 'sandbox must be the read-only enum' } });
-    const thread = { id: `thr_${++threadCounter}`, ephemeral: Boolean(message.params.ephemeral), turns: [] };
+    if (!['read-only', 'workspace-write', 'danger-full-access'].includes(message.params?.sandbox)) return send({ id: message.id, error: { code: -32602, message: 'sandbox must be a supported enum' } });
+    calls.push({ method: message.method, sandbox: message.params.sandbox, approvalPolicy: message.params.approvalPolicy ?? null });
+    const thread = { id: `thr_${++threadCounter}`, ephemeral: Boolean(message.params.ephemeral), sandbox: message.params.sandbox, turns: [] };
     send({ id: message.id, result: { thread } }); send({ method: 'thread/started', params: { thread } }); return;
   }
   if (message.method === 'thread/resume') return send({ id: message.id, result: { thread: { id: message.params.threadId, ephemeral: false, turns: [] } } });
   if (message.method === 'turn/interrupt') { send({ id: message.id, result: {} }); send({ method: 'turn/completed', params: { threadId: message.params.threadId, turn: { id: message.params.turnId, status: 'interrupted', items: [] } } }); return; }
   if (message.method === 'turn/start') {
-    if (message.params?.sandboxPolicy?.type !== 'readOnly') return send({ id: message.id, error: { code: -32602, message: 'sandboxPolicy.type must be readOnly' } });
+    if (!['readOnly', 'workspaceWrite', 'dangerFullAccess'].includes(message.params?.sandboxPolicy?.type)) return send({ id: message.id, error: { code: -32602, message: 'sandboxPolicy.type must be supported' } });
+    calls.push({ method: message.method, sandboxPolicy: message.params.sandboxPolicy, approvalPolicy: message.params.approvalPolicy ?? null });
     if ((message.params.input ?? []).some((item) => item.text === 'verify high effort') && message.params?.effort !== 'high') return send({ id: message.id, error: { code: -32602, message: 'effort must be forwarded' } });
     const turn = { id: `turn_${++turnCounter}`, status: 'inProgress', items: [] };
     send({ id: message.id, result: { turn } });

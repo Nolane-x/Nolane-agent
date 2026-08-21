@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { CliProvider } from '../src/providers/cli-provider.mjs';
 import { ProviderRegistry, createBuiltInCliProviders } from '../src/providers/provider-registry.mjs';
 import { CodexAppServerClient } from '../src/providers/codex-app-server.mjs';
+import { ProviderSessionHost } from '../src/providers/provider-session-host.mjs';
 import { OutcomeAwareProviderRouter } from '../src/providers/outcome-aware-router.mjs';
 
 async function fakeCli(t) {
@@ -22,6 +23,33 @@ async function fakeCli(t) {
   `);
   return { executable: process.execPath, script };
 }
+
+test('ProviderRegistry preserves Codex App Server authority when it opens a logical session', async () => {
+  let openedScope = null;
+  const provider = {
+    id: 'codex-app-server',
+    kind: 'codex-app-server',
+    sessionCapabilities: () => ({ logicalSessions: true }),
+    async openSession({ scope }) { openedScope = scope; return { id: 'thread-1' }; },
+    async completeInSession() { return { providerId: 'codex-app-server', text: 'done' }; },
+    async closeSession() {},
+    async complete() { return { providerId: 'codex-app-server', text: 'one-shot' }; },
+  };
+  const host = new ProviderSessionHost({ governor: { snapshot: () => ({ state: 'normal' }) } });
+  const registry = new ProviderRegistry({ sessionHost: host });
+  const codex = registry.register(provider);
+
+  await codex.complete({
+    messages: [{ role: 'user', content: 'Write the change' }],
+    codexAppServerExecutionPolicy: { modeId: 'deep', sandboxPolicy: { type: 'dangerFullAccess' }, automaticApproval: true },
+    leaseContext: { projectId: 'p1', missionId: 'm1', taskId: 't1' },
+  });
+
+  assert.deepEqual(openedScope.codexAppServerExecutionPolicy, {
+    modeId: 'deep', sandboxPolicy: { type: 'dangerFullAccess' }, automaticApproval: true,
+  });
+  await host.close();
+});
 
 test('CliProvider detects versions and invokes through argv/stdin without a shell', async (t) => {
   const fake = await fakeCli(t);

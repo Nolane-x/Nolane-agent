@@ -70,6 +70,30 @@ test('CodexAppServerClient forwards a documented per-turn reasoning effort', asy
   assert.equal(result.status, 'completed');
 });
 
+test('CodexAppServerClient binds a full-access policy to one logical session and approval request', async (t) => {
+  const approvals = [];
+  const codex = client({
+    approvalHandler: async (request) => {
+      approvals.push(request.executionPolicy ?? null);
+      return { decision: request.executionPolicy?.automaticApproval === true ? 'accept' : 'decline' };
+    },
+  });
+  t.after(() => codex.close());
+  const executionPolicy = {
+    modeId: 'deep',
+    sandboxPolicy: { type: 'dangerFullAccess' },
+    automaticApproval: true,
+  };
+
+  const session = await codex.openSession({ scope: { cwd: process.cwd(), codexAppServerExecutionPolicy: executionPolicy } });
+  await codex.completeInSession(session, { messages: [{ role: 'user', content: 'Write a local file' }] });
+  const observed = await codex.rpc.request('test/calls', {});
+
+  assert.deepEqual(session.executionPolicy, executionPolicy);
+  assert.deepEqual(approvals, [executionPolicy]);
+  assert.deepEqual(observed.calls.map((call) => call.sandbox ?? call.sandboxPolicy?.type), ['danger-full-access', 'dangerFullAccess']);
+});
+
 test('CodexAppServerClient complete() preserves method-specific sandbox shapes and retry classification', async (t) => {
   const codex = client();
   t.after(() => codex.close());

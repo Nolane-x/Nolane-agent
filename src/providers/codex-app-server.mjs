@@ -56,6 +56,27 @@ function normalizeTurnSandboxPolicy(policy) {
   return policy;
 }
 
+function normalizeExecutionPolicy(value, fallbackSandboxPolicy = undefined) {
+  const candidate = value && typeof value === 'object' ? value : {};
+  const sandboxPolicy = normalizeTurnSandboxPolicy(candidate.sandboxPolicy ?? fallbackSandboxPolicy);
+  const fullAccess = candidate.modeId === 'deep'
+    && candidate.automaticApproval === true
+    && normalizeThreadSandbox(sandboxPolicy) === 'danger-full-access';
+  return Object.freeze({
+    modeId: fullAccess ? 'deep' : null,
+    sandboxPolicy: Object.freeze({ ...sandboxPolicy }),
+    automaticApproval: fullAccess,
+  });
+}
+
+export function decideCodexAppServerApproval(request) {
+  const policy = request?.executionPolicy;
+  const automaticApproval = policy?.modeId === 'deep'
+    && policy?.automaticApproval === true
+    && policy?.sandboxPolicy?.type === 'dangerFullAccess';
+  return Object.freeze({ decision: automaticApproval ? 'accept' : 'decline' });
+}
+
 function tokenUsage(params) {
   const raw = params?.tokenUsage?.total ?? params?.tokenUsage ?? {};
   const promptTokens = Number(raw.inputTokens ?? raw.promptTokens ?? 0) || 0;
@@ -110,7 +131,7 @@ export class CodexAppServerClient {
     if (!Array.isArray(detectArgs) || detectArgs.some((item) => typeof item !== 'string')) throw new TypeError('detectArgs must be strings');
     this.id = id; this.label = label; this.kind = 'codex-app-server'; this.executable = executable; this.args = [...args]; this.detectArgs = [...detectArgs]; this.cwd = cwd; this.env = { ...env }; this.timeoutMs = timeoutMs; this.credentialOwner = 'official-cli';
     this.profile = Object.freeze({ capabilities: Object.freeze(['coding', 'structured-events', 'subscription-auth', 'threads', 'interrupts', 'governed-actions']), qualityTier: 4.5, costTier: 0, latencyTier: 2, local: false });
-    this.approvalHandler = approvalHandler; this.initialized = null; this.state = 'idle'; this.turnStates = new Map();
+    this.approvalHandler = approvalHandler; this.initialized = null; this.state = 'idle'; this.turnStates = new Map(); this.threadExecutionPolicies = new Map();
     this.rpc = new JsonlRpcProcess({ executable, args, cwd, env: clientEnvironment(this.env), inheritEnvironment: false, timeoutMs, includeJsonrpc: false, requestHandler: (method, params) => this.#serverRequest(method, params) });
     this.rpc.on('notification', (message) => this.#notification(message));
     this.rpc.on('closed', () => { this.state = 'closed'; });
@@ -179,10 +200,13 @@ export class CodexAppServerClient {
   async loginCancel(loginId) { await this.connect(); return this.rpc.request('account/login/cancel', { loginId: String(loginId) }); }
   async logout() { await this.connect(); return this.rpc.request('account/logout', {}); }
 
-  async startThread({ cwd = this.cwd, ephemeral = false, sandboxPolicy = undefined, approvalPolicy = 'untrusted' } = {}) {
+  async startThread({ cwd = this.cwd, ephemeral = false, sandboxPolicy = undefined, approvalPolicy = 'untrusted', executionPolicy = undefined } = {}) {
     await this.connect();
-    const result = await this.rpc.request('thread/start', { cwd: cwd ?? undefined, ephemeral: Boolean(ephemeral), sandbox: normalizeThreadSandbox(sandboxPolicy), approvalPolicy });
-    return Object.freeze(result.thread ?? result);
+    const normalizedExecutionPolicy = normalizeExecutionPolicy(executionPolicy, sandboxPolicy);
+    const result = await this.rpc.request('thread/start', { cwd: cwd ?? undefined, ephemeral: Boolean(ephemeral), sandbox: normalizeThreadSandbox(normalizedExecutionPolicy.sandboxPolicy), approvalPolicy });
+    const thread = Object.freeze(result.thread ?? result);
+    if (thread?.id) this.threadExecutionPolicies.set(String(thread.id), normalizedExecutionPolicy);
+    return thread;
   }
 
   async resumeThread(threadId, options = {}) {
@@ -191,11 +215,14 @@ export class CodexAppServerClient {
     return Object.freeze(result.thread ?? result);
   }
 
-  async startTurn({ threadId, input, cwd = this.cwd, model = undefined, effort = undefined, sandboxPolicy = undefined, approvalPolicy = undefined, signal = null } = {}) {
+  async startTurn({ threadId, input, cwd = this.cwd, model = undefined, effort = undefined, sandboxPolicy = undefined, approvalPolicy = undefined, executionPolicy = undefined, signal = null } = {}) {
     await this.connect();
     if (!String(threadId ?? '').trim()) throw new TypeError('threadId is required');
     const text = typeof input === 'string' ? input : JSON.stringify(input ?? '');
-    const params = { threadId: String(threadId), input: [{ type: 'text', text }], ...(cwd ? { cwd } : {}), ...(model ? { model } : {}), ...(effort ? { effort: String(effort) } : {}), sandboxPolicy: normalizeTurnSandboxPolicy(sandboxPolicy), ...(approvalPolicy ? { approvalPolicy } : {}) };
+    const key = String(threadId);
+    const normalizedExecutionPolicy = normalizeExecutionPolicy(executionPolicy ?? this.threadExecutionPolicies.get(key), sandboxPolicy);
+    this.threadExecutionPolicies.set(key, normalizedExecutionPolicy);
+    const params = { threadId: key, input: [{ type: 'text', text }], ...(cwd ? { cwd } : {}), ...(model ? { model } : {}), ...(effort ? { effort: String(effort) } : {}), sandboxPolicy: normalizedExecutionPolicy.sandboxPolicy, ...(approvalPolicy ? { approvalPolicy } : {}) };
     const started = await this.rpc.request('turn/start', params, { signal, timeoutMs: this.timeoutMs });
     const turn = started.turn ?? started;
     const state = this.#turnState(threadId, turn.id);
@@ -216,8 +243,9 @@ export class CodexAppServerClient {
   processDescriptor() { return Object.freeze({ rootPid: Number(this.rpc?.child?.pid) || null, state: this.state, runtimeKind: 'codex-app-server' }); }
 
   async openSession({ scope = {}, signal = null } = {}) {
-    const thread = await this.startThread({ cwd: scope.cwd ?? this.cwd, ephemeral: false, sandboxPolicy: { type: 'read-only' }, approvalPolicy: 'untrusted' });
-    return Object.freeze({ id: thread.id, threadId: thread.id, cwd: scope.cwd ?? this.cwd, openedFor: Object.freeze({ projectId: scope.projectId ?? null, missionId: scope.missionId ?? null, repositoryId: scope.repositoryId ?? null }), signalBound: Boolean(signal) });
+    const executionPolicy = normalizeExecutionPolicy(scope.codexAppServerExecutionPolicy);
+    const thread = await this.startThread({ cwd: scope.cwd ?? this.cwd, ephemeral: false, approvalPolicy: 'untrusted', executionPolicy });
+    return Object.freeze({ id: thread.id, threadId: thread.id, cwd: scope.cwd ?? this.cwd, executionPolicy, openedFor: Object.freeze({ projectId: scope.projectId ?? null, missionId: scope.missionId ?? null, repositoryId: scope.repositoryId ?? null }), signalBound: Boolean(signal) });
   }
 
   async completeInSession(session, { messages = [], tools = [], signal = null, model = undefined, effort = undefined, cwd = undefined } = {}) {
@@ -225,7 +253,7 @@ export class CodexAppServerClient {
     if (!threadId) throw new TypeError('session threadId is required');
     const prompt = buildForgeActionPrompt(messages, tools);
     try {
-      const result = await this.startTurn({ threadId, input: prompt, cwd: cwd ?? session?.cwd ?? this.cwd, model, effort, signal });
+      const result = await this.startTurn({ threadId, input: prompt, cwd: cwd ?? session?.cwd ?? this.cwd, model, effort, executionPolicy: session?.executionPolicy, signal });
       const envelope = parseForgeActionEnvelope(result.text, tools);
       return Object.freeze({ providerId: this.id, model: model ?? 'codex-subscription', text: envelope ? envelope.text : result.text, toolCalls: envelope?.toolCalls ?? Object.freeze([]), finishReason: result.status === 'completed' ? 'stop' : result.status, usage: result.usage, raw: Object.freeze({ ...result, prompt }) });
     } catch (error) {
@@ -233,12 +261,13 @@ export class CodexAppServerClient {
     }
   }
 
-  async closeSession(_session, _options = {}) { return Object.freeze({ closed: true, processRetained: this.state === 'ready' }); }
+  async closeSession(session, _options = {}) { this.threadExecutionPolicies.delete(String(session?.threadId ?? session?.id ?? '')); return Object.freeze({ closed: true, processRetained: this.state === 'ready' }); }
 
-  async complete({ messages = [], tools = [], signal = null, model = undefined, effort = undefined, cwd = this.cwd } = {}) {
+  async complete({ messages = [], tools = [], signal = null, model = undefined, effort = undefined, cwd = this.cwd, codexAppServerExecutionPolicy = undefined } = {}) {
     try {
-      const thread = await this.startThread({ cwd, ephemeral: true, sandboxPolicy: { type: 'read-only' }, approvalPolicy: 'untrusted' });
-      return await this.completeInSession({ id: thread.id, threadId: thread.id, cwd }, { messages, tools, signal, model, effort, cwd });
+      const executionPolicy = normalizeExecutionPolicy(codexAppServerExecutionPolicy);
+      const thread = await this.startThread({ cwd, ephemeral: true, approvalPolicy: 'untrusted', executionPolicy });
+      return await this.completeInSession({ id: thread.id, threadId: thread.id, cwd, executionPolicy }, { messages, tools, signal, model, effort, cwd });
     } catch (error) {
       throw codexExecutionError(error);
     }
@@ -257,7 +286,8 @@ export class CodexAppServerClient {
   async #serverRequest(method, params) {
     if (!/requestApproval$/i.test(method) && method !== 'tool/requestUserInput' && method !== 'openai/form') throw Object.assign(new Error(`Unsupported Codex server request: ${method}`), { code: -32601 });
     let response = { decision: 'decline' };
-    if (typeof this.approvalHandler === 'function') response = await this.approvalHandler(Object.freeze({ method, ...structuredClone(params) }));
+    const executionPolicy = params?.threadId ? this.threadExecutionPolicies.get(String(params.threadId)) ?? null : null;
+    if (typeof this.approvalHandler === 'function') response = await this.approvalHandler(Object.freeze({ method, ...structuredClone(params), executionPolicy: executionPolicy ? structuredClone(executionPolicy) : null }));
     const decision = String(response?.decision ?? 'decline');
     if (!APPROVALS.has(decision)) throw new Error(`Invalid Codex approval decision: ${decision}`);
     const state = params?.threadId && params?.turnId ? this.#turnState(params.threadId, params.turnId) : null;
