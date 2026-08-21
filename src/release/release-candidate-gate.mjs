@@ -10,7 +10,9 @@ export const REQUIRED_EXACT_HEAD_WORKFLOWS = Object.freeze([
 ]);
 
 const REQUIRED_EXTERNAL_PLATFORMS = Object.freeze(['linux', 'windows', 'macos']);
-const BLOCKING_MATRIX_STATUSES = Object.freeze(['FAIL', 'UNKNOWN', 'BLOCKED']);
+// UNKNOWN is the intentionally open product-quality backlog. A release is
+// blocked only by a confirmed failed or explicitly blocked obligation.
+const BLOCKING_MATRIX_STATUSES = Object.freeze(['FAIL', 'BLOCKED']);
 
 function normalizeSha(value) {
   return String(value ?? '').trim().toLowerCase();

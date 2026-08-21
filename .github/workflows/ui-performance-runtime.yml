@@ -1,6 +1,8 @@
 name: UI runtime performance evidence
 
 on:
+  push:
+    branches: [main]
   pull_request:
     paths:
       - 'scripts/capture-ui-performance-evidence.mjs'

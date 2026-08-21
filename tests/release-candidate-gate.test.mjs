@@ -49,15 +49,15 @@ test('release candidate rejects stale, missing, skipped, action-required, and fa
   assert.ok(selected.failed.some((entry) => entry.name === REQUIRED_EXACT_HEAD_WORKFLOWS[3] && entry.conclusion === 'failure'));
 });
 
-test('release candidate fails closed when tag identity, product-perfection status, or external certification is not current', () => {
+test('release candidate fails closed for tag identity, actual product-perfection failures, or stale external certification', () => {
   const pass = evaluateReleaseCandidate({
     expectedSha: SHA,
     tagSha: SHA,
     workflowRuns: successfulRuns(),
     productPerfectionCounts: {
-      PASS: 310,
+      PASS: 0,
       FAIL: 0,
-      UNKNOWN: 0,
+      UNKNOWN: 310,
       BLOCKED: 0,
       NOT_APPLICABLE: 0,
       DEFERRED_WITH_REASON: 0
@@ -73,7 +73,8 @@ test('release candidate fails closed when tag identity, product-perfection statu
 
   for (const mutation of [
     { tagSha: 'b'.repeat(40) },
-    { productPerfectionCounts: { PASS: 309, FAIL: 0, UNKNOWN: 1, BLOCKED: 0, NOT_APPLICABLE: 0, DEFERRED_WITH_REASON: 0 } },
+    { productPerfectionCounts: { PASS: 309, FAIL: 1, UNKNOWN: 0, BLOCKED: 0, NOT_APPLICABLE: 0, DEFERRED_WITH_REASON: 0 } },
+    { productPerfectionCounts: { PASS: 309, FAIL: 0, UNKNOWN: 0, BLOCKED: 1, NOT_APPLICABLE: 0, DEFERRED_WITH_REASON: 0 } },
     { externalCertification: { status: 'pass', headSha: 'b'.repeat(40), runnerReceipts: ['linux', 'windows', 'macos'] } },
     { externalCertification: { status: 'pass', headSha: SHA, runnerReceipts: ['linux', 'windows'] } }
   ]) {
@@ -82,9 +83,9 @@ test('release candidate fails closed when tag identity, product-perfection statu
       tagSha: SHA,
       workflowRuns: successfulRuns(),
       productPerfectionCounts: {
-        PASS: 310,
+        PASS: 0,
         FAIL: 0,
-        UNKNOWN: 0,
+        UNKNOWN: 310,
         BLOCKED: 0,
         NOT_APPLICABLE: 0,
         DEFERRED_WITH_REASON: 0

@@ -1,6 +1,8 @@
 name: Proofline ledger runtime evidence
 
 on:
+  push:
+    branches: [main]
   pull_request:
     paths:
       - 'ui-v3/**'
