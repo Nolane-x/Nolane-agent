@@ -121,14 +121,6 @@ jobs:
         run: |
           test -n "$NOLANE_UPDATE_PRIVATE_KEY_B64" || { echo 'NOLANE_UPDATE_PRIVATE_KEY_B64 is required; release signing fails closed.' >&2; exit 1; }
 
-      - name: Require macOS signing credentials
-        env:
-          MAC_CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
-          MAC_CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
-        run: |
-          test -n "$MAC_CSC_LINK" || { echo 'MAC_CSC_LINK is required for macOS GitHub Releases auto-update.' >&2; exit 1; }
-          test -n "$MAC_CSC_KEY_PASSWORD" || { echo 'MAC_CSC_KEY_PASSWORD is required for macOS GitHub Releases auto-update.' >&2; exit 1; }
-
       - name: Verify immutable tag and commit
         env:
           GITHUB_SHA: ${{ needs.candidate-gate.outputs.source_sha }}
@@ -162,8 +154,6 @@ jobs:
       - name: Build macOS DMG and ZIP release artifacts
         env:
           NOLANE_ELECTRON_TARGET: mac
-          CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
         run: npm run build:electron:installer
 
       - name: Upload macOS release assets
@@ -276,15 +266,6 @@ jobs:
         run: |
           if (-not $env:NOLANE_UPDATE_PRIVATE_KEY_B64) { throw 'NOLANE_UPDATE_PRIVATE_KEY_B64 is required; release signing fails closed.' }
 
-      - name: Require Windows signing credentials
-        shell: pwsh
-        env:
-          WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
-          WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
-        run: |
-          if (-not $env:WIN_CSC_LINK) { throw 'WIN_CSC_LINK is required for Windows GitHub Releases auto-update.' }
-          if (-not $env:WIN_CSC_KEY_PASSWORD) { throw 'WIN_CSC_KEY_PASSWORD is required for Windows GitHub Releases auto-update.' }
-
       - name: Verify immutable tag and commit
         shell: pwsh
         env:
@@ -337,9 +318,7 @@ jobs:
       - name: Build NSIS installer and update metadata
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
-          WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
-          WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
-          NOLANE_WINDOWS_PUBLISHER: ${{ vars.NOLANE_WINDOWS_PUBLISHER }}
+          NOLANE_VERIFY_AUTHENTICODE: false
         run: npm run build:electron:installer
 
       - name: Collect native macOS and Linux release assets
