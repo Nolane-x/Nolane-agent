@@ -497,7 +497,9 @@ const providerConnections = new ProviderConnectionService({
     }),
   },
 });
-await providerConnections.load();
+void providerConnections.load().catch((error) => {
+  store.appendEvent(createEvent('providers.initial-refresh.failed', { error: String(error?.message ?? error).slice(0, 300) }));
+});
 const providerProfiles = modelProfiles.publicView().models;
 for (const connection of providerConnections.list()) {
   const hasExactModel = providerProfiles.some((profile) => profile.providerId === connection.id);
