@@ -1,6 +1,8 @@
 name: UI runtime visual evidence
 
 on:
+  push:
+    branches: [main]
   pull_request:
     paths:
       - 'ui-v3/**'

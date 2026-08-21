@@ -99,6 +99,20 @@ test('release workflow gates every platform build on exact-head candidate eviden
   assert.match(packageJson, /"verify:release-candidate"\s*:/);
 });
 
+test('release-required runtime evidence also runs for every main commit', async () => {
+  const workflows = await Promise.all([
+    'ui-runtime-visual.yml',
+    'ui-performance-runtime.yml',
+    'proofline-empty-evidence.yml',
+    'proofline-ledger-evidence.yml'
+  ].map((file) => read(`.github/workflows/${file}`)));
+
+  for (const source of workflows) {
+    assert.match(source, /push:\s*\n\s+branches:\s*\[main\]/);
+    assert.match(source, /workflow_dispatch:/);
+  }
+});
+
 test('Dependabot keeps GitHub Actions and npm release tooling current', async () => {
   const source = await read('.github/dependabot.yml');
   assert.match(source, /package-ecosystem: "github-actions"/);
