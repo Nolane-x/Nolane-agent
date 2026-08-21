@@ -65,15 +65,10 @@ function reasoningEfforts(profile) {
   return [...new Set(values.map((item) => String(typeof item === 'object' ? item?.reasoningEffort : item).trim().toLowerCase()).filter(Boolean))];
 }
 
-function defaultReasoningEffort(profile, efforts) {
-  const preferred = String(profile?.reasoning?.defaultLevel ?? profile?.metadata?.defaultReasoningEffort ?? '').trim().toLowerCase();
-  return efforts.includes(preferred) ? preferred : (efforts[0] ?? null);
-}
-
 function normalizedReasoningEffort(models, selectedModel, requestedEffort) {
   const efforts = reasoningEfforts(selectedModelProfile(models, selectedModel));
   const selected = String(requestedEffort ?? '').trim().toLowerCase();
-  return efforts.includes(selected) ? selected : defaultReasoningEffort(selectedModelProfile(models, selectedModel), efforts);
+  return efforts.includes(selected) ? selected : null;
 }
 
 function providerIsReady(provider) {
@@ -183,6 +178,7 @@ function modelPickerOptions(model) {
 function reasoningEffortOptions(model) {
   const profile = selectedModelProfile(model.models, model.selectedModel);
   const values = reasoningEfforts(profile);
+  if (!values.length) return [];
   const labels = {
     none: model.language === 'vi' ? 'Không suy luận' : 'No reasoning',
     minimal: model.language === 'vi' ? 'Tối thiểu' : 'Minimal',
@@ -193,7 +189,12 @@ function reasoningEffortOptions(model) {
     max: 'Max',
     ultra: 'Ultra',
   };
-  return values.map((value) => ({ value, label: labels[value] ?? value, detail: model.language === 'vi' ? 'Mức suy luận do model đã chọn hỗ trợ cho lượt này' : 'Reasoning effort supported by the selected model for this turn' }));
+  const defaultOption = {
+    value: '',
+    label: model.language === 'vi' ? 'Mặc định model' : 'Model default',
+    detail: model.language === 'vi' ? 'Để provider chọn mức mặc định cho model này' : 'Let the provider use this model’s default effort',
+  };
+  return [defaultOption, ...values.map((value) => ({ value, label: labels[value] ?? value, detail: model.language === 'vi' ? 'Mức suy luận do model đã chọn hỗ trợ cho lượt này' : 'Reasoning effort supported by the selected model for this turn' }))];
 }
 
 function renderComposerPicker({ name, ariaLabel, iconName, selected, options, className = '', searchable = false, searchLabel = '' }) {
@@ -247,7 +248,7 @@ export function renderHomeView(model = buildHomeViewModel()) {
       <form id="mission-composer" class="mission-composer" autocomplete="off">
         <div class="composer-context-row"><div class="composer-project-control" aria-label="${t('home.project',model.language)}">${renderProjectPicker({ id:'home-project-picker', projects:model.projects, selectedProjectId:model.selectedProjectId, language:model.language, open:model.projectMenuOpen, query:model.projectQuery, mode:'composer', name:'projectId' })}</div><span class="composer-runtime" data-state="${providersReady&&selectedModelReady?'ready':'limited'}" role="status" aria-live="polite"><i data-state="${providersReady&&selectedModelReady?'ready':'limited'}"></i>${runtimeStatus}</span></div>${renderSelectedSkills(model)}
         <label class="composer-input"><span class="sr-only">${t('home.objective',model.language)}</span><textarea id="objective" name="objective" rows="3" placeholder="${esc(t('home.placeholder',model.language))}" required></textarea>${renderMenu(model)}</label>
-        <div class="composer-footer"><div class="composer-tools"><button type="button" data-action="attach" aria-label="${t('home.attach',model.language)}">${icon('paperclip',{size:17})}<span>${t('home.attach',model.language)}</span></button><button type="button" data-action="open-context" aria-label="${model.language==='vi'?'Thêm ngữ cảnh':'Add context'}">@</button><button type="button" data-action="open-commands" aria-label="${model.language==='vi'?'Mở danh sách lệnh':'Open commands'}">/</button></div><div class="composer-send">${renderComposerPicker({ name:'intent', ariaLabel:t('home.intent',model.language), iconName:'spark', selected:model.intent, options:intentOptions(model) })}${renderComposerPicker({ name:'modelChoice', ariaLabel:t('common.model',model.language), iconName:'model', selected:model.selectedModel, options:modelOptions, className:'composer-select--model', searchable:modelOptions.length>12, searchLabel:model.language==='vi'?'Tìm model…':'Search models…' })}${effortOptions.length ? renderComposerPicker({ name:'planningEffort', ariaLabel:model.language==='vi'?'Mức suy luận':'Reasoning effort', iconName:'activity', selected:model.selectedEffort, options:effortOptions, className:'composer-select--effort' }) : ''}<button class="composer-submit" type="submit"${model.submitting||!model.projects.length||!providersReady||!selectedModelReady?' disabled':''}>${model.submitting?'<span class="spinner"></span>':icon('send',{size:17})}<span>${t('home.send',model.language)}</span></button></div></div>
+        <div class="composer-footer"><div class="composer-tools"><button type="button" data-action="attach" aria-label="${t('home.attach',model.language)}">${icon('paperclip',{size:17})}<span>${t('home.attach',model.language)}</span></button><button type="button" data-action="open-context" aria-label="${model.language==='vi'?'Thêm ngữ cảnh':'Add context'}">@</button><button type="button" data-action="open-commands" aria-label="${model.language==='vi'?'Mở danh sách lệnh':'Open commands'}">/</button></div><div class="composer-send">${renderComposerPicker({ name:'intent', ariaLabel:t('home.intent',model.language), iconName:'spark', selected:model.intent, options:intentOptions(model) })}${renderComposerPicker({ name:'modelChoice', ariaLabel:t('common.model',model.language), iconName:'model', selected:model.selectedModel, options:modelOptions, className:'composer-select--model', searchable:modelOptions.length>12, searchLabel:model.language==='vi'?'Tìm model…':'Search models…' })}${effortOptions.length ? renderComposerPicker({ name:'planningEffort', ariaLabel:model.language==='vi'?'Mức suy luận':'Reasoning effort', iconName:'activity', selected:model.selectedEffort ?? '', options:effortOptions, className:'composer-select--effort' }) : ''}<button class="composer-submit" type="submit"${model.submitting||!model.projects.length||!providersReady||!selectedModelReady?' disabled':''}>${model.submitting?'<span class="spinner"></span>':icon('send',{size:17})}<span>${t('home.send',model.language)}</span></button></div></div>
       </form>${readinessHtml}${model.error?`<div class="home-error" role="alert">${icon('warning',{size:16})}<span>${esc(model.error)}</span><button type="button" data-home-action="retry">${model.language==='vi'?'Thử lại':'Retry'}</button></div>`:''}
     </div>
     <div class="home-content"><section class="home-section"><header><div><p class="eyebrow">${t('home.quick',model.language)}</p><h2>${model.language==='vi'?'Bạn muốn bắt đầu thế nào?':'Choose a starting point'}</h2></div><div class="home-section__actions"><a href="#/skills" data-route="/skills">${model.language==='vi'?'Kho skill':'Skill library'} ${icon('arrow',{size:14})}</a><a href="#/settings" data-route="/settings">${model.language==='vi'?'Tùy chỉnh':'Customize'} ${icon('arrow',{size:14})}</a></div></header><div class="capability-grid">${quick.map((item)=>`<button type="button" class="capability-card" data-quick-intent="${item.intent}" data-quick-text="${esc(item.title)}"><span>${icon(item.icon,{size:19})}</span><strong>${esc(item.title)}</strong><small>${esc(item.text)}</small>${icon('arrow',{size:15,className:'capability-card__arrow'})}</button>`).join('')}</div></section>

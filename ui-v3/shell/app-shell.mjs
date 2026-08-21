@@ -1,6 +1,7 @@
 import { GLOBAL_DESTINATIONS, renderGlobalRail } from './global-rail.mjs';
 import { createSessionSidebarModel, renderSessionSidebar } from './session-sidebar.mjs';
 import { icon } from '../core/icon.mjs';
+import { renderNolaneMark } from '../core/brand.mjs';
 import { experienceMeta, normalizeExperience } from '../core/experience-policy.mjs';
 import { t } from '../core/i18n.mjs';
 import { renderExperienceSwitcher } from '../components/experience-switcher/experience-switcher.mjs';
@@ -40,7 +41,7 @@ export function renderAppShell({ activePath = '/', content = '', sessionSnapshot
   return `<div class="app-shell" data-product="Nolane Agent" data-experience-level="${escapeHtml(requestedExperience)}" data-progressive-experience="${experience}" data-shell-mode="${mode}" data-sidebar-collapsed="${Boolean(sidebarCollapsed)}">
     ${renderGlobalRail({ activePath, experience, language })}
     <aside class="session-sidebar" aria-label="${t('shell.sessions',language)}">
-      <div class="session-sidebar__brand"><div><span class="session-sidebar__brand-mark">${icon('spark',{size:16})}</span><span><strong>Nolane</strong><small>${t('shell.workspace',language)}</small></span></div><button type="button" data-command="collapse-sidebar" aria-label="${t('shell.collapse',language)}">${icon('menu',{size:17})}</button></div>
+      <div class="session-sidebar__brand"><div><span class="session-sidebar__brand-mark">${renderNolaneMark()}</span><span><strong>Nolane</strong><small>${t('shell.workspace',language)}</small></span></div><button type="button" data-command="collapse-sidebar" aria-label="${t('shell.collapse',language)}">${icon('menu',{size:17})}</button></div>
       <button class="session-sidebar__new" type="button" data-command="new-mission">${icon('plus',{size:17})}<span>${t('shell.new',language)}</span><kbd>⌘N</kbd></button>
       <label class="session-sidebar__search"><span>${icon('search',{size:15})}</span><input type="search" placeholder="${t('shell.search',language)}" data-session-search><kbd>⌘K</kbd></label>
       <div id="session-groups" class="session-sidebar__groups">${sessions}</div>

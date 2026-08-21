@@ -17225,7 +17225,7 @@
       "entrypoints": [
         {
           "path": "src/providers/provider-registry.mjs",
-          "sha256": "c4892c4e13e1aebf5df5fc60eb68bf4e77ae9618c238b27027eef7565423df22"
+          "sha256": "8a074f577b0382877025da5f4294fa09a0cb64dbf6e0d6ab3c4d0e132c24bc22"
         }
       ],
       "externalCondition": "Run each provider adapter with real credentials or local endpoint and attach replayable request, usage, rate-limit and cancellation receipts.",
@@ -17233,7 +17233,7 @@
       "negativeTests": [
         {
           "path": "tests/direct-api-providers.test.mjs",
-          "sha256": "0d9c3df27a9e47d2db95226aab26b43236880ab73172f479b5dee4f46bc94649"
+          "sha256": "5e946b446f2f08b9d79f69f8fa4030947e45d4e07c98dd0fa2e0715bc9eb5194"
         }
       ],
       "productionWiring": [
@@ -17247,7 +17247,7 @@
       "tests": [
         {
           "path": "tests/direct-api-providers.test.mjs",
-          "sha256": "0d9c3df27a9e47d2db95226aab26b43236880ab73172f479b5dee4f46bc94649"
+          "sha256": "5e946b446f2f08b9d79f69f8fa4030947e45d4e07c98dd0fa2e0715bc9eb5194"
         }
       ],
       "title": "Provider-specific transports and real credential execution",
@@ -25525,7 +25525,7 @@
       "entrypoints": [
         {
           "path": "electron-builder.config.cjs",
-          "sha256": "7330fb2458834a84d648915a89b8de694f8e373b4e1b962bd9e9c83199fa4f54"
+          "sha256": "4965f1c1cadd43e0611b64419ffa089d6825b9ad3a35815ee6057614f8adcd9d"
         }
       ],
       "externalCondition": "Build, install, upgrade, uninstall and recover on each supported operating system with data-preservation receipts.",
@@ -25540,7 +25540,7 @@
         {
           "contains": "nsis",
           "path": "electron-builder.config.cjs",
-          "sha256": "7330fb2458834a84d648915a89b8de694f8e373b4e1b962bd9e9c83199fa4f54"
+          "sha256": "4965f1c1cadd43e0611b64419ffa089d6825b9ad3a35815ee6057614f8adcd9d"
         }
       ],
       "status": "external_gate",
@@ -31466,7 +31466,7 @@
     }
   ],
   "productVersion": "0.0.0",
-  "receiptSha256": "2777fa73c40fb2e47e7faa7b56fbdb2a758ff0f57eb89b305fcecbc958e620bb",
+  "receiptSha256": "fc1ba0e94d571aee26b5d5370dafa16c3099841083b5fc0c5deeb45e6d5250be",
   "schema": "nolane.native-core.conformance-receipt.v1",
   "status": "pass",
   "summary": {

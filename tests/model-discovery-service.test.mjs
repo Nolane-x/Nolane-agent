@@ -21,9 +21,14 @@ test('discovers OpenAI-compatible models and preserves provider IDs', async () =
   assert.equal(JSON.stringify(result).includes('secret'), false);
 });
 
-test('publishes verified reasoning controls for discovered GPT-5.6 without guessing custom model capabilities', async () => {
+test('publishes verified reasoning controls for documented OpenAI models without guessing custom model capabilities', async () => {
   const service = new ModelDiscoveryService({
-    fetch: async () => response({ data: [{ id: 'gpt-5.6', owned_by: 'openai' }, { id: 'company-private-model' }] }),
+    fetch: async () => response({ data: [
+      { id: 'gpt-5.6-sol', owned_by: 'openai' },
+      { id: 'gpt-5.3-codex', owned_by: 'openai' },
+      { id: 'gpt-5', owned_by: 'openai' },
+      { id: 'company-private-model' },
+    ] }),
   });
 
   const result = await service.discover({ providerFamily: 'openai-api', baseUrl: 'https://api.example.test', apiKey: 'secret' });
@@ -33,7 +38,9 @@ test('publishes verified reasoning controls for discovered GPT-5.6 without guess
     controllable: true,
     levels: ['none', 'low', 'medium', 'high', 'xhigh', 'max'],
   });
-  assert.equal(result.models[1].reasoning, undefined);
+  assert.deepEqual(result.models[1].reasoning?.levels, ['low', 'medium', 'high', 'xhigh']);
+  assert.deepEqual(result.models[2].reasoning?.levels, ['minimal', 'low', 'medium', 'high']);
+  assert.equal(result.models[3].reasoning, undefined);
 });
 
 test('accepts provider connection metadata without duplicating versioned base paths', async () => {
@@ -53,12 +60,21 @@ test('maps Anthropic provider kind and preserves caller auth headers', async () 
     assert.equal(url, 'https://api.anthropic.test/v1/models');
     assert.equal(options.headers['x-api-key'], 'secret');
     assert.equal(options.headers['anthropic-version'], '2023-06-01');
-    return response({ data: [{ id: 'claude-sonnet-4-7' }], has_more: false });
+    return response({ data: [{
+      id: 'claude-sonnet-4-7',
+      capabilities: {
+        effort: {
+          low: { supported: true }, medium: { supported: true }, high: { supported: true },
+          xhigh: { supported: true }, max: { supported: true },
+        },
+      },
+    }], has_more: false });
   };
   const service = new ModelDiscoveryService({ fetch });
   const result = await service.discover({ providerId: 'anthropic-api', kind: 'anthropic-messages', baseUrl: 'https://api.anthropic.test/v1', apiKey: 'secret' });
   assert.equal(result.providerFamily, 'anthropic-api');
   assert.equal(result.models[0].id, 'anthropic/claude-sonnet-4-7');
+  assert.deepEqual(result.models[0].reasoning?.levels, ['low', 'medium', 'high', 'xhigh', 'max']);
   assert.equal(JSON.stringify(result).includes('secret'), false);
 });
 
@@ -82,6 +98,20 @@ test('paginates Anthropic and Gemini discovery', async () => {
   assert.equal(gemini.models.length, 2);
   assert.equal(gemini.models[0].context.contextWindow, 1_000_000);
   assert.equal(gemini.models[1].capabilities.embeddings, true);
+});
+
+test('publishes Gemini 3 thinking levels only for documented model families', async () => {
+  const service = new ModelDiscoveryService({
+    fetch: async () => response({ models: [
+      { name: 'models/gemini-3.1-pro-preview', supportedGenerationMethods: ['generateContent'] },
+      { name: 'models/gemini-2.5-flash', supportedGenerationMethods: ['generateContent'] },
+    ] }),
+  });
+
+  const result = await service.discover({ providerFamily: 'gemini-api', baseUrl: 'https://generativelanguage.googleapis.test', apiKey: 'secret' });
+
+  assert.deepEqual(result.models[0].reasoning?.levels, ['low', 'medium', 'high']);
+  assert.equal(result.models[1].reasoning, undefined);
 });
 
 test('discovers Ollama and LM Studio deployment metadata', async () => {

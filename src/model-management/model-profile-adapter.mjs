@@ -48,6 +48,12 @@ export function advancedProfileToLegacyPatch(profile, { providerId, modelId } = 
       embeddings: tri(profile.capabilities?.embeddings),
       imageGeneration: tri(profile.modalities?.output?.image),
     },
+    reasoning: {
+      supported: tri(profile.reasoning?.supported),
+      controllable: tri(profile.reasoning?.controllable),
+      levels: Array.isArray(profile.reasoning?.levels) ? profile.reasoning.levels.map(String) : [],
+      defaultLevel: profile.reasoning?.defaultLevel ?? null,
+    },
     pricing: profile.pricing ?? {},
     quotas: profile.limits ?? {},
     local: {
@@ -89,6 +95,7 @@ export function legacyDiscoveryToAdvancedRecord(record, { providerId = record?.p
       output: { text: outputModalities.has('text') || outputModalities.size === 0, image: outputModalities.has('image'), audio: outputModalities.has('audio'), video: outputModalities.has('video') },
     },
     capabilities: record?.capabilities ?? {},
+    reasoning: record?.reasoning ?? {},
     toolCalling: { supported: record?.capabilities?.tools ?? null, parallel: record?.capabilities?.parallelTools ?? null },
     deployment: {
       local: ['ollama', 'lm-studio', 'openai-compatible'].includes(String(record?.kind ?? '').toLowerCase()) || Boolean(record?.local?.runtime || record?.local?.format || record?.local?.quantization),

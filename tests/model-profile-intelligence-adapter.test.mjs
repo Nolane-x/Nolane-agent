@@ -21,3 +21,25 @@ test('compatibility registry enriches old API records with full intelligence dos
   const legacy = advancedProfileToLegacyPatch(record.intelligence, { providerId: 'openai-api', modelId: 'gpt-5.3-codex' });
   assert.equal(legacy.capabilities.structuredOutput, true);
 });
+
+test('compatibility registry preserves discovered per-model reasoning controls for the composer', () => {
+  const registry = new ModelProfileRegistry();
+
+  const [profile] = registry.mergeDiscovery('codex-app-server', [{
+    id: 'gpt-5.6-sol',
+    reasoning: {
+      supported: true,
+      controllable: true,
+      levels: ['low', 'medium', 'high', 'xhigh', 'max'],
+      defaultLevel: 'high',
+    },
+  }]);
+
+  assert.deepEqual(profile.reasoning, {
+    supported: true,
+    controllable: true,
+    levels: ['low', 'medium', 'high', 'xhigh', 'max'],
+    defaultLevel: 'high',
+  });
+  assert.deepEqual(registry.publicView().models[0].reasoning, profile.reasoning);
+});

@@ -61,6 +61,19 @@ test('Anthropic Messages provider normalizes tool_use and never leaks a rejected
   await assert.rejects(() => failing.complete({ messages: [{ role: 'user', content: 'x' }] }), (error) => !String(error.message).includes('sk-ant-private'));
 });
 
+test('Anthropic Messages provider forwards a selected effort in output_config', async () => {
+  let body;
+  const provider = new AnthropicMessagesProvider({
+    id: 'anthropic-effort', model: 'claude-opus-5', apiKey: 'sk-ant-private',
+    fetchImpl: async (_url, init) => { body = JSON.parse(init.body); return response({ id: 'msg_1', model: 'claude-opus-5', content: [{ type: 'text', text: 'Done.' }], usage: { input_tokens: 1, output_tokens: 1 } }); },
+  });
+
+  await provider.complete({ messages: [{ role: 'user', content: 'Use maximum effort' }], effort: 'max' });
+
+  assert.deepEqual(body.output_config, { effort: 'max' });
+  assert.doesNotMatch(JSON.stringify(body), /sk-ant-private/);
+});
+
 test('Gemini GenerateContent provider normalizes functionCall and usage metadata', async () => {
   let body;
   const provider = new GeminiGenerateContentProvider({

@@ -14,6 +14,7 @@ module.exports = {
   electronVersion: '43.2.0',
   compression: 'maximum',
   artifactName: 'NolaneAgent-Setup-${version}-${arch}.${ext}',
+  icon: 'build/icon.svg',
   directories: { output: 'release/installer', buildResources: 'build' },
   files: [
     'src/**/*',

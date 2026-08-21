@@ -1,4 +1,5 @@
 import { icon } from '../core/icon.mjs';
+import { renderNolaneMark } from '../core/brand.mjs';
 import { canAccess } from '../core/experience-policy.mjs';
 import { t } from '../core/i18n.mjs';
 
@@ -27,5 +28,5 @@ export function renderGlobalRail({ activePath = '/', experience = 'everyday', la
     const current = isCurrent(item, activePath) ? ' aria-current="page"' : '';
     return `<a href="#${item.path}" data-route="${item.path}" data-nav-id="${item.id}" data-tooltip="${label}" aria-label="${label}"${current}>${icon(item.icon,{size:20})}<span class="global-rail__label">${label}</span></a>`;
   };
-  return `<nav class="global-rail" aria-label="Nolane Agent navigation"><a class="global-rail__logo" href="#/" data-route="/" aria-label="${t('app.name',language)}"><span>N</span></a><div class="global-rail__main">${primary.map(renderItem).join('')}</div>${settings ? `<div class="global-rail__bottom">${renderItem(settings)}</div>` : ''}</nav>`;
+  return `<nav class="global-rail" aria-label="Nolane Agent navigation"><a class="global-rail__logo" href="#/" data-route="/" aria-label="${t('app.name',language)}">${renderNolaneMark()}</a><div class="global-rail__main">${primary.map(renderItem).join('')}</div>${settings ? `<div class="global-rail__bottom">${renderItem(settings)}</div>` : ''}</nav>`;
 }

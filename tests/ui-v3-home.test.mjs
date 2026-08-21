@@ -195,6 +195,31 @@ test('home composer exposes and submits only catalog-advertised reasoning effort
   assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Use careful reasoning', planningProviderId: 'opencode', planningModelId: 'openai/gpt-5.6-sol', deploymentKey: 'opencode/openai/gpt-5.6-sol', planningEffort: 'ultra', mcpAllowedTools: [] }]]);
 });
 
+test('home composer keeps the selected model default unless the user explicitly chooses an effort', async () => {
+  const calls = [];
+  const api = {
+    async get(path) {
+      if (path === '/api/projects') return [{ id: 'p1', name: 'Project' }];
+      if (path === '/api/provider-connections') return [{ id: 'openai-api', state: 'ready' }];
+      if (path === '/api/model-profiles') return [{ key: 'openai-api/gpt-5.6-sol', providerId: 'openai-api', modelId: 'gpt-5.6-sol', displayName: 'GPT-5.6 Sol', reasoning: { supported: true, controllable: true, defaultLevel: 'high', levels: ['low', 'medium', 'high'] } }];
+      return [];
+    },
+    async post(path, body) { calls.push([path, body]); return { id: 'mission-default', objective: body.objective }; },
+  };
+  const controller = createHomeController({ api });
+  await controller.load();
+  controller.setModel('openai-api/gpt-5.6-sol');
+
+  const html = renderHomeView(controller.snapshot());
+  assert.match(html, /data-composer-picker="planningEffort"/);
+  assert.match(html, /Mặc định model|Model default/);
+  await controller.submit({ objective: 'Use the provider default', projectId: 'p1', modelChoice: 'openai-api/gpt-5.6-sol' });
+
+  assert.deepEqual(calls, [['/api/missions/plan', {
+    projectId: 'p1', objective: 'Use the provider default', planningProviderId: 'openai-api', planningModelId: 'gpt-5.6-sol', deploymentKey: 'openai-api/gpt-5.6-sol', mcpAllowedTools: [],
+  }]]);
+});
+
 test('home composer uses the persisted routing default until the user chooses another model', async () => {
   const api = {
     async get(path) {

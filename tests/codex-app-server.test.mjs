@@ -171,6 +171,12 @@ test('CodexAppServerClient imports the app-server model catalog without inventin
     id: 'gpt-5.6-codex',
     displayName: 'GPT-5.6 Codex',
     discoveredAt: catalog.observedAt,
+    reasoning: {
+      supported: true,
+      controllable: true,
+      levels: ['low', 'medium', 'high'],
+      defaultLevel: 'medium',
+    },
     metadata: {
       source: 'codex-app-server',
       hidden: false,

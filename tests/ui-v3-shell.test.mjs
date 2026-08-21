@@ -1,7 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import { GLOBAL_DESTINATIONS, createAppShellModel, localizeRouteTitle, renderAppShell } from '../ui-v3/shell/app-shell.mjs';
+
+const require = createRequire(import.meta.url);
 
 test('Nolane Agent rail contains exactly the approved top-level destinations', () => {
   assert.deepEqual(GLOBAL_DESTINATIONS.map((item) => item.id), [
@@ -51,4 +54,17 @@ test('workspace command bar uses accessible contrast tokens for its visible text
   const css = await readFile(new URL('../ui-v3/styles/layout/app-shell.css', import.meta.url), 'utf8');
   assert.match(css, /\.shell-command-search\{[^}]*color:var\(--text-secondary\)/);
   assert.match(css, /\.shell-command-search>kbd\{[^}]*color:var\(--text-secondary\)/);
+});
+
+test('Nolane visual identity is a theme-aware vector mark in the shell and a declared packaging icon', async () => {
+  const html = renderAppShell();
+  const favicon = await readFile(new URL('../ui-v3/nolane.svg', import.meta.url), 'utf8');
+  const packagingIcon = await readFile(new URL('../build/icon.svg', import.meta.url), 'utf8');
+  const builder = require('../electron-builder.config.cjs');
+
+  assert.match(html, /data-nolane-mark="true"/);
+  assert.match(html, /class="nolane-brand-mark"/);
+  assert.match(favicon, /viewBox="0 0 64 64"/);
+  assert.match(packagingIcon, /viewBox="0 0 64 64"/);
+  assert.equal(builder.icon, 'build/icon.svg');
 });
