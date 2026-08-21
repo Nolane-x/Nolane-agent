@@ -63,7 +63,7 @@ module.exports = {
     oneClick: false,
     perMachine: false,
     allowElevation: true,
-    allowToChangeInstallationDirectory: true,
+    allowToChangeInstallationDirectory: false,
     createDesktopShortcut: true,
     createStartMenuShortcut: true,
     shortcutName: 'Nolane Agent',
