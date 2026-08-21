@@ -50,7 +50,7 @@ export class ProviderRegistry {
             const invoke = () => sessionHost
               ? sessionHost.complete({
                   provider: target, request, signal: request.signal ?? null,
-                  scope: { projectId, missionId, taskId, repositoryId, workspaceHash },
+                  scope: { projectId, missionId, taskId, repositoryId, workspaceHash, ...(request.codexAppServerExecutionPolicy ? { codexAppServerExecutionPolicy: request.codexAppServerExecutionPolicy } : {}) },
                   fingerprint: [repositoryFingerprint, harnessProfileSha256, toolSchemaSha256].filter(Boolean).join(':'),
                 })
               : target.complete(request);

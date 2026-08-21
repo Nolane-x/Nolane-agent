@@ -11,7 +11,7 @@ import { DurableEventHub } from './events/durable-event-hub.mjs';
 import { ForgeOsBridge } from './forge/forgeos-bridge.mjs';
 import { ForgeOsToolGateway } from './forge/forgeos-tool-gateway.mjs';
 import { ProviderRegistry, createBuiltInCliProviders } from './providers/provider-registry.mjs';
-import { CodexAppServerClient } from './providers/codex-app-server.mjs';
+import { CodexAppServerClient, decideCodexAppServerApproval } from './providers/codex-app-server.mjs';
 import { CliAuthAdapter, createAvailabilityOnlyCliAuthAdapter } from './providers/cli-auth-adapter.mjs';
 import { ProviderConnectionService } from './providers/provider-connection-service.mjs';
 import { OutcomeAwareProviderRouter, OutcomeMetricsStore } from './providers/outcome-aware-router.mjs';
@@ -402,7 +402,7 @@ for (const id of ['codex', 'claude', 'gemini', 'opencode', 'github-copilot', 'cu
   const cwd = path.join(providerSandboxRoot, id); await mkdir(cwd, { recursive: true }); providerOverrides[id] = { cwd };
 }
 for (const provider of createBuiltInCliProviders(providerOverrides)) providers.register(provider);
-const codexAppServer = providers.register(new CodexAppServerClient({ cwd: path.join(providerSandboxRoot, 'codex-app-server'), approvalHandler: async () => ({ decision: 'decline' }) }));
+const codexAppServer = providers.register(new CodexAppServerClient({ cwd: path.join(providerSandboxRoot, 'codex-app-server'), approvalHandler: decideCodexAppServerApproval }));
 await mkdir(codexAppServer.cwd, { recursive: true });
 const { modelProfiles, modelDiscovery, modelProbes, modelManager } = uxFoundation.bindProviders(providers);
 const providerConnections = new ProviderConnectionService({
