@@ -12,6 +12,7 @@ test('native desktop package identities and targets are stable and NolaneNative-
   assert.equal(config.win.electronUpdaterCompatibility, '>=2.16');
   assert.equal(config.nsis.oneClick, false);
   assert.equal(config.nsis.perMachine, false);
+  assert.equal(config.nsis.allowToChangeInstallationDirectory, false);
   assert.equal(config.nsis.deleteAppDataOnUninstall, false);
   assert.equal(config.nsis.differentialPackage, true);
   assert.equal(config.nsis.guid, 'd4f38ef8-b26d-4fc8-9b83-31a988f96251');
