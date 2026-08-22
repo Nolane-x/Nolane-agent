@@ -57,7 +57,7 @@ module.exports = {
     electronUpdaterCompatibility: '>=2.16',
     requestedExecutionLevel: 'asInvoker',
     verifyUpdateCodeSignature: process.env.NOLANE_VERIFY_AUTHENTICODE !== 'false',
-    publisherName: process.env.NOLANE_WINDOWS_PUBLISHER || undefined,
+    ...(process.env.NOLANE_WINDOWS_PUBLISHER ? { publisherName: process.env.NOLANE_WINDOWS_PUBLISHER } : {}),
   },
   nsis: {
     guid: 'd4f38ef8-b26d-4fc8-9b83-31a988f96251',

@@ -25525,7 +25525,7 @@
       "entrypoints": [
         {
           "path": "electron-builder.config.cjs",
-          "sha256": "4965f1c1cadd43e0611b64419ffa089d6825b9ad3a35815ee6057614f8adcd9d"
+          "sha256": "b0c01c787a361c47b9d41292c1088f5bd3b8e4b79a8e18bded4e148305c4492e"
         }
       ],
       "externalCondition": "Build, install, upgrade, uninstall and recover on each supported operating system with data-preservation receipts.",
@@ -25533,21 +25533,21 @@
       "negativeTests": [
         {
           "path": "tests/electron-installer-config.test.mjs",
-          "sha256": "5a16d5d007ff4ff28b3ac582f9a581acc1d27e2af5ad05eab4eecf52c34bba71"
+          "sha256": "8551705754889f026d8dbbd4416971c72d50dc4e5f67e274ece0226a1e17429c"
         }
       ],
       "productionWiring": [
         {
           "contains": "nsis",
           "path": "electron-builder.config.cjs",
-          "sha256": "4965f1c1cadd43e0611b64419ffa089d6825b9ad3a35815ee6057614f8adcd9d"
+          "sha256": "b0c01c787a361c47b9d41292c1088f5bd3b8e4b79a8e18bded4e148305c4492e"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/electron-installer-config.test.mjs",
-          "sha256": "5a16d5d007ff4ff28b3ac582f9a581acc1d27e2af5ad05eab4eecf52c34bba71"
+          "sha256": "8551705754889f026d8dbbd4416971c72d50dc4e5f67e274ece0226a1e17429c"
         }
       ],
       "title": "Installer and bootstrap journeys across supported operating systems",
@@ -31466,7 +31466,7 @@
     }
   ],
   "productVersion": "0.0.0",
-  "receiptSha256": "f2215205033d9f3028fb2aeec99235bc6f4672ea6b118328cf86262e0602b448",
+  "receiptSha256": "8251801e83afb936009416db610e1722836666105b08a4c840ff9457cad15bcd",
   "schema": "nolane.native-core.conformance-receipt.v1",
   "status": "pass",
   "summary": {
