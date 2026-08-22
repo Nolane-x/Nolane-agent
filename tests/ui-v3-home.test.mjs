@@ -153,6 +153,15 @@ test('home uses a compact task-first composition instead of an oversized generic
   assert.doesNotMatch(styles, /font-size:clamp\(38px,5\.2vw,72px\)/);
 });
 
+test('flagship desktop home keeps the mission brief and composer in a readable working balance', async () => {
+  const styles = await readFile(new URL('../ui-v3/styles/flagship/proofborne-instrument.css', import.meta.url), 'utf8');
+
+  assert.match(styles, /\.home-intro\s*\{\s*grid-template-columns:\s*minmax\(360px,\s*\.7fr\)\s+minmax\(0,\s*1fr\)/);
+  assert.match(styles, /\.home-intro__copy\s*\{\s*max-width:\s*470px/);
+  assert.match(styles, /\.home-intro h1\s*\{\s*max-width:\s*480px;[\s\S]*?font-size:\s*clamp\(34px,\s*3\.6vw,\s*52px\)/);
+  assert.match(styles, /\.mission-composer\s*\{[\s\S]*?border-radius:\s*14px/);
+});
+
 test('home composer sends provider and model separately for the selected deployment', async () => {
   const calls = [];
   const api = {
