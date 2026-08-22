@@ -12,15 +12,15 @@ Nolane Agent 0.0.0 establishes the canonical stable release identity for the loc
 
 The tag-triggered GitHub Actions workflow builds the release on native runners only:
 
-- unsigned Windows NSIS, including the signed Nolane update-manifest path; Windows may show an **Unknown Publisher** warning;
+- unsigned Windows NSIS with `latest.yml` update metadata; Windows may show an **Unknown Publisher** warning;
 - unsigned macOS DMG and ZIP; Gatekeeper may require explicit user confirmation;
 - Linux AppImage and DEB.
 
-The packaged app presents **Download update** and then **Update and restart** when a newer release is available. Windows uses the signed Nolane update manifest. macOS and Linux use GitHub Releases metadata through `electron-updater`. An update restart is blocked while a mission is active and creates recovery data before installation.
+The packaged app presents **Download update** and then **Update and restart** when a newer release is available. Windows, macOS, and Linux use GitHub Releases metadata through `electron-updater`. An update restart is blocked while a mission is active, creates recovery data before installation, replaces the existing application, and preserves the user data directory.
 
 ## Publication boundary
 
-This document does not create a GitHub Release. Publication requires the matching `v0.0.0` tag, all required GitHub Actions secrets, exact-head candidate evidence, and a successful release workflow.
+This document does not create a GitHub Release. Publication requires the matching `v0.0.0` tag, exact-head candidate evidence, and a successful release workflow. No private update-signing key or platform code-signing credential is required for the unsigned 0.0.0 artifacts.
 
 ## Evidence boundary
 

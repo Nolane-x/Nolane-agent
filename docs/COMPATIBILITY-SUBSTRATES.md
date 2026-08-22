@@ -22,4 +22,4 @@ Documentation must not claim ForgeOS is absent while those conditions are false.
 
 ## Update trust configuration
 
-`config/update.json` and the update public key are release-generated inputs. Their packaging entry does not imply that production trust material is committed as a normal source file.
+`config/update.json` disables the legacy custom signed-feed service. Packaged Windows, macOS, and Linux releases use `electron-updater` GitHub Releases metadata; their update configuration is produced by `electron-builder`, not by a source-controlled private key.

@@ -19,7 +19,7 @@ test('CI workflow runs product validation without publishing or release secrets'
   assert.doesNotMatch(source, /NOLANE_UPDATE_PRIVATE_KEY|WIN_CSC|gh release create/);
 });
 
-test('release workflow permits unsigned Windows and macOS artifacts while retaining signed update metadata', async () => {
+test('release workflow publishes unsigned cross-platform artifacts with electron-updater GitHub metadata and no private signing gate', async () => {
   const [source, packageJson, builderConfig, readme, releaseNotes, limitations] = await Promise.all([
     read('.github/workflows/release.yml'),
     read('package.json'),
@@ -46,6 +46,7 @@ test('release workflow permits unsigned Windows and macOS artifacts while retain
   assert.match(source, /NolaneAgent-\*\.deb/);
   assert.match(source, /latest-mac\.yml/);
   assert.match(source, /latest-linux\.yml/);
+  assert.match(source, /release\/installer\/latest\.yml/);
   assert.doesNotMatch(source, /Require macOS signing credentials/);
   assert.doesNotMatch(source, /MAC_CSC_LINK is required/);
   assert.doesNotMatch(source, /Require Windows signing credentials/);
@@ -54,28 +55,31 @@ test('release workflow permits unsigned Windows and macOS artifacts while retain
   assert.match(source, /NOLANE_VERIFY_AUTHENTICODE: false/);
   assert.match(source, /actions\/download-artifact@v8/);
   assert.match(source, /digest-mismatch: error/);
-  assert.match(source, /NOLANE_UPDATE_PRIVATE_KEY_B64/);
-  assert.match(source, /nolane\.agent\.update\.v2/);
-  assert.match(source, /--package-kind nsis/);
+  assert.doesNotMatch(source, /NOLANE_UPDATE_PRIVATE_KEY_B64/);
+  assert.doesNotMatch(source, /nolane\.agent\.update\.v2/);
+  assert.doesNotMatch(source, /sign-manifest/);
+  assert.doesNotMatch(source, /update-feed/);
+  assert.doesNotMatch(source, /prepare-update-trust/);
   assert.match(source, /actions\/attest@v4/);
   assert.match(source, /gh release create/);
   assert.match(source, /SHA256SUMS/);
   assert.match(source, /npm run release:matrix/);
-  assert.match(source, /release\/matrix-\$\{\{ steps\.update_trust\.outputs\.version \}\}\/full-release-matrix\.md/);
-  assert.match(source, /release\/matrix-\$\{\{ steps\.update_trust\.outputs\.version \}\}\/full-release-matrix\.json/);
+  assert.match(source, /release\/matrix-\$\{\{ steps\.release_identity\.outputs\.version \}\}\/full-release-matrix\.md/);
+  assert.match(source, /release\/matrix-\$\{\{ steps\.release_identity\.outputs\.version \}\}\/full-release-matrix\.json/);
   assert.match(source, /matrixMd|full-release-matrix\.md/);
   assert.doesNotMatch(source, /nolane_native-agent|NolaneNative/);
   assert.match(packageJson, /"electron-updater"\s*:\s*"6\.8\.9"/);
   assert.match(builderConfig, /provider: 'github'/);
   assert.match(readme, /unsigned.*Windows.*Unknown Publisher/i);
   assert.match(releaseNotes, /unsigned.*Windows.*Unknown Publisher/i);
-  assert.match(limitations, /mandatory.*update signing key/i);
+  assert.match(limitations, /unsigned.*Windows.*Unknown Publisher/i);
+  assert.doesNotMatch(limitations, /mandatory.*update signing key/i);
 });
 
-test('release workflow verifies tag/version coherence and fails closed without the update signing key', async () => {
+test('release workflow verifies tag/version coherence without requiring a private update signing key', async () => {
   const [workflow, verifier] = await Promise.all([read('.github/workflows/release.yml'), read('scripts/verify-release-tag.mjs')]);
   assert.match(workflow, /verify-release-tag\.mjs/);
-  assert.match(workflow, /if \(-not \$env:NOLANE_UPDATE_PRIVATE_KEY_B64\)/);
+  assert.doesNotMatch(workflow, /NOLANE_UPDATE_PRIVATE_KEY_B64/);
   assert.match(verifier, /package\.json/);
   assert.match(verifier, /v\$\{version\}/);
   assert.match(verifier, /GITHUB_SHA/);

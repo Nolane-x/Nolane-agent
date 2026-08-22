@@ -30,42 +30,44 @@ function updaterFixture({ version = '5.0.0-beta.7', releaseNotes = 'https://gith
 }
 
 test('GitHub release updater uses packaged electron-updater metadata and only exposes a verified newer release', async (t) => {
-  const updater = updaterFixture();
-  const userDataDir = await mkdtemp(path.join(os.tmpdir(), 'nolane-github-release-updater-'));
-  t.after(() => rm(userDataDir, { recursive: true, force: true }));
-  const subject = new GitHubReleaseUpdater({
-    updater,
-    app: { isPackaged: true },
-    currentVersion: '5.0.0-beta.6',
-    platform: 'darwin',
-    userDataDir,
-  });
+  for (const platform of ['win32', 'darwin', 'linux']) {
+    const updater = updaterFixture();
+    const userDataDir = await mkdtemp(path.join(os.tmpdir(), 'nolane-github-release-updater-'));
+    t.after(() => rm(userDataDir, { recursive: true, force: true }));
+    const subject = new GitHubReleaseUpdater({
+      updater,
+      app: { isPackaged: true },
+      currentVersion: '5.0.0-beta.6',
+      platform,
+      userDataDir,
+    });
 
-  assert.equal(updater.autoDownload, false);
-  assert.equal(updater.autoInstallOnAppQuit, false);
-  assert.equal(updater.allowPrerelease, true);
-  assert.deepEqual(await subject.status(), { ready: false, reason: 'no-downloaded-update' });
+    assert.equal(updater.autoDownload, false);
+    assert.equal(updater.autoInstallOnAppQuit, false);
+    assert.equal(updater.allowPrerelease, true);
+    assert.deepEqual(await subject.status(), { ready: false, reason: 'no-downloaded-update' });
 
-  const result = await subject.check();
-  assert.deepEqual(result, {
-    available: true,
-    version: '5.0.0-beta.7',
-    releaseTag: 'v5.0.0-beta.7',
-    releaseNotesUrl: 'https://github.com/Nolane-x/Nolane-agent/releases/tag/v5.0.0-beta.7',
-  });
+    const result = await subject.check();
+    assert.deepEqual(result, {
+      available: true,
+      version: '5.0.0-beta.7',
+      releaseTag: 'v5.0.0-beta.7',
+      releaseNotesUrl: 'https://github.com/Nolane-x/Nolane-agent/releases/tag/v5.0.0-beta.7',
+    });
 
-  const downloaded = await subject.download();
-  assert.equal(downloaded.ready, true);
-  assert.equal(downloaded.version, '5.0.0-beta.7');
-  assert.equal(downloaded.releaseTag, 'v5.0.0-beta.7');
-  assert.equal(downloaded.releaseNotesUrl, 'https://github.com/Nolane-x/Nolane-agent/releases/tag/v5.0.0-beta.7');
+    const downloaded = await subject.download();
+    assert.equal(downloaded.ready, true);
+    assert.equal(downloaded.version, '5.0.0-beta.7');
+    assert.equal(downloaded.releaseTag, 'v5.0.0-beta.7');
+    assert.equal(downloaded.releaseNotesUrl, 'https://github.com/Nolane-x/Nolane-agent/releases/tag/v5.0.0-beta.7');
 
-  await subject.installAndRestart();
-  assert.deepEqual(updater.installArguments, [false, true]);
-  const recovery = JSON.parse(await readFile(path.join(userDataDir, 'updates', 'update-recovery.json'), 'utf8'));
-  assert.equal(recovery.state, 'github-release-updater-launched');
-  assert.equal(recovery.targetVersion, '5.0.0-beta.7');
-  assert.equal(recovery.preserveUserData, true);
+    await subject.installAndRestart();
+    assert.deepEqual(updater.installArguments, [false, true]);
+    const recovery = JSON.parse(await readFile(path.join(userDataDir, 'updates', 'update-recovery.json'), 'utf8'));
+    assert.equal(recovery.state, 'github-release-updater-launched');
+    assert.equal(recovery.targetVersion, '5.0.0-beta.7');
+    assert.equal(recovery.preserveUserData, true);
+  }
 });
 
 test('GitHub release updater remains unavailable in an unpackaged source run', async () => {

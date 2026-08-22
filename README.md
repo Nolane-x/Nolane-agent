@@ -17,13 +17,13 @@ Nolane Agent is a local-first workspace for directing AI agents across a real pr
 
 GitHub Actions is the only release packaging environment. A tag matching the package version creates native artifacts on GitHub runners:
 
-- Windows: unsigned NSIS installer with the signed Nolane update manifest. Windows may show an **Unknown Publisher** warning.
+- Windows: unsigned NSIS installer and `latest.yml` update metadata. Windows may show an **Unknown Publisher** warning.
 - macOS: unsigned DMG and ZIP. macOS Gatekeeper may require an explicit user confirmation before launch.
 - Linux: AppImage and DEB.
 
-When a packaged installation sees a newer GitHub Release, the application presents an explicit **Download update** action followed by **Update and restart**. Windows uses the Nolane signed update-manifest path. macOS and Linux use GitHub Releases metadata through `electron-updater`. Updates never install automatically, and an active mission blocks restart until it is safe.
+When a packaged installation sees a newer GitHub Release, the application presents an explicit **Download update** action followed by **Update and restart**. Windows, macOS, and Linux use GitHub Releases metadata through `electron-updater`; downloaded packages are checked against that metadata before handoff. Updates never install automatically, and an active mission blocks restart until it is safe. The NSIS installer replaces the existing Windows installation in place while preserving the application data directory, and Nolane records a recovery snapshot before restart.
 
-No public GitHub Release is created by this repository change. A maintainer must still create the matching tag and provide the required GitHub Actions secrets: `NOLANE_UPDATE_PRIVATE_KEY_B64`, `WIN_CSC_LINK`, `WIN_CSC_KEY_PASSWORD`, `MAC_CSC_LINK`, and `MAC_CSC_KEY_PASSWORD`.
+No public GitHub Release is created by this repository change. A maintainer creates the matching tag; GitHub Actions can build and publish the unsigned artifacts without private update keys or platform code-signing credentials. Authenticode and Apple signing are future optional hardening work, not release gates for Nolane Agent 0.0.0.
 
 ## Architecture
 
