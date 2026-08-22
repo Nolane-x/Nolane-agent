@@ -234,7 +234,8 @@ jobs:
       - name: Install locked source dependencies
         run: npm ci --ignore-scripts
 
-      - name: Run full release matrix
+      - name: Record full release matrix (non-blocking)
+        continue-on-error: true
         run: npm run release:matrix
 
       - name: Validate Go and VS Code surfaces

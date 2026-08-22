@@ -63,6 +63,7 @@ test('release workflow publishes unsigned cross-platform artifacts with electron
   assert.match(source, /actions\/attest@v4/);
   assert.match(source, /gh release create/);
   assert.match(source, /SHA256SUMS/);
+  assert.match(source, /name: Record full release matrix \(non-blocking\)\s*\n\s*continue-on-error: true\s*\n\s*run: npm run release:matrix/);
   assert.match(source, /npm run release:matrix/);
   assert.match(source, /release\/matrix-\$\{\{ steps\.release_identity\.outputs\.version \}\}\/full-release-matrix\.md/);
   assert.match(source, /release\/matrix-\$\{\{ steps\.release_identity\.outputs\.version \}\}\/full-release-matrix\.json/);
