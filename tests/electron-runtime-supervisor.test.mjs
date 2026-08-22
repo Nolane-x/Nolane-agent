@@ -14,6 +14,15 @@ class FakeProcess extends EventEmitter {
   kill() { this.killed = true; this.emit('exit', 0); }
 }
 
+test('RuntimeSupervisor gives a complete local runtime graph a two-minute startup budget by default', () => {
+  const supervisor = new RuntimeSupervisor({
+    runtimeFile: 'runtime.json',
+    modulePath: '/app/src/app.mjs',
+    processFactory: () => new FakeProcess(),
+  });
+  assert.equal(supervisor.startupTimeoutMs, 120_000);
+});
+
 test('RuntimeSupervisor waits for an authenticated runtime handoff', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-electron-runtime-'));
   t.after(() => rm(root, { recursive: true, force: true }));

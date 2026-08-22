@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { generateNolaneProgram } from '../scripts/generate-nolane-program.mjs';
+import { PRODUCT_IDENTITY } from '../src/product-identity.mjs';
 
 test('program generator creates a real requirement registry and a Nolane runtime purity receipt and immutable historical transformation evidence', async () => {
   const featureAuditBefore = await readFile('docs/feature-audit-5.0.0-beta.6.json');
@@ -21,8 +22,8 @@ test('program generator creates a real requirement registry and a Nolane runtime
   assert.equal(registry.statusCounts.verified_source_test, 193);
   assert.equal(registry.statusCounts.external_gate, 5);
   assert.equal(registry.statusCounts.not_implemented ?? 0, 0);
-  assert.equal(registry.version, '0.0.0');
-  assert.equal(registry.productVersion, '0.0.0');
+  assert.equal(registry.version, PRODUCT_IDENTITY.version);
+  assert.equal(registry.productVersion, PRODUCT_IDENTITY.version);
   const cleanRoom = registry.requirements.find((item) => item.id === 'NOL-AUDIT-003');
   assert.equal(cleanRoom.status, 'verified_source_test');
   assert.equal(cleanRoom.acceptance.entrypoint, 'scripts/certify-published-source.mjs');

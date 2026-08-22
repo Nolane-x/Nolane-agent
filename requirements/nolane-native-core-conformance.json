@@ -21065,7 +21065,7 @@
       "entrypoints": [
         {
           "path": "desktop/main.cjs",
-          "sha256": "f495cc1a20a92f9a6fa1e9d00cacaf9bd57aee55e593a327a9a225b79e79d24d"
+          "sha256": "4104bf0b2eb97089fc271a7ed1547c1b492fe7eb80baa6eee5e777be67a29a73"
         }
       ],
       "externalCondition": "Build and execute the signed NSIS installer on Windows, then attach update, performance, accessibility and recovery receipts.",
@@ -21073,21 +21073,21 @@
       "negativeTests": [
         {
           "path": "tests/electron-runtime-supervisor.test.mjs",
-          "sha256": "89e2f88413533aa42dc6774fca46a2df9bedaa34fae6fd22bce758b41f9d7763"
+          "sha256": "ce2fda76febe6fc5b13b0d01013b2a445357c5f8fd187ad36b1aa1a631268c69"
         }
       ],
       "productionWiring": [
         {
           "contains": "BrowserWindow",
           "path": "desktop/main.cjs",
-          "sha256": "f495cc1a20a92f9a6fa1e9d00cacaf9bd57aee55e593a327a9a225b79e79d24d"
+          "sha256": "4104bf0b2eb97089fc271a7ed1547c1b492fe7eb80baa6eee5e777be67a29a73"
         }
       ],
       "status": "external_gate",
       "tests": [
         {
           "path": "tests/electron-runtime-supervisor.test.mjs",
-          "sha256": "89e2f88413533aa42dc6774fca46a2df9bedaa34fae6fd22bce758b41f9d7763"
+          "sha256": "ce2fda76febe6fc5b13b0d01013b2a445357c5f8fd187ad36b1aa1a631268c69"
         }
       ],
       "title": "Electron desktop installer, update and real Windows runtime certification",
@@ -31466,7 +31466,7 @@
     }
   ],
   "productVersion": "0.0.0",
-  "receiptSha256": "2ea1607a582d9daab020836796486e1b6e9e572dafe2c971cc588913cee39df4",
+  "receiptSha256": "1b04f81cae2b2247dcb1d9339f2c0eb8a64473f4107af7c5a2ee07984f0713bf",
   "schema": "nolane.native-core.conformance-receipt.v1",
   "status": "pass",
   "summary": {

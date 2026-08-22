@@ -3,10 +3,10 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { PRODUCT_IDENTITY, canonicalEnvironmentName, isLegacyProductName } from '../src/product-identity.mjs';
 
-test('Nolane Agent 0.0.0 is the canonical release identity', async () => {
+test('the configured Nolane Agent version is the canonical release identity', async () => {
   assert.equal(PRODUCT_IDENTITY.product, 'Nolane Agent');
   assert.equal(PRODUCT_IDENTITY.packageName, 'nolane-agent');
-  assert.equal(PRODUCT_IDENTITY.version, '0.0.0');
+  assert.match(PRODUCT_IDENTITY.version, /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/);
   assert.equal(PRODUCT_IDENTITY.channel, 'stable');
   assert.equal(PRODUCT_IDENTITY.artifactPrefix, 'NolaneAgent');
   assert.equal(canonicalEnvironmentName('UI_VERSION'), 'NOLANE_AGENT_UI_VERSION');
@@ -20,19 +20,20 @@ test('Nolane Agent 0.0.0 is the canonical release identity', async () => {
   assert.equal(manifest.product, 'Nolane Agent');
 });
 
-test('the current public release documents are the Nolane Agent 0.0.0 set', async () => {
+test('the current public release documents match the configured Nolane Agent version', async () => {
+  const version = PRODUCT_IDENTITY.version;
   const [readme, releaseNotes, limitations, verification, gaps] = await Promise.all([
     readFile('README.md', 'utf8'),
-    readFile('docs/RELEASE-0.0.0.md', 'utf8'),
-    readFile('docs/LIMITATIONS-0.0.0.md', 'utf8'),
-    readFile('docs/VERIFICATION-REPORT-0.0.0.md', 'utf8'),
-    readFile('docs/REMAINING-GAPS-0.0.0.md', 'utf8'),
+    readFile(`docs/RELEASE-${version}.md`, 'utf8'),
+    readFile(`docs/LIMITATIONS-${version}.md`, 'utf8'),
+    readFile(`docs/VERIFICATION-REPORT-${version}.md`, 'utf8'),
+    readFile(`docs/REMAINING-GAPS-${version}.md`, 'utf8'),
   ]);
   for (const document of [readme, releaseNotes, limitations, verification, gaps]) {
-    assert.match(document, /Nolane Agent 0\.0\.0/);
+    assert.ok(document.includes(`Nolane Agent ${version}`));
   }
-  assert.match(readme, /docs\/RELEASE-0\.0\.0\.md/);
-  assert.match(readme, /docs\/LIMITATIONS-0\.0\.0\.md/);
-  assert.match(readme, /docs\/VERIFICATION-REPORT-0\.0\.0\.md/);
-  assert.match(readme, /docs\/REMAINING-GAPS-0\.0\.0\.md/);
+  assert.ok(readme.includes(`docs/RELEASE-${version}.md`));
+  assert.ok(readme.includes(`docs/LIMITATIONS-${version}.md`));
+  assert.ok(readme.includes(`docs/VERIFICATION-REPORT-${version}.md`));
+  assert.ok(readme.includes(`docs/REMAINING-GAPS-${version}.md`));
 });
