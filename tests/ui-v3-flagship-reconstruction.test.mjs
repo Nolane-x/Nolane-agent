@@ -48,8 +48,8 @@ test('flagship shell reads as a calibrated command band and working margin', asy
 
 test('Home becomes a mission launch surface instead of a card grid', async () => {
   const css = await readFile(flagshipUrl, 'utf8');
-  assert.match(css, /\.home-intro\s*\{[^}]*grid-template-columns:\s*minmax\(180px,[^;]+\)\s+minmax\(0,\s*1fr\)/s);
-  assert.match(css, /\.mission-composer\s*\{[^}]*border-radius:\s*10px[^}]*box-shadow:\s*none/s);
+  assert.match(css, /\.home-intro\s*\{[^}]*grid-template-columns:\s*minmax\(360px,[^;]+\)\s+minmax\(0,\s*1fr\)/s);
+  assert.match(css, /\.mission-composer\s*\{[^}]*border-radius:\s*14px[^}]*box-shadow:\s*none/s);
   assert.match(css, /\.capability-grid\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/s);
   assert.match(css, /\.capability-card\s*\{[^}]*min-height:\s*0[^}]*border-radius:\s*0[^}]*box-shadow:\s*none/s);
   assert.match(css, /\.recent-mission\s*\{[^}]*border-radius:\s*0[^}]*border-left:/s);
