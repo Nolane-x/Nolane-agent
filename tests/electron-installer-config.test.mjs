@@ -40,6 +40,10 @@ test('optional Windows publisher metadata is omitted when unsigned builds do not
   }
 });
 
+test('packaged desktop includes the release platform truth loaded by the update coordinator', () => {
+  assert.ok(config.files.includes('config/release-platform-capabilities.json'));
+});
+
 test('native release builder refuses the wrong host and selects only declared platform targets', async () => {
   const source = await readFile('scripts/build-electron-installer.mjs', 'utf8');
   assert.match(source, /NOLANE_ELECTRON_TARGET/);

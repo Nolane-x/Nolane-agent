@@ -26,6 +26,7 @@ module.exports = {
     'ui-dist/**/*',
     'config/product-identity.json',
     'config/release-identity.json',
+    'config/release-platform-capabilities.json',
     'config/update.json',
     'config/nolane-agent-update-public.pem',
     'vendor/forge-os/src/**/*',
