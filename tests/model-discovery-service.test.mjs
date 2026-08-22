@@ -114,6 +114,30 @@ test('publishes Gemini 3 thinking levels only for documented model families', as
   assert.equal(result.models[1].reasoning, undefined);
 });
 
+test('publishes only Gemini 3.1 Flash-Lite Image thinking levels documented for that image model', async () => {
+  const service = new ModelDiscoveryService({
+    fetch: async () => response({ models: [
+      { name: 'models/gemini-3.1-flash-lite-image-preview', supportedGenerationMethods: ['generateContent'] },
+    ] }),
+  });
+
+  const result = await service.discover({ providerFamily: 'gemini-api', baseUrl: 'https://generativelanguage.googleapis.test', apiKey: 'secret' });
+
+  assert.deepEqual(result.models[0].reasoning?.levels, ['minimal', 'high']);
+});
+
+test('publishes the documented low and high thinking levels for Gemini 3 Pro', async () => {
+  const service = new ModelDiscoveryService({
+    fetch: async () => response({ models: [
+      { name: 'models/gemini-3-pro-preview', supportedGenerationMethods: ['generateContent'] },
+    ] }),
+  });
+
+  const result = await service.discover({ providerFamily: 'gemini-api', baseUrl: 'https://generativelanguage.googleapis.test', apiKey: 'secret' });
+
+  assert.deepEqual(result.models[0].reasoning?.levels, ['low', 'high']);
+});
+
 test('discovers Ollama and LM Studio deployment metadata', async () => {
   const fetch = async (url) => url.includes('/api/tags')
     ? response({ models: [{ name: 'qwen3:4b-q4_K_M', size: 2_700_000_000, details: { family: 'qwen3', parameter_size: '4.0B', quantization_level: 'Q4_K_M', format: 'gguf' } }] })

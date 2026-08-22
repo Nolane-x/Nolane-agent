@@ -61,6 +61,8 @@ function anthropicEffortControls(capability) {
 
 function geminiReasoningControls(providerModelId) {
   const id = String(providerModelId ?? '').trim().toLowerCase();
+  if (/^gemini-3\.1-flash-lite-image(?:[-:].*)?$/.test(id)) return controls(['minimal', 'high']);
+  if (/^gemini-3-pro(?:[-:].*)?$/.test(id)) return controls(['low', 'high']);
   if (/^gemini-3\.1-pro(?:[-:].*)?$/.test(id) || /^gemini-3\.7-flash(?:[-:].*)?$/.test(id)) return controls(['low', 'medium', 'high']);
   if (/^gemini-3\.(?:1|5)-flash-lite(?:[-:].*)?$/.test(id) || /^gemini-3\.(?:5|6)-flash(?:[-:].*)?$/.test(id) || /^gemini-3-flash(?:[-:].*)?$/.test(id)) return controls(['minimal', 'low', 'medium', 'high']);
   return undefined;
