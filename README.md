@@ -2,11 +2,20 @@
 
 ![Nolane Agent mark](build/icon.svg)
 
-[![Release](https://img.shields.io/github/v/release/Nolane-x/Nolane-agent?display_name=tag&sort=semver)](https://github.com/Nolane-x/Nolane-agent/releases/tag/v0.0.0)
-[![Build](https://img.shields.io/github/actions/workflow/status/Nolane-x/Nolane-agent/ci.yml?label=verification)](https://github.com/Nolane-x/Nolane-agent/actions/workflows/ci.yml)
-[![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Linux-7c6cf0)](https://github.com/Nolane-x/Nolane-agent/releases/tag/v0.0.0)
+<div align="center">
+  <p><strong>The local-first command centre for serious AI work.</strong></p>
+  <p>Direct real agents in real projects — with model choice, governed tools, skills, browser work, evidence, and recovery in one desktop workspace.</p>
 
-**Nolane Agent is a local-first workspace for directing capable AI agents through real software projects.** It brings project-aware chat, provider and model choice, governed tools, browser work, a skill library, review, evidence, and recovery into one desktop application.
+  <a href="https://github.com/Nolane-x/Nolane-agent/releases/tag/v0.0.0"><img src="https://img.shields.io/github/v/release/Nolane-x/Nolane-agent?display_name=tag&sort=semver" alt="Release" /></a>
+  <a href="https://github.com/Nolane-x/Nolane-agent/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Nolane-x/Nolane-agent/ci.yml?label=verification" alt="Verification" /></a>
+  <a href="https://github.com/Nolane-x/Nolane-agent/releases/tag/v0.0.0"><img src="https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Linux-7c6cf0" alt="Windows, macOS, and Linux" /></a>
+</div>
+
+<p align="center">
+  <strong>English</strong> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.hi.md">हिन्दी</a>
+</p>
+
+Nolane Agent is not another blank chat box. It is a **project-aware AI workspace** for turning an intent into a visible mission: choose the project, runtime, model, effort, skills, and approval boundary; then inspect the work as it moves through tools, browser activity, checks, evidence, and recovery.
 
 `v0.0.0` is available now. Historical checkpoint and beta documents remain in the repository as immutable provenance; they are not the current release documentation.
 
@@ -25,6 +34,24 @@
 - **Build a reusable skill system** — search, inspect, install, and attach provenance-bound local and Forge OS skills. Plugins and MCP stay governed through the Control Plane.
 - **Progress from a simple chat to an expert workspace** — Everyday, Workspace, Studio, and Expert views reveal more capability without hiding runtime state or making the UI feel overloaded.
 - **Recover deliberately** — durable checkpoints, error states, update recovery, and restart safeguards keep missions and local data under the user's control.
+
+## One workspace, a complete control loop
+
+| You need | Nolane Agent gives you |
+| --- | --- |
+| A real place to work | A selected local project, not an isolated prompt; move between conversation, files, terminal, diffs, browser activity, and execution. |
+| A runtime you can trust | Provider and model discovery that exposes the controls a runtime can genuinely honour instead of presenting fake universal settings. |
+| The right depth of thought | Model-specific effort controls where supported, with provider-native defaults retained where they are not. |
+| Safety without friction | Ask for approval, Approve for me, and Full access modes; inspect the operation and its receipts rather than losing the thread. |
+| A system that compounds | Provenance-bound local and Forge OS skills, plus governed plugins and MCP through the Control Plane. |
+| A desktop app that stays current | Native installers, explicit updates, checksum metadata, in-place Windows upgrades, and recovery before restart. |
+
+## Start in five minutes
+
+1. Download the [Windows installer](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.0/NolaneAgent-Setup-0.0.0-x64.exe), [macOS DMG](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.0/NolaneAgent-0.0.0-x64.dmg), or [Linux AppImage](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.0/NolaneAgent-0.0.0-x86_64.AppImage).
+2. Select or create the local project the agent should work in.
+3. Connect an available provider or CLI runtime, then choose a model and effort when that runtime supports them.
+4. Describe the mission. Nolane keeps the plan, operation state, review boundary, and recovery path visible while the work progresses.
 
 ## Desktop delivery and updates
 
