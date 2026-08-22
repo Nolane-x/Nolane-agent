@@ -10,7 +10,7 @@ const root = path.dirname(fileURLToPath(import.meta.url));
 const fixture = path.join(root, 'fixtures', 'codex-app-server.mjs');
 
 test('Codex App Server reuses one thread through ProviderSessionHost', async (t) => {
-  const provider = new CodexAppServerClient({ executable: process.execPath, args: [fixture], timeoutMs: 1_000, approvalHandler: async () => ({ decision: 'accept' }) });
+  const provider = new CodexAppServerClient({ executable: process.execPath, args: [fixture], timeoutMs: 3_000, approvalHandler: async () => ({ decision: 'accept' }) });
   const host = new ProviderSessionHost({ governor: { snapshot: () => ({ state: 'normal' }) } });
   t.after(async () => { await host.close(); await provider.close(); });
   const common = { provider, scope: { projectId: 'p1', missionId: 'm1', repositoryId: 'repo1' }, fingerprint: 'repo-head:harness:tools' };

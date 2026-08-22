@@ -60,6 +60,21 @@ test('model cards show only their verified reasoning-effort choices', () => {
   assert.match(renderModelProfilesPanel({ models: [{ providerId: 'openai', modelId: 'gpt-5.6', reasoning: { supported: true, controllable: true, levels: ['low', 'max'] } }], providers: [{ id: 'openai', kind: 'openai-responses' }] }, { lang: 'vi' }), /Mức suy luận/);
 });
 
+test('provider-declared reasoning effort clearly states that the model is validated when used', () => {
+  const model = {
+    providerId: 'openai', modelId: 'manual-model', reasoning: { supported: true, controllable: true, levels: ['low', 'medium', 'high'] },
+    metadata: { effort: { provenance: 'provider-declared', modelCompatibility: 'provider-validated-at-execution' } },
+  };
+  const provider = { id: 'openai', kind: 'openai-responses', label: 'OpenAI API', configured: true };
+
+  const english = renderModelProfilesPanel({ models: [model], providers: [provider] });
+  assert.match(english, /data-model-effort-provenance="provider-declared"/);
+  assert.match(english, /Provider-declared; model compatibility is validated when you use it\./);
+
+  const vietnamese = renderModelProfilesPanel({ models: [model], providers: [provider] }, { lang: 'vi' });
+  assert.match(vietnamese, /Provider công bố; tính tương thích của model được kiểm tra khi sử dụng\./);
+});
+
 test('CLI model profiles expose discovery and a manual model entry point with Vietnamese copy', () => {
   const html = renderModelProfilesPanel({ models: [{ key: 'codex/gpt-5.6-codex', providerId: 'codex', modelId: 'gpt-5.6-codex', capabilities: {} }], providers: [{ id: 'codex', kind: 'cli', label: 'Codex CLI', available: true, authenticated: true, healthy: true, modelSelection: { mode: 'forwarded' } }] }, { lang: 'vi' });
   assert.match(html, /Thêm model CLI/);

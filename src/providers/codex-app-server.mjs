@@ -105,15 +105,23 @@ function catalogEntries(result) {
 function normalizeCatalogModel(model, observedAt) {
   const id = String(model?.id ?? model?.modelId ?? '').trim();
   if (!id) return null;
+  const supportedReasoningEfforts = boundedReasoningEfforts(model?.supportedReasoningEfforts);
+  const defaultReasoningEffort = model?.defaultReasoningEffort == null ? null : String(model.defaultReasoningEffort);
   return Object.freeze({
     id,
     displayName: String(model?.displayName ?? model?.name ?? id).trim() || id,
     discoveredAt: observedAt,
+    ...(supportedReasoningEfforts.length ? { reasoning: Object.freeze({
+      supported: true,
+      controllable: true,
+      levels: supportedReasoningEfforts,
+      defaultLevel: supportedReasoningEfforts.includes(defaultReasoningEffort) ? defaultReasoningEffort : null,
+    }) } : {}),
     metadata: Object.freeze({
       source: 'codex-app-server',
       hidden: model?.hidden === true,
-      defaultReasoningEffort: model?.defaultReasoningEffort == null ? null : String(model.defaultReasoningEffort),
-      supportedReasoningEfforts: boundedReasoningEfforts(model?.supportedReasoningEfforts),
+      defaultReasoningEffort,
+      supportedReasoningEfforts,
       additionalSpeedTiers: boundedStringList(model?.additionalSpeedTiers),
       serviceTiers: boundedStringList(model?.serviceTiers),
       defaultServiceTier: model?.defaultServiceTier == null ? null : String(model.defaultServiceTier),

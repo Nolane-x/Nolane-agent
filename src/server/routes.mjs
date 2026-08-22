@@ -2,6 +2,7 @@ import path from 'node:path';
 import { stat } from 'node:fs/promises';
 import { AUTONOMY_PROFILES } from '../security/autonomy-policy.mjs';
 import { BROWSER_WRITE_ACTIONS } from '../security/browser-permission-service.mjs';
+import { providerDeclaredEffort } from '../providers/provider-effort-metadata.mjs';
 
 function json(res, status, value, headers = {}) {
   const body = JSON.stringify(value);
@@ -1650,11 +1651,13 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
       if (!modelId || modelId.length > 256 || /[\u0000-\u001f\u007f]/.test(modelId)) throw Object.assign(new TypeError('modelId is invalid'), { statusCode: 400, code: 'model_id_invalid' });
       const provider = providers?.publicView?.().find((item) => String(item.id) === providerId);
       if (!provider) throw Object.assign(new Error(`Unknown provider: ${providerId}`), { statusCode: 404, code: 'provider_not_found' });
+      const effort = providerDeclaredEffort(provider);
       const profile = modelProfiles.upsert({
         providerId,
         modelId,
         displayName: String(body.displayName ?? modelId).trim().slice(0, 256) || modelId,
-        metadata: { providerKind: provider.kind ?? null, configured: provider.configured === true, source: 'user' },
+        ...(effort?.reasoning ? { reasoning: effort.reasoning } : {}),
+        metadata: { providerKind: provider.kind ?? null, configured: provider.configured === true, source: 'user', ...(effort?.metadata ?? {}) },
         local: provider.kind === 'cli' ? { runtime: 'official-cli' } : undefined,
       }, { source: 'userOverrides' });
       return json(res, 201, { profile, profiles: modelProfiles.publicView({ providerId }) });

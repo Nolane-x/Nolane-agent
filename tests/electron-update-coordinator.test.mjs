@@ -10,7 +10,7 @@ const { DesktopUpdateCoordinator } = require('../desktop/update-coordinator.cjs'
 
 function json(value, status = 200) { return new Response(JSON.stringify(value), { status, headers: { 'content-type': 'application/json' } }); }
 
-async function fixture(t, { autoDownload = false, runningMissions = [], platform = 'win32', releaseUpdater = null } = {}) {
+async function fixture(t, { autoDownload = false, runningMissions = [], platform = 'win32', releaseUpdater = undefined } = {}) {
   const root = await mkdtemp(path.join(os.tmpdir(), 'nolane-update-coordinator-'));
   t.after(() => rm(root, { recursive: true, force: true }));
   const requests = []; const states = []; const timers = [];
@@ -18,6 +18,12 @@ async function fixture(t, { autoDownload = false, runningMissions = [], platform
   const updateController = {
     status: async () => ({ ready: false, reason: 'no-staged-update' }),
     installAndRestart: async (preparation) => { installed = true; installedPreparation = preparation; return { launched: true, version: '5.0.0-beta.7' }; }
+  };
+  const defaultReleaseUpdater = {
+    status: async () => ({ ready: false, reason: 'no-downloaded-update' }),
+    check: async () => ({ available: true, version: '5.0.0-beta.7', releaseTag: 'v5.0.0-beta.7', releaseNotesUrl: 'https://github.com/Nolane-x/Nolane-agent/releases/tag/v5.0.0-beta.7' }),
+    download: async () => ({ ready: true, version: '5.0.0-beta.7', releaseTag: 'v5.0.0-beta.7', releaseNotesUrl: 'https://github.com/Nolane-x/Nolane-agent/releases/tag/v5.0.0-beta.7' }),
+    installAndRestart: async (preparation) => { installed = true; installedPreparation = preparation; return { launched: true, version: '5.0.0-beta.7' }; },
   };
   const manifest = {
     schema: 'nolane.agent.update.v2', version: '5.0.0-beta.7', signature: 'verified-by-runtime',
@@ -36,7 +42,7 @@ async function fixture(t, { autoDownload = false, runningMissions = [], platform
   };
   const coordinator = new DesktopUpdateCoordinator({
     updateController, userDataDir: root, platform,
-    releaseUpdater,
+    releaseUpdater: releaseUpdater === undefined ? defaultReleaseUpdater : releaseUpdater,
     getRuntimeConnection: () => ({ origin: 'http://127.0.0.1:1234', token: 'runtime-token' }), fetchImpl,
     emit: (state) => states.push(state), random: () => 0.5, now: () => '2026-08-03T19:00:00.000Z',
     setTimeoutImpl: (callback, delay) => { const timer = { callback, delay, unref() {} }; timers.push(timer); return timer; },
@@ -62,24 +68,25 @@ test('coordinator projects authoritative Windows package and native install-hand
   assert.equal(state.platformTruth.platform, 'win32');
   assert.deepEqual(state.platformTruth.packageKinds, ['nsis']);
   assert.equal(state.platformTruth.inAppUpdateHandoff.enabled, true);
+  assert.equal(state.platformTruth.inAppUpdateHandoff.mechanism, 'electron-updater-github');
   assert.equal(state.platformTruth.nativeInstallHandoff.enabled, true);
 });
 
-test('manual check retains the verified manifest internally and stages it without renderer input on Windows', async (t) => {
-  const { coordinator, requests, manifest } = await fixture(t, { platform: 'win32' });
+test('Windows downloads GitHub Releases metadata without asking the local runtime to stage a signed manifest', async (t) => {
+  const { coordinator, requests } = await fixture(t, { platform: 'win32' });
   await coordinator.checkForUpdates({ manual: true });
   assert.equal(coordinator.state().state, 'available');
-  assert.equal(coordinator.state().signatureVerified, true);
+  assert.equal(coordinator.state().signatureVerified, false);
   assert.equal(coordinator.state().packageKind, 'nsis');
   await coordinator.downloadAvailableUpdate();
   assert.equal(coordinator.state().state, 'staged');
-  const stage = requests.find(([pathname]) => pathname === '/api/updates/stage');
-  assert.deepEqual(stage[2], { manifest });
+  assert.equal(coordinator.state().integrityVerified, true);
+  assert.equal(requests.some(([pathname]) => pathname === '/api/updates/check' || pathname === '/api/updates/stage'), false);
 });
 
-test('macOS and Linux fail closed instead of staging a Windows NSIS handoff when the packaged updater is unavailable', async (t) => {
-  for (const platform of ['darwin', 'linux']) {
-    const { coordinator, requests } = await fixture(t, { platform });
+test('all packaged platforms fail closed instead of staging a custom manifest when the GitHub Releases updater is unavailable', async (t) => {
+  for (const platform of ['win32', 'darwin', 'linux']) {
+    const { coordinator, requests } = await fixture(t, { platform, releaseUpdater: null });
     await coordinator.checkForUpdates({ manual: true });
     const result = await coordinator.downloadAvailableUpdate();
     assert.equal(result.state, 'handoffUnavailable');
@@ -90,8 +97,8 @@ test('macOS and Linux fail closed instead of staging a Windows NSIS handoff when
   }
 });
 
-test('macOS and Linux download and install their own GitHub Releases artifact without touching the Windows manifest', async (t) => {
-  for (const [platform, packageKind] of [['darwin', 'dmg'], ['linux', 'appimage']]) {
+test('all packaged platforms download and install their own GitHub Releases artifact without touching the custom manifest API', async (t) => {
+  for (const [platform, packageKind] of [['win32', 'nsis'], ['darwin', 'dmg'], ['linux', 'appimage']]) {
     let downloaded = false; let installed = null;
     const releaseUpdater = {
       status: async () => ({ ready: false, reason: 'no-downloaded-update' }),
@@ -119,7 +126,7 @@ test('auto-download does not create an in-flight promise cycle', async (t) => {
   const { coordinator, requests } = await fixture(t, { autoDownload: true, platform: 'win32' });
   const result = await coordinator.checkForUpdates({ manual: false });
   assert.equal(result.state, 'staged');
-  assert.equal(requests.filter(([pathname]) => pathname === '/api/updates/stage').length, 1);
+  assert.equal(requests.some(([pathname]) => pathname === '/api/updates/check' || pathname === '/api/updates/stage'), false);
 });
 
 test('installation is blocked while a mission is running and launches only after the runtime reports none', async (t) => {
@@ -139,4 +146,5 @@ test('installation is blocked while a mission is running and launches only after
   assert.equal(clear.installedPreparation().snapshotId, 'snapshot_1');
   const prepare = clear.requests.find(([pathname]) => pathname === '/api/updates/prepare');
   assert.deepEqual(prepare[2], { targetVersion: '5.0.0-beta.7' });
+  assert.equal(clear.requests.some(([pathname]) => pathname === '/api/updates/check' || pathname === '/api/updates/stage'), false);
 });

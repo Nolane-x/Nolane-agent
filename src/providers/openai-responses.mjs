@@ -1,4 +1,5 @@
 import { functionTool, normalizeMessages, parseArguments, postJson, required, resolveCredential, secureBaseUrl } from './http-provider-utils.mjs';
+import { effortTransportForKind } from './provider-effort-metadata.mjs';
 
 function reasoningEffort(value) {
   const effort = String(value ?? '').trim().toLowerCase();
@@ -15,7 +16,7 @@ export class OpenAIResponsesProvider {
     this.timeoutMs = Number(timeoutMs); this.fetchImpl = fetchImpl;
     this.profile = Object.freeze({ capabilities: Object.freeze([...(profile.capabilities ?? ['coding', 'tool-calling', 'structured-output', 'governed-actions'])]), qualityTier: Number(profile.qualityTier ?? 4.5), costTier: Number(profile.costTier ?? 2), latencyTier: Number(profile.latencyTier ?? 2), local: this.baseUrl.startsWith('http://localhost') || this.baseUrl.startsWith('http://127.0.0.1') });
   }
-  publicView() { return Object.freeze({ id: this.id, kind: this.kind, label: 'OpenAI API', model: this.model, baseUrl: this.baseUrl, ...this.profile }); }
+  publicView() { return Object.freeze({ id: this.id, kind: this.kind, label: 'OpenAI API', model: this.model, baseUrl: this.baseUrl, effort: effortTransportForKind(this.kind), ...this.profile }); }
   async detect() { try { await resolveCredential(this); return Object.freeze({ ...this.publicView(), available: true, authenticated: true, healthy: true }); } catch (error) { return Object.freeze({ ...this.publicView(), available: true, authenticated: false, healthy: false, error: String(error.message ?? error) }); } }
   async complete({ messages = [], tools = [], signal = null, model = this.model, effort = null } = {}) {
     const key = await resolveCredential(this); const clean = normalizeMessages(messages);

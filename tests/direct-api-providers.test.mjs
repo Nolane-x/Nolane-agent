@@ -61,6 +61,19 @@ test('Anthropic Messages provider normalizes tool_use and never leaks a rejected
   await assert.rejects(() => failing.complete({ messages: [{ role: 'user', content: 'x' }] }), (error) => !String(error.message).includes('sk-ant-private'));
 });
 
+test('Anthropic Messages provider forwards a selected effort in output_config', async () => {
+  let body;
+  const provider = new AnthropicMessagesProvider({
+    id: 'anthropic-effort', model: 'claude-opus-5', apiKey: 'sk-ant-private',
+    fetchImpl: async (_url, init) => { body = JSON.parse(init.body); return response({ id: 'msg_1', model: 'claude-opus-5', content: [{ type: 'text', text: 'Done.' }], usage: { input_tokens: 1, output_tokens: 1 } }); },
+  });
+
+  await provider.complete({ messages: [{ role: 'user', content: 'Use maximum effort' }], effort: 'max' });
+
+  assert.deepEqual(body.output_config, { effort: 'max' });
+  assert.doesNotMatch(JSON.stringify(body), /sk-ant-private/);
+});
+
 test('Gemini GenerateContent provider normalizes functionCall and usage metadata', async () => {
   let body;
   const provider = new GeminiGenerateContentProvider({
@@ -88,6 +101,16 @@ test('Gemini GenerateContent provider forwards a selected thinking level only wh
   await provider.complete({ messages: [{ role: 'user', content: 'Think carefully' }], effort: 'high' });
 
   assert.deepEqual(body.generationConfig, { thinkingConfig: { thinkingLevel: 'HIGH' } });
+});
+
+test('direct API providers publish only their documented effort transport and bounded choices', () => {
+  const openai = new OpenAIResponsesProvider({ id: 'openai-effort-view', model: 'gpt-5.6' });
+  const anthropic = new AnthropicMessagesProvider({ id: 'anthropic-effort-view', model: 'claude-opus-5' });
+  const gemini = new GeminiGenerateContentProvider({ id: 'gemini-effort-view', model: 'gemini-3.6-flash' });
+
+  assert.deepEqual(openai.publicView().effort, { supported: true, mode: 'forwarded', levels: ['none', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'] });
+  assert.deepEqual(anthropic.publicView().effort, { supported: true, mode: 'forwarded', levels: ['low', 'medium', 'high', 'xhigh', 'max'] });
+  assert.deepEqual(gemini.publicView().effort, { supported: true, mode: 'forwarded', levels: ['minimal', 'low', 'medium', 'high'] });
 });
 
 test('Direct API providers expose stable setup and execution errors without returning credentials', async () => {

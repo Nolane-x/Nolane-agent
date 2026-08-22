@@ -8,7 +8,7 @@ test('Electron main wires the staged updater through trusted IPC and marks a suc
   const source = await read('desktop/main.cjs');
   assert.match(source, /ElectronUpdateController/);
   assert.match(source, /loadPackagedGitHubReleaseUpdater/);
-  assert.match(source, /\['darwin', 'linux'\]/);
+  assert.match(source, /\['win32', 'darwin', 'linux'\]/);
   assert.match(source, /nolane:update-status/);
   assert.match(source, /nolane:update-install-and-restart/);
   assert.match(source, /safeSender\(event\)/);

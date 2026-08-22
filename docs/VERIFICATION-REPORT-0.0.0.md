@@ -8,7 +8,7 @@ The 0.0.0 release contract verifies coherence among the live product identity, p
 
 - `npm run verify:version` checks the product and packaging version surfaces, including the current documentation set.
 - `npm run verify:electron-installer` checks Electron installer identity and Windows update compatibility.
-- The focused update tests exercise Windows signed-manifest behavior and macOS/Linux GitHub Releases handoff.
+- The focused update tests exercise Windows, macOS, and Linux GitHub Releases handoff, update recovery, and retained user-data behavior.
 - GitHub Actions validates source, Windows, macOS, Linux, Chromium, UI runtime, performance, ledger, and empty-runtime evidence for the release-candidate branch.
 
 ## What this does not prove

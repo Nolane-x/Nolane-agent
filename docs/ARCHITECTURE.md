@@ -73,7 +73,7 @@ Everyday, Workspace, Studio and Expert are views over shared product state. Expe
 
 Electron keeps the renderer sandboxed with context isolation and narrow IPC. The renderer cannot choose installer paths, release URLs or commands.
 
-The runtime update service verifies Nolane-signed metadata, repository identity, tag, commit, exact asset name, HTTPS redirects, byte count, SHA-256 and PE identity before staging. Release preparation generates `config/update.json` and the trusted public key. Checkpoint 14 adds background coordination, streaming download, session checkpointing, migration journals, explicit relaunch and post-update health/recovery.
+Packaged desktop releases use `electron-updater` with GitHub Releases metadata for Windows, macOS, and Linux. The updater resolves the repository release, validates downloaded package integrity against its metadata, and hands off only after an explicit user action. The legacy custom signed-feed service is disabled in `config/update.json`; no private update key is packaged or required by the release workflow. Checkpoint 14 adds background coordination, session checkpointing, migration journals, explicit relaunch and post-update health/recovery.
 
 An update is a binary/schema migration, not a new installation. Stable app identity and `userData` paths must preserve settings, projects, missions, drafts, memory, model metadata, trust records and OS-vault credential references. A real Windows CP13 → CP14 replay is a release gate.
 

@@ -10,7 +10,7 @@ Examples include provider-real sessions with the user’s own credentials, indep
 
 ## Release prerequisites
 
-The release workflow fails closed when the mandatory Nolane update signing key is absent. Windows and macOS artifacts are intentionally unsigned and may show platform trust warnings. A GitHub Release must exist before packaged applications can download it. A version change alone never creates a release or an update feed.
+The release workflow intentionally permits unsigned Windows and macOS artifacts, which can show platform trust warnings such as Windows **Unknown Publisher** or macOS Gatekeeper confirmation. A GitHub Release must exist before packaged applications can download its `electron-updater` metadata. A version change alone never creates a release.
 
 ## Non-claims
 

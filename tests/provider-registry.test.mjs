@@ -93,6 +93,25 @@ test('CliProvider forwards an advertised reasoning effort through its documented
   assert.deepEqual(provider.publicView().effort, { supported: true, mode: 'forwarded', levels: ['low', 'high', 'max'] });
 });
 
+test('CliProvider forwards Codex effort through its documented configuration override', async (t) => {
+  const fake = await fakeCli(t);
+  const provider = new CliProvider({
+    id: 'codex-effort',
+    label: 'Codex effort',
+    executable: fake.executable,
+    baseArgs: [fake.script, '-'],
+    promptMode: 'stdin',
+    effortConfigKey: 'model_reasoning_effort',
+    effortLevels: ['low', 'medium', 'high', 'xhigh', 'max'],
+  });
+
+  const result = await provider.invoke({ prompt: 'Think carefully', effort: 'xhigh' });
+  const payload = JSON.parse(result.stdout);
+
+  assert.deepEqual(payload.args.slice(-3), ['--config', 'model_reasoning_effort="xhigh"', '-']);
+  assert.deepEqual(provider.publicView().effort, { supported: true, mode: 'config-override', levels: ['low', 'medium', 'high', 'xhigh', 'max'] });
+});
+
 test('CliProvider keeps a completed Codex agent message when a later tool event reports an error', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-codex-events-'));
   t.after(() => rm(root, { recursive: true, force: true }));
@@ -201,6 +220,37 @@ test('CliProvider discovers model ids through an explicit argv-only command', as
   assert.equal(result.raw, undefined);
 });
 
+test('CliProvider preserves OpenCode model variants as per-model reasoning effort choices', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-cli-opencode-models-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const script = path.join(root, 'models-cli.mjs');
+  await writeFile(script, `
+    if (process.argv.includes('--models')) {
+      console.log('openai/gpt-5.6');
+      console.log(JSON.stringify({ id: 'gpt-5.6', providerID: 'openai', variants: {
+        quick: { reasoningEffort: 'low' }, deliberate: { reasoningEffort: 'high' }, exhaustive: { reasoningEffort: 'max' },
+      } }, null, 2));
+      process.exit(0);
+    }
+    console.log(JSON.stringify({ args: process.argv.slice(2) }));
+    process.exit(0);
+  `);
+  const provider = new CliProvider({
+    id: 'opencode-fixture', label: 'OpenCode fixture', executable: process.execPath,
+    baseArgs: [script], promptMode: 'none', modelFlag: null, effortFlag: '--variant',
+    modelDiscoveryArgs: [script, '--models'], harnessFamily: 'opencode-cli', timeoutMs: 10_000,
+  });
+
+  const result = await provider.discoverModels();
+
+  assert.deepEqual(result.models.map((item) => item.id), ['openai/gpt-5.6']);
+  assert.deepEqual(result.models[0].reasoning, { supported: true, controllable: true, levels: ['low', 'high', 'max'] });
+  assert.deepEqual(result.models[0].metadata.supportedReasoningEfforts, ['low', 'high', 'max']);
+  assert.deepEqual(result.models[0].metadata.effortVariants, { low: 'quick', high: 'deliberate', max: 'exhaustive' });
+  const invocation = await provider.invoke({ model: 'openai/gpt-5.6', effort: 'high' });
+  assert.deepEqual(JSON.parse(invocation.stdout).args.slice(-2), ['--variant', 'deliberate']);
+});
+
 test('CliProvider exposes bounded compatibility catalog entries without claiming live discovery', async () => {
   const provider = new CliProvider({ id: 'catalog-cli', label: 'Catalog CLI', executable: process.execPath, modelCatalog: ['alpha', 'beta'] });
   const result = await provider.discoverModels();
@@ -280,7 +330,7 @@ test('ProviderRegistry exposes secret-free public views and built-in official CL
   assert.equal(builtIns.find((item) => item.id === 'codex').publicView().modelDiscovery.mode, 'unsupported');
   assert.equal(builtIns.find((item) => item.id === 'opencode').publicView().modelDiscovery.mode, 'command');
   assert.equal(builtIns.find((item) => item.id === 'opencode').publicView().modelDiscovery.live, true);
-  assert.deepEqual(builtIns.find((item) => item.id === 'opencode').modelDiscoveryArgs, ['models', '--refresh']);
+  assert.deepEqual(builtIns.find((item) => item.id === 'opencode').modelDiscoveryArgs, ['models', '--refresh', '--verbose', '--pure']);
   const kimi = builtIns.find((item) => item.id === 'kimi-code');
   assert.equal(kimi.executable, 'kimi');
   assert.deepEqual(kimi.baseArgs, ['--output-format', 'stream-json']);
@@ -292,8 +342,15 @@ test('ProviderRegistry exposes secret-free public views and built-in official CL
   assert.equal(kimi.profile.capabilities.includes('governed-actions'), false);
   assert.ok(!kimi.baseArgs.includes('--yolo'));
   assert.ok(!kimi.baseArgs.includes('--auto'));
+  const grokBuild = builtIns.find((item) => item.id === 'grok-build');
+  assert.deepEqual(grokBuild.publicView().effort, { supported: true, mode: 'forwarded', levels: ['low', 'medium', 'high', 'xhigh'] });
+  const aiderCli = builtIns.find((item) => item.id === 'aider');
+  assert.deepEqual(aiderCli.publicView().effort, { supported: true, mode: 'forwarded', levels: ['low', 'medium', 'high'] });
   const copilot = builtIns.find((item) => item.id === 'github-copilot');
   assert.deepEqual(copilot.modelCatalog, ['claude-sonnet-4.6', 'gpt-5.4', 'claude-haiku-4.5', 'gpt-5.3-codex', 'gemini-3.1-pro-preview', 'gemini-3.5-flash', 'gemini-3.6-flash', 'mai-code-1-flash']);
+  assert.deepEqual(copilot.publicView().effort, { supported: true, mode: 'forwarded', levels: ['none', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'] });
+  const copilotModels = await copilot.discoverModels();
+  assert.ok(copilotModels.models.every((model) => model.reasoning?.controllable === true && model.reasoning.levels.includes('xhigh')));
   assert.equal(copilot.publicView().modelDiscovery.mode, 'compatibility-catalog');
   assert.ok(copilot.baseArgs.includes('plan'));
   assert.ok(copilot.baseArgs.includes('--sandbox'));

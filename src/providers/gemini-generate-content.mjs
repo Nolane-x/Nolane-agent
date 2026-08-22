@@ -1,4 +1,5 @@
 import { functionTool, normalizeMessages, postJson, required, resolveCredential, secureBaseUrl } from './http-provider-utils.mjs';
+import { effortTransportForKind } from './provider-effort-metadata.mjs';
 
 function thinkingLevel(value) {
   const level = String(value ?? '').trim().toUpperCase();
@@ -13,7 +14,7 @@ export class GeminiGenerateContentProvider {
     this.apiKey = apiKey == null ? null : String(apiKey); this.credentialRef = credentialRef; this.credentialResolver = credentialResolver; this.timeoutMs = Number(timeoutMs); this.fetchImpl = fetchImpl;
     this.profile = Object.freeze({ capabilities: Object.freeze([...(profile.capabilities ?? ['coding', 'tool-calling', 'structured-output', 'long-context', 'governed-actions'])]), qualityTier: Number(profile.qualityTier ?? 4), costTier: Number(profile.costTier ?? 1), latencyTier: Number(profile.latencyTier ?? 1.5), local: false });
   }
-  publicView() { return Object.freeze({ id: this.id, kind: this.kind, label: 'Google Gemini API', model: this.model, baseUrl: this.baseUrl, ...this.profile }); }
+  publicView() { return Object.freeze({ id: this.id, kind: this.kind, label: 'Google Gemini API', model: this.model, baseUrl: this.baseUrl, effort: effortTransportForKind(this.kind), ...this.profile }); }
   async detect() { try { await resolveCredential(this); return Object.freeze({ ...this.publicView(), available: true, authenticated: true, healthy: true }); } catch (error) { return Object.freeze({ ...this.publicView(), available: true, authenticated: false, healthy: false, error: String(error.message ?? error) }); } }
   async complete({ messages = [], tools = [], signal = null, effort = null } = {}) {
     const key = await resolveCredential(this); const clean = normalizeMessages(messages);

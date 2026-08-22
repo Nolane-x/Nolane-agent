@@ -153,6 +153,15 @@ test('home uses a compact task-first composition instead of an oversized generic
   assert.doesNotMatch(styles, /font-size:clamp\(38px,5\.2vw,72px\)/);
 });
 
+test('flagship desktop home keeps the mission brief and composer in a readable working balance', async () => {
+  const styles = await readFile(new URL('../ui-v3/styles/flagship/proofborne-instrument.css', import.meta.url), 'utf8');
+
+  assert.match(styles, /\.home-intro\s*\{\s*grid-template-columns:\s*minmax\(360px,\s*\.7fr\)\s+minmax\(0,\s*1fr\)/);
+  assert.match(styles, /\.home-intro__copy\s*\{\s*max-width:\s*470px/);
+  assert.match(styles, /\.home-intro h1\s*\{\s*max-width:\s*480px;[\s\S]*?font-size:\s*clamp\(34px,\s*3\.6vw,\s*52px\)/);
+  assert.match(styles, /\.mission-composer\s*\{[\s\S]*?border-radius:\s*14px/);
+});
+
 test('home composer sends provider and model separately for the selected deployment', async () => {
   const calls = [];
   const api = {
@@ -193,6 +202,60 @@ test('home composer exposes and submits only catalog-advertised reasoning effort
   assert.doesNotMatch(html, /Codex reasoning effort/);
   await controller.submit({ objective: 'Use careful reasoning', projectId: 'p1', modelChoice: 'opencode/openai/gpt-5.6-sol', planningEffort: 'ultra' });
   assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Use careful reasoning', planningProviderId: 'opencode', planningModelId: 'openai/gpt-5.6-sol', deploymentKey: 'opencode/openai/gpt-5.6-sol', planningEffort: 'ultra', mcpAllowedTools: [] }]]);
+});
+
+test('home composer omits inferred reasoning levels without a controllable effort transport', () => {
+  const html = renderHomeView(buildHomeViewModel({
+    selectedModel: 'openai-api/gpt-4.1',
+    providers: [{ id: 'openai-api', state: 'ready' }],
+    models: [{
+      key: 'openai-api/gpt-4.1', providerId: 'openai-api', modelId: 'gpt-4.1', displayName: 'GPT-4.1',
+      reasoning: { supported: true, controllable: 'unknown', levels: ['low', 'medium', 'high'] },
+    }],
+  }));
+
+  assert.doesNotMatch(html, /data-composer-picker="planningEffort"/);
+});
+
+test('home composer identifies provider-declared effort for a manually added CLI model', () => {
+  const html = renderHomeView(buildHomeViewModel({
+    language: 'vi',
+    selectedModel: 'aider/anthropic/claude-sonnet',
+    providers: [{ id: 'aider', state: 'ready' }],
+    models: [{
+      key: 'aider/anthropic/claude-sonnet', providerId: 'aider', modelId: 'anthropic/claude-sonnet', displayName: 'Claude Sonnet via Aider',
+      reasoning: { supported: true, controllable: true, levels: ['low', 'medium', 'high'] },
+      metadata: { effort: { provenance: 'provider-declared', transport: 'forwarded', modelCompatibility: 'provider-validated-at-execution' } },
+    }],
+  }));
+
+  assert.match(html, /data-composer-picker="planningEffort"/);
+  assert.match(html, /Provider hỗ trợ mức này và sẽ kiểm tra tính tương thích của model khi chạy/);
+});
+
+test('home composer keeps the selected model default unless the user explicitly chooses an effort', async () => {
+  const calls = [];
+  const api = {
+    async get(path) {
+      if (path === '/api/projects') return [{ id: 'p1', name: 'Project' }];
+      if (path === '/api/provider-connections') return [{ id: 'openai-api', state: 'ready' }];
+      if (path === '/api/model-profiles') return [{ key: 'openai-api/gpt-5.6-sol', providerId: 'openai-api', modelId: 'gpt-5.6-sol', displayName: 'GPT-5.6 Sol', reasoning: { supported: true, controllable: true, defaultLevel: 'high', levels: ['low', 'medium', 'high'] } }];
+      return [];
+    },
+    async post(path, body) { calls.push([path, body]); return { id: 'mission-default', objective: body.objective }; },
+  };
+  const controller = createHomeController({ api });
+  await controller.load();
+  controller.setModel('openai-api/gpt-5.6-sol');
+
+  const html = renderHomeView(controller.snapshot());
+  assert.match(html, /data-composer-picker="planningEffort"/);
+  assert.match(html, /Mặc định model|Model default/);
+  await controller.submit({ objective: 'Use the provider default', projectId: 'p1', modelChoice: 'openai-api/gpt-5.6-sol' });
+
+  assert.deepEqual(calls, [['/api/missions/plan', {
+    projectId: 'p1', objective: 'Use the provider default', planningProviderId: 'openai-api', planningModelId: 'gpt-5.6-sol', deploymentKey: 'openai-api/gpt-5.6-sol', mcpAllowedTools: [],
+  }]]);
 });
 
 test('home composer uses the persisted routing default until the user chooses another model', async () => {

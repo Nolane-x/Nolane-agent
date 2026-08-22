@@ -17,8 +17,10 @@ test('release platform truth is machine-readable and fail-closed per platform', 
   const windows = table.platforms.win32;
   assert.deepEqual(windows.packageKinds, ['nsis']);
   assert.equal(windows.inAppUpdateHandoff.enabled, true);
+  assert.equal(windows.inAppUpdateHandoff.mechanism, 'electron-updater-github');
   assert.equal(windows.nativeInstallHandoff.enabled, true);
-  assert.equal(windows.nativeInstallHandoff.mechanism, 'nsis');
+  assert.equal(windows.nativeInstallHandoff.mechanism, 'electron-updater-github');
+  assert.equal(windows.updateTrust.enabled, true);
 
   const mac = table.platforms.darwin;
   assert.deepEqual(mac.packageKinds, ['dmg', 'zip']);

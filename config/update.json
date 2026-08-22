@@ -1,8 +1,7 @@
 {
   "schema": "nolane.agent.update-config.v1",
-  "enabled": true,
+  "enabled": false,
   "repository": "Nolane-x/Nolane-agent",
   "channel": "stable",
-  "endpoint": "https://raw.githubusercontent.com/Nolane-x/Nolane-agent/update-feed/feeds/stable/nolane-agent-update-stable.json",
-  "publicKeyFile": "nolane-agent-update-public.pem"
+  "reason": "Packaged Electron releases use electron-updater GitHub Releases metadata instead of the retired custom signed feed."
 }

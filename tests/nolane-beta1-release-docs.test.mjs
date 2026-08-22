@@ -14,7 +14,8 @@ test('Beta.1 release documents describe GitHub NSIS updates and preserve non-cla
   assert.match(release,/NSIS installer|signed Nolane update manifest/i);
   assert.match(limits,/cannot itself produce.*Windows.*\.exe|actual installer.*external/i);
   assert.match(verification,/actual installer publication.*external/i);
-  assert.match(releasing,/NOLANE_UPDATE_PRIVATE_KEY_B64/);
+  assert.doesNotMatch(releasing,/NOLANE_UPDATE_PRIVATE_KEY_B64/);
+  assert.match(releasing,/GitHub Releases metadata|electron-updater/i);
 
   assert.match(release,/193(?:\/198| verified)|5 explicitly open/i);
   assert.match(limits,/There are 5 open requirements/i);

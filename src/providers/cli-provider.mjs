@@ -39,6 +39,14 @@ function normalizeEffort(value) {
   return candidate;
 }
 
+function normalizeEffortConfigKey(value) {
+  if (value == null) return null;
+  const key = String(value).trim();
+  if (!key) return null;
+  if (!/^[A-Za-z][A-Za-z0-9_.]*$/.test(key)) throw new TypeError('effortConfigKey is invalid');
+  return key;
+}
+
 function effortList(value, label) {
   if (!Array.isArray(value)) throw new TypeError(`${label} must be an array of strings`);
   return Object.freeze([...new Set(value.map(normalizeEffort).filter(Boolean))]);
@@ -73,9 +81,56 @@ function modelCandidates(output) {
   return [...new Set(values)];
 }
 
-function discoveryModel(providerId, modelId, source, observedAt, reasoningEfforts = []) {
-  const metadata = reasoningEfforts.length ? Object.freeze({ supportedReasoningEfforts: reasoningEfforts }) : Object.freeze({});
-  return Object.freeze({ id: modelId, modelId, displayName: modelId, providerId, discoveredAt: observedAt, source: Object.freeze({ ...source, observedAt }), metadata });
+function discoveryModel(providerId, modelId, source, observedAt, reasoningEfforts = [], effortVariants = null) {
+  const metadata = reasoningEfforts.length ? Object.freeze({
+    supportedReasoningEfforts: reasoningEfforts,
+    ...(effortVariants && Object.keys(effortVariants).length ? { effortVariants: Object.freeze({ ...effortVariants }) } : {}),
+  }) : Object.freeze({});
+  const reasoning = reasoningEfforts.length ? Object.freeze({ supported: true, controllable: true, levels: reasoningEfforts }) : undefined;
+  return Object.freeze({ id: modelId, modelId, displayName: modelId, providerId, discoveredAt: observedAt, source: Object.freeze({ ...source, observedAt }), ...(reasoning ? { reasoning } : {}), metadata });
+}
+
+function jsonObjects(value) {
+  const source = String(value ?? ''); const objects = [];
+  let start = -1; let depth = 0; let quoted = false; let escaped = false;
+  for (let index = 0; index < source.length; index += 1) {
+    const character = source[index];
+    if (start < 0) { if (character === '{') { start = index; depth = 1; } continue; }
+    if (quoted) { if (escaped) escaped = false; else if (character === '\\') escaped = true; else if (character === '"') quoted = false; continue; }
+    if (character === '"') { quoted = true; continue; }
+    if (character === '{') depth += 1;
+    else if (character === '}') {
+      depth -= 1;
+      if (depth === 0) { try { objects.push(JSON.parse(source.slice(start, index + 1))); } catch {} start = -1; }
+    }
+  }
+  return objects;
+}
+
+function openCodeModels(output, providerId, source, observedAt) {
+  const records = new Map();
+  for (const item of jsonObjects(output)) {
+    const model = normalizeModelId(item?.id); const provider = normalizeModelId(item?.providerID);
+    const id = model && provider ? normalizeModelId(`${provider}/${model}`) : null;
+    if (!id) continue;
+    const current = records.get(id) ?? { levels: [], effortVariants: {} };
+    for (const [variantName, variant] of Object.entries(item.variants ?? {})) {
+      let effort = null; let normalizedVariant = null;
+      try { effort = normalizeEffort(variant?.reasoningEffort); normalizedVariant = normalizeEffort(variantName); } catch { continue; }
+      if (!effort || !normalizedVariant) continue;
+      current.levels.push(effort);
+      current.effortVariants[effort] ??= normalizedVariant;
+    }
+    records.set(id, current);
+  }
+  const effortVariants = new Map();
+  const models = [...records.entries()].map(([id, record]) => {
+    const levels = effortList(record.levels, 'OpenCode variants');
+    const variants = Object.freeze({ ...record.effortVariants });
+    effortVariants.set(id, variants);
+    return discoveryModel(providerId, id, source, observedAt, levels, variants);
+  });
+  return Object.freeze({ models: Object.freeze(models), effortVariants });
 }
 
 function diagnostic(output) {
@@ -159,8 +214,9 @@ async function resolveNpmWindowsWrapper(candidate) {
 
 export class CliProvider {
   #resolvedExecutable = null;
+  #effortVariantByModel = new Map();
 
-  constructor({ id, label, executable, versionArgs = ['--version'], baseArgs = [], promptMode = 'stdin', promptFlag = null, modelFlag = '--model', modelSelection = null, effortFlag = null, effortLevels = [], effortByModel: configuredEffortByModel = null, executionSafety = 'verified', modelDiscoveryArgs = null, modelCatalog = [], timeoutMs = 10 * 60_000, env = {}, secretEnvKeys = [], cwd = null, credentialOwner = 'official-cli', harnessFamily = 'generic-local', profile = {} } = {}) {
+  constructor({ id, label, executable, versionArgs = ['--version'], baseArgs = [], promptMode = 'stdin', promptFlag = null, modelFlag = '--model', modelSelection = null, effortFlag = null, effortConfigKey = null, effortLevels = [], effortByModel: configuredEffortByModel = null, executionSafety = 'verified', modelDiscoveryArgs = null, modelCatalog = [], timeoutMs = 10 * 60_000, env = {}, secretEnvKeys = [], cwd = null, credentialOwner = 'official-cli', harnessFamily = 'generic-local', profile = {} } = {}) {
     this.id = text(id, 'provider id');
     this.label = text(label ?? id, 'provider label');
     this.kind = 'cli';
@@ -174,9 +230,11 @@ export class CliProvider {
     this.modelSelection = modelSelection ?? (this.modelFlag ? 'forwarded' : 'cli-config');
     if (!['forwarded', 'cli-config'].includes(this.modelSelection)) throw new TypeError('modelSelection is invalid');
     this.effortFlag = effortFlag == null ? null : String(effortFlag).trim() || null;
+    this.effortConfigKey = normalizeEffortConfigKey(effortConfigKey);
+    if (this.effortFlag && this.effortConfigKey) throw new TypeError('Specify either effortFlag or effortConfigKey');
     this.effortLevels = effortList(effortLevels, 'effortLevels');
     this.effortByModel = effortByModel(configuredEffortByModel);
-    if (!this.effortFlag && (this.effortLevels.length || Object.keys(this.effortByModel).length)) throw new TypeError('effortFlag is required when a CLI advertises reasoning effort');
+    if (!this.effortFlag && !this.effortConfigKey && (this.effortLevels.length || Object.keys(this.effortByModel).length)) throw new TypeError('an effort transport is required when a CLI advertises reasoning effort');
     if (!['verified', 'external-plan-config-required'].includes(executionSafety)) throw new TypeError('executionSafety is invalid');
     this.executionSafety = executionSafety;
     this.modelDiscoveryArgs = modelDiscoveryArgs == null ? null : argv(modelDiscoveryArgs, 'modelDiscoveryArgs');
@@ -208,13 +266,18 @@ export class CliProvider {
         live: Boolean(this.modelDiscoveryArgs?.length),
       }),
       modelSelection: Object.freeze({ mode: this.modelSelection, forwarded: this.modelSelection === 'forwarded' }),
-      effort: Object.freeze({ supported: Boolean(this.effortFlag), mode: this.effortFlag ? 'forwarded' : 'unsupported', levels: this.effortLevels }),
+      effort: Object.freeze({ supported: Boolean(this.effortFlag || this.effortConfigKey), mode: this.effortFlag ? 'forwarded' : this.effortConfigKey ? 'config-override' : 'unsupported', levels: this.effortLevels }),
       ...this.profile,
     });
   }
 
   #effortLevelsForModel(modelId) {
     return this.effortByModel[normalizeModelId(modelId) ?? ''] ?? this.effortLevels;
+  }
+
+  #effortTransportValue(modelId, effort) {
+    if (this.harnessFamily !== 'opencode-cli') return effort;
+    return this.#effortVariantByModel.get(normalizeModelId(modelId) ?? '')?.[effort] ?? effort;
   }
 
   async discoverModels({ timeoutMs = Math.min(this.timeoutMs, 15_000) } = {}) {
@@ -234,7 +297,10 @@ export class CliProvider {
       if (result.aborted) throw new Error('model discovery cancelled');
       if (result.exitCode !== 0) throw new Error(`model discovery exited with ${result.exitCode}`);
       const source = Object.freeze({ type: 'cli-command', live: true });
-      const models = modelCandidates(`${result.stdout}\n${result.stderr}`).map((modelId) => discoveryModel(this.id, modelId, source, observedAt, this.#effortLevelsForModel(modelId)));
+      const output = `${result.stdout}\n${result.stderr}`;
+      const structured = this.harnessFamily === 'opencode-cli' ? openCodeModels(output, this.id, source, observedAt) : null;
+      if (structured?.models.length) this.#effortVariantByModel = structured.effortVariants;
+      const models = structured?.models.length ? structured.models : modelCandidates(output).map((modelId) => discoveryModel(this.id, modelId, source, observedAt, this.#effortLevelsForModel(modelId)));
       return Object.freeze({ schema: 'nolane.cli-model-discovery.v1', providerId: this.id, status: 'discovered', source, models: Object.freeze(models), errors: Object.freeze([]), observedAt });
     } catch (error) {
       return Object.freeze({ schema: 'nolane.cli-model-discovery.v1', providerId: this.id, status: 'error', source: Object.freeze({ type: 'cli-command', live: true }), models: Object.freeze([]), errors: Object.freeze([String(error?.message ?? error).slice(0, 300)]), observedAt });
@@ -298,7 +364,12 @@ export class CliProvider {
     if (this.effortFlag && selectedEffort) {
       const sentinel = finalArgs.indexOf('-');
       const insertion = sentinel >= 0 ? sentinel : finalArgs.length;
-      finalArgs.splice(insertion, 0, this.effortFlag, selectedEffort);
+      finalArgs.splice(insertion, 0, this.effortFlag, this.#effortTransportValue(selectedModel, selectedEffort));
+    }
+    if (this.effortConfigKey && selectedEffort) {
+      const sentinel = finalArgs.indexOf('-');
+      const insertion = sentinel >= 0 ? sentinel : finalArgs.length;
+      finalArgs.splice(insertion, 0, '--config', `${this.effortConfigKey}="${selectedEffort}"`);
     }
     let input = '';
     if (this.promptMode === 'stdin') input = String(prompt);

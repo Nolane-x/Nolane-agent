@@ -5,8 +5,8 @@ import { renderUpdateNotice } from '../ui-v3/components/update-notice/update-not
 
 const windowsTruth = Object.freeze({
   schema: 'nolane.desktop-update-platform-truth.v1', platform: 'win32', label: 'Windows', packageKinds: ['nsis'],
-  inAppUpdateHandoff: { enabled: true, mechanism: 'nolane-signed-nsis' },
-  nativeInstallHandoff: { enabled: true, mechanism: 'nsis' },
+  inAppUpdateHandoff: { enabled: true, mechanism: 'electron-updater-github' },
+  nativeInstallHandoff: { enabled: true, mechanism: 'electron-updater-github' },
 });
 const macTruth = Object.freeze({
   schema: 'nolane.desktop-update-platform-truth.v1', platform: 'darwin', label: 'macOS', packageKinds: ['dmg','zip'],

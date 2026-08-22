@@ -209,8 +209,13 @@ function providerCard(provider, models, experience, comparison, dossiers, provid
   const rows = models.length ? models.map((profile) => {
     const canonical = canonicalId(profile);
     const reasoningLevels = Array.isArray(profile.reasoning?.levels) ? profile.reasoning.levels.map((level) => String(level).trim().toLowerCase()).filter(Boolean) : [];
+    const providerDeclaredEffort = profile.metadata?.effort?.provenance === 'provider-declared'
+      && profile.metadata?.effort?.modelCompatibility === 'provider-validated-at-execution';
+    const effortProvenance = providerDeclaredEffort
+      ? `<small data-model-effort-provenance="provider-declared">${vi ? 'Provider công bố; tính tương thích của model được kiểm tra khi sử dụng.' : 'Provider-declared; model compatibility is validated when you use it.'}</small>`
+      : '';
     const reasoningEffort = profile.reasoning?.supported === true && profile.reasoning?.controllable === true && reasoningLevels.length
-      ? `<div data-model-reasoning-effort><dt>${vi ? 'Mức suy luận' : 'Reasoning effort'}</dt><dd>${esc(reasoningLevels.map((level) => reasoningEffortLabel(level, lang)).join(' · '))}</dd></div>`
+      ? `<div data-model-reasoning-effort><dt>${vi ? 'Mức suy luận' : 'Reasoning effort'}</dt><dd>${esc(reasoningLevels.map((level) => reasoningEffortLabel(level, lang)).join(' · '))}${effortProvenance}</dd></div>`
       : '';
     const capabilityEntries = Object.entries({ text: profile.capabilities?.text, tools: profile.capabilities?.tools, structuredOutput: profile.capabilities?.structuredOutput, streaming: profile.capabilities?.streaming, vision: profile.capabilities?.vision, reasoning: profile.reasoning?.supported ?? profile.capabilities?.reasoning }).map(([name, value]) => {
       const [label, status] = capabilityStatus(value);

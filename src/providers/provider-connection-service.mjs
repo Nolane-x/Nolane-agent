@@ -2,6 +2,7 @@ import { OpenAIResponsesProvider } from './openai-responses.mjs';
 import { AnthropicMessagesProvider } from './anthropic-messages.mjs';
 import { GeminiGenerateContentProvider } from './gemini-generate-content.mjs';
 import { OpenAICompatibleProvider } from './openai-compatible.mjs';
+import { effortTransportForKind, withProviderDeclaredEffort } from './provider-effort-metadata.mjs';
 
 const ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
 const API_KINDS = new Set(['openai-responses', 'anthropic-messages', 'gemini-generate-content', 'openai-compatible']);
@@ -79,6 +80,7 @@ export class ProviderConnectionService {
     const config = record?.config ?? {};
     const defaults = DEFAULTS[record.kind] ?? {};
     const authenticated = record.kind === 'openai-compatible' || Boolean(config.vaultRef);
+    const effort = effortTransportForKind(record.kind);
     return Object.freeze({
       id: record.id,
       kind: record.kind,
@@ -92,6 +94,7 @@ export class ProviderConnectionService {
       capabilities: Object.freeze(['coding', 'tool-calling', 'governed-actions']),
       modelDiscovery: Object.freeze({ supported: true, mode: 'api', live: true }),
       config: Object.freeze({ model: null, baseUrl: config.baseUrl ?? null, lastTestStatus: null, lastTestedAt: null }),
+      ...(effort ? { effort } : {}),
     });
   }
 
@@ -339,8 +342,10 @@ export class ProviderConnectionService {
       headers['x-api-key'] = key; headers['anthropic-version'] = headers['anthropic-version'] ?? '2023-06-01'; apiKey = null;
     }
     const result = await this.modelDiscovery.discover({ providerId: cleanId, kind: record.kind, baseUrl: record.config.baseUrl, headers, apiKey });
-    this.modelProfiles.mergeDiscovery(cleanId, result.models);
-    return Object.freeze({ ...result, profiles: this.modelProfiles.publicView?.({ providerId: cleanId }) ?? null });
+    const provider = registered ?? { kind: record.kind };
+    const models = Object.freeze((result.models ?? []).map((model) => withProviderDeclaredEffort(model, provider)));
+    this.modelProfiles.mergeDiscovery(cleanId, models);
+    return Object.freeze({ ...result, models, profiles: this.modelProfiles.publicView?.({ providerId: cleanId }) ?? null });
   }
 
   async probeModel(id, { modelId = null, probes = ['text', 'tools', 'structuredOutput'] } = {}) {

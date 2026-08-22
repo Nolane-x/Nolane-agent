@@ -40,11 +40,42 @@ function endpoint(baseUrl, suffix) {
   return base.toString();
 }
 
+const controls = (levels) => Object.freeze({ supported: true, controllable: true, levels: Object.freeze(levels) });
+const OPENAI_REASONING_CONTROLS = Object.freeze({
+  'gpt-5': controls(['minimal', 'low', 'medium', 'high']),
+  'gpt-5.1': controls(['none', 'low', 'medium', 'high']),
+  'gpt-5.2': controls(['none', 'low', 'medium', 'high', 'xhigh']),
+  'gpt-5.2-codex': controls(['low', 'medium', 'high', 'xhigh']),
+  'gpt-5.3-codex': controls(['low', 'medium', 'high', 'xhigh']),
+});
+
+function cloneControls(value) {
+  return value ? { supported: value.supported, controllable: value.controllable, levels: [...value.levels] } : undefined;
+}
+
+function anthropicEffortControls(capability) {
+  const order = ['low', 'medium', 'high', 'xhigh', 'max'];
+  const levels = order.filter((level) => capability?.[level]?.supported === true);
+  return levels.length ? controls(levels) : undefined;
+}
+
+function geminiReasoningControls(providerModelId) {
+  const id = String(providerModelId ?? '').trim().toLowerCase();
+  if (/^gemini-3\.1-flash-lite-image(?:[-:].*)?$/.test(id)) return controls(['minimal', 'high']);
+  if (/^gemini-3-pro(?:[-:].*)?$/.test(id)) return controls(['low', 'high']);
+  if (/^gemini-3\.1-pro(?:[-:].*)?$/.test(id) || /^gemini-3\.7-flash(?:[-:].*)?$/.test(id)) return controls(['low', 'medium', 'high']);
+  if (/^gemini-3\.(?:1|5)-flash-lite(?:[-:].*)?$/.test(id) || /^gemini-3\.(?:5|6)-flash(?:[-:].*)?$/.test(id) || /^gemini-3-flash(?:[-:].*)?$/.test(id)) return controls(['minimal', 'low', 'medium', 'high']);
+  return undefined;
+}
+
 function knownReasoningControls(providerFamily, providerModelId) {
-  // Only publish levels the receiving API documents for this exact model ID.
-  if (providerFamily === 'openai-api' && providerModelId === 'gpt-5.6') {
-    return { supported: true, controllable: true, levels: ['none', 'low', 'medium', 'high', 'xhigh', 'max'] };
+  const family = String(providerFamily ?? '').toLowerCase();
+  const id = String(providerModelId ?? '').trim().toLowerCase();
+  if (family === 'openai-api') {
+    if (/^gpt-5\.6(?:-(?:sol|terra|luna))?$/.test(id)) return controls(['none', 'low', 'medium', 'high', 'xhigh', 'max']);
+    return cloneControls(OPENAI_REASONING_CONTROLS[id]);
   }
+  if (family === 'gemini-api' || family === 'google-api') return geminiReasoningControls(id);
   return undefined;
 }
 
@@ -117,10 +148,12 @@ export class ModelDiscoveryService {
       const payload = await this.#json(url.toString(), { headers });
       for (const model of payload.data ?? []) {
         if (!model?.id) continue;
+        const reasoning = anthropicEffortControls(model.capabilities?.effort);
         models.push({
           id: `anthropic/${String(model.id).toLowerCase()}`,
           providerFamily: 'anthropic-api', providerModelId: model.id,
           identity: { displayName: model.display_name ?? null, releaseDate: model.created_at?.slice?.(0, 10) ?? null },
+          ...(reasoning ? { reasoning } : {}),
           source: { type: 'provider-api', providerId: 'anthropic-api', observedAt },
         });
       }
@@ -142,6 +175,7 @@ export class ModelDiscoveryService {
         const providerId = String(model.name ?? '').replace(/^models\//, '');
         if (!providerId) continue;
         const methods = new Set(model.supportedGenerationMethods ?? []);
+        const reasoning = knownReasoningControls('gemini-api', providerId);
         models.push({
           id: `google/${providerId.toLowerCase()}`,
           providerFamily: 'google-api', providerModelId: providerId,
@@ -151,6 +185,7 @@ export class ModelDiscoveryService {
             streaming: methods.has('streamGenerateContent') ? true : methods.has('generateContent') ? true : null,
             embeddings: methods.has('embedContent') || methods.has('batchEmbedContents') ? true : null,
           },
+          ...(reasoning ? { reasoning } : {}),
           source: { type: 'provider-api', providerId: 'google-api', observedAt },
         });
       }

@@ -6,14 +6,33 @@ const SENSITIVE = /(api[-_]?key|access[-_]?token|refresh[-_]?token|password|secr
 const unknownCapabilities = () => Object.fromEntries(CAPABILITIES.map((key) => [key, 'unknown']));
 const clone = (value) => structuredClone(value ?? {});
 const freeze = (value) => Object.freeze(Array.isArray(value) ? value.map(freeze) : value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).map(([key, child]) => [key, freeze(child)])) : value);
+const REASONING_LEVEL = /^[a-z0-9][a-z0-9._-]{0,63}$/;
 function cleanObject(value) {
   if (Array.isArray(value)) return value.map(cleanObject);
   if (!value || typeof value !== 'object') return value;
   return Object.fromEntries(Object.entries(value).filter(([key]) => !SENSITIVE.test(key)).map(([key, child]) => [key, cleanObject(child)]));
 }
 function normalizeKey(providerId, modelId) { return `${String(providerId).trim()}/${String(modelId).trim()}`; }
+function normalizeReasoningLevels(value) {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.map((item) => String(item ?? '').trim().toLowerCase()).filter((item) => REASONING_LEVEL.test(item)))];
+}
+function mergeReasoning(current, input) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return current;
+  const levels = normalizeReasoningLevels(input.levels);
+  const hasEvidence = input.supported === true || input.supported === false || input.controllable === true || input.controllable === false || levels.length > 0 || input.defaultLevel != null;
+  if (!hasEvidence) return current;
+  const nextLevels = Array.isArray(input.levels) ? levels : current.levels;
+  const candidateDefault = input.defaultLevel == null ? current.defaultLevel : String(input.defaultLevel).trim().toLowerCase();
+  return {
+    supported: input.supported === true ? true : input.supported === false ? false : current.supported,
+    controllable: input.controllable === true ? true : input.controllable === false ? false : current.controllable,
+    levels: nextLevels,
+    defaultLevel: nextLevels.includes(candidateDefault) ? candidateDefault : null,
+  };
+}
 function baseProfile(providerId, modelId) {
-  return { key: normalizeKey(providerId, modelId), providerId: String(providerId), modelId: String(modelId), displayName: String(modelId), family: null, tokenizerId: null, aliases: [], lifecycle: 'unknown', context: { inputTokens: null, outputTokens: null }, modalities: { input: ['text'], output: ['text'] }, capabilities: unknownCapabilities(), pricing: {}, quotas: {}, local: {}, metadata: {}, intelligence: null, declared: {}, discovered: {}, probed: {}, observed: {}, userOverrides: {}, sources: [] };
+  return { key: normalizeKey(providerId, modelId), providerId: String(providerId), modelId: String(modelId), displayName: String(modelId), family: null, tokenizerId: null, aliases: [], lifecycle: 'unknown', context: { inputTokens: null, outputTokens: null }, modalities: { input: ['text'], output: ['text'] }, capabilities: unknownCapabilities(), reasoning: { supported: 'unknown', controllable: 'unknown', levels: [], defaultLevel: null }, pricing: {}, quotas: {}, local: {}, metadata: {}, intelligence: null, declared: {}, discovered: {}, probed: {}, observed: {}, userOverrides: {}, sources: [] };
 }
 function mergeProfile(current, patch, source) {
   const next = clone(current);
@@ -28,6 +47,7 @@ function mergeProfile(current, patch, source) {
   if (input.inputModalities || input.outputModalities || input.modalities) next.modalities = { input: input.inputModalities ?? input.modalities?.input ?? next.modalities.input, output: input.outputModalities ?? input.modalities?.output ?? next.modalities.output };
   if (Array.isArray(next.modalities.input) && next.modalities.input.includes('image')) next.capabilities.vision = true;
   if (input.capabilities) next.capabilities = { ...next.capabilities, ...input.capabilities };
+  if (input.reasoning) next.reasoning = mergeReasoning(next.reasoning, input.reasoning);
   for (const key of ['pricing','quotas','local','metadata']) if (input[key]) next[key] = { ...next[key], ...input[key] };
   if (input.intelligence) next.intelligence = input.intelligence;
   if (input.sourceUrl || input.reviewedAt) next.sources = [...next.sources, { kind: source, url: input.sourceUrl ?? null, reviewedAt: input.reviewedAt ?? null }].slice(-20);
@@ -49,7 +69,7 @@ export class ModelProfileRegistry {
   }
   #intelligence(providerId, modelId, profile = {}) {
     const canonicalId = canonicalModelId(providerId, modelId);
-    const hasOperationalDiscovery = ['contextLength', 'outputTokenLimit', 'context', 'capabilities', 'inputModalities', 'outputModalities', 'modalities', 'local', 'kind', 'discoveredAt']
+    const hasOperationalDiscovery = ['contextLength', 'outputTokenLimit', 'context', 'capabilities', 'reasoning', 'inputModalities', 'outputModalities', 'modalities', 'local', 'kind', 'discoveredAt']
       .some((key) => profile?.[key] !== undefined && profile?.[key] !== null);
     try {
       if (hasOperationalDiscovery) this.intelligenceRegistry.registerDiscovered(legacyDiscoveryToAdvancedRecord({ providerId, modelId, ...profile }, { providerId }));

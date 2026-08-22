@@ -262,7 +262,7 @@ app.whenReady().then(async () => {
   hardenSession();
   windowStateStore = new WindowStateStore({ userDataDir: app.getPath('userData') });
   updateController = new ElectronUpdateController({ userDataDir: app.getPath('userData'), currentVersion: app.getVersion(), quit: () => { quitting = true; supervisor?.stop().finally(() => app.quit()); } });
-  const releaseUpdater = ['darwin', 'linux'].includes(process.platform)
+  const releaseUpdater = ['win32', 'darwin', 'linux'].includes(process.platform)
     ? loadPackagedGitHubReleaseUpdater({ app, currentVersion: app.getVersion(), platform: process.platform, userDataDir: app.getPath('userData') })
     : null;
   updateCoordinator = new DesktopUpdateCoordinator({
