@@ -1,2 +1,0 @@
-import { buildSessionGroups } from '../shell/session-sidebar.7ddcf44a63d9.mjs';
-export function createSessionViewModel(){let runs=[],approvals=[];return Object.freeze({update(value={}){runs=(value.runs??runs).map(x=>({...x,id:String(x.id)}));approvals=(value.approvals??approvals).map(x=>({...x,missionId:String(x.missionId??x.id)}))},snapshot({projectId=null}={}){const filter=x=>!projectId||String(x.projectId)===String(projectId);return Object.freeze({projectId,groups:buildSessionGroups(runs.filter(filter),approvals.filter(filter))})}})}
