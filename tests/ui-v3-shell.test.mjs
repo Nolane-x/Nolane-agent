@@ -60,6 +60,7 @@ test('Nolane visual identity is a theme-aware vector mark in the shell and a dec
   const html = renderAppShell();
   const favicon = await readFile(new URL('../ui-v3/nolane.svg', import.meta.url), 'utf8');
   const packagingIcon = await readFile(new URL('../build/icon.svg', import.meta.url), 'utf8');
+  const extensionIcon = await readFile(new URL('../extensions/vscode/extension/media/nolane.svg', import.meta.url), 'utf8');
   const readme = await readFile(new URL('../README.md', import.meta.url), 'utf8');
   const builder = require('../electron-builder.config.cjs');
 
@@ -67,6 +68,8 @@ test('Nolane visual identity is a theme-aware vector mark in the shell and a dec
   assert.match(html, /class="nolane-brand-mark"/);
   assert.match(favicon, /viewBox="0 0 64 64"/);
   assert.match(packagingIcon, /viewBox="0 0 64 64"/);
+  assert.match(extensionIcon, /<path[^>]+stroke="currentColor"/);
+  assert.doesNotMatch(extensionIcon, /M5 3h14v4/);
   assert.match(readme, /!\[Nolane Agent mark\]\(build\/icon\.svg\)/);
   assert.equal(builder.icon, 'build/icon.svg');
 });
