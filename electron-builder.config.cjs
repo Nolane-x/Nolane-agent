@@ -83,6 +83,7 @@ module.exports = {
     target: [{ target: 'AppImage', arch: ['x64'] }, { target: 'deb', arch: ['x64'] }],
     artifactName: 'NolaneAgent-${version}-${arch}.${ext}',
     category: 'Development',
+    maintainer: 'Nolane Agent <nolane-2010@users.noreply.github.com>',
   },
   publish: [{ provider: 'github', owner, repo, channel: '${channel}', releaseType: 'draft' }],
 };

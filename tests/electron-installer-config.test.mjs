@@ -21,6 +21,7 @@ test('native desktop package identities and targets are stable and NolaneNative-
   assert.match(config.mac.artifactName, /NolaneAgent-\$\{version\}-\$\{arch\}\.\$\{ext\}/);
   assert.deepEqual(config.linux.target, [{ target: 'AppImage', arch: ['x64'] }, { target: 'deb', arch: ['x64'] }]);
   assert.match(config.linux.artifactName, /NolaneAgent-\$\{version\}-\$\{arch\}\.\$\{ext\}/);
+  assert.equal(config.linux.maintainer, 'Nolane Agent <nolane-2010@users.noreply.github.com>');
   assert.ok(config.files.some((entry) => entry === '!vendor/nolane_native-agent/**'));
   assert.ok(config.files.some((entry) => entry === '!src/nolane_native/**'));
 });
