@@ -179,6 +179,8 @@ function reasoningEffortOptions(model) {
   const profile = selectedModelProfile(model.models, model.selectedModel);
   const values = reasoningEfforts(profile);
   if (!values.length) return [];
+  const providerDeclared = profile?.metadata?.effort?.provenance === 'provider-declared'
+    && profile?.metadata?.effort?.modelCompatibility === 'cli-validated-at-execution';
   const labels = {
     none: model.language === 'vi' ? 'Không suy luận' : 'No reasoning',
     minimal: model.language === 'vi' ? 'Tối thiểu' : 'Minimal',
@@ -194,7 +196,10 @@ function reasoningEffortOptions(model) {
     label: model.language === 'vi' ? 'Mặc định model' : 'Model default',
     detail: model.language === 'vi' ? 'Để provider chọn mức mặc định cho model này' : 'Let the provider use this model’s default effort',
   };
-  return [defaultOption, ...values.map((value) => ({ value, label: labels[value] ?? value, detail: model.language === 'vi' ? 'Mức suy luận do model đã chọn hỗ trợ cho lượt này' : 'Reasoning effort supported by the selected model for this turn' }))];
+  const detail = providerDeclared
+    ? (model.language === 'vi' ? 'CLI hỗ trợ mức này và sẽ kiểm tra tính tương thích của model khi chạy' : 'The CLI supports this level and validates model compatibility at execution')
+    : (model.language === 'vi' ? 'Mức suy luận do model đã chọn hỗ trợ cho lượt này' : 'Reasoning effort supported by the selected model for this turn');
+  return [defaultOption, ...values.map((value) => ({ value, label: labels[value] ?? value, detail }))];
 }
 
 function renderComposerPicker({ name, ariaLabel, iconName, selected, options, className = '', searchable = false, searchLabel = '' }) {

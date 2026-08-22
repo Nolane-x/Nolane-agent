@@ -17,6 +17,35 @@ test('model profile HTTP API lists discovers and probes models', async () => {
   assert.equal((await call(route,{method:'POST',pathname:'/api/model-profiles/probe',body:{providerId:'p',modelId:'m',probes:['text']}})).body.capabilities.text,true);
 });
 
+test('manual CLI model profiles inherit only provider-declared effort transport metadata', async () => {
+  let received = null;
+  const modelProfiles = {
+    publicView: () => ({ schema: 'profiles', models: [] }),
+    upsert: (profile) => { received = profile; return { key: `${profile.providerId}/${profile.modelId}`, ...profile }; },
+  };
+  const providers = {
+    publicView: () => [{
+      id: 'aider', kind: 'cli', configured: true,
+      effort: { supported: true, mode: 'forwarded', levels: ['low', 'medium', 'high'] },
+    }],
+  };
+  const route = createRoutes({ modelProfiles, providers });
+
+  const added = await call(route, { method: 'POST', pathname: '/api/model-profiles', body: { providerId: 'aider', modelId: 'anthropic/claude-sonnet' } });
+
+  assert.equal(added.status, 201);
+  assert.deepEqual(received.reasoning, {
+    supported: true,
+    controllable: true,
+    levels: ['low', 'medium', 'high'],
+  });
+  assert.deepEqual(received.metadata.effort, {
+    provenance: 'provider-declared',
+    transport: 'forwarded',
+    modelCompatibility: 'cli-validated-at-execution',
+  });
+});
+
 test('provider connection HTTP API applies a selected discovered model', async () => {
   const calls = [];
   const route = createRoutes({

@@ -195,6 +195,22 @@ test('home composer exposes and submits only catalog-advertised reasoning effort
   assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Use careful reasoning', planningProviderId: 'opencode', planningModelId: 'openai/gpt-5.6-sol', deploymentKey: 'opencode/openai/gpt-5.6-sol', planningEffort: 'ultra', mcpAllowedTools: [] }]]);
 });
 
+test('home composer identifies provider-declared effort for a manually added CLI model', () => {
+  const html = renderHomeView(buildHomeViewModel({
+    language: 'vi',
+    selectedModel: 'aider/anthropic/claude-sonnet',
+    providers: [{ id: 'aider', state: 'ready' }],
+    models: [{
+      key: 'aider/anthropic/claude-sonnet', providerId: 'aider', modelId: 'anthropic/claude-sonnet', displayName: 'Claude Sonnet via Aider',
+      reasoning: { supported: true, controllable: true, levels: ['low', 'medium', 'high'] },
+      metadata: { effort: { provenance: 'provider-declared', transport: 'forwarded', modelCompatibility: 'cli-validated-at-execution' } },
+    }],
+  }));
+
+  assert.match(html, /data-composer-picker="planningEffort"/);
+  assert.match(html, /CLI hỗ trợ mức này và sẽ kiểm tra tính tương thích của model khi chạy/);
+});
+
 test('home composer keeps the selected model default unless the user explicitly chooses an effort', async () => {
   const calls = [];
   const api = {
