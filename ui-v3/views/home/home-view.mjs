@@ -57,6 +57,7 @@ function selectedModelProfile(models, selection) {
 }
 
 function reasoningEfforts(profile) {
+  if (profile?.reasoning?.controllable !== true) return [];
   const values = [
     profile?.reasoning?.levels,
     profile?.metadata?.supportedReasoningEfforts,
@@ -180,7 +181,7 @@ function reasoningEffortOptions(model) {
   const values = reasoningEfforts(profile);
   if (!values.length) return [];
   const providerDeclared = profile?.metadata?.effort?.provenance === 'provider-declared'
-    && profile?.metadata?.effort?.modelCompatibility === 'cli-validated-at-execution';
+    && profile?.metadata?.effort?.modelCompatibility === 'provider-validated-at-execution';
   const labels = {
     none: model.language === 'vi' ? 'Không suy luận' : 'No reasoning',
     minimal: model.language === 'vi' ? 'Tối thiểu' : 'Minimal',
@@ -197,7 +198,7 @@ function reasoningEffortOptions(model) {
     detail: model.language === 'vi' ? 'Để provider chọn mức mặc định cho model này' : 'Let the provider use this model’s default effort',
   };
   const detail = providerDeclared
-    ? (model.language === 'vi' ? 'CLI hỗ trợ mức này và sẽ kiểm tra tính tương thích của model khi chạy' : 'The CLI supports this level and validates model compatibility at execution')
+    ? (model.language === 'vi' ? 'Provider hỗ trợ mức này và sẽ kiểm tra tính tương thích của model khi chạy' : 'The provider supports this level and validates model compatibility at execution')
     : (model.language === 'vi' ? 'Mức suy luận do model đã chọn hỗ trợ cho lượt này' : 'Reasoning effort supported by the selected model for this turn');
   return [defaultOption, ...values.map((value) => ({ value, label: labels[value] ?? value, detail }))];
 }

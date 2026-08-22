@@ -156,6 +156,37 @@ test('ProviderConnectionService stores API keys only in the vault, restores prov
   assert.equal(await vault.resolve({ service: 'forge.provider.openai-api', account: 'default' }), null);
 });
 
+test('ProviderConnectionService annotates discovered API models with provider-declared effort transport', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-discovered-api-effort-'));
+  const store = new StudioStore(path.join(root, 'studio.db'));
+  const vault = new CredentialVault({ backend: new MemoryCredentialBackend() });
+  t.after(() => store.close());
+  t.after(() => vault.close());
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const merged = [];
+  const service = new ProviderConnectionService({
+    store,
+    registry: new ProviderRegistry(),
+    credentialVault: vault,
+    modelDiscovery: { async discover() { return { models: [{ id: 'gpt-5.6' }] }; } },
+    modelProfiles: {
+      mergeDiscovery(providerId, models) { merged.push({ providerId, models }); },
+      publicView() { return { models: [] }; },
+    },
+  });
+
+  await service.configureApi({ id: 'openai-picker', kind: 'openai-responses', apiKey: 'sk-picker-test' });
+
+  assert.deepEqual(merged, [{
+    providerId: 'openai-picker',
+    models: [{
+      id: 'gpt-5.6',
+      reasoning: { supported: true, controllable: true, levels: ['none', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'] },
+      metadata: { effort: { provenance: 'provider-declared', transport: 'forwarded', modelCompatibility: 'provider-validated-at-execution' } },
+    }],
+  }]);
+});
+
 test('ProviderConnectionService exposes Codex login and fixed-command Claude auth status without reading OAuth tokens', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'forge-provider-auth-'));
   const store = new StudioStore(path.join(root, 'studio.db'));

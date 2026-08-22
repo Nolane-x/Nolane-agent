@@ -195,6 +195,19 @@ test('home composer exposes and submits only catalog-advertised reasoning effort
   assert.deepEqual(calls, [['/api/missions/plan', { projectId: 'p1', objective: 'Use careful reasoning', planningProviderId: 'opencode', planningModelId: 'openai/gpt-5.6-sol', deploymentKey: 'opencode/openai/gpt-5.6-sol', planningEffort: 'ultra', mcpAllowedTools: [] }]]);
 });
 
+test('home composer omits inferred reasoning levels without a controllable effort transport', () => {
+  const html = renderHomeView(buildHomeViewModel({
+    selectedModel: 'openai-api/gpt-4.1',
+    providers: [{ id: 'openai-api', state: 'ready' }],
+    models: [{
+      key: 'openai-api/gpt-4.1', providerId: 'openai-api', modelId: 'gpt-4.1', displayName: 'GPT-4.1',
+      reasoning: { supported: true, controllable: 'unknown', levels: ['low', 'medium', 'high'] },
+    }],
+  }));
+
+  assert.doesNotMatch(html, /data-composer-picker="planningEffort"/);
+});
+
 test('home composer identifies provider-declared effort for a manually added CLI model', () => {
   const html = renderHomeView(buildHomeViewModel({
     language: 'vi',
@@ -203,12 +216,12 @@ test('home composer identifies provider-declared effort for a manually added CLI
     models: [{
       key: 'aider/anthropic/claude-sonnet', providerId: 'aider', modelId: 'anthropic/claude-sonnet', displayName: 'Claude Sonnet via Aider',
       reasoning: { supported: true, controllable: true, levels: ['low', 'medium', 'high'] },
-      metadata: { effort: { provenance: 'provider-declared', transport: 'forwarded', modelCompatibility: 'cli-validated-at-execution' } },
+      metadata: { effort: { provenance: 'provider-declared', transport: 'forwarded', modelCompatibility: 'provider-validated-at-execution' } },
     }],
   }));
 
   assert.match(html, /data-composer-picker="planningEffort"/);
-  assert.match(html, /CLI hỗ trợ mức này và sẽ kiểm tra tính tương thích của model khi chạy/);
+  assert.match(html, /Provider hỗ trợ mức này và sẽ kiểm tra tính tương thích của model khi chạy/);
 });
 
 test('home composer keeps the selected model default unless the user explicitly chooses an effort', async () => {

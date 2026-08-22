@@ -42,7 +42,7 @@ test('manual CLI model profiles inherit only provider-declared effort transport 
   assert.deepEqual(received.metadata.effort, {
     provenance: 'provider-declared',
     transport: 'forwarded',
-    modelCompatibility: 'cli-validated-at-execution',
+    modelCompatibility: 'provider-validated-at-execution',
   });
 });
 

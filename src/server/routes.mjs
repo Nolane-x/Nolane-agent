@@ -2,6 +2,7 @@ import path from 'node:path';
 import { stat } from 'node:fs/promises';
 import { AUTONOMY_PROFILES } from '../security/autonomy-policy.mjs';
 import { BROWSER_WRITE_ACTIONS } from '../security/browser-permission-service.mjs';
+import { providerDeclaredEffort } from '../providers/provider-effort-metadata.mjs';
 
 function json(res, status, value, headers = {}) {
   const body = JSON.stringify(value);
@@ -43,24 +44,6 @@ function defaultPlanner({ objective }) {
 }
 
 const DEFAULT_PERMISSION_MODE_IDS = Object.freeze({ ask: 'edit-approved', workspace: 'auto-edit', full: 'deep' });
-
-function manualCliEffort(provider) {
-  if (provider?.kind !== 'cli' || provider?.effort?.supported !== true) return null;
-  const levels = [...new Set((Array.isArray(provider.effort.levels) ? provider.effort.levels : [])
-    .map((level) => String(level ?? '').trim().toLowerCase())
-    .filter((level) => /^[a-z0-9][a-z0-9._-]{0,63}$/.test(level)))];
-  if (!levels.length) return null;
-  return {
-    reasoning: { supported: true, controllable: true, levels },
-    metadata: {
-      effort: {
-        provenance: 'provider-declared',
-        transport: provider.effort.mode === 'config-override' ? 'config-override' : 'forwarded',
-        modelCompatibility: 'cli-validated-at-execution',
-      },
-    },
-  };
-}
 
 async function defaultAgentModeId(settingsService, projectId) {
   if (!settingsService?.effective) return undefined;
@@ -1668,7 +1651,7 @@ export function createRoutes({ store, providers, missionRunner, runCoordinator =
       if (!modelId || modelId.length > 256 || /[\u0000-\u001f\u007f]/.test(modelId)) throw Object.assign(new TypeError('modelId is invalid'), { statusCode: 400, code: 'model_id_invalid' });
       const provider = providers?.publicView?.().find((item) => String(item.id) === providerId);
       if (!provider) throw Object.assign(new Error(`Unknown provider: ${providerId}`), { statusCode: 404, code: 'provider_not_found' });
-      const effort = manualCliEffort(provider);
+      const effort = providerDeclaredEffort(provider);
       const profile = modelProfiles.upsert({
         providerId,
         modelId,

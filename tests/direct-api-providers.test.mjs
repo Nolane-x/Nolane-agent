@@ -103,6 +103,16 @@ test('Gemini GenerateContent provider forwards a selected thinking level only wh
   assert.deepEqual(body.generationConfig, { thinkingConfig: { thinkingLevel: 'HIGH' } });
 });
 
+test('direct API providers publish only their documented effort transport and bounded choices', () => {
+  const openai = new OpenAIResponsesProvider({ id: 'openai-effort-view', model: 'gpt-5.6' });
+  const anthropic = new AnthropicMessagesProvider({ id: 'anthropic-effort-view', model: 'claude-opus-5' });
+  const gemini = new GeminiGenerateContentProvider({ id: 'gemini-effort-view', model: 'gemini-3.6-flash' });
+
+  assert.deepEqual(openai.publicView().effort, { supported: true, mode: 'forwarded', levels: ['none', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'] });
+  assert.deepEqual(anthropic.publicView().effort, { supported: true, mode: 'forwarded', levels: ['low', 'medium', 'high', 'xhigh', 'max'] });
+  assert.deepEqual(gemini.publicView().effort, { supported: true, mode: 'forwarded', levels: ['minimal', 'low', 'medium', 'high'] });
+});
+
 test('Direct API providers expose stable setup and execution errors without returning credentials', async () => {
   const missingCredential = new OpenAIResponsesProvider({ id: 'missing', model: 'gpt-5' });
   await assert.rejects(

@@ -1,4 +1,5 @@
 import { functionTool, normalizeMessages, postJson, required, resolveCredential, secureBaseUrl } from './http-provider-utils.mjs';
+import { effortTransportForKind } from './provider-effort-metadata.mjs';
 
 const EFFORT_LEVELS = new Set(['low', 'medium', 'high', 'xhigh', 'max']);
 function outputEffort(value) {
@@ -14,7 +15,7 @@ export class AnthropicMessagesProvider {
     this.apiKey = apiKey == null ? null : String(apiKey); this.credentialRef = credentialRef; this.credentialResolver = credentialResolver; this.timeoutMs = Number(timeoutMs); this.maxTokens = Number(maxTokens); this.fetchImpl = fetchImpl;
     this.profile = Object.freeze({ capabilities: Object.freeze([...(profile.capabilities ?? ['coding', 'tool-calling', 'structured-output', 'long-context', 'governed-actions'])]), qualityTier: Number(profile.qualityTier ?? 4.5), costTier: Number(profile.costTier ?? 2), latencyTier: Number(profile.latencyTier ?? 2), local: false });
   }
-  publicView() { return Object.freeze({ id: this.id, kind: this.kind, label: 'Anthropic API', model: this.model, baseUrl: this.baseUrl, ...this.profile }); }
+  publicView() { return Object.freeze({ id: this.id, kind: this.kind, label: 'Anthropic API', model: this.model, baseUrl: this.baseUrl, effort: effortTransportForKind(this.kind), ...this.profile }); }
   async detect() { try { await resolveCredential(this); return Object.freeze({ ...this.publicView(), available: true, authenticated: true, healthy: true }); } catch (error) { return Object.freeze({ ...this.publicView(), available: true, authenticated: false, healthy: false, error: String(error.message ?? error) }); } }
   async complete({ messages = [], tools = [], signal = null, model = this.model, effort = null } = {}) {
     const key = await resolveCredential(this); const clean = normalizeMessages(messages);

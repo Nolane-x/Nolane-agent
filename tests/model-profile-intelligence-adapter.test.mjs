@@ -43,3 +43,16 @@ test('compatibility registry preserves discovered per-model reasoning controls f
   });
   assert.deepEqual(registry.publicView().models[0].reasoning, profile.reasoning);
 });
+
+test('compatibility registry preserves provider-declared effort controls over inferred family defaults', () => {
+  const registry = new ModelProfileRegistry();
+  const [profile] = registry.mergeDiscovery('openai-picker', [{
+    id: 'gpt-5.6',
+    reasoning: { supported: true, controllable: true, levels: ['none', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'] },
+    metadata: { effort: { provenance: 'provider-declared', transport: 'forwarded', modelCompatibility: 'provider-validated-at-execution' } },
+  }]);
+
+  assert.deepEqual(profile.reasoning.levels, ['none', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max']);
+  assert.equal(profile.reasoning.controllable, true);
+  assert.deepEqual(profile.metadata.effort, { provenance: 'provider-declared', transport: 'forwarded', modelCompatibility: 'provider-validated-at-execution' });
+});
