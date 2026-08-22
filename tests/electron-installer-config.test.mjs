@@ -33,6 +33,12 @@ test('package pins Electron builder and updater versions for GitHub reproducibil
   assert.equal(metadata.scripts['verify:electron-installer'], 'node scripts/verify-electron-installer-config.mjs');
 });
 
+test('optional Windows publisher metadata is omitted when unsigned builds do not configure it', () => {
+  if (!process.env.NOLANE_WINDOWS_PUBLISHER) {
+    assert.equal(Object.hasOwn(config.win, 'publisherName'), false);
+  }
+});
+
 test('native release builder refuses the wrong host and selects only declared platform targets', async () => {
   const source = await readFile('scripts/build-electron-installer.mjs', 'utf8');
   assert.match(source, /NOLANE_ELECTRON_TARGET/);
