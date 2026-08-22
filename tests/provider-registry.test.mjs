@@ -342,6 +342,10 @@ test('ProviderRegistry exposes secret-free public views and built-in official CL
   assert.equal(kimi.profile.capabilities.includes('governed-actions'), false);
   assert.ok(!kimi.baseArgs.includes('--yolo'));
   assert.ok(!kimi.baseArgs.includes('--auto'));
+  const grokBuild = builtIns.find((item) => item.id === 'grok-build');
+  assert.deepEqual(grokBuild.publicView().effort, { supported: true, mode: 'forwarded', levels: ['low', 'medium', 'high', 'xhigh'] });
+  const aiderCli = builtIns.find((item) => item.id === 'aider');
+  assert.deepEqual(aiderCli.publicView().effort, { supported: true, mode: 'forwarded', levels: ['low', 'medium', 'high'] });
   const copilot = builtIns.find((item) => item.id === 'github-copilot');
   assert.deepEqual(copilot.modelCatalog, ['claude-sonnet-4.6', 'gpt-5.4', 'claude-haiku-4.5', 'gpt-5.3-codex', 'gemini-3.1-pro-preview', 'gemini-3.5-flash', 'gemini-3.6-flash', 'mai-code-1-flash']);
   assert.deepEqual(copilot.publicView().effort, { supported: true, mode: 'forwarded', levels: ['none', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'] });
