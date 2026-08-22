@@ -1,13 +1,13 @@
-# Nolane Agent
+# Nolane Agent 0.0.1
 
 <div align="center">
   <img src="build/icon.svg" width="112" alt="Biểu tượng Nolane Agent" />
   <h3>Trung tâm điều phối AI cục bộ cho công việc nghiêm túc.</h3>
   <p>Đưa AI agent vào đúng dự án thật — với model, công cụ, skill, trình duyệt, phê duyệt, bằng chứng và khôi phục trong cùng một ứng dụng desktop.</p>
 
-  <a href="https://github.com/Nolane-x/Nolane-agent/releases/tag/v0.0.0"><img src="https://img.shields.io/github/v/release/Nolane-x/Nolane-agent?display_name=tag&sort=semver" alt="Phiên bản phát hành" /></a>
+  <a href="https://github.com/Nolane-x/Nolane-agent/releases/tag/v0.0.1"><img src="https://img.shields.io/github/v/release/Nolane-x/Nolane-agent?display_name=tag&sort=semver" alt="Phiên bản phát hành" /></a>
   <a href="https://github.com/Nolane-x/Nolane-agent/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Nolane-x/Nolane-agent/ci.yml?label=verification" alt="Xác minh" /></a>
-  <a href="https://github.com/Nolane-x/Nolane-agent/releases/tag/v0.0.0"><img src="https://img.shields.io/badge/nền%20tảng-Windows%20%7C%20macOS%20%7C%20Linux-7c6cf0" alt="Windows, macOS và Linux" /></a>
+  <a href="https://github.com/Nolane-x/Nolane-agent/releases/tag/v0.0.1"><img src="https://img.shields.io/badge/nền%20tảng-Windows%20%7C%20macOS%20%7C%20Linux-7c6cf0" alt="Windows, macOS và Linux" /></a>
 </div>
 
 <p align="center">
@@ -16,13 +16,13 @@
 
 Nolane Agent không phải một ô chat trống. Đây là **workspace AI hiểu dự án**: bạn chọn thư mục làm việc, runtime, model, effort, skill và mức phê duyệt; sau đó nhìn thấy AI lập kế hoạch, sử dụng công cụ, duyệt web, kiểm tra kết quả, lưu bằng chứng và sẵn sàng khôi phục khi cần.
 
-## Tải Nolane Agent 0.0.0
+## Tải Nolane Agent 0.0.1
 
 | Nền tảng | Gói cài đặt |
 | --- | --- |
-| Windows | [NSIS installer (.exe)](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.0/NolaneAgent-Setup-0.0.0-x64.exe) |
-| macOS | [DMG](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.0/NolaneAgent-0.0.0-x64.dmg) hoặc [ZIP](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.0/NolaneAgent-0.0.0-x64.zip) |
-| Linux | [AppImage](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.0/NolaneAgent-0.0.0-x86_64.AppImage) hoặc [gói Debian](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.0/NolaneAgent-0.0.0-amd64.deb) |
+| Windows | [NSIS installer (.exe)](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.1/NolaneAgent-Setup-0.0.1-x64.exe) |
+| macOS | [DMG](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.1/NolaneAgent-0.0.1-x64.dmg) hoặc [ZIP](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.1/NolaneAgent-0.0.1-x64.zip) |
+| Linux | [AppImage](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.1/NolaneAgent-0.0.1-x86_64.AppImage) hoặc [gói Debian](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.1/NolaneAgent-0.0.1-amd64.deb) |
 
 ## Điều gì làm Nolane Agent khác biệt?
 
@@ -62,7 +62,7 @@ Nolane Agent không phải một ô chat trống. Đây là **workspace AI hiể
 
 ## Phát hành desktop và cập nhật
 
-Mỗi bản phát hành được đóng gói hoàn toàn bởi GitHub Actions. Bản `v0.0.0` có installer Windows, DMG/ZIP cho macOS, AppImage/DEB cho Linux, metadata cập nhật, checksum SHA-256 và provenance attestation.
+Mỗi bản phát hành được đóng gói hoàn toàn bởi GitHub Actions. Bản `v0.0.1` có installer Windows, DMG/ZIP cho macOS, AppImage/DEB cho Linux, metadata cập nhật, checksum SHA-256 và provenance attestation.
 
 Khi có GitHub Release mới, ứng dụng hiển thị **Tải bản cập nhật** rồi **Cập nhật và khởi động lại**. Cập nhật không tự chạy; mission đang hoạt động sẽ chặn restart cho đến khi an toàn. NSIS thay thế bản cài Windows tại chỗ nhưng giữ lại thư mục dữ liệu ứng dụng.
 
@@ -74,9 +74,9 @@ Nolane Agent có source, test và bằng chứng CI cho các năng lực đã n�
 
 ## Tài liệu phát hành
 
-- [Release notes](docs/RELEASE-0.0.0.md)
-- [Giới hạn đã biết](docs/LIMITATIONS-0.0.0.md)
-- [Phạm vi xác minh](docs/VERIFICATION-REPORT-0.0.0.md)
-- [Các khoảng trống còn lại](docs/REMAINING-GAPS-0.0.0.md)
+- [Release notes](docs/RELEASE-0.0.1.md)
+- [Giới hạn đã biết](docs/LIMITATIONS-0.0.1.md)
+- [Phạm vi xác minh](docs/VERIFICATION-REPORT-0.0.1.md)
+- [Các khoảng trống còn lại](docs/REMAINING-GAPS-0.0.1.md)
 
 Các checkpoint, beta, audit và tài liệu forensic trong `docs/`, `docs/checkpoints/`, `requirements/` và `evidence/` là provenance lịch sử, không phải thương hiệu hiện tại của sản phẩm.

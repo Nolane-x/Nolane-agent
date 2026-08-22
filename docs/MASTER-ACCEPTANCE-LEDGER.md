@@ -1,6 +1,6 @@
-# Nolane Agent 0.0.0 — Master Acceptance Ledger
+# Nolane Agent 0.0.1 — Master Acceptance Ledger
 
-Product version: **0.0.0**
+Product version: **0.0.1**
 
 ## Canonical scope
 
@@ -25,5 +25,5 @@ The NolaneNative rows are inventory-derived behavior candidates. Their status is
 
 Exact-title duplicates are represented as aliases under one canonical requirement. Similar but non-identical requirements remain separate to avoid hiding work through fuzzy matching.
 
-Ledger receipt SHA-256: `416b61caaa9b6d4a2de9740499e3fb329149e3b48187405b9e0ebde8a431c2ed`
+Ledger receipt SHA-256: `cc19ca17ba3dd8cd6ba03bd4f971adf3d35aafbd24ef8a77881d0d7c18354f66`
 

@@ -1,13 +1,13 @@
-# Nolane Agent
+# Nolane Agent 0.0.1
 
 <div align="center">
   <img src="build/icon.svg" width="112" alt="Nolane Agent चिह्न" />
   <h3>गंभीर AI कार्य के लिए local-first command centre।</h3>
   <p>AI agent को वास्तविक प्रोजेक्ट में चलाइए — मॉडल, टूल, skills, browser, approval, evidence और recovery एक ही desktop workspace में।</p>
 
-  <a href="https://github.com/Nolane-x/Nolane-agent/releases/tag/v0.0.0"><img src="https://img.shields.io/github/v/release/Nolane-x/Nolane-agent?display_name=tag&sort=semver" alt="रिलीज़" /></a>
+  <a href="https://github.com/Nolane-x/Nolane-agent/releases/tag/v0.0.1"><img src="https://img.shields.io/github/v/release/Nolane-x/Nolane-agent?display_name=tag&sort=semver" alt="रिलीज़" /></a>
   <a href="https://github.com/Nolane-x/Nolane-agent/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Nolane-x/Nolane-agent/ci.yml?label=verification" alt="सत्यापन" /></a>
-  <a href="https://github.com/Nolane-x/Nolane-agent/releases/tag/v0.0.0"><img src="https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Linux-7c6cf0" alt="Windows, macOS और Linux" /></a>
+  <a href="https://github.com/Nolane-x/Nolane-agent/releases/tag/v0.0.1"><img src="https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Linux-7c6cf0" alt="Windows, macOS और Linux" /></a>
 </div>
 
 <p align="center">
@@ -16,13 +16,13 @@
 
 Nolane Agent केवल एक खाली chat box नहीं है। यह एक **project-aware AI workspace** है: पहले local folder, runtime, model, effort, skill और approval boundary चुनें; फिर देखें कि agent कैसे योजना बनाता है, tools चलाता है, web पर काम करता है, परिणाम जाँचता है, evidence रखता है और ज़रूरत पड़ने पर recovery करता है।
 
-## Nolane Agent 0.0.0 डाउनलोड करें
+## Nolane Agent 0.0.1 डाउनलोड करें
 
 | Platform | Package |
 | --- | --- |
-| Windows | [NSIS installer (.exe)](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.0/NolaneAgent-Setup-0.0.0-x64.exe) |
-| macOS | [DMG](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.0/NolaneAgent-0.0.0-x64.dmg) या [ZIP](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.0/NolaneAgent-0.0.0-x64.zip) |
-| Linux | [AppImage](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.0/NolaneAgent-0.0.0-x86_64.AppImage) या [Debian package](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.0/NolaneAgent-0.0.0-amd64.deb) |
+| Windows | [NSIS installer (.exe)](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.1/NolaneAgent-Setup-0.0.1-x64.exe) |
+| macOS | [DMG](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.1/NolaneAgent-0.0.1-x64.dmg) या [ZIP](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.1/NolaneAgent-0.0.1-x64.zip) |
+| Linux | [AppImage](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.1/NolaneAgent-0.0.1-x86_64.AppImage) या [Debian package](https://github.com/Nolane-x/Nolane-agent/releases/download/v0.0.1/NolaneAgent-0.0.1-amd64.deb) |
 
 ## Nolane Agent को अलग क्या बनाता है?
 
@@ -62,7 +62,7 @@ Intent / conversation
 
 ## Desktop delivery और updates
 
-हर release पूरी तरह GitHub Actions से package होती है। `v0.0.0` में Windows installer, macOS DMG/ZIP, Linux AppImage/DEB, update metadata, SHA-256 checksums और provenance attestation हैं।
+हर release पूरी तरह GitHub Actions से package होती है। `v0.0.1` में Windows installer, macOS DMG/ZIP, Linux AppImage/DEB, update metadata, SHA-256 checksums और provenance attestation हैं।
 
 नई GitHub Release मिलने पर application **Download update** और फिर **Update and restart** दिखाता है। Update अपने-आप install नहीं होते; चल रही mission restart को तब तक रोकेगी जब तक वह सुरक्षित न हो। NSIS Windows installation को in place बदलता है और application data directory सुरक्षित रखता है।
 
@@ -74,9 +74,9 @@ Nolane Agent बताई गई क्षमताओं के लिए sourc
 
 ## Release दस्तावेज़
 
-- [Release notes](docs/RELEASE-0.0.0.md)
-- [ज्ञात सीमाएँ](docs/LIMITATIONS-0.0.0.md)
-- [Verification scope](docs/VERIFICATION-REPORT-0.0.0.md)
-- [Remaining gaps](docs/REMAINING-GAPS-0.0.0.md)
+- [Release notes](docs/RELEASE-0.0.1.md)
+- [ज्ञात सीमाएँ](docs/LIMITATIONS-0.0.1.md)
+- [Verification scope](docs/VERIFICATION-REPORT-0.0.1.md)
+- [Remaining gaps](docs/REMAINING-GAPS-0.0.1.md)
 
 `docs/`, `docs/checkpoints/`, `requirements/` और `evidence/` में मौजूद checkpoint, beta, audit और forensic सामग्री historical provenance है, वर्तमान उत्पाद branding नहीं।
