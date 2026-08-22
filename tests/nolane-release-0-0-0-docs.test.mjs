@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { PRODUCT_IDENTITY } from '../src/product-identity.mjs';
 
-const version = '0.0.0';
+const version = PRODUCT_IDENTITY.version;
 const files = [
   `README.md`,
   `docs/RELEASE-${version}.md`,
@@ -11,14 +12,14 @@ const files = [
   `docs/REMAINING-GAPS-${version}.md`,
 ];
 
-test('0.0.0 release documents describe GitHub-only desktop delivery and preserve current non-claims', async () => {
+test('current release documents describe GitHub-only desktop delivery and preserve current non-claims', async () => {
   const documents = await Promise.all(files.map((file) => readFile(file, 'utf8')));
   for (const document of documents) {
-    assert.match(document, /Nolane Agent 0\.0\.0/);
+    assert.ok(document.includes(`Nolane Agent ${version}`));
     assert.doesNotMatch(document, /Forge Studio/);
   }
   const text = documents.join('\n');
-  assert.match(text, /Nolane Agent 0\.0\.0/);
+  assert.ok(text.includes(`Nolane Agent ${version}`));
   assert.match(text, /GitHub Actions is the only release packaging environment/i);
   assert.match(text, /Windows NSIS/i);
   assert.match(text, /macOS DMG and ZIP/i);

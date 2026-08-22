@@ -8,7 +8,7 @@ The Master Acceptance Ledger records 1,460 canonical items: 1,372 verified and 8
 
 ## Release prerequisites
 
-The GitHub workflow permits unsigned Windows and macOS artifacts, so platform trust warnings can appear. A GitHub Release must exist before packaged installations can consume `electron-updater` metadata. A version change alone does not create a release.
+The GitHub workflow permits unsigned Windows and macOS artifacts. Windows may display an **Unknown Publisher** warning, and macOS Gatekeeper may require an explicit confirmation before launch. A GitHub Release must exist before packaged installations can consume `electron-updater` metadata. A version change alone does not create a release.
 
 ## Non-claims
 

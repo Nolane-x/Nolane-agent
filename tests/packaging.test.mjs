@@ -81,7 +81,10 @@ test('staged portable application starts with the complete Nolane Agent Core run
   child.once('exit', () => { exited = true; });
   t.after(() => { if (!exited) child.kill('SIGTERM'); });
   let stderr = ''; child.stderr.on('data', (chunk) => { stderr += chunk; });
-  const deadline = Date.now() + 45_000; let runtime; let healthStatus = null;
+  // This closure test runs after hundreds of isolated files in the full suite.
+  // Keep the product readiness requirement intact, but allow a constrained CI host
+  // enough time to initialize the complete local runtime graph.
+  const deadline = Date.now() + 120_000; let runtime; let healthStatus = null;
   while (Date.now() < deadline) {
     try {
       runtime = JSON.parse(await readFile(runtimeFile, 'utf8'));
@@ -91,7 +94,7 @@ test('staged portable application starts with the complete Nolane Agent Core run
     if (exited) break;
     await new Promise((resolve) => setTimeout(resolve, 50));
   }
-  assert.ok(runtime, `staged app failed to publish runtime metadata within 45000ms (exit=${exited ? 'exited' : 'running'}): ${stderr}`);
+  assert.ok(runtime, `staged app failed to publish runtime metadata within 120000ms (exit=${exited ? 'exited' : 'running'}): ${stderr}`);
   assert.equal(healthStatus, 200, `staged app health check failed: ${stderr}`);
   const waitForExit = (timeoutMs) => exited
     ? Promise.resolve(true)

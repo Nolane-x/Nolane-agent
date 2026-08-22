@@ -210,7 +210,7 @@ async function startRuntimeAndLoad({ recovering = false } = {}) {
       runtimeFile,
       modulePath: path.join(root, 'src', 'app.mjs'),
       cwd: root,
-      startupTimeoutMs: Number(process.env.NOLANE_AGENT_STARTUP_TIMEOUT_MS) || 45_000,
+      startupTimeoutMs: Number(process.env.NOLANE_AGENT_STARTUP_TIMEOUT_MS) || 120_000,
       maxRestarts: 2,
       env: {
         ...process.env,

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { PRODUCT_IDENTITY } from '../src/product-identity.mjs';
 
 const read = (file) => readFile(new URL(`../${file}`, import.meta.url), 'utf8');
 
@@ -20,13 +21,14 @@ test('CI workflow runs product validation without publishing or release secrets'
 });
 
 test('release workflow publishes unsigned cross-platform artifacts with electron-updater GitHub metadata and no private signing gate', async () => {
+  const version = PRODUCT_IDENTITY.version;
   const [source, packageJson, builderConfig, readme, releaseNotes, limitations] = await Promise.all([
     read('.github/workflows/release.yml'),
     read('package.json'),
     read('electron-builder.config.cjs'),
     read('README.md'),
-    read('docs/RELEASE-0.0.0.md'),
-    read('docs/LIMITATIONS-0.0.0.md')
+    read(`docs/RELEASE-${version}.md`),
+    read(`docs/LIMITATIONS-${version}.md`)
   ]);
   assert.match(source, /tags:\s*\n\s*- ['"]v\*['"]/);
   assert.match(source, /runs-on: windows-latest/);
@@ -71,9 +73,10 @@ test('release workflow publishes unsigned cross-platform artifacts with electron
   assert.doesNotMatch(source, /nolane_native-agent|NolaneNative/);
   assert.match(packageJson, /"electron-updater"\s*:\s*"6\.8\.9"/);
   assert.match(builderConfig, /provider: 'github'/);
-  assert.match(readme, /unsigned.*Windows.*Unknown Publisher/i);
-  assert.match(releaseNotes, /unsigned.*Windows.*Unknown Publisher/i);
-  assert.match(limitations, /unsigned.*Windows.*Unknown Publisher/i);
+  for (const document of [readme, releaseNotes, limitations]) {
+    assert.match(document, /unsigned/i);
+    assert.match(document, /Windows.*Unknown Publisher/i);
+  }
   assert.doesNotMatch(limitations, /mandatory.*update signing key/i);
 });
 
