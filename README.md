@@ -1,5 +1,7 @@
 # Nolane Agent 0.0.0
 
+![Nolane Agent mark](build/icon.svg)
+
 Nolane Agent is a local-first workspace for directing AI agents across a real project. It combines governed missions, provider and model selection, tools, browser work, skills, review, evidence, and recovery in one desktop application.
 
 `0.0.0` is the canonical stable release identity for this product. Historical checkpoint and beta documents remain in the repository as immutable provenance; they are not the current release documentation.
