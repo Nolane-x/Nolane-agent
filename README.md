@@ -1,7 +1,8 @@
 # Nolane Agent
 
+![Nolane Agent mark](build/icon.svg)
+
 <div align="center">
-  <img src="build/icon.svg" width="112" alt="Nolane Agent mark" />
   <p><strong>The local-first command centre for serious AI work.</strong></p>
   <p>Direct real agents in real projects — with model choice, governed tools, skills, browser work, evidence, and recovery in one desktop workspace.</p>
 
