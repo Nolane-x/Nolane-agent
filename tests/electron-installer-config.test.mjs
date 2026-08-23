@@ -44,6 +44,15 @@ test('packaged desktop includes the release platform truth loaded by the update 
   assert.ok(config.files.includes('config/release-platform-capabilities.json'));
 });
 
+test('packaged desktop includes the TypeScript compiler imported during runtime boot', () => {
+  assert.ok(config.files.includes('third_party/typescript/**/*'));
+});
+
+test('sandboxed preload is self-contained instead of requiring a local helper module', async () => {
+  const source = await readFile('desktop/preload.cjs', 'utf8');
+  assert.doesNotMatch(source, /require\(['"]\.\/legacy-migration\.cjs['"]\)/);
+});
+
 test('native release builder refuses the wrong host and selects only declared platform targets', async () => {
   const source = await readFile('scripts/build-electron-installer.mjs', 'utf8');
   assert.match(source, /NOLANE_ELECTRON_TARGET/);

@@ -1,7 +1,10 @@
 'use strict';
 
 const electron = require('electron');
-const { legacyDesktopGlobal, legacySelectDirectoryChannel } = require('./legacy-migration.cjs');
+// Sandboxed Electron preloads cannot require local modules. Keep the two
+// compatibility identifiers inline so the preload remains self-contained.
+const legacyDesktopGlobal = 'forgeDesktop';
+const legacySelectDirectoryChannel = 'forge:select-directory';
 
 const api = Object.freeze({
   selectDirectory: () => electron.ipcRenderer.invoke('nolane:select-directory'),
