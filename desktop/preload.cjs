@@ -1,10 +1,6 @@
 'use strict';
 
 const electron = require('electron');
-// Sandboxed Electron preloads cannot require local modules. Keep the two
-// compatibility identifiers inline so the preload remains self-contained.
-const legacyDesktopGlobal = 'forgeDesktop';
-const legacySelectDirectoryChannel = 'forge:select-directory';
 
 const api = Object.freeze({
   selectDirectory: () => electron.ipcRenderer.invoke('nolane:select-directory'),
@@ -32,4 +28,3 @@ const api = Object.freeze({
 });
 
 electron.contextBridge.exposeInMainWorld('nolaneDesktop', api);
-electron.contextBridge.exposeInMainWorld(legacyDesktopGlobal, Object.freeze({ ...api, selectDirectory: () => electron.ipcRenderer.invoke(legacySelectDirectoryChannel) }));
