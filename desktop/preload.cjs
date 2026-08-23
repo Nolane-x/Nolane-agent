@@ -1,7 +1,6 @@
 'use strict';
 
 const electron = require('electron');
-const { legacyDesktopGlobal, legacySelectDirectoryChannel } = require('./legacy-migration.cjs');
 
 const api = Object.freeze({
   selectDirectory: () => electron.ipcRenderer.invoke('nolane:select-directory'),
@@ -29,4 +28,3 @@ const api = Object.freeze({
 });
 
 electron.contextBridge.exposeInMainWorld('nolaneDesktop', api);
-electron.contextBridge.exposeInMainWorld(legacyDesktopGlobal, Object.freeze({ ...api, selectDirectory: () => electron.ipcRenderer.invoke(legacySelectDirectoryChannel) }));

@@ -24,6 +24,7 @@ module.exports = {
     'ui/**/*',
     'ui-v3/**/*',
     'ui-dist/**/*',
+    'third_party/typescript/**/*',
     'config/product-identity.json',
     'config/release-identity.json',
     'config/release-platform-capabilities.json',
