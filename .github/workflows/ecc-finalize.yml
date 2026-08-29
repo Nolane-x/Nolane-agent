@@ -1,0 +1,90 @@
+name: ECC finalization
+
+on:
+  push:
+    branches:
+      - codex/ephemeral-capability-composition-v1
+    paths:
+      - .github/workflows/ecc-finalize.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/ephemeral-capability-composition-v1
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Apply asserted normative spec closure
+        run: |
+          node --check scripts/finalize-ecc-spec.mjs
+          node scripts/finalize-ecc-spec.mjs
+          grep -F '## 18.1 Runtime input contract invariant' docs/superpowers/specs/2026-08-29-ephemeral-capability-composition-v1-design.md
+          grep -F '## 18.2 Tool-call budget non-laundering invariant' docs/superpowers/specs/2026-08-29-ephemeral-capability-composition-v1-design.md
+          grep -F 'mechanism-only-no-intelligence-comparison' docs/superpowers/specs/2026-08-29-ephemeral-capability-composition-v1-design.md
+      - name: Remove all implementation scaffolding before evidence generation
+        run: |
+          rm .github/workflows/ecc-adversarial-focused.yml
+          rm .github/workflows/ecc-hardening-apply.yml
+          rm .github/workflows/ecc-evidence-probe.yml
+          rm .github/workflows/ecc-finalize.yml
+          rm scripts/apply-ecc-hardening.mjs
+          rm scripts/apply-ecc-test-adjustment.mjs
+          rm scripts/finalize-ecc-spec.mjs
+      - name: Verify final-tree ECC behavior and benchmark
+        run: |
+          node --check src/agent/ephemeral-capability-registry.mjs
+          node --check src/agent/agent-loop.mjs
+          node --check scripts/benchmark-ephemeral-capability-composition.mjs
+          node --test tests/ephemeral-capability-registry.test.mjs tests/ephemeral-capability-input-validation.test.mjs tests/agent-loop-ephemeral-capability.test.mjs tests/ephemeral-capability-mechanism-benchmark.test.mjs
+          node scripts/benchmark-ephemeral-capability-composition.mjs
+      - name: Regenerate official Nolane evidence on the final desired tree
+        run: npm run program:nolane
+      - name: Run full source validation and evidence quality
+        run: |
+          npm run validate
+          npm run audit:evidence-quality
+      - name: Assert exact finalization footprint
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --name-only | sort > /tmp/actual.txt
+          cat > /tmp/expected.txt <<'EOF'
+          .github/workflows/ecc-adversarial-focused.yml
+          .github/workflows/ecc-evidence-probe.yml
+          .github/workflows/ecc-finalize.yml
+          .github/workflows/ecc-hardening-apply.yml
+          docs/MASTER-ACCEPTANCE-LEDGER.md
+          docs/superpowers/specs/2026-08-29-ephemeral-capability-composition-v1-design.md
+          requirements/master-acceptance-ledger.json
+          requirements/nolane-agent-v5-requirements.json
+          requirements/runtime-purity-summary.json
+          scripts/apply-ecc-hardening.mjs
+          scripts/apply-ecc-test-adjustment.mjs
+          scripts/finalize-ecc-spec.mjs
+          EOF
+          sort -o /tmp/expected.txt /tmp/expected.txt
+          echo '=== expected ==='
+          cat /tmp/expected.txt
+          echo '=== actual ==='
+          cat /tmp/actual.txt
+          diff -u /tmp/expected.txt /tmp/actual.txt
+          git diff --check
+      - name: Commit final spec evidence and scaffolding cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -m "docs: close ECC v1 evidence and remove scaffolding"
+          git push origin HEAD:codex/ephemeral-capability-composition-v1
