@@ -1,0 +1,31 @@
+name: ECC schema hardening focused
+
+on:
+  push:
+    branches:
+      - codex/ephemeral-capability-composition-v1
+    paths:
+      - .github/workflows/ecc-schema-hardening-focused.yml
+      - tests/ephemeral-capability-schema-definition-validation.test.mjs
+      - src/agent/ephemeral-capability-registry.mjs
+
+permissions:
+  contents: read
+
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/ephemeral-capability-composition-v1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Run ECC schema hardening suite
+        run: |
+          node --check src/agent/ephemeral-capability-registry.mjs
+          node --test tests/ephemeral-capability-schema-definition-validation.test.mjs tests/ephemeral-capability-registry.test.mjs tests/ephemeral-capability-input-validation.test.mjs
