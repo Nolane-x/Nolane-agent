@@ -76,7 +76,7 @@ Properties:
 - no automatic skill creation;
 - run end makes every definition unreachable.
 
-The implementation may expose the registry snapshot in run checkpoints for observability, but checkpoint data must be descriptive only. Resume support is out of scope for V1 unless it can preserve the same run-scoped authority without creating a persistence path.
+V1 does not serialize composite definitions into resumable checkpoints. A normal run checkpoint may record only bounded diagnostic metadata such as capability name and receipt hash, never enough definition state to rehydrate execution after process/run recreation. Resume semantics are deferred deliberately because rehydration would turn an ephemeral capability into a persistence mechanism.
 
 ## 6. Model-facing creation tool
 
@@ -84,7 +84,7 @@ Add one meta-tool only:
 
 `tool.compose.create`
 
-It is exposed only when task metadata enables the experiment, for example:
+It is exposed only when task metadata enables the experiment:
 
 `ephemeralCapabilityComposition: true`
 
@@ -111,24 +111,24 @@ Conceptual input:
       "id": "search",
       "tool": "fs.search",
       "args": {
-        "query": { "from": "input", "path": ["symbol"] }
+        "query": { "$bind": { "from": "input", "path": ["symbol"] } }
       }
     },
     {
       "id": "read",
       "tool": "fs.read",
       "args": {
-        "path": { "from": "step", "stepId": "search", "path": ["output", "matches", "0", "path"] }
+        "path": { "$bind": { "from": "step", "stepId": "search", "path": ["output", "matches", 0, "path"] } }
       }
     }
   ],
   "output": {
-    "from": "step",
-    "stepId": "read",
-    "path": ["output"]
+    "$bind": { "from": "step", "stepId": "read", "path": ["output"] }
   }
 }
 ```
+
+The `$bind` wrapper removes ambiguity between an ordinary literal object containing fields named `from`/`path` and a runtime binding instruction. Any object without the single reserved `$bind` key is treated as literal JSON and recursively cloned.
 
 The final registered schema name is namespaced by the runtime, for example:
 
@@ -136,16 +136,32 @@ The final registered schema name is namespaced by the runtime, for example:
 
 The caller does not control a namespace that could collide with core/gateway tools.
 
-### 6.2 Bounds
+### 6.2 Parameter-schema subset
+
+V1 accepts only a bounded JSON-Schema subset for the composite's model-facing input:
+
+- root `type` must be `object`;
+- `additionalProperties` must be `false`;
+- `properties` may use `string`, `number`, `integer`, `boolean`, `array`, `object`, or `null` types;
+- nested object schemas must also set `additionalProperties:false`;
+- arrays require an `items` schema;
+- `required`, `enum`, `const`, numeric bounds, string length bounds, array length bounds, and nested `properties` are allowed;
+- external `$ref`, `$defs`, pattern-based property expansion, schema composition keywords such as `allOf`/`anyOf`/`oneOf`, and executable/custom keywords are rejected.
+
+The implementation should reuse existing schema validation utilities where practical. It must not introduce a general-purpose schema interpreter solely for this feature.
+
+### 6.3 Bounds
 
 V1 limits:
 
 - maximum 8 steps;
 - maximum 32 input parameters;
-- maximum 64 bindings total;
+- maximum 64 binding nodes total;
 - maximum binding path depth 16;
+- maximum literal JSON depth 24;
+- maximum normalized definition size 64 KiB;
 - maximum description 1,000 characters;
-- maximum name 64 characters before namespacing;
+- maximum caller-supplied name 64 characters before namespacing;
 - step IDs unique, 1–64 characters;
 - a step may reference only task input or outputs of earlier steps;
 - no forward references;
@@ -154,31 +170,33 @@ V1 limits:
 - no `tool.catalog.*` or `tool.compose.*` as primitive steps;
 - no hidden fallback to arbitrary object/property evaluation.
 
+The run may register at most 16 ephemeral capabilities. A definition that would exceed this limit is rejected.
+
 ## 7. Binding language
 
 V1 uses a deliberately weak data-binding language.
 
-Allowed sources:
+Allowed binding sources:
 
 ```json
-{ "from": "input", "path": ["name"] }
+{ "$bind": { "from": "input", "path": ["name"] } }
 ```
 
 ```json
-{ "from": "step", "stepId": "search", "path": ["output", "matches", 0, "path"] }
+{ "$bind": { "from": "step", "stepId": "search", "path": ["output", "matches", 0, "path"] } }
 ```
 
-Literal values are represented as ordinary JSON values.
+Literal values are ordinary JSON values and may be nested. A binding node is recognized only when an object has exactly one own key, `$bind`, whose value conforms to the binding schema.
 
 There is no interpolation syntax, expression evaluator, function call, arithmetic, JavaScript property access, prototype traversal, or executable template.
 
-Path traversal accepts only own properties of plain arrays/objects and rejects dangerous keys including `__proto__`, `prototype`, and `constructor`.
+Path segments must be strings or non-negative safe integers. Traversal accepts only own properties of plain arrays/objects and rejects dangerous string segments `__proto__`, `prototype`, and `constructor` at every depth.
 
 A missing binding is an execution failure. V1 does not silently substitute `null`, empty strings, or defaults.
 
 ## 8. Registry
 
-Add a small run-local unit, tentatively:
+Add a small run-local unit:
 
 `src/agent/ephemeral-capability-registry.mjs`
 
@@ -192,9 +210,9 @@ Responsibilities only:
 6. build signed definition/execution receipts;
 7. expose bounded snapshots for diagnostics/tests.
 
-The registry must not execute primitive tools itself.
+The registry must not execute primitive tools itself through any direct broker/gateway dependency.
 
-It receives an injected governed executor callback for invocation. This prevents a privileged side channel.
+Its invocation method receives an injected callback supplied by `AgentLoop` that executes one primitive through the normal governed path. The registry may sequence calls to this callback, but it has no alternative execution capability.
 
 ## 9. One governed execution path
 
@@ -215,17 +233,21 @@ V1 must refactor only enough of this logic to make primitive execution reusable 
 
 Conceptually:
 
-`executeGovernedTool({ name, args, origin, parentCompositeId })`
+`executeGovernedTool({ name, args, origin, parentCompositeId, childStepId })`
 
 Ordinary model tool calls and composite child steps both use this function.
 
-There must be no direct calls from the composite registry to `broker.execute()`, MCP, browser, operating plane, adaptive intelligence, filesystem helpers, or process helpers.
+The governed executor must return the existing `{status, output, receipt}` result and must not itself append a model-facing tool message for synthetic child calls. The caller controls message rendering. This prevents a composite with N internal steps from fabricating N top-level model tool-call IDs while preserving all child events, evidence, activity entries, and receipts.
+
+There must be no direct calls from the composite registry to `broker.execute()`, MCP, browser, goal, ForgeOS, operating plane, adaptive intelligence, filesystem helpers, or process helpers.
 
 This is a hard architectural invariant.
 
 ## 10. Authorization semantics
 
-At creation time, the registry receives the run-local `authorizedToolSchemas` map and rejects definitions whose primitive tool is absent.
+At creation time, the registry receives the current run-local primitive schema map and rejects definitions whose primitive tool is absent.
+
+For this check, **primitive schema map** means the currently authorized ordinary execution tools only. It excludes `ephemeral.*`, `tool.compose.*`, and `tool.catalog.*` regardless of whether those meta-tools are present in `activeTools`.
 
 At invocation time, every step must additionally satisfy the current `activeTools` set and all current hook/task-contract checks.
 
@@ -248,12 +270,16 @@ V1 executes steps sequentially in declared order.
 
 For each step:
 
-1. resolve arguments from invocation input and already completed step outputs;
+1. resolve arguments from invocation input and already completed step results;
 2. execute the primitive through the governed executor;
 3. require a normal tool receipt;
 4. append the receipt hash to the composite execution trace;
-5. make the screened primitive result available to subsequent bindings;
-6. stop immediately on failure.
+5. store a bounded structured clone of the primitive result for later bindings;
+6. stop immediately if the primitive throws, returns a non-`pass` status, lacks a valid receipt hash, or produces a result that cannot be safely cloned within configured bounds.
+
+Later bindings read from the primitive result object `{status, output, receipt}`. This is why examples use paths beginning with `output`.
+
+Primitive child results are not added to the LLM conversation as separate top-level tool messages. The model receives one final result for the `ephemeral.*` invocation. Existing evidence/activity/event pipelines still retain every child operation.
 
 No rollback is automatically inferred. If a primitive tool already has transactional/rollback behavior, it retains that behavior. A later version may require explicit compensation definitions after evidence shows they are necessary.
 
@@ -264,11 +290,13 @@ A failing child step causes the composite to fail with:
 - child receipt hash when one exists;
 - prior child receipt hashes;
 - definition hash;
-- no fabricated output.
+- no fabricated successful output.
+
+The top-level composite result uses the same `status` convention as ordinary tools: `pass` only when every child step passed and the output binding resolved; otherwise it is a failure or the typed child error propagates according to the existing AgentLoop failure convention.
 
 ## 12. Receipts and provenance
 
-Definition receipt schema, tentative:
+Definition receipt schema:
 
 `forge.ephemeral-capability-definition.v1`
 
@@ -283,7 +311,7 @@ Contains at least:
 - creation-time authorization snapshot hash;
 - creation receipt hash.
 
-Execution receipt schema, tentative:
+Execution receipt schema:
 
 `forge.ephemeral-capability-execution.v1`
 
@@ -302,11 +330,15 @@ Contains at least:
 
 The aggregate receipt never replaces child receipts. Child receipts remain first-class evidence and must continue to be recorded by the existing evidence pipeline.
 
+Receipts contain hashes/metadata only; they do not persist raw secrets, raw hidden reasoning, or unbounded child outputs.
+
 ## 13. Dynamic tool interaction
 
-When dynamic tool discovery is enabled, `tool.compose.create` remains a pinned/meta tool only if the experiment flag is enabled.
+When dynamic tool discovery is enabled, `tool.compose.create` is exposed alongside the discovery meta-tools when and only when `ephemeralCapabilityComposition:true`.
 
-A newly registered `ephemeral.*` tool becomes available in `activeTools` and `authorizedToolSchemas` for the current run only.
+When dynamic tool discovery is disabled but composition is explicitly enabled, `tool.compose.create` is still exposed directly because composition and catalog discovery are orthogonal experiment flags.
+
+A newly registered `ephemeral.*` schema becomes available in `activeTools` and in the run-local top-level authorization map used to validate model calls. It is **not** added to the primitive schema map used to validate future composite definitions, so nesting remains impossible by construction.
 
 It must not be inserted into the global `DynamicToolCatalog`.
 
@@ -362,7 +394,11 @@ Tests must include at minimum:
 17. successful composition including an authorized mutation tool under an explicit task contract;
 18. run-local expiration / no visibility in a second run;
 19. no mutation of global `DynamicToolCatalog`;
-20. aggregate receipt changes when any definition, input, child receipt, or output changes.
+20. aggregate receipt changes when any definition, input, child receipt, or output changes;
+21. literal object containing `from` and `path` is not misread as a binding;
+22. composite count/size/depth bounds fail closed;
+23. child non-pass result cannot yield top-level pass;
+24. composition enabled while dynamic discovery disabled still works without exposing catalog meta-tools.
 
 ## 17. Test-driven implementation slices
 
@@ -370,19 +406,19 @@ Implementation should proceed in small red-green-refactor slices:
 
 ### Slice A — registry validation
 
-Create failing unit tests for normalization, limits, primitive authorization, unsafe bindings, ordering, collision protection, and frozen definitions.
+Create failing unit tests for normalization, schema subset, limits, primitive authorization, unsafe bindings, ordering, collision protection, namespacing, and frozen definitions.
 
 ### Slice B — pure binding resolution
 
-Create failing unit tests for input/step bindings, missing paths, arrays, dangerous keys, and immutable outputs.
+Create failing unit tests for input/step bindings, literal objects, missing paths, arrays, dangerous keys, depth bounds, and immutable/cloned outputs.
 
 ### Slice C — run-local registration
 
-Create failing AgentLoop integration tests proving `tool.compose.create` can register an `ephemeral.*` schema only when enabled and cannot mutate the global catalog.
+Create failing AgentLoop integration tests proving `tool.compose.create` can register an `ephemeral.*` schema only when enabled and cannot mutate the global catalog or primitive composition allowlist.
 
 ### Slice D — governed child execution
 
-Refactor the minimum per-tool execution path and add tests proving ordinary and composite child calls traverse the same authorization/hook/task-contract/broker path.
+Refactor the minimum per-tool execution path and add tests proving ordinary and composite child calls traverse the same authorization/hook/task-contract/broker/gateway path while child calls do not create fake top-level model messages.
 
 ### Slice E — receipts/events/failure propagation
 
@@ -404,7 +440,8 @@ Engineering acceptance requires all of the following:
 - no authority increase is possible through composition;
 - every child effect retains an ordinary child receipt;
 - aggregate receipt is deterministic and provenance-complete;
-- feature is opt-in.
+- feature is opt-in;
+- ordinary tool execution behavior is unchanged when the feature flag is absent/false.
 
 Capability acceptance is stricter and separate. We do **not** call the mechanism an intelligence improvement merely because tests pass.
 
