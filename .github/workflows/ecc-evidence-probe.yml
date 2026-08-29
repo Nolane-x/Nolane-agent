@@ -1,0 +1,40 @@
+name: ECC evidence regeneration probe
+
+on:
+  push:
+    branches:
+      - codex/ephemeral-capability-composition-v1
+    paths:
+      - .github/workflows/ecc-evidence-probe.yml
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/ephemeral-capability-composition-v1
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Regenerate official Nolane program evidence without committing
+        run: npm run program:nolane
+      - name: Verify regenerated evidence
+        run: |
+          npm run audit:evidence-freshness
+          npm run audit:evidence-quality
+      - name: Report exact regeneration footprint
+        run: |
+          echo '=== git status --short ==='
+          git status --short
+          echo '=== git diff --name-only ==='
+          git diff --name-only
+          echo '=== git diff --stat ==='
+          git diff --stat
