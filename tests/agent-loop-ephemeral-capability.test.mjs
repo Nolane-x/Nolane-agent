@@ -120,7 +120,10 @@ test('composite child effects consume the run tool-call budget instead of launde
       return { text: '', toolCalls: [{ id: 'invoke', name: 'ephemeral.readFile', arguments: { path: 'README.md' } }], usage: { totalTokens: 1 } };
     },
   });
-  await assert.rejects(() => f.loop.run(f.task, { providerId: 'budget-model', budgets: budgets({ maxToolCalls: 2 }) }), /tool call/i);
+  await assert.rejects(
+    () => f.loop.run(f.task, { providerId: 'budget-model', budgets: budgets({ maxToolCalls: 2 }) }),
+    (error) => error?.name === 'BudgetExceededError' && /tool-call budget exceeded/i.test(String(error.message)),
+  );
 });
 
 test('composite child calls still obey lifecycle hook denial', async (t) => {
