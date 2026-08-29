@@ -364,7 +364,6 @@ export class AgentLoop {
     const ephemeralCapabilities = ephemeralCapabilityComposition ? new EphemeralCapabilityRegistry({ runId: run.id, taskId: task.id }) : null;
     let primitiveToolSchemas = new Map(baseTools.map((schema) => [schema.function.name, schema]));
     let catalogAuthorizedToolSchemas = new Map(primitiveToolSchemas);
-    let authorizedToolSchemas = new Map(primitiveToolSchemas);
     let mcpToolNames = new Set();
     let browserToolNames = new Set();
     let goalToolNames = new Set();
@@ -476,7 +475,6 @@ export class AgentLoop {
       }
       primitiveToolSchemas = new Map(activeTools.map((schema) => [schema.function.name, schema]));
       catalogAuthorizedToolSchemas = new Map(primitiveToolSchemas);
-      authorizedToolSchemas = new Map(primitiveToolSchemas);
       if (dynamicToolDiscovery) {
         const pinned = new Set(this.dynamicToolCatalog.baseSchemas().map((schema) => schema.function.name));
         activeTools = Object.freeze([
@@ -488,7 +486,6 @@ export class AgentLoop {
       } else if (ephemeralCapabilityComposition) {
         activeTools = Object.freeze([...activeTools, EPHEMERAL_CAPABILITY_COMPOSITION_SCHEMA]);
       }
-      for (const schema of activeTools) authorizedToolSchemas.set(schema.function.name, schema);
       const sessionStartHook = await runHook('SessionStart', {
         objective: task.objective,
         toolNames: activeTools.map((schema) => schema.function.name),
@@ -732,7 +729,6 @@ ${JSON.stringify(dependency.metadata.handoff).slice(0, 12_000)}`,
             throw error;
           }
           if (!activeTools.some((item) => item.function.name === registered.name)) activeTools = Object.freeze([...activeTools, registered.schema]);
-          authorizedToolSchemas.set(registered.name, registered.schema);
           const capabilityOutput = Object.freeze({
             schema: 'forge.ephemeral-capability-created.v1',
             tool: Object.freeze({ name: registered.name, description: registered.schema.function.description, parameters: registered.schema.function.parameters }),

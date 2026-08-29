@@ -85,7 +85,7 @@ test('invoke treats non-binding objects as literals and fails closed on stale au
   const registry = new EphemeralCapabilityRegistry({ runId: 'run-1', taskId: 'task-1' });
   const literal = registry.register(definition({ name: 'literal', steps: [{ id: 'x', tool: 'fs.read', args: { payload: { from: 'input', path: ['literal'] } } }], output: { $bind: { from: 'step', stepId: 'x', path: ['output'] } } }), { primitiveSchemas });
   let observed;
-  await registry.invoke(literal.name, {}, { isPrimitiveActive: () => true, async executePrimitive({ args }) { observed = args; return { status: 'pass', output: 'ok', receipt: { receiptSha256: hash('c') } }; } });
+  await registry.invoke(literal.name, { symbol: 'unused' }, { isPrimitiveActive: () => true, async executePrimitive({ args }) { observed = args; return { status: 'pass', output: 'ok', receipt: { receiptSha256: hash('c') } }; } });
   assert.deepEqual(observed.payload, { from: 'input', path: ['literal'] });
 
   const registered = registry.register(definition({ name: 'failures' }), { primitiveSchemas });

@@ -58,7 +58,7 @@ function assertSchema(schema, { root = false, depth = 0 } = {}) {
     const properties = schema.properties ?? {};
     if (root && Object.keys(properties).length > 32) fail('EPHEMERAL_CAPABILITY_PARAMETER_LIMIT', 'composite input parameters exceed 32');
     for (const [name, child] of Object.entries(properties)) {
-      if (!name) fail('EPHEMERAL_CAPABILITY_SCHEMA_PROPERTY', 'property name must be non-empty');
+      if (!name || DANGEROUS_PATH_KEYS.has(name)) fail('EPHEMERAL_CAPABILITY_SCHEMA_PROPERTY', `unsafe or empty parameter property name: ${name}`);
       assertSchema(child, { depth: depth + 1 });
     }
     if (schema.required !== undefined) {
@@ -79,6 +79,58 @@ function assertSchema(schema, { root = false, depth = 0 } = {}) {
   }
   if (schema.enum !== undefined && (!Array.isArray(schema.enum) || schema.enum.length === 0)) fail('EPHEMERAL_CAPABILITY_SCHEMA_ENUM', 'enum must be a non-empty array');
   return schema;
+}
+
+function schemaValueEqual(left, right) {
+  try { return canonicalStringify(left) === canonicalStringify(right); }
+  catch { return false; }
+}
+
+function inputSchemaFailure(path, message) {
+  fail('EPHEMERAL_CAPABILITY_INPUT_SCHEMA', `invalid composite input at ${path}: ${message}`);
+}
+
+function validateInputValue(value, schema, path = '$', depth = 0) {
+  if (depth > 24) inputSchemaFailure(path, 'schema validation depth exceeds 24');
+  const type = schema.type;
+  const typeValid = type === 'null' ? value === null
+    : type === 'object' ? plainObject(value)
+      : type === 'array' ? Array.isArray(value)
+        : type === 'integer' ? Number.isSafeInteger(value)
+          : type === 'number' ? typeof value === 'number' && Number.isFinite(value)
+            : type === 'string' ? typeof value === 'string'
+              : type === 'boolean' ? typeof value === 'boolean'
+                : false;
+  if (!typeValid) inputSchemaFailure(path, `expected ${type}`);
+
+  if (schema.const !== undefined && !schemaValueEqual(value, schema.const)) inputSchemaFailure(path, 'const constraint failed');
+  if (schema.enum !== undefined && !schema.enum.some((candidate) => schemaValueEqual(value, candidate))) inputSchemaFailure(path, 'enum constraint failed');
+
+  if (type === 'string') {
+    if (schema.minLength !== undefined && value.length < schema.minLength) inputSchemaFailure(path, `minLength ${schema.minLength} not met`);
+    if (schema.maxLength !== undefined && value.length > schema.maxLength) inputSchemaFailure(path, `maxLength ${schema.maxLength} exceeded`);
+  }
+  if (type === 'number' || type === 'integer') {
+    if (schema.minimum !== undefined && value < schema.minimum) inputSchemaFailure(path, `minimum ${schema.minimum} not met`);
+    if (schema.maximum !== undefined && value > schema.maximum) inputSchemaFailure(path, `maximum ${schema.maximum} exceeded`);
+    if (schema.exclusiveMinimum !== undefined && value <= schema.exclusiveMinimum) inputSchemaFailure(path, `exclusiveMinimum ${schema.exclusiveMinimum} not met`);
+    if (schema.exclusiveMaximum !== undefined && value >= schema.exclusiveMaximum) inputSchemaFailure(path, `exclusiveMaximum ${schema.exclusiveMaximum} exceeded`);
+  }
+  if (type === 'array') {
+    if (schema.minItems !== undefined && value.length < schema.minItems) inputSchemaFailure(path, `minItems ${schema.minItems} not met`);
+    if (schema.maxItems !== undefined && value.length > schema.maxItems) inputSchemaFailure(path, `maxItems ${schema.maxItems} exceeded`);
+    for (let index = 0; index < value.length; index += 1) validateInputValue(value[index], schema.items, `${path}[${index}]`, depth + 1);
+  }
+  if (type === 'object') {
+    const properties = schema.properties ?? {};
+    for (const required of schema.required ?? []) if (!Object.hasOwn(value, required)) inputSchemaFailure(path, `missing required property ${required}`);
+    for (const key of Object.keys(value)) {
+      if (DANGEROUS_PATH_KEYS.has(key)) inputSchemaFailure(path, `unsafe property ${key}`);
+      if (!Object.hasOwn(properties, key)) inputSchemaFailure(path, `additional property ${key} is not allowed`);
+      validateInputValue(value[key], properties[key], `${path}.${key}`, depth + 1);
+    }
+  }
+  return true;
 }
 
 function bindingNode(value) {
@@ -197,6 +249,7 @@ export class EphemeralCapabilityRegistry {
       const tool = assertText(raw.tool, 'step tool', 128);
       if (primitiveKindDenied(tool)) fail('EPHEMERAL_CAPABILITY_PRIMITIVE_DENIED', `meta or composite tool cannot be a primitive: ${tool}`);
       if (!primitiveSchemas.has(tool)) fail('EPHEMERAL_CAPABILITY_PRIMITIVE_UNAUTHORIZED', `primitive tool is not authorized: ${tool}`);
+      if (raw.args !== undefined && !plainObject(raw.args)) fail('EPHEMERAL_CAPABILITY_STEP_ARGS', `step ${id} args must be an object`);
       const args = normalizeTemplate(raw.args ?? {}, earlierStepIds, state);
       earlierStepIds.add(id);
       return { id, tool, args };
@@ -226,6 +279,7 @@ export class EphemeralCapabilityRegistry {
     if (typeof isPrimitiveActive !== 'function') fail('EPHEMERAL_CAPABILITY_AUTHORITY_REQUIRED', 'isPrimitiveActive callback is required');
     if (!plainObject(input)) fail('EPHEMERAL_CAPABILITY_INPUT_INVALID', 'composite input must be an object');
     const invocationInput = cloneJson(input, 'invocation input');
+    validateInputValue(invocationInput, record.definition.parameters);
     const stepResults = new Map();
     const childReceipts = [];
     for (const step of record.definition.steps) {
