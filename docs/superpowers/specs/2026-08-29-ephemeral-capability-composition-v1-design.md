@@ -467,6 +467,8 @@ For the V1 bounded schema subset, runtime validation enforces the declared type 
 
 Invalid input fails closed with a typed error and **zero child primitive executions**. Step `args` must themselves be plain objects; arrays or other non-object values are invalid definitions.
 
+Schema definitions also fail closed before registration when bounded constraint keywords are malformed or type-inapplicable. Numeric bounds must be finite numbers; string and array length bounds must be non-negative safe integers; duplicate `required` names and directly contradictory simple ranges are rejected. This prevents a syntactically accepted but semantically malformed model-facing tool schema from entering the run.
+
 ## 18.2 Tool-call budget non-laundering invariant
 
 Ephemeral composition may compress **model-facing orchestration**, but it must never compress runtime governance accounting.
@@ -506,6 +508,7 @@ The implemented V1 closure adds explicit tests for:
 29. non-object step argument rejection;
 30. child tool-call budget accounting and budget-laundering prevention;
 31. deterministic baseline-versus-composite mechanism benchmark with equal primitive effects.
+32. malformed, type-inapplicable, duplicate-required, and contradictory bounded schema constraints fail closed at registration.
 ## 19. Expected code surface
 
 Expected files, subject to implementation evidence:
