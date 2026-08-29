@@ -6,6 +6,8 @@ on:
       - codex/ephemeral-capability-composition-v1
     paths:
       - tests/ephemeral-capability-input-validation.test.mjs
+      - tests/ephemeral-capability-mechanism-benchmark.test.mjs
+      - scripts/benchmark-ephemeral-capability-composition.mjs
       - src/agent/ephemeral-capability-registry.mjs
       - src/agent/agent-loop.mjs
       - .github/workflows/ecc-adversarial-focused.yml
@@ -26,8 +28,10 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --ignore-scripts
-      - name: Run ECC adversarial RED/GREEN suite
+      - name: Run ECC adversarial and benchmark suite
         run: |
           node --check src/agent/ephemeral-capability-registry.mjs
           node --check src/agent/agent-loop.mjs
-          node --test tests/ephemeral-capability-registry.test.mjs tests/ephemeral-capability-input-validation.test.mjs tests/agent-loop-ephemeral-capability.test.mjs
+          node --check scripts/benchmark-ephemeral-capability-composition.mjs
+          node --test tests/ephemeral-capability-registry.test.mjs tests/ephemeral-capability-input-validation.test.mjs tests/agent-loop-ephemeral-capability.test.mjs tests/ephemeral-capability-mechanism-benchmark.test.mjs
+          node scripts/benchmark-ephemeral-capability-composition.mjs
