@@ -1,0 +1,101 @@
+name: ECC schema hardening finalization
+
+on:
+  push:
+    branches:
+      - codex/ephemeral-capability-composition-v1
+    paths:
+      - .github/workflows/ecc-schema-finalize.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/ephemeral-capability-composition-v1
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Close normative schema-definition invariant
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('docs/superpowers/specs/2026-08-29-ephemeral-capability-composition-v1-design.md')
+          s = p.read_text()
+          marker = 'Invalid input fails closed with a typed error and **zero child primitive executions**. Step `args` must themselves be plain objects; arrays or other non-object values are invalid definitions.\n'
+          addition = marker + '\nSchema definitions also fail closed before registration when bounded constraint keywords are malformed or type-inapplicable. Numeric bounds must be finite numbers; string and array length bounds must be non-negative safe integers; duplicate `required` names and directly contradictory simple ranges are rejected. This prevents a syntactically accepted but semantically malformed model-facing tool schema from entering the run.\n'
+          if s.count(marker) != 1:
+              raise SystemExit('expected exactly one runtime-input invariant marker')
+          s = s.replace(marker, addition)
+          test_marker = '31. deterministic baseline-versus-composite mechanism benchmark with equal primitive effects.\n'
+          test_addition = test_marker + '32. malformed, type-inapplicable, duplicate-required, and contradictory bounded schema constraints fail closed at registration.\n'
+          if s.count(test_marker) != 1:
+              raise SystemExit('expected exactly one closure-test marker')
+          p.write_text(s.replace(test_marker, test_addition))
+          PY
+          grep -F 'Schema definitions also fail closed before registration' docs/superpowers/specs/2026-08-29-ephemeral-capability-composition-v1-design.md
+      - name: Remove all final schema-hardening scaffolding
+        run: |
+          rm .github/workflows/ecc-schema-hardening-focused.yml
+          rm .github/workflows/ecc-schema-hardening-apply.yml
+          rm .github/workflows/ecc-schema-finalize.yml
+          rm scripts/apply-ecc-schema-definition-hardening.mjs
+      - name: Verify final ECC behavior and benchmark
+        run: |
+          node --check src/agent/ephemeral-capability-registry.mjs
+          node --check src/agent/agent-loop.mjs
+          node --check scripts/benchmark-ephemeral-capability-composition.mjs
+          node --test tests/ephemeral-capability-schema-definition-validation.test.mjs tests/ephemeral-capability-registry.test.mjs tests/ephemeral-capability-input-validation.test.mjs tests/agent-loop-ephemeral-capability.test.mjs tests/ephemeral-capability-mechanism-benchmark.test.mjs
+          node scripts/benchmark-ephemeral-capability-composition.mjs
+      - name: Regenerate official Nolane evidence on final desired tree
+        run: npm run program:nolane
+      - name: Run full source validation and evidence quality
+        run: |
+          npm run validate
+          npm run audit:evidence-quality
+      - name: Assert bounded finalization footprint
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --name-only | sort > /tmp/actual.txt
+          cat > /tmp/allowed.txt <<'EOF'
+          .github/workflows/ecc-schema-finalize.yml
+          .github/workflows/ecc-schema-hardening-apply.yml
+          .github/workflows/ecc-schema-hardening-focused.yml
+          docs/MASTER-ACCEPTANCE-LEDGER.md
+          docs/superpowers/specs/2026-08-29-ephemeral-capability-composition-v1-design.md
+          requirements/master-acceptance-ledger.json
+          requirements/nolane-agent-v5-requirements.json
+          requirements/runtime-purity-summary.json
+          scripts/apply-ecc-schema-definition-hardening.mjs
+          EOF
+          sort -o /tmp/allowed.txt /tmp/allowed.txt
+          echo '=== actual finalization diff ==='
+          cat /tmp/actual.txt
+          comm -23 /tmp/actual.txt /tmp/allowed.txt > /tmp/unexpected.txt
+          test ! -s /tmp/unexpected.txt || { echo 'Unexpected files:'; cat /tmp/unexpected.txt; exit 1; }
+          for required in \
+            .github/workflows/ecc-schema-finalize.yml \
+            .github/workflows/ecc-schema-hardening-apply.yml \
+            .github/workflows/ecc-schema-hardening-focused.yml \
+            docs/superpowers/specs/2026-08-29-ephemeral-capability-composition-v1-design.md \
+            scripts/apply-ecc-schema-definition-hardening.mjs; do
+            grep -Fx "$required" /tmp/actual.txt >/dev/null || { echo "Missing expected diff: $required"; exit 1; }
+          done
+          git diff --check
+      - name: Commit final clean tree
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -m "docs: close ECC schema hardening evidence"
+          git push origin HEAD:codex/ephemeral-capability-composition-v1
