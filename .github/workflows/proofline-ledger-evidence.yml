@@ -61,7 +61,7 @@ jobs:
           node scripts/capture-proofline-ledger-evidence.mjs
       - name: Upload Proofline ledger evidence
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: proofline-ledger-runtime-evidence
           path: ${{ runner.temp }}/nolane-proofline-ledger-evidence

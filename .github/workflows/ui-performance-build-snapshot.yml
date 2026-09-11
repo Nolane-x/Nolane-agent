@@ -36,7 +36,7 @@ jobs:
       - name: Build deterministic UI distribution
         run: npm run build:ui-v3
       - name: Upload generated UI distribution snapshot
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ui-performance-merged-dist-${{ github.sha }}
           path: ui-dist

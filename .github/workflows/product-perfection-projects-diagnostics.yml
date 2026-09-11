@@ -72,7 +72,7 @@ jobs:
 
       - name: Upload product-perfection-projects-diagnostics
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: product-perfection-projects-diagnostics
           path: ${{ runner.temp }}/product-perfection-projects-diagnostics

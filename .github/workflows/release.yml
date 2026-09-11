@@ -89,7 +89,7 @@ jobs:
 
       - name: Upload candidate gate receipt
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: nolane-release-candidate-gate
           path: release/release-candidate-gate.json
@@ -167,7 +167,7 @@ jobs:
         run: npm run build:electron:installer
 
       - name: Upload macOS release assets
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nolane-agent-macos-release-assets
           if-no-files-found: error
@@ -239,7 +239,7 @@ jobs:
         run: npm run build:electron:installer
 
       - name: Upload Linux release assets
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nolane-agent-linux-release-assets
           if-no-files-found: error
@@ -400,7 +400,7 @@ jobs:
             release/matrix-${{ steps.update_trust.outputs.version }}/full-release-matrix.json
 
       - name: Upload workflow artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nolane-agent-${{ steps.update_trust.outputs.version }}-windows
           if-no-files-found: error

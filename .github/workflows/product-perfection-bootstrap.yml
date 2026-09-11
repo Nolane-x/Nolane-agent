@@ -37,7 +37,7 @@ jobs:
           node --check scripts/verify-product-perfection-matrix.mjs
 
       - name: Upload durable specification pack and canonical matrix
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: product-perfection-spec-pack
           path: |
