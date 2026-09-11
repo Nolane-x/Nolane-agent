@@ -42,7 +42,7 @@ jobs:
       NOLANE_UI_EVIDENCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
@@ -138,7 +138,7 @@ jobs:
       NOLANE_UI_EVIDENCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
